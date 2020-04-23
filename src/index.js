@@ -3,10 +3,39 @@ import ReactDOM from 'react-dom';
 import {VehicleForm} from './vehicleInput.js';
 import {RouteCalculator} from './routeCalculator.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {App} from './App.js';
 
 const US = "mpgUS";
 const UK = "mpgUK";
 const METRIC = "lPer100Km";
+
+
+class APIcaller extends React.Component {
+  listVehicles(){
+    fetch('/fueltypes')
+      .then(res => res.json())
+      .then(
+        (result) => {
+            console.log(result)
+
+        },
+        (error) => {
+            console.log("Error");
+        }
+      )
+  }
+
+
+  render(){
+
+    return(
+      <div class="container bg-light">
+        <p>API Caller</p>
+        <button class="btn-outline-danger" onClick={this.listVehicles}>List Vehicles</button>
+      </div>
+    );
+  }
+}
 
 class Page extends React.Component {
   constructor(props){
@@ -85,8 +114,11 @@ class Page extends React.Component {
           <h1>Armchair Dissident Carbon Tax</h1>      
           <p>Everything's fucked anyway.</p>
         </div>
-        {vehicleForm}
         {routeCalculator}
+        <App />
+        <div class="jumbotron">
+          <h1>Whitespace</h1>
+        </div>
       </div>
     );
   }

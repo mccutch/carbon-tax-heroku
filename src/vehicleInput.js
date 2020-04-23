@@ -1,6 +1,5 @@
 import React from 'react';
 import './index.css';
-import {styles} from './styles.js'
 
 
 

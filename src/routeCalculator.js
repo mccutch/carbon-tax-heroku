@@ -1,11 +1,11 @@
 import React from 'react';
 import './index.css';
-import {styles} from './styles.js';
+import {keys} from './secret_api_keys.js';
 
 const US = "mpgUS";
 const UK = "mpgUK";
 const METRIC = "lPer100Km";
-const GOOGLE_API_KEY = 'AIzaSyBCHu8vhA03Pc6M1R-GP_QQQuQW1x8Mrks';
+const GOOGLE_API_KEY = keys.google_api_key;
 
 class PlaceInput extends React.Component{
 
@@ -80,7 +80,7 @@ class MapView extends React.Component{
 
     return(
       <div class="pt-3">
-        <iframe width="100%" height="100%" frameBorder="0"
+        <iframe title="mapDisplay" width="100%" height="100%" frameBorder="0"
                 src={base_url+url_suffix}
                 allowFullScreen
         >

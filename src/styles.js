@@ -1,4 +1,3 @@
-const width = 400;
 
 
 export const styles = {
