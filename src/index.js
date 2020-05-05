@@ -4,6 +4,8 @@ import {VehicleForm} from './vehicleInput.js';
 import {RouteCalculator} from './routeCalculator.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {App} from './App.js';
+import {LoginApp} from './LoginApp.js';
+import {JWTChecker} from './JWT_checker.js';
 
 const US = "mpgUS";
 const UK = "mpgUK";
@@ -114,8 +116,7 @@ class Page extends React.Component {
           <h1>Armchair Dissident Carbon Tax</h1>      
           <p>Everything's fucked anyway.</p>
         </div>
-        {routeCalculator}
-        <App />
+        <JWTChecker />
         <div class="jumbotron">
           <h1>Whitespace</h1>
         </div>

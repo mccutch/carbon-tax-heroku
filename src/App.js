@@ -29,7 +29,7 @@ export class App extends Component {
 
   handle_login = (e, data) => {
     e.preventDefault();
-    fetch('/token-auth/', { //could be '/token-auth'? http://localhost:8000/
+    fetch('/api/token/', { //could be '/token-auth'? http://localhost:8000/
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ export class App extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        localStorage.setItem('token', json.token);
+        localStorage.setItem('access', json.token);
         console.log("Login success");
         console.log(json);
         this.setState({
