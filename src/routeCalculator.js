@@ -75,7 +75,7 @@ class MapView extends React.Component{
         url_suffix = this.props.parameters;
       } else {
         // Default map display
-        url_suffix = "units=imperial&origin=melbourne&destination=arapiles&key=AIzaSyBCHu8vhA03Pc6M1R-GP_QQQuQW1x8Mrks"
+        url_suffix = "units=imperial&origin=melbourne&destination=arapiles&key="+GOOGLE_API_KEY
       }
 
     return(
@@ -111,6 +111,7 @@ class RouteResultView extends React.Component{
         <MapView parameters={this.props.parameters}/>
         <p>Distance: {parseFloat(this.props.distance).toFixed(1)}</p>
         <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
+        <button type="button" class="btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
       </div>
     );
   }
@@ -126,7 +127,7 @@ export class RouteCalculator extends React.Component{
       destination: "",
       via: "",
       distance: 0,
-      directionsSuffix: "units=metric&origin=melbourne&destination=arapiles&key=AIzaSyBCHu8vhA03Pc6M1R-GP_QQQuQW1x8Mrks",
+      directionsSuffix: "units=metric&origin=melbourne&destination=arapiles&key="+GOOGLE_API_KEY,
       inputErrorMessage: "",
     }
 
@@ -231,7 +232,7 @@ export class RouteCalculator extends React.Component{
 
   render(){
     return(
-      <div class="container-sm bg-light" >
+      <div class="container bg-success" >
         <RouteInputFields submitQuery={(o, d, v)=>this.receiveQuery(o,d,v)}/>
         <RouteResultView 
           parameters={this.state.directionsSuffix}
@@ -239,6 +240,7 @@ export class RouteCalculator extends React.Component{
           origin={this.state.origin}
           destination={this.state.destination}
           distance={this.state.distance}
+          hideCalculator={this.props.hideCalculator}
         />
       </div>
     );

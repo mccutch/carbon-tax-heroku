@@ -266,10 +266,8 @@ class SliderInput extends React.Component {
 class VehicleResult extends React.Component {
   constructor(props){
     super(props);
-
     this.state = {cityProportion: 0.55,}
     this.handleSliderChange = this.handleSliderChange.bind(this);
-
     this.handleClick=this.handleClick.bind(this)
   }
 
@@ -279,11 +277,13 @@ class VehicleResult extends React.Component {
 
   handleClick(){
     if(this.props.data.vehicleId){
-      this.props.submitVehicle(this.props.data.name, this.findEconomy(), this.props.data.fuelType);
+      this.props.submitVehicle(this.findEconomy(), this.props.data.fuelType);
+      this.props.hideForm()
     }
   }
 
   findEconomy(){
+    /* return vehicle economy in display units */
     return(
       this.props.convertFromUSMpg(
           (this.state.cityProportion * this.props.data.cityMpg) 
@@ -300,8 +300,8 @@ class VehicleResult extends React.Component {
 
     return(
       <div class="container">
-        <div class="row bg-light text-right">
-              <p>Vehicle: {this.props.data.name}</p>
+        <div class="row bg-dark text-white text-right">
+              <h3>{this.props.data.name}</h3>
         </div>
         <div class="row">
           <div class="col-sm">
@@ -359,6 +359,13 @@ class VehicleResult extends React.Component {
         >
           Use these values
         </button>
+        <button
+          type="button"
+          class="btn-outline-danger"
+          onClick={this.props.hideForm}
+        >
+          Cancel
+        </button>
       </div>
     );
   }
@@ -377,6 +384,7 @@ export class VehicleForm extends React.Component {
       cityMpg: 0,
       fuelType: null,
     }
+
   }
 
   receiveVehicleId(name, num){
@@ -421,16 +429,42 @@ export class VehicleForm extends React.Component {
   }
 
 
+
+
   render(){
+    let display
+
+    if(this.state.vehicleId){
+      display = <div>
+                  <VehicleInputFields 
+                    returnVehicleId ={(name,num) => this.receiveVehicleId(name,num)}
+                  />
+                  <VehicleResult  
+                    data = {this.state}
+                    submitVehicle = {this.props.submitVehicle}
+                    convertFromUSMpg={this.props.convertFromUSMpg}
+                    units = {this.props.units}
+                    hideForm = {this.props.hideForm}
+                  />
+                </div>
+    } else {
+      display = <div>
+                  <VehicleInputFields 
+                    returnVehicleId ={(name,num) => this.receiveVehicleId(name,num)}
+                  />
+                  <button
+                    type="button"
+                    class="btn-outline-danger"
+                    onClick={this.props.hideForm}
+                  >
+                    Cancel
+                  </button>
+                </div>
+    }
+
     return(
-      <div class="container-sm bg-light">
-        <VehicleInputFields 
-          returnVehicleId ={(name,num) => this.receiveVehicleId(name,num)} />
-        <VehicleResult  data = {this.state}
-                        submitVehicle = {this.props.submitVehicle}
-                        convertFromUSMpg={this.props.convertFromUSMpg}
-                        units = {this.props.units}
-        />
+      <div class="container-sm bg-success">
+        {display}
       </div>
     );
   }

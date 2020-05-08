@@ -6,6 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {App} from './App.js';
 import {LoginApp} from './LoginApp.js';
 import {JWTChecker} from './JWT_checker.js';
+import {EconomyInput} from './economyInput.js';
+import {DistanceInput} from './distanceInput.js';
+import {LoginWrapper} from './loginWrapper.js';
 
 const US = "mpgUS";
 const UK = "mpgUK";
@@ -43,41 +46,68 @@ class Page extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      name: null,
-      mpg: 0,
+      lPer100km: 0,
       fuelType: null,
-      units: METRIC,
+      displayUnits: METRIC,
       origin: null,
       destination: null,
       distance: null,
+      loggedIn: false,
     }
     this.convertFromUSMpg = this.convertFromUSMpg.bind(this);
+    this.toggleDisplayUnits = this.toggleDisplayUnits.bind(this);
+    this.setLogin = this.setLogin.bind(this);
   }
 
-  handleSubmitVehicle(name, mpg, fuel){
-    this.setState({ name: name,
-                    mpg: mpg,
-                    fuelType: fuel,
-                  });
+  toggleDisplayUnits(){
+    if(this.state.displayUnits===METRIC){
+      this.setState({displayUnits:US})
+    } else if(this.state.displayUnits===US){
+      this.setState({displayUnits:UK})
+    } else if(this.state.displayUnits===UK){
+      this.setState({displayUnits:METRIC})
+    }
+  }
+
+  
+
+  convertFromDisplayUnits(value){
+    if (this.state.displayUnits === METRIC){
+      return value;
+    } else if (this.state.displayUnits === UK){
+      return 100*3.785411784*1.201/(1.609344*value)
+    } else if (this.state.displayUnits === US){
+      return 100*3.785411784/(1.609344*value)
+    } else {
+      console.log("Unknown economy units.")
+      return 0;
+    }
+  }
+
+  handleSubmitEconomy(economy, fuel){
+    this.setState({
+      lPer100km: this.convertFromDisplayUnits(economy),
+      fuelType: fuel,
+    });
   }
 
   convertFromUSMpg(value){
-    /* Convert between US mpg and L/100km */
+    /* Convert from US mpg to display units */
     /* Return a units as a string if value==null */
 
-    if (this.state.units === METRIC){
+    if (this.state.displayUnits === METRIC){
       if(!value) {
         return "L/100km";
       } else {
       return 100*3.785411784/(1.609344*value);
       }
-    } else if (this.state.units === UK){
+    } else if (this.state.displayUnits === UK){
       if (!value) {
         return "UK mpg";
       } else{
         return 1.201*value;
       }
-    } else if (this.state.units === US){
+    } else if (this.state.displayUnits === US){
       if (!value) {
         return "US mpg";
       } else {
@@ -90,6 +120,7 @@ class Page extends React.Component {
   }
 
   handleSubmitDistance(origin, destination, distance){
+    /* Expects to receive distance in km */
     this.setState({
       origin: origin,
       destination: destination,
@@ -97,18 +128,35 @@ class Page extends React.Component {
     })
   }
 
+  setLogin(bool_val){
+    this.setState({loggedIn: bool_val})
+  }
+
 
   render(){
 
-    let vehicleForm = <VehicleForm 
-                        submitVehicle={(name,mpg,fuel)=>this.handleSubmitVehicle(name,mpg,fuel)}
-                        units={this.state.units}
+
+    let economyInput = <EconomyInput
+                        submitEconomy={(econ,fuel)=>this.handleSubmitEconomy(econ,fuel)}
+                        units={this.state.displayUnits}
                         convertFromUSMpg={this.convertFromUSMpg}
                       />
 
     let routeCalculator = <RouteCalculator  submitDistance={(orig,dest,dist)=>this.handleSubmitDistance(orig,dest,dist)}
-                                            units={this.state.units}
+                                            units={this.state.displayUnits}
                           />
+
+    let distanceInput = <DistanceInput  
+                          submitDistance={(orig,dest,dist)=>this.handleSubmitDistance(orig,dest,dist)}
+                          displayUnits={this.state.displayUnits}
+                        />
+
+
+    let loginWrapper =  <div className="container bg-info">
+                          <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin}/>
+                          <button type="button" class = "btn-outline-warning" onClick={this.toggleDisplayUnits}>Change Units</button>
+                        </div>
+
 
     return(
       <div class="container-fluid bg-dark">
@@ -116,7 +164,12 @@ class Page extends React.Component {
           <h1>Armchair Dissident Carbon Tax</h1>      
           <p>Everything's fucked anyway.</p>
         </div>
-        <JWTChecker />
+        <div>
+          <JWTChecker />
+          <div>{loginWrapper}</div>
+          <div>{distanceInput}</div>
+          <div>{economyInput}</div>
+        </div>
         <div class="jumbotron">
           <h1>Whitespace</h1>
         </div>

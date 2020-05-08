@@ -29,7 +29,7 @@ export class App extends Component {
 
   handle_login = (e, data) => {
     e.preventDefault();
-    fetch('/api/token/', { //could be '/token-auth'? http://localhost:8000/
+    fetch('/api/token/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -38,7 +38,8 @@ export class App extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        localStorage.setItem('access', json.token);
+        localStorage.setItem('access', json.access);
+        localStorage.setItem('refresh', json.refresh);
         console.log("Login success");
         console.log(json);
         this.setState({
@@ -61,9 +62,10 @@ export class App extends Component {
       .then(res => res.json())
       .then(
         (json) => {
-        localStorage.setItem('token', json.token);
-        console.log("Token: "+json.token)
-        console.log(json)
+        localStorage.setItem('access', json.access);
+        localStorage.setItem('refresh', json.refresh);
+        console.log("Access: "+json.token)
+        console.log("Refresh: "+json.refresh)
         this.setState({
           logged_in: true,
           displayed_form: '',
@@ -76,7 +78,7 @@ export class App extends Component {
   };
 
   handle_logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('access');
     this.setState({ logged_in: false, username: '' });
   };
 
