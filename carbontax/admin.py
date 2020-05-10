@@ -12,7 +12,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ('name','owner','fuel','economy','economy_metric')
+    list_display = ('name','owner','fuel','economy')
 
 @admin.register(EconomyMetric)
 class EconomyMetricAdmin(admin.ModelAdmin):

@@ -5,6 +5,7 @@ class EmissionInstance(models.Model):
     """
     Created when an entry is created from inputs.
     """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=30, null=True)
     date = models.DateField(null=True)
     travel_mode = models.CharField(max_length=30, null=True)
@@ -20,7 +21,7 @@ class FuelType(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f'{self.name}_{self.unit}'
+        return f'{self.name}'
 
 class EconomyMetric(models.Model):
     name = models.CharField(max_length=30)
@@ -48,9 +49,8 @@ class Profile(models.Model):
 class Vehicle(models.Model):
     name = models.CharField(max_length=30)
     fuel = models.ForeignKey(FuelType, on_delete = models.CASCADE, help_text = 'Select a fuel type for this vehicle.')
-    economy = models.FloatField()
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    economy_metric = models.ForeignKey(EconomyMetric, on_delete=models.CASCADE)
+    economy = models.FloatField() # MUST BE IN L/100km
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}'

@@ -2,10 +2,16 @@ from . import models
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
+class ItemRelatedField(serializers.RelatedField):
+    def to_representation(self,value):
+        return str(value)
+
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
+    fuel = ItemRelatedField(read_only=True)
+
     class Meta:
         model = models.Vehicle
-        fields = ['name', 'fuel', 'economy', 'owner', 'economy_metric']
+        fields = ['name', 'fuel', 'economy']
 
 class FuelTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

@@ -15,14 +15,43 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
 
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics
+
 # Serve Single Page Application
 index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 
 #API Viewsets
 class VehicleViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAdminUser, )
     queryset = models.Vehicle.objects.all()
     serializer_class = serializers.VehicleSerializer
+"""
+class UserVehicleView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        queryset = models.Vehicle.objects
+        string_ret = 'hello, '+name
+        content = {'message': string_ret}
+        return Response(content)
+"""
+class UserVehicleList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.VehicleSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return models.Vehicle.objects.filter(owner=user)
+
 
 class FuelTypeViewSet(viewsets.ModelViewSet):
     queryset = models.FuelType.objects.all()
@@ -39,6 +68,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserSerializer
     queryset = models.Profile.objects.all()
+
+class CurrentUser(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        username = request.user.username
+        content = {'username': username}
+        return Response(content)
 
 
 
@@ -67,3 +103,18 @@ class UserList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print("SERIALIZER is invalid")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# https://simpleisbetterthancomplex.com/tutorial/2018/12/19/how-to-use-jwt-authentication-with-django-rest-framework.html
+
+
+
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+
+    def get(self, request):
+        name = request.user.username
+        string_ret = 'hello, '+name
+        content = {'message': string_ret}
+        return Response(content)
