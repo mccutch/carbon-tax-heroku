@@ -70,7 +70,7 @@ export class DistanceInput extends React.Component{
     } else {
       display = <div>
                   <input  
-                    type="text"
+                    type="number"
                     id="distance"
                     onChange={this.handleChange} 
                     name="distance"

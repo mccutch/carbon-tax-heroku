@@ -1,5 +1,7 @@
 import React from 'react';
 import {VehicleForm} from './vehicleInput.js';
+import {refreshToken}  from './myJWT.js';
+import * as units from './unitConversions';
 
 class FuelList extends React.Component{
   constructor(props){
@@ -67,54 +69,169 @@ class FuelList extends React.Component{
   }
 }
 
+class UserVehicleTable extends React.Component{
+  constructor(props){
+    super(props)
+    this.buildTable=this.buildTable.bind(this)
+  }
+
+  buildTable(){
+    let tableRows=[]
+    for(let i=0; i<this.props.vehicles.length; i++){
+
+      let vehicle=this.props.vehicles[i]
+      let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
+      tableRows.push(
+        <tr>
+          <td>{vehicle.name}</td>
+          <td>{economy.toFixed(1)}</td>
+          <td>{units.displayUnitString(this.props.displayUnits)}</td>
+          <td>{vehicle.fuel}</td>
+          <td>
+            <button className="btn-outline-warning" name={i.toString()} onClick={this.props.onClick}>Use this vehicle</button>
+          </td>
+        </tr>
+      )
+    }
+
+    return( 
+      <table>
+        <tbody>
+          {tableRows}
+        </tbody>
+      </table>
+    )
+  }
+
+  render(){
+    
+
+    return(
+      this.buildTable()
+    )
+
+  }
+}
+
 export class EconomyInput extends React.Component{
   constructor(props){
     super(props);
 
     this.state = {
       displayVehicleInput: false,
-      economy: null,
+      displayUserVehicles: false,
+      vehicles: null,
+      lPer100km: null, // economy must be stored in metric
       fuel: null,
     }
     this.handleClick = this.handleClick.bind(this)
-    this.hideVehicleForm = this.hideVehicleForm.bind(this)
+    this.hideForms = this.hideForms.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.findSavedVehicle = this.findSavedVehicle.bind(this)
+    this.handleVehicleChoice = this.handleVehicleChoice.bind(this)
+    this.submitEconomy = this.submitEconomy.bind(this)
   }
 
   handleClick(event){
     if(event.target.name==="displayVehicleForm"){
       this.setState({displayVehicleInput:true})
     } else if(event.target.name==="submitEconomy"){
-      if(this.state.economy && this.state.fuel){
-        this.props.submitEconomy(this.state.economy, this.state.fuel) 
-      }
+      this.submitEconomy()
+    } else if(event.target.name==="useSavedVehicle"){
+      this.findSavedVehicle()
     }
   }
 
-  hideVehicleForm(){
-    this.setState({displayVehicleInput:false})
+  submitEconomy(){
+
+    if(this.state.lPer100km && this.state.fuel){
+      this.props.submitEconomy(this.state.lPer100km, this.state.fuel) 
+    }
+  }
+
+  hideForms(){
+    this.setState({displayVehicleInput:false, displayUserVehicles:false, vehicles:null,})
   }
 
   handleChange(event){
     let value = event.target.value
     if(event.target.name==="economy"){
-      this.setState({economy: value})
+      this.setState({lPer100km: units.convertFromDisplayUnits(value, this.props.displayUnits)})
     } else if(event.target.name==="fuelType"){
       if(value==="FUEL"){value=null}
       this.setState({fuel: value})
     }
   }
 
+  findSavedVehicle(){
+    fetch('/my-vehicles/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      }
+    })
+    .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        this.setState({displayUserVehicles: true, vehicles:json})
+      })
+      .catch(e => {
+        console.log(e.message)
+        if(e.message==='401'){
+          refreshToken({onSuccess:this.findSavedVehicle})
+        }
+      });
+  }
+
+  handleVehicleChoice(event){
+    let id = event.target.name
+    console.log(this.state.vehicles[id])
+    let chosenVehicle = this.state.vehicles[id]
+    this.props.submitEconomy(chosenVehicle.economy, chosenVehicle.fuel)
+    this.hideForms()
+  }
+
 
   render(){
+
+    let memberDisplay
+    if(this.props.loggedIn){
+      memberDisplay = <button
+                        type="button"
+                        name="useSavedVehicle"
+                        class="btn-outline-success"
+                        onClick={this.handleClick}
+                      >Use a saved vehicle</button>
+    }
+
     let display
     if(this.state.displayVehicleInput){
       display = <VehicleForm 
                 submitVehicle={this.props.submitEconomy}
-                units={this.props.displayUnits}
-                convertFromUSMpg={this.props.convertFromUSMpg}
-                hideForm={this.hideVehicleForm}
+                displayUnits={this.props.displayUnits}
+                hideForm={this.hideForms}
               />
+    } else if(this.state.displayUserVehicles){
+      display = 
+      <div>
+        <UserVehicleTable 
+          vehicles={this.state.vehicles} 
+          onClick={this.handleVehicleChoice} 
+          displayUnits={this.props.displayUnits}
+        />
+        <button
+          type="button"
+          name="cancel"
+          class="btn-outline-danger"
+          onClick={this.hideForms}
+        >Cancel</button>
+      </div>
     } else {
       display = <div class="row">
                   <div class="col">
@@ -125,7 +242,7 @@ export class EconomyInput extends React.Component{
                       name="economy"
                       placeholder="Fuel economy"
                     />
-                    <label for="economy">{this.props.convertFromUSMpg()}</label>
+                    <label for="economy">{units.displayUnitString(this.props.displayUnits)}</label>
                     <FuelList label="fuelType" onChange={this.handleChange} defaultText="FUEL"/>
                     <button
                       type="button"
@@ -141,9 +258,12 @@ export class EconomyInput extends React.Component{
                       class="btn-outline-success"
                       onClick={this.handleClick}
                     >Find US vehicles</button>
+                    {memberDisplay}
                   </div>
                 </div>
     }
+
+   
     
     return(
       <div class='container bg-info'>{display}</div>

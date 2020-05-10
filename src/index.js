@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {VehicleForm} from './vehicleInput.js';
-import {RouteCalculator} from './routeCalculator.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {App} from './App.js';
 import {LoginApp} from './LoginApp.js';
@@ -9,38 +8,14 @@ import {JWTChecker} from './JWT_checker.js';
 import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';
 import {LoginWrapper} from './loginWrapper.js';
+import {CarbonCalculator} from './carbonCalculator.js'
+import * as units from './unitConversions';
+
 
 const US = "mpgUS";
 const UK = "mpgUK";
 const METRIC = "lPer100Km";
 
-
-class APIcaller extends React.Component {
-  listVehicles(){
-    fetch('/fueltypes')
-      .then(res => res.json())
-      .then(
-        (result) => {
-            console.log(result)
-
-        },
-        (error) => {
-            console.log("Error");
-        }
-      )
-  }
-
-
-  render(){
-
-    return(
-      <div class="container bg-light">
-        <p>API Caller</p>
-        <button class="btn-outline-danger" onClick={this.listVehicles}>List Vehicles</button>
-      </div>
-    );
-  }
-}
 
 class Page extends React.Component {
   constructor(props){
@@ -51,12 +26,14 @@ class Page extends React.Component {
       displayUnits: METRIC,
       origin: null,
       destination: null,
-      distance: null,
+      distanceKm: null,
       loggedIn: false,
+      economySubmitted: false,
+      distanceSubmitted: false,
     }
-    this.convertFromUSMpg = this.convertFromUSMpg.bind(this);
     this.toggleDisplayUnits = this.toggleDisplayUnits.bind(this);
     this.setLogin = this.setLogin.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
   }
 
   toggleDisplayUnits(){
@@ -69,62 +46,26 @@ class Page extends React.Component {
     }
   }
 
+
   
 
-  convertFromDisplayUnits(value){
-    if (this.state.displayUnits === METRIC){
-      return value;
-    } else if (this.state.displayUnits === UK){
-      return 100*3.785411784*1.201/(1.609344*value)
-    } else if (this.state.displayUnits === US){
-      return 100*3.785411784/(1.609344*value)
-    } else {
-      console.log("Unknown economy units.")
-      return 0;
-    }
-  }
-
-  handleSubmitEconomy(economy, fuel){
+  handleSubmitEconomy(lper100km, fuel){
     this.setState({
-      lPer100km: this.convertFromDisplayUnits(economy),
+      lPer100km: lper100km,
       fuelType: fuel,
+      economySubmitted: true,
     });
   }
 
-  convertFromUSMpg(value){
-    /* Convert from US mpg to display units */
-    /* Return a units as a string if value==null */
+  
 
-    if (this.state.displayUnits === METRIC){
-      if(!value) {
-        return "L/100km";
-      } else {
-      return 100*3.785411784/(1.609344*value);
-      }
-    } else if (this.state.displayUnits === UK){
-      if (!value) {
-        return "UK mpg";
-      } else{
-        return 1.201*value;
-      }
-    } else if (this.state.displayUnits === US){
-      if (!value) {
-        return "US mpg";
-      } else {
-        return value;
-      }
-    } else {
-      console.log("Unknown economy units.")
-      return 0;
-    }
-  }
-
-  handleSubmitDistance(origin, destination, distance){
+  handleSubmitDistance(origin, destination, distanceKm){
     /* Expects to receive distance in km */
     this.setState({
       origin: origin,
       destination: destination,
-      distance: distance,
+      distanceKm: distanceKm,
+      distanceSubmitted: true,
     })
   }
 
@@ -132,30 +73,81 @@ class Page extends React.Component {
     this.setState({loggedIn: bool_val})
   }
 
+  handleEdit(event){
+    if(event.target.name==="economy"){
+      this.setState({economySubmitted:false})
+    } else if(event.target.name==="distance"){
+      this.setState({distanceSubmitted:false})
+    }
+  }
 
   render(){
 
 
-    let economyInput = <EconomyInput
+    let economyInput
+    if(this.state.economySubmitted){
+      economyInput = 
+        <div className="container bg-success text-white" >
+          <div className="row">
+            <h3>
+              {parseFloat(units.convert(this.state.lPer100km, this.state.displayUnits)).toFixed(1)} {units.string(this.state.displayUnits)}, {this.state.fuelType}
+            </h3>
+            <button
+              type="button"
+              name="economy"
+              class="btn-outline-primary"
+              onClick={this.handleEdit}
+            >Edit</button>
+          </div>
+        </div>
+    } else {
+      economyInput = <EconomyInput
                         submitEconomy={(econ,fuel)=>this.handleSubmitEconomy(econ,fuel)}
-                        units={this.state.displayUnits}
-                        convertFromUSMpg={this.convertFromUSMpg}
+                        displayUnits={this.state.displayUnits}
+                        loggedIn={this.state.loggedIn}
                       />
+    }
 
-    let routeCalculator = <RouteCalculator  submitDistance={(orig,dest,dist)=>this.handleSubmitDistance(orig,dest,dist)}
-                                            units={this.state.displayUnits}
-                          />
-
-    let distanceInput = <DistanceInput  
+    let distanceDisplay
+    if(this.state.distanceSubmitted){
+      distanceDisplay = 
+        <div className="container bg-success text-white" >
+          <div className="row">
+            <h3>
+              {parseFloat(units.distanceDisplay(this.state.distanceKm, this.state.displayUnits)).toFixed(0)} {units.distanceString(this.state.displayUnits)}
+            </h3>
+            <button
+              type="button"
+              name="distance"
+              class="btn-outline-primary"
+              onClick={this.handleEdit}
+            >Edit</button>
+          </div>
+        </div>
+    } else {
+      distanceDisplay = <DistanceInput  
                           submitDistance={(orig,dest,dist)=>this.handleSubmitDistance(orig,dest,dist)}
                           displayUnits={this.state.displayUnits}
+                          submitted={this.state.distanceSubmitted}
                         />
+    }
+
+    
 
 
     let loginWrapper =  <div className="container bg-info">
                           <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin}/>
                           <button type="button" class = "btn-outline-warning" onClick={this.toggleDisplayUnits}>Change Units</button>
                         </div>
+
+    let carbonResult 
+    if(this.state.economySubmitted && this.state.distanceSubmitted){
+      carbonResult = 
+        <div>
+          <CarbonCalculator data={this.state}/>
+        </div>
+    }
+    
 
 
     return(
@@ -167,8 +159,9 @@ class Page extends React.Component {
         <div>
           <JWTChecker />
           <div>{loginWrapper}</div>
-          <div>{distanceInput}</div>
+          <div>{distanceDisplay}</div>
           <div>{economyInput}</div>
+          <div>{carbonResult}</div>
         </div>
         <div class="jumbotron">
           <h1>Whitespace</h1>

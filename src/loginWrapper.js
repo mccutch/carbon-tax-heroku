@@ -1,5 +1,5 @@
 import React from 'react';
-import { getToken, refreshToken, clearToken }  from './myJWT.js';
+import {getToken, refreshToken, clearToken }  from './myJWT.js';
 import {keys} from './secret_api_keys.js';
 
 const MEMBER_LOGIN = keys.member_login;
@@ -57,7 +57,10 @@ class LoginForm extends React.Component{
 export class LoginWrapper extends React.Component{
   constructor(props){
     super(props)
-    this.state={username:null}
+    this.state={
+      username:null,
+      loginFailed:false,
+    }
 
     this.handleClick = this.handleClick.bind(this)
     this.fetchUsername = this.fetchUsername.bind(this)
@@ -97,7 +100,7 @@ export class LoginWrapper extends React.Component{
   }
 
   loginFailure(){
-
+    this.setState({loginFailed:true})
   }
 
   loginSuccess(){
@@ -105,7 +108,7 @@ export class LoginWrapper extends React.Component{
   }
 
   logoutSuccess(){
-    this.setState({username: null})
+    this.setState({username: null, loginFailed:false})
     this.props.login(false)
   }
 
@@ -123,25 +126,31 @@ export class LoginWrapper extends React.Component{
   }
 
   handleSubmit(data){
+    this.setState({loginFailed:false})
     getToken({data:data, onSuccess:this.loginSuccess, onFailure:this.loginFailure})
   }
 
   render(){
     let display
     if(this.props.loggedIn){
-      
       display = 
-      <div>
-        <p>Hello {this.state.username}</p>
-        <button name="logout" onClick={this.handleClick}>Logout</button>
-      </div>
+        <div>
+          <p>Hello {this.state.username}</p>
+          <button name="logout" onClick={this.handleClick}>Logout</button>
+        </div>
+    } else if(this.state.loginFailed){
+      display=
+        <div>
+          <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Auto-login</button>
+          <p>Login failed.</p>
+          <LoginForm submitForm={this.handleSubmit}/>
+        </div>
     } else {
-      
       display = 
-      <div>
-        <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Auto-login</button>
-        <LoginForm submitForm={this.handleSubmit}/>
-      </div>
+        <div>
+          <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Auto-login</button>
+          <LoginForm submitForm={this.handleSubmit}/>
+        </div>
     }
 
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import './index.css';
+import * as units from './unitConversions';
+import {findFuel} from './fuelTypes.js';
 
 
 
@@ -268,14 +269,14 @@ class VehicleResult extends React.Component {
     super(props);
     this.state = {cityProportion: 0.55,}
     this.handleSliderChange = this.handleSliderChange.bind(this);
-    this.handleClick=this.handleClick.bind(this)
+    this.handleSubmit=this.handleSubmit.bind(this)
   }
 
   handleSliderChange(event){
     this.setState({cityProportion: event.target.value})
   }
 
-  handleClick(){
+  handleSubmit(){
     if(this.props.data.vehicleId){
       this.props.submitVehicle(this.findEconomy(), this.props.data.fuelType);
       this.props.hideForm()
@@ -283,20 +284,18 @@ class VehicleResult extends React.Component {
   }
 
   findEconomy(){
-    /* return vehicle economy in display units */
+    /* return vehicle economy in metric */
     return(
-      this.props.convertFromUSMpg(
-          (this.state.cityProportion * this.props.data.cityMpg) 
-            + (1-this.state.cityProportion)*this.props.data.highwayMpg
-      )
+      (this.state.cityProportion * this.props.data.cityLper100Km) 
+        + (1-this.state.cityProportion)*this.props.data.highwayLper100Km
     );
   }
 
   render(){
-    let estimatedEconomy = this.findEconomy();
-    let highwayEconomy = this.props.convertFromUSMpg(this.props.data.highwayMpg);
-    let cityEconomy = this.props.convertFromUSMpg(this.props.data.cityMpg);
-    let unitText = this.props.convertFromUSMpg();
+    let estimatedEconomy = units.convertFromMetricToDisplayUnits(this.findEconomy(),this.props.displayUnits);
+    let highwayEconomy = units.convertFromMetricToDisplayUnits(this.props.data.highwayLper100Km, this.props.displayUnits);
+    let cityEconomy = units.convertFromMetricToDisplayUnits(this.props.data.cityLper100Km, this.props.displayUnits);
+    let unitText = units.displayUnitString(this.props.displayUnits);
 
     return(
       <div class="container">
@@ -355,7 +354,7 @@ class VehicleResult extends React.Component {
         <button
           type="button"
           class="btn-outline-primary"
-          onClick={this.handleClick}
+          onClick={this.handleSubmit}
         >
           Use these values
         </button>
@@ -380,19 +379,25 @@ export class VehicleForm extends React.Component {
     this.state = {
       name: null,
       vehicleId: null,
-      highwayMpg: 0,
-      cityMpg: 0,
+      highwayLper100Km: 0,
+      cityLper100Km: 0,
       fuelType: null,
     }
 
+    this.normaliseFuelType = this.normaliseFuelType.bind(this)
+  }
+
+  normaliseFuelType(fuelRaw){
+    let fuelNorm = findFuel(fuelRaw)
+    this.setState({fuelType: fuelNorm})
   }
 
   receiveVehicleId(name, num){
     if (!num){
       this.setState({ name: null,
                       vehicleId: null,
-                      highwayMpg: 0,
-                      cityMpg: 0,
+                      highwayLper100Km: 0,
+                      cityLper100Km: 0,
                       fuelType: null,
                     })
       return;
@@ -414,13 +419,13 @@ export class VehicleForm extends React.Component {
           let xmlDoc = parser.parseFromString(result, "text/xml");
 
           let highwayMpg = xmlDoc.getElementsByTagName('highway08');
-          this.setState({highwayMpg: parseFloat(highwayMpg[0].childNodes[0].nodeValue)});
+          this.setState({highwayLper100Km: units.convertFromUSMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
 
           let cityMpg = xmlDoc.getElementsByTagName('city08');
-          this.setState({cityMpg: parseFloat(cityMpg[0].childNodes[0].nodeValue)});
+          this.setState({cityLper100Km: units.convertFromUSMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
 
           let fuelType = xmlDoc.getElementsByTagName('fuelType1');
-          this.setState({fuelType: (fuelType[0].childNodes[0].nodeValue)});
+          this.normaliseFuelType((fuelType[0].childNodes[0].nodeValue))
         },
       (error) => {
           console.log("Error");
@@ -442,8 +447,7 @@ export class VehicleForm extends React.Component {
                   <VehicleResult  
                     data = {this.state}
                     submitVehicle = {this.props.submitVehicle}
-                    convertFromUSMpg={this.props.convertFromUSMpg}
-                    units = {this.props.units}
+                    displayUnits = {this.props.displayUnits}
                     hideForm = {this.props.hideForm}
                   />
                 </div>
