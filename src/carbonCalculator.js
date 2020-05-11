@@ -24,7 +24,6 @@ export class CarbonCalculator extends React.Component{
   }
 
   getFuelCarbon(fuelType){
-    let returnList = [this.props.defaultText]
     fetch('/fueltypes/', {
       method: 'GET',
       headers: {
@@ -59,14 +58,19 @@ export class CarbonCalculator extends React.Component{
 
   saveEmission(){
 
-    console.log(this.state)
-    console.log(this.props.data)
-
     let tripName = "Unnamed trip"
+    let maxLen = 60
     if(this.props.data.origin){
-      tripName = this.props.data.origin +" to "+this.props.data.destination
-    }
+      let origin = this.props.data.origin
+      let destination = this.props.data.destination
+      origin = origin.substring(0, origin.indexOf(','));
+      destination = destination.substring(0, destination.indexOf(','));
+      tripName = origin +" to "+destination
 
+      if(tripName.length>=maxLen){
+        tripName = tripName.substring(0,maxLen-1)
+      }
+    }
 
     let date = getDate.today()
     if(this.state.date){

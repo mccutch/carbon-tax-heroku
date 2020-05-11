@@ -52,15 +52,14 @@ class FuelList extends React.Component{
       })
       .catch(e => {
         console.log(e)
-      });
-      
+      }); 
   }
 
   render(){
     return(
       <select
-        onChange = {this.props.onChange}////not used yet - use to change parent state
-        name = {this.props.label} ////not used
+        onChange = {this.props.onChange}
+        name = {this.props.label}
       >
         {this.renderOptions()}
       </select>

@@ -1,9 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {VehicleForm} from './vehicleInput.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {App} from './App.js';
-import {LoginApp} from './LoginApp.js';
 import {JWTChecker} from './JWT_checker.js';
 import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';

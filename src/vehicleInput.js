@@ -1,5 +1,5 @@
 import React from 'react';
-import * as units from './unitConversions';
+import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
 
 
@@ -245,7 +245,6 @@ class VehicleInputFields extends React.Component {
 }
 
 class SliderInput extends React.Component {
-
   render(){
     return(
         <label>
@@ -292,9 +291,9 @@ class VehicleResult extends React.Component {
   }
 
   render(){
-    let estimatedEconomy = units.convertFromMetricToDisplayUnits(this.findEconomy(),this.props.displayUnits);
-    let highwayEconomy = units.convertFromMetricToDisplayUnits(this.props.data.highwayLper100Km, this.props.displayUnits);
-    let cityEconomy = units.convertFromMetricToDisplayUnits(this.props.data.cityLper100Km, this.props.displayUnits);
+    let estimatedEconomy = units.convert(this.findEconomy(),this.props.displayUnits);
+    let highwayEconomy = units.convert(this.props.data.highwayLper100Km, this.props.displayUnits);
+    let cityEconomy = units.convert(this.props.data.cityLper100Km, this.props.displayUnits);
     let unitText = units.displayUnitString(this.props.displayUnits);
 
     return(
@@ -403,9 +402,8 @@ export class VehicleForm extends React.Component {
       return;
     }
 
+    //console.log("Searching for economy by ID..." +num);
     this.setState({name: name});
-
-    console.log("Searching for economy by ID..." +num);
     this.setState({vehicleId: num});
 
     let url="https://www.fueleconomy.gov/ws/rest/vehicle/"
@@ -419,10 +417,10 @@ export class VehicleForm extends React.Component {
           let xmlDoc = parser.parseFromString(result, "text/xml");
 
           let highwayMpg = xmlDoc.getElementsByTagName('highway08');
-          this.setState({highwayLper100Km: units.convertFromUSMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
+          this.setState({highwayLper100Km: units.USMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
 
           let cityMpg = xmlDoc.getElementsByTagName('city08');
-          this.setState({cityLper100Km: units.convertFromUSMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
+          this.setState({cityLper100Km: units.USMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
 
           let fuelType = xmlDoc.getElementsByTagName('fuelType1');
           this.normaliseFuelType((fuelType[0].childNodes[0].nodeValue))
@@ -433,12 +431,8 @@ export class VehicleForm extends React.Component {
     ) 
   }
 
-
-
-
   render(){
     let display
-
     if(this.state.vehicleId){
       display = <div>
                   <VehicleInputFields 

@@ -1,10 +1,8 @@
 import React from 'react';
 import './index.css';
 import {keys} from './secret_api_keys.js';
+import * as units from './unitConversions.js';
 
-const US = "mpgUS";
-const UK = "mpgUK";
-const METRIC = "lPer100Km";
 const GOOGLE_API_KEY = keys.google_api_key;
 
 class PlaceInput extends React.Component{
@@ -65,8 +63,6 @@ class RouteInputFields extends React.Component{
 
 class MapView extends React.Component{
 
-  
-
   render(){
     let base_url = "https://www.google.com/maps/embed/v1/directions?";
     let url_suffix
@@ -109,7 +105,6 @@ class RouteResultView extends React.Component{
     return(
       <div class="container">
         <MapView parameters={this.props.parameters}/>
-        <p>Distance: {parseFloat(this.props.distance).toFixed(1)}</p>
         <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
         <button type="button" class="btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
       </div>
@@ -138,16 +133,16 @@ export class RouteCalculator extends React.Component{
     let orig_url = encodeURIComponent(origin);
     let dest_url = encodeURIComponent(destination);
 
-    let units;
-    if(this.props.units === METRIC){
-      units = 'metric';
+    let googleUnits;
+    if(this.props.displayUnits === units.METRIC){
+      googleUnits = 'metric';
     } else {
-      units = 'imperial';
+      googleUnits = 'imperial';
     }
 
     let prefix_url = "https://cors-anywhere.herokuapp.com/"
     let base_url = 'https://maps.googleapis.com/maps/api/directions/json?mode=no-cors'
-    let suffix = `units=${units}&origin=${orig_url}&destination=${dest_url}&key=${GOOGLE_API_KEY}`
+    let suffix = `units=${googleUnits}&origin=${orig_url}&destination=${dest_url}&key=${GOOGLE_API_KEY}`
     if(via){
       suffix += '&waypoints=' + encodeURIComponent(via);
     }
@@ -227,8 +222,6 @@ export class RouteCalculator extends React.Component{
         }
       ) 
   }
-
-
 
   render(){
     return(

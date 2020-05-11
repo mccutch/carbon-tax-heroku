@@ -1,0 +1,20 @@
+
+
+
+carbon pricing
+- Attach to user profile
+- Profile editing view
+
+
+vehicle save
+- Attach to user profile
+- Edit/delete vehicles through profile
+
+view my emssions
++ api view
+- create react rendering
+- hide input form
+
+fuel support
+- lpg, electric, aviation fuels
+- decide how to repurpose the co2/unit and vehicle economy fields

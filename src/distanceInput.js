@@ -1,9 +1,7 @@
 import React from 'react';
 import { RouteCalculator } from './routeCalculator.js'
+import * as units from './unitConversions.js'
 
-const US = "mpgUS";
-const UK = "mpgUK";
-const METRIC = "lPer100Km";
 
 export class DistanceInput extends React.Component{
   constructor(props){
@@ -17,7 +15,6 @@ export class DistanceInput extends React.Component{
     this.handleClick = this.handleClick.bind(this)
     this.hideRouteCalculator = this.hideRouteCalculator.bind(this)
     this.handleChange = this.handleChange.bind(this)
-    this.convertToKm = this.convertToKm.bind(this)
   }
 
   handleClick(event){
@@ -26,18 +23,11 @@ export class DistanceInput extends React.Component{
     } else if(event.target.name==="submitDistance"){
 
       if(this.state.distance>0){
-        this.props.submitDistance("","",this.convertToKm(this.state.distance))
+        this.props.submitDistance("","",units.convertToKm(this.state.distance, this.props.displayUnits))
       }
     }
   }
 
-  convertToKm(value){
-    if(this.props.displayUnits===METRIC){
-      return value;
-    } else {
-      return value/1.60934;
-    }
-  }
 
   hideRouteCalculator(){
     this.setState({displayRouteCalculator:false})
@@ -53,18 +43,14 @@ export class DistanceInput extends React.Component{
 
 
   render(){
-    let placeholderText = "Distance"
-    if(this.props.displayUnits===METRIC){
-      placeholderText+=" (km)"
-    } else{
-      placeholderText+=" (mi)"
-    }
+
+    let placeholderText = `Distance (${units.distanceString(this.props.displayUnits)})`
 
     let display
     if(this.state.displayRouteCalculator){
       display = <RouteCalculator  
                   submitDistance={this.props.submitDistance}
-                  units={this.props.displayUnits}
+                  displayUnits={this.props.displayUnits}
                   hideCalculator={this.hideRouteCalculator}
                 />
     } else {
