@@ -20,4 +20,4 @@ class EconomyMetricAdmin(admin.ModelAdmin):
 
 @admin.register(EmissionInstance)
 class EmissionInstanceAdmin(admin.ModelAdmin):
-    list_display = ('name','date','travel_mode','distance','co2_output_kg','price')
+    list_display = ('name','date','travel_mode','distance','co2_output_kg','price', 'user')

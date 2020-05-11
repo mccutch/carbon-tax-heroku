@@ -9,12 +9,8 @@ import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';
 import {LoginWrapper} from './loginWrapper.js';
 import {CarbonCalculator} from './carbonCalculator.js'
+import {Sandbox} from './sandbox.js'
 import * as units from './unitConversions';
-
-
-const US = "mpgUS";
-const UK = "mpgUK";
-const METRIC = "lPer100Km";
 
 
 class Page extends React.Component {
@@ -23,7 +19,7 @@ class Page extends React.Component {
     this.state = {
       lPer100km: 0,
       fuelType: null,
-      displayUnits: METRIC,
+      displayUnits: units.METRIC,
       origin: null,
       destination: null,
       distanceKm: null,
@@ -37,6 +33,9 @@ class Page extends React.Component {
   }
 
   toggleDisplayUnits(){
+    this.setState({displayUnits:units.toggle(this.state.displayUnits)})
+
+    /*
     if(this.state.displayUnits===METRIC){
       this.setState({displayUnits:US})
     } else if(this.state.displayUnits===US){
@@ -44,6 +43,7 @@ class Page extends React.Component {
     } else if(this.state.displayUnits===UK){
       this.setState({displayUnits:METRIC})
     }
+    */
   }
 
 
@@ -162,6 +162,7 @@ class Page extends React.Component {
           <div>{distanceDisplay}</div>
           <div>{economyInput}</div>
           <div>{carbonResult}</div>
+          <Sandbox />
         </div>
         <div class="jumbotron">
           <h1>Whitespace</h1>

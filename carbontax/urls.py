@@ -5,6 +5,7 @@ from . import views
 from rest_framework import routers
 from . import views
 from rest_framework_simplejwt import views as jwt_views
+from rest_framework.urlpatterns import format_suffix_patterns
 
 
 router = routers.DefaultRouter()
@@ -22,4 +23,9 @@ urlpatterns = [
     path('hello/', views.HelloView.as_view(), name='hello'),
     path('current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
+    path('my-emissions/', views.UserEmissionList.as_view(), name="my-emissions"),
+    path('emissions/', views.EmissionList.as_view(), name="emissions"),
+    path('emission/<int:pk>/', views.EmissionDetail.as_view()),
 ]
+
+#urlpatterns = format_suffix_patterns(urlpatterns)

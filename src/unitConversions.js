@@ -1,6 +1,6 @@
-const US = "mpgUS";
-const UK = "mpgUK";
-const METRIC = "lPer100Km";
+export const US = "mpgUS";
+export const UK = "mpgUK";
+export const METRIC = "lPer100Km";
 
 
 
@@ -14,6 +14,16 @@ export function string(displayUnits){
 }
 export function convert(val, units){
   return(convertFromMetricToDisplayUnits(val,units))
+}
+
+export function toggle(units){
+  if(units===METRIC){
+    return US
+  } else if(units===US){
+    return UK
+  } else if(UK){
+    return METRIC    
+  }
 }
 
 export function distanceDisplay(value, displayUnits){

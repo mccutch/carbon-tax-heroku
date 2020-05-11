@@ -2,16 +2,14 @@ from . import models
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-class ItemRelatedField(serializers.RelatedField):
-    def to_representation(self,value):
-        return str(value)
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
-    fuel = ItemRelatedField(read_only=True)
+    fuel = serializers.StringRelatedField()
+    owner = serializers.StringRelatedField()
 
     class Meta:
         model = models.Vehicle
-        fields = ['name', 'fuel', 'economy']
+        fields = ['name', 'fuel', 'economy', 'owner']
 
 class FuelTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -32,6 +30,24 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
+
+
+class EmissionSerializer(serializers.ModelSerializer):
+    #user = serializers.StringRelatedField()
+
+    # Create a custom method field
+    #user = serializers.SerializerMethodField('_user')
+    
+    
+
+    # Use this method for the custom field
+    def _user(self, obj):
+        if self.context:
+            return self.context['request'].user
+
+    class Meta:
+        model = models.EmissionInstance
+        fields = ['name', 'date', 'travel_mode', 'distance', 'co2_output_kg', 'price', 'user']
 
 class UserSerializerWithToken(serializers.ModelSerializer):
 

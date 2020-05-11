@@ -1,15 +1,26 @@
 import React from 'react';
 import {refreshToken} from './myJWT.js'
+import * as getDate from './getDate.js'
+
+
 
 export class CarbonCalculator extends React.Component{
   constructor(props){
     super(props)
     this.state = {
       carbonKg:null,
+      date:null,
     }
 
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
     this.saveEmission=this.saveEmission.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+  }
+
+  handleChange(event){
+    if(event.target.name==="date"){
+      this.setState({date:event.target.value})
+    }
   }
 
   getFuelCarbon(fuelType){
@@ -47,15 +58,38 @@ export class CarbonCalculator extends React.Component{
   }
 
   saveEmission(){
+
     console.log(this.state)
     console.log(this.props.data)
 
-    fetch('/my-vehicles/', {
-      method: 'GET',
+    let tripName = "Unnamed trip"
+    if(this.props.data.origin){
+      tripName = this.props.data.origin +" to "+this.props.data.destination
+    }
+
+
+    let date = getDate.today()
+    if(this.state.date){
+      date = this.state.date
+    }
+
+    let data = {
+      "name": tripName,
+      "date": date,
+      "travel_mode": "Rec driving",
+      "distance": this.props.data.distanceKm,
+      "co2_output_kg": this.state.carbonKg,
+      "price": 1.0 
+    }
+
+
+    fetch('/my-emissions/', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: "Bearer "+localStorage.getItem('access')
-      }
+      },
+      body: JSON.stringify(data)
     })
     .then(res => {
         if(res.ok){
@@ -65,12 +99,12 @@ export class CarbonCalculator extends React.Component{
         }
       })
       .then(json => {
-        this.setState({displayUserVehicles: true, vehicles:json})
+        console.log(json)
       })
       .catch(e => {
         console.log(e.message)
         if(e.message==='401'){
-          refreshToken({onSuccess:this.findSavedVehicle})
+          refreshToken({onSuccess:this.saveEmission})
         }
       });
   }
@@ -83,6 +117,7 @@ export class CarbonCalculator extends React.Component{
     if(this.props.data.loggedIn){
         memberDisplay=
           <div>
+            <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
             <button
               type="button"
               name="cancel"

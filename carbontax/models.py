@@ -5,13 +5,20 @@ class EmissionInstance(models.Model):
     """
     Created when an entry is created from inputs.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, null=True)
+    name = models.CharField(max_length=60, null=True)
     date = models.DateField(null=True)
     travel_mode = models.CharField(max_length=30, null=True)
     distance = models.FloatField(null=True)
     co2_output_kg = models.FloatField(null=True)
     price = models.FloatField(null=True)
+    user = models.CharField(max_length=60, null=True)
+
+
+    @classmethod
+    def create(cls, user, name, date, travel_mode, distance, co2_output_kg, price):
+        emission = cls(user=user, name=name, date=date, travel_mode=travel_mode, distance=distance, co2_output_kg=co2_output_kg, price=price)
+        
+        return emission
 
 
 class FuelType(models.Model):
