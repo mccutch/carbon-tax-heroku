@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
     # This seems to prevent a POST
-    fuel = serializers.StringRelatedField()
-    owner = serializers.StringRelatedField()
+    fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", read_only=True)
+    owner = serializers.HyperlinkedRelatedField(view_name="user-detail", read_only=True)
 
     class Meta:
         model = models.Vehicle

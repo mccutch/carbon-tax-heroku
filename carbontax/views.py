@@ -155,6 +155,9 @@ class FuelTypeList(generics.ListAPIView):
     queryset = models.FuelType.objects.all()
     serializer_class = serializers.FuelTypeSerializer
 
+class FuelDetail(generics.RetrieveAPIView):
+    serializer_class = serializers.FuelTypeSerializer
+
 class EconomyMetricList(generics.ListAPIView):
     queryset = models.EconomyMetric.objects.all()
     serializer_class = serializers.EconomyMetricSerializer

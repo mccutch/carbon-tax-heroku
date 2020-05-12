@@ -25,7 +25,8 @@ urlpatterns = [
     path('emission/<int:pk>/', views.EmissionDetail.as_view(), name="emission-detail"),
     
     path('fueltypes/', views.FuelTypeList.as_view(), name="fuels"),
-    path('economymetrics/', views.EconomyMetricList.as_view(), name="economymetrics")
+    path('fuel/<int:pk>/', views.FuelDetail.as_view(), name="fuel-detail"),
+    path('economymetrics/', views.EconomyMetricList.as_view(), name="economymetrics"),
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)

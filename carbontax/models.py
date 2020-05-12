@@ -31,7 +31,7 @@ class EconomyMetric(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    location = models.CharField(max_length=30, blank=True)
+    location = models.CharField(max_length=60, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 
     def __str__(self):
