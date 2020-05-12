@@ -64,13 +64,25 @@ class UserVehicleList(APIView):
         for the currently authenticated user.
         """
         vehicles = models.Vehicle.objects.filter(owner=request.user)
-        serializer = serializers.VehicleSerializer(vehicles, many=True)
+        serializer = serializers.VehicleListSerializer(vehicles, many=True, context={'request':request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
+
+        print(request.data)
+        print(request.user.username)
+        print(request.user.id)
+
         data=request.data
+        #data['owner']='http://localhost:8000/user/2/'
+        data['owner']=f'/user/{request.user.id}/'
+        #data['owner']=request.user.id
+        print(data)
         serializer = serializers.VehicleSerializer(data=data, context={'request':request})
-        return Response(serializer.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EmissionList(APIView):
@@ -103,24 +115,6 @@ class UserEmissionList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-"""class emissionList(generics.ListAPIView):
-    serializer_class = serializers.EmissionSerializer
-
-    def get_queryset(self):
-        return models.EmissionInstance.objects.all()
-
-    def post(self):
-        data = JSONParser().parse(self.request)
-        serializer = serializers.EmissionSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)"""
-
-
-
 
 
 class EmissionDetail(APIView):
@@ -203,8 +197,7 @@ class UserDetail(APIView):
 class CurrentUser(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
-        username = request.user.username
-        content = {'username': username, 'id':request.user.id}
+        content = {'username': request.user.username, 'id':request.user.pk}
         return Response(content)
 
 

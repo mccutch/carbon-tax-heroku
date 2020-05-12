@@ -40,9 +40,10 @@ class Profile(models.Model):
 
 class Vehicle(models.Model):
     name = models.CharField(max_length=30)
+    #fuel = models.CharField(max_length=30)
     fuel = models.ForeignKey(FuelType, on_delete = models.CASCADE, help_text = 'Select a fuel type for this vehicle.')
     economy = models.FloatField() # MUST BE IN L/100km
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
 
     def __str__(self):
         return f'{self.name}'

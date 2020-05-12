@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { getToken, refreshToken }  from './myJWT.js';
 
 export class JWTChecker extends React.Component{
@@ -92,7 +92,6 @@ export class JWTChecker extends React.Component{
 
   getUsername(){
 
-    let data = {Authorisation: "Bearer "+localStorage.getItem('access')};
     
     fetch('/hello/', { //could be '/token-auth'? http://localhost:8000/
       method: 'GET',
@@ -128,14 +127,14 @@ export class JWTChecker extends React.Component{
   handleLogin(event){
     let data = {}
     if(event.target.name==='good'){
-      let data = {
+      data = {
         username:"member",
         password:"Flintstones"
         
       }
       getToken({data:data})
     } else if(event.target.name==='bad'){
-      let data = {
+      data = {
         username:"member",
         password:"xxx"
       }
@@ -179,7 +178,6 @@ export class JWTChecker extends React.Component{
   }
 
   render(){
-    let access = localStorage.getItem('access')
 
     return(
       <div className="App" class="container bg-light">

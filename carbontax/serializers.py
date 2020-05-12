@@ -4,9 +4,17 @@ from django.contrib.auth.models import User
 
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
-    # This seems to prevent a POST
-    fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", read_only=True)
-    owner = serializers.HyperlinkedRelatedField(view_name="user-detail", read_only=True)
+    #owner = serializers.HyperlinkedRelatedField(view_name="user-detail", queryset=User.objects.all())
+    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
+
+    class Meta:
+        model = models.Vehicle
+        fields = ['name', 'fuel', 'economy', 'owner']
+
+class VehicleListSerializer(serializers.HyperlinkedModelSerializer):
+    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", read_only=True)
+    owner = serializers.StringRelatedField(read_only=True)
+    fuel = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = models.Vehicle
@@ -32,8 +40,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username',)
 
-
-class EmissionSerializer(serializers.ModelSerializer):
+class EmissionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.EmissionInstance
         fields = ['name', 'date', 'travel_mode', 'distance', 'co2_output_kg', 'price', 'user']
+
+

@@ -7,19 +7,18 @@ import {VehicleSaveForm} from './vehicleSave.js';
 class FuelList extends React.Component{
   constructor(props){
     super(props)
-    this.state = {list:[]}
 
     this.renderOptions = this.renderOptions.bind(this)
     this.fetchList = this.fetchList.bind(this)
   }
 
   renderOptions(){
-    let list = this.state.list;
+    let list = this.props.fuelList;
       let listOptions = [];
       for(let i=0; i<list.length; i++){
         listOptions.push(<option 
                             value={list[i]}
-                            key = {list[i]}
+                            key = {i}
                           >
                           {list[i]}</option>)
       }
@@ -49,7 +48,7 @@ class FuelList extends React.Component{
         for(let i=0; i<json.length; i++){
           returnList.push(json[i].name)
         }
-        this.setState({list:returnList})
+        this.props.sendFuelList(returnList)
       })
       .catch(e => {
         console.log(e)
@@ -87,6 +86,7 @@ class UserVehicleTable extends React.Component{
           <td>{economy.toFixed(1)}</td>
           <td>{units.displayUnitString(this.props.displayUnits)}</td>
           <td>{vehicle.fuel}</td>
+          <td>{vehicle.owner}</td>
           <td>
             <button className="btn-outline-warning" name={i.toString()} onClick={this.props.onClick}>Use this vehicle</button>
           </td>
@@ -124,7 +124,8 @@ export class EconomyInput extends React.Component{
       lPer100km: null, // economy must be stored in metric
       fuel: null,
       vehicleWillSave: false,
-      saveAs: "My vehicle"
+      saveAs: "My vehicle",
+      fuelList: [],
     }
     this.handleClick = this.handleClick.bind(this)
     this.hideForms = this.hideForms.bind(this)
@@ -134,6 +135,11 @@ export class EconomyInput extends React.Component{
     this.submitEconomy = this.submitEconomy.bind(this)
     this.saveVehicle = this.saveVehicle.bind(this)
     this.saveAs = this.saveAs.bind(this)
+    this.receiveFuelList = this.receiveFuelList.bind(this)
+  }
+
+  receiveFuelList(list){
+    this.setState({fuelList:list})
   }
 
   handleClick(event){
@@ -142,7 +148,7 @@ export class EconomyInput extends React.Component{
     } else if(event.target.name==="submitEconomy"){
       this.submitEconomy()
       if(this.state.vehicleWillSave){
-        this.saveVehicle(this.state.saveAs, this.state.lPer100km, this.state.fuel)
+        this.saveVehicle()
       }
     } else if(event.target.name==="useSavedVehicle"){
       this.findSavedVehicle()
@@ -151,19 +157,40 @@ export class EconomyInput extends React.Component{
     }
   }
 
-  saveAs(name){
+  saveAs(name, econ, fuel){
+    console.log("economy.saveas")
     this.setState({
       vehicleWillSave:true,
-      saveAs:name
+      saveAs:name,
     })
+
+    if(econ && fuel){
+      this.setState({
+        fuel: fuel,
+        lPer100km: econ,
+      })
+    }
   }
 
-  saveVehicle(name, econ, fuel){
-    console.log("SAVE VEHICLE")
-    console.log("name: "+name)
-    console.log("fuel: "+fuel)
-    console.log("econ: "+econ)
-    /*
+  saveVehicle(){
+
+    let fuel_id=0
+    for(let i=1;i<this.state.fuelList.length; i++){
+      if(this.state.fuel===this.state.fuelList[i]){
+        fuel_id=i;
+        break
+      }
+    }
+
+    let data = {
+      "name":this.state.saveAs,
+      "fuel":`/fuel/${fuel_id}/`,
+      "economy":this.state.lPer100km
+    }
+
+    console.log('SAVE AS - DATA:')
+    console.log(data)
+    
     fetch('/my-vehicles/', {
       method: 'POST',
       headers: {
@@ -185,10 +212,10 @@ export class EconomyInput extends React.Component{
       .catch(e => {
         console.log(e.message)
         if(e.message==='401'){
-          refreshToken({onSuccess:this.saveEmission})
+          refreshToken({onSuccess:this.saveVehicle})
         }
       });
-      */
+      
   }
 
   submitEconomy(){
@@ -208,7 +235,7 @@ export class EconomyInput extends React.Component{
       this.setState({lPer100km: units.convertFromDisplayUnits(value, this.props.displayUnits)})
     } else if(event.target.name==="fuelType"){
       if(value==="FUEL"){value=null}
-      this.setState({fuel: value})
+      this.setState({fuel: event.target.value})
     } else if(event.target.name==="vehicleSaveAs"){
       this.setState({saveAs:value})
     }
@@ -288,6 +315,8 @@ export class EconomyInput extends React.Component{
                 hideForm={this.hideForms}
                 saveVehicle={this.saveVehicle}
                 loggedIn={this.props.loggedIn}
+                saveAs={this.saveAs}
+                vehicleWillSave={this.state.vehicleWillSave}
               />
     } else if(this.state.displayUserVehicles){
       display = 
@@ -296,6 +325,7 @@ export class EconomyInput extends React.Component{
           vehicles={this.state.vehicles} 
           onClick={this.handleVehicleChoice} 
           displayUnits={this.props.displayUnits}
+          fuelList={this.state.fuelList}
         />
         <button
           type="button"
@@ -315,7 +345,7 @@ export class EconomyInput extends React.Component{
                       placeholder="Fuel economy"
                     />
                     <label for="economy">{units.displayUnitString(this.props.displayUnits)}</label>
-                    <FuelList label="fuelType" onChange={this.handleChange} defaultText="FUEL"/>
+                    <FuelList label="fuelType" onChange={this.handleChange} defaultText="FUEL" sendFuelList={this.receiveFuelList} fuelList={this.state.fuelList}/>
                     {submitDisplay}
                   </div>
                   <div class="col">

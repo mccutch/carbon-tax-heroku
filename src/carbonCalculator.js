@@ -7,11 +7,34 @@ import * as getDate from './getDate.js'
 export class CarbonCalculator extends React.Component{
   constructor(props){
     super(props)
+
+    let tripName
+    let maxLen = 60
+    if(this.props.data.origin){
+      let origin = this.props.data.origin
+      let destination = this.props.data.destination
+      origin = origin.substring(0, origin.indexOf(','));
+      destination = destination.substring(0, destination.indexOf(','));
+      tripName = origin +" to "+destination
+
+      if(tripName.length>=maxLen){
+        console.log("Route name too long")
+        tripName = tripName.substring(0,maxLen-1)
+      }
+      
+    } else {
+      tripName="Default Trip Name"
+    }
+
+
+
+
     this.state = {
       carbonKg:null,
       date:null,
-      tripName:"Unnamed Trip"
+      tripName:tripName
     }
+
 
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
     this.saveEmission=this.saveEmission.bind(this)
@@ -57,24 +80,13 @@ export class CarbonCalculator extends React.Component{
 
   componentDidMount(){
     this.getFuelCarbon(this.props.data.fuelType)
+
+
   }
 
   saveEmission(){
 
     let tripName = this.state.tripName
-    let maxLen = 60
-    if(this.props.data.origin){
-      let origin = this.props.data.origin
-      let destination = this.props.data.destination
-      origin = origin.substring(0, origin.indexOf(','));
-      destination = destination.substring(0, destination.indexOf(','));
-      tripName = origin +" to "+destination
-
-      if(tripName.length>=maxLen){
-        console.log("Route name too long")
-        tripName = tripName.substring(0,maxLen-1)
-      }
-    }
 
     let date = getDate.today()
     if(this.state.date){
@@ -120,6 +132,7 @@ export class CarbonCalculator extends React.Component{
 
   render(){
     let carbon = this.state.carbonKg
+
     
     let memberDisplay
     if(this.props.data.loggedIn){

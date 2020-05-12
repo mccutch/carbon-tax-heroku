@@ -285,7 +285,6 @@ class VehicleResult extends React.Component {
     super(props);
     this.state = {
       cityProportion: 0.55,
-      vehicleWillSave: false,
       saveAs: this.props.data.name,
     }
     this.handleSliderChange = this.handleSliderChange.bind(this);
@@ -300,16 +299,13 @@ class VehicleResult extends React.Component {
   handleSubmit(){
     if(this.props.data.vehicleId){
       this.props.submitVehicle(this.findEconomy(), this.props.data.fuelType);
-      this.props.saveVehicle(this.state.saveAs, this.findEconomy(), this.props.data.fuelType)
+      this.props.saveVehicle()
       this.props.hideForm()
     }
   }
 
   saveAs(name){
-    this.setState({
-      vehicleWillSave:true,
-      saveAs:name
-    })
+    this.props.saveAs(name, this.findEconomy(), this.props.data.fuelType)
   }
   
 
@@ -332,7 +328,7 @@ class VehicleResult extends React.Component {
       saveVehicleDisplay = <VehicleSaveForm
                             saveAs={this.saveAs}     
                             vehicleName={this.state.saveAs}
-                            vehicleWillSave={this.state.vehicleWillSave}
+                            vehicleWillSave={this.props.vehicleWillSave}
                           />
     }
 
@@ -488,6 +484,8 @@ export class VehicleForm extends React.Component {
                     hideForm = {this.props.hideForm}
                     saveVehicle = {this.props.saveVehicle}
                     loggedIn={this.props.loggedIn}
+                    saveAs={this.props.saveAs}
+                    vehicleWillSave={this.props.vehicleWillSave}
                   />
                 </div>
     } else {

@@ -7,7 +7,7 @@ carbon pricing
 
 
 vehicle save
-- Attach to user profile
++ Attach to user profile
 - Edit/delete vehicles through profile
 
 view my emssions
