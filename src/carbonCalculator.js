@@ -10,6 +10,7 @@ export class CarbonCalculator extends React.Component{
     this.state = {
       carbonKg:null,
       date:null,
+      tripName:"Unnamed Trip"
     }
 
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
@@ -20,6 +21,8 @@ export class CarbonCalculator extends React.Component{
   handleChange(event){
     if(event.target.name==="date"){
       this.setState({date:event.target.value})
+    } else if (event.target.name==="tripName"){
+      this.setState({tripName:event.target.value})
     }
   }
 
@@ -58,7 +61,7 @@ export class CarbonCalculator extends React.Component{
 
   saveEmission(){
 
-    let tripName = "Unnamed trip"
+    let tripName = this.state.tripName
     let maxLen = 60
     if(this.props.data.origin){
       let origin = this.props.data.origin
@@ -68,6 +71,7 @@ export class CarbonCalculator extends React.Component{
       tripName = origin +" to "+destination
 
       if(tripName.length>=maxLen){
+        console.log("Route name too long")
         tripName = tripName.substring(0,maxLen-1)
       }
     }
@@ -122,6 +126,7 @@ export class CarbonCalculator extends React.Component{
         memberDisplay=
           <div>
             <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
+            <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
             <button
               type="button"
               name="cancel"

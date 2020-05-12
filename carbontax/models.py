@@ -14,13 +14,6 @@ class EmissionInstance(models.Model):
     user = models.CharField(max_length=60, null=True)
 
 
-    @classmethod
-    def create(cls, user, name, date, travel_mode, distance, co2_output_kg, price):
-        emission = cls(user=user, name=name, date=date, travel_mode=travel_mode, distance=distance, co2_output_kg=co2_output_kg, price=price)
-        
-        return emission
-
-
 class FuelType(models.Model):
     name = models.CharField(max_length=30, unique=True)
     unit = models.CharField(max_length=30)
@@ -32,14 +25,6 @@ class FuelType(models.Model):
 
 class EconomyMetric(models.Model):
     name = models.CharField(max_length=30)
-
-    def convert_to_L(self,num):
-        if(self.name=='mpg'):
-            return 100*3.785411784/(1.609344*num)
-        elif(self.name=='L/100km'):
-            return num
-        else:
-            return 0
 
     def __str__(self):
         return self.name

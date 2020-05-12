@@ -1,6 +1,7 @@
 import React from 'react';
 import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
+import {VehicleSaveForm} from './vehicleSave.js';
 
 
 
@@ -87,9 +88,9 @@ class VehicleInputFields extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      year: '1998',
-      make: 'Ford',
-      model: 'Escort',
+      year: null,
+      make: null,
+      model: null,
       options: null,
       idFound: false,
     }
@@ -98,6 +99,15 @@ class VehicleInputFields extends React.Component {
     this.makeDefault = "MAKE";
     this.modelDefault = "MODEL";
     this.optionsDefault = "OPTIONS";
+    this.setVehicle = this.setVehicle.bind(this)
+  }
+
+  setVehicle(){
+    this.setState({
+      year: '1998',
+      make: 'Ford',
+      model: 'Escort',
+    })
   }
 
   handleChange(event){
@@ -205,6 +215,13 @@ class VehicleInputFields extends React.Component {
         <div class="container">
           <h2>US Database Vehicle Input</h2>
         </div>
+        <div className="row">
+          <button
+            type="button"
+            class="btn-outline-danger"
+            onClick={this.setVehicle}
+          >Set Default Vehicle</button>
+        </div>
         <div class="container">
           <ListInput  
             label="Year"
@@ -266,9 +283,14 @@ class SliderInput extends React.Component {
 class VehicleResult extends React.Component {
   constructor(props){
     super(props);
-    this.state = {cityProportion: 0.55,}
+    this.state = {
+      cityProportion: 0.55,
+      vehicleWillSave: false,
+      saveAs: this.props.data.name,
+    }
     this.handleSliderChange = this.handleSliderChange.bind(this);
     this.handleSubmit=this.handleSubmit.bind(this)
+    this.saveAs=this.saveAs.bind(this)
   }
 
   handleSliderChange(event){
@@ -278,9 +300,18 @@ class VehicleResult extends React.Component {
   handleSubmit(){
     if(this.props.data.vehicleId){
       this.props.submitVehicle(this.findEconomy(), this.props.data.fuelType);
+      this.props.saveVehicle(this.state.saveAs, this.findEconomy(), this.props.data.fuelType)
       this.props.hideForm()
     }
   }
+
+  saveAs(name){
+    this.setState({
+      vehicleWillSave:true,
+      saveAs:name
+    })
+  }
+  
 
   findEconomy(){
     /* return vehicle economy in metric */
@@ -295,6 +326,15 @@ class VehicleResult extends React.Component {
     let highwayEconomy = units.convert(this.props.data.highwayLper100Km, this.props.displayUnits);
     let cityEconomy = units.convert(this.props.data.cityLper100Km, this.props.displayUnits);
     let unitText = units.displayUnitString(this.props.displayUnits);
+
+    let saveVehicleDisplay
+    if(this.props.loggedIn){
+      saveVehicleDisplay = <VehicleSaveForm
+                            saveAs={this.saveAs}     
+                            vehicleName={this.state.saveAs}
+                            vehicleWillSave={this.state.vehicleWillSave}
+                          />
+    }
 
     return(
       <div class="container">
@@ -350,20 +390,23 @@ class VehicleResult extends React.Component {
             <p>{this.props.data.fuelType}</p>
           </div>
         </div>
-        <button
-          type="button"
-          class="btn-outline-primary"
-          onClick={this.handleSubmit}
-        >
-          Use these values
-        </button>
-        <button
-          type="button"
-          class="btn-outline-danger"
-          onClick={this.props.hideForm}
-        >
-          Cancel
-        </button>
+        {saveVehicleDisplay}
+        <div className="row">
+          <button
+            type="button"
+            class="btn-outline-primary"
+            onClick={this.handleSubmit}
+          >
+            Use these values
+          </button>
+          <button
+            type="button"
+            class="btn-outline-danger"
+            onClick={this.props.hideForm}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     );
   }
@@ -443,6 +486,8 @@ export class VehicleForm extends React.Component {
                     submitVehicle = {this.props.submitVehicle}
                     displayUnits = {this.props.displayUnits}
                     hideForm = {this.props.hideForm}
+                    saveVehicle = {this.props.saveVehicle}
+                    loggedIn={this.props.loggedIn}
                   />
                 </div>
     } else {

@@ -2,6 +2,7 @@ import React from 'react';
 import {VehicleForm} from './vehicleInput.js';
 import {refreshToken}  from './myJWT.js';
 import * as units from './unitConversions';
+import {VehicleSaveForm} from './vehicleSave.js';
 
 class FuelList extends React.Component{
   constructor(props){
@@ -122,6 +123,8 @@ export class EconomyInput extends React.Component{
       vehicles: null,
       lPer100km: null, // economy must be stored in metric
       fuel: null,
+      vehicleWillSave: false,
+      saveAs: "My vehicle"
     }
     this.handleClick = this.handleClick.bind(this)
     this.hideForms = this.hideForms.bind(this)
@@ -129,6 +132,8 @@ export class EconomyInput extends React.Component{
     this.findSavedVehicle = this.findSavedVehicle.bind(this)
     this.handleVehicleChoice = this.handleVehicleChoice.bind(this)
     this.submitEconomy = this.submitEconomy.bind(this)
+    this.saveVehicle = this.saveVehicle.bind(this)
+    this.saveAs = this.saveAs.bind(this)
   }
 
   handleClick(event){
@@ -136,9 +141,54 @@ export class EconomyInput extends React.Component{
       this.setState({displayVehicleInput:true})
     } else if(event.target.name==="submitEconomy"){
       this.submitEconomy()
+      if(this.state.vehicleWillSave){
+        this.saveVehicle(this.state.saveAs, this.state.lPer100km, this.state.fuel)
+      }
     } else if(event.target.name==="useSavedVehicle"){
       this.findSavedVehicle()
+    } else if(event.target.name==="saveVehicle"){
+      this.setState({vehicleWillSave:true})
     }
+  }
+
+  saveAs(name){
+    this.setState({
+      vehicleWillSave:true,
+      saveAs:name
+    })
+  }
+
+  saveVehicle(name, econ, fuel){
+    console.log("SAVE VEHICLE")
+    console.log("name: "+name)
+    console.log("fuel: "+fuel)
+    console.log("econ: "+econ)
+    /*
+    fetch('/my-vehicles/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      },
+      body: JSON.stringify(data)
+    })
+    .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        console.log(json)
+      })
+      .catch(e => {
+        console.log(e.message)
+        if(e.message==='401'){
+          refreshToken({onSuccess:this.saveEmission})
+        }
+      });
+      */
   }
 
   submitEconomy(){
@@ -159,6 +209,8 @@ export class EconomyInput extends React.Component{
     } else if(event.target.name==="fuelType"){
       if(value==="FUEL"){value=null}
       this.setState({fuel: value})
+    } else if(event.target.name==="vehicleSaveAs"){
+      this.setState({saveAs:value})
     }
   }
 
@@ -198,7 +250,7 @@ export class EconomyInput extends React.Component{
 
 
   render(){
-
+    let saveVehicleDisplay
     let memberDisplay
     if(this.props.loggedIn){
       memberDisplay = <button
@@ -207,6 +259,25 @@ export class EconomyInput extends React.Component{
                         class="btn-outline-success"
                         onClick={this.handleClick}
                       >Use a saved vehicle</button>
+
+      saveVehicleDisplay =  <VehicleSaveForm
+                              saveAs={this.saveAs}     
+                              vehicleName={this.state.saveAs}
+                              vehicleWillSave={this.state.vehicleWillSave}
+                            />
+    }
+    let submitDisplay
+    if(this.state.lPer100km && this.state.fuel){
+      submitDisplay = 
+      <div>
+        {saveVehicleDisplay}
+        <button
+          type="button"
+          name="submitEconomy"
+          class="btn-outline-primary"
+          onClick={this.handleClick}
+        >Use these values</button>
+      </div>
     }
 
     let display
@@ -215,6 +286,8 @@ export class EconomyInput extends React.Component{
                 submitVehicle={this.props.submitEconomy}
                 displayUnits={this.props.displayUnits}
                 hideForm={this.hideForms}
+                saveVehicle={this.saveVehicle}
+                loggedIn={this.props.loggedIn}
               />
     } else if(this.state.displayUserVehicles){
       display = 
@@ -243,12 +316,7 @@ export class EconomyInput extends React.Component{
                     />
                     <label for="economy">{units.displayUnitString(this.props.displayUnits)}</label>
                     <FuelList label="fuelType" onChange={this.handleChange} defaultText="FUEL"/>
-                    <button
-                      type="button"
-                      name="submitEconomy"
-                      class="btn-outline-primary"
-                      onClick={this.handleClick}
-                    >Use these values</button>
+                    {submitDisplay}
                   </div>
                   <div class="col">
                     <button

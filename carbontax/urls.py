@@ -16,11 +16,9 @@ router.register(r'profiles', views.ProfileViewSet)
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('', include(router.urls)),
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('hello/', views.HelloView.as_view(), name='hello'),
     path('current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
     path('my-emissions/', views.UserEmissionList.as_view(), name="my-emissions"),

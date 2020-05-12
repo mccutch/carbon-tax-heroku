@@ -45,17 +45,32 @@ class UserVehicleView(APIView):
         content = {'message': string_ret}
         return Response(content)
 """
-class UserVehicleList(generics.ListAPIView):
+
+"""class UserVehicleList(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.VehicleSerializer
 
     def get_queryset(self):
+        user = self.request.user
+        return models.Vehicle.objects.filter(owner=user)"""
+
+class UserVehicleList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
         """
         This view should return a list of all the purchases
         for the currently authenticated user.
         """
-        user = self.request.user
-        return models.Vehicle.objects.filter(owner=user)
+        vehicles = models.Vehicle.objects.filter(owner=request.user)
+        serializer = serializers.VehicleSerializer(vehicles, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data=request.data
+        serializer = serializers.VehicleSerializer(data=data, context={'request':request})
+        return Response(serializer.data)
+
 
 class EmissionList(APIView):
     permission_classes = (IsAdminUser,)
@@ -160,31 +175,6 @@ class CurrentUser(APIView):
 
 
 
-
-@api_view(['GET'])
-def current_user(request):
-    """
-    Determine the current user by their token, and return their data
-    """
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
-
-
-class UserList(APIView):
-    """
-    Create a new user. It's called 'UserList' because normally we'd have a get
-    method here too, for retrieving a list of all User objects.
-    """
-    permission_classes = (permissions.AllowAny,)
-
-    def post(self, request, format=None):
-        serializer = UserSerializerWithToken(data=request.data)
-        if serializer.is_valid():
-            print("SERIALIZER is valid")
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print("SERIALIZER is invalid")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # https://simpleisbetterthancomplex.com/tutorial/2018/12/19/how-to-use-jwt-authentication-with-django-rest-framework.html
