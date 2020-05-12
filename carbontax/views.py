@@ -201,7 +201,7 @@ class CurrentUser(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         username = request.user.username
-        content = {'username': username}
+        content = {'username': username, 'id':request.user.id}
         return Response(content)
 
 

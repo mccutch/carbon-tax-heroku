@@ -59,6 +59,7 @@ export class LoginWrapper extends React.Component{
     super(props)
     this.state={
       username:null,
+      user_id:null,
       loginFailed:false,
     }
 
@@ -87,7 +88,10 @@ export class LoginWrapper extends React.Component{
       })
       .then(json => {
         this.props.login(true)
-        this.setState({username:json.username})
+        this.setState({
+          username:json.username,
+          user_id:json.id,
+        })
       })
       .catch(error => {
         console.log(error.message)
@@ -108,7 +112,11 @@ export class LoginWrapper extends React.Component{
   }
 
   logoutSuccess(){
-    this.setState({username: null, loginFailed:false})
+    this.setState({
+      username: null,
+      user_id: null, 
+      loginFailed:false,
+    })
     this.props.login(false)
   }
 
@@ -135,7 +143,7 @@ export class LoginWrapper extends React.Component{
     if(this.props.loggedIn){
       display = 
         <div>
-          <p>Hello {this.state.username}</p>
+          <p>Hello {this.state.username}, ID:{this.state.user_id}</p>
           <button name="logout" onClick={this.handleClick}>Logout</button>
         </div>
     } else if(this.state.loginFailed){
