@@ -13,7 +13,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, UserSerializerWithToken
 
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
@@ -31,7 +30,9 @@ index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 
 #API Viewsets
-class VehicleViewSet(viewsets.ModelViewSet):
+
+
+class VehicleList(generics.ListAPIView):
     permission_classes = (IsAdminUser, )
     queryset = models.Vehicle.objects.all()
     serializer_class = serializers.VehicleSerializer
@@ -150,21 +151,51 @@ class EmissionDetail(APIView):
         emission.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FuelTypeViewSet(viewsets.ModelViewSet):
+class FuelTypeList(generics.ListAPIView):
     queryset = models.FuelType.objects.all()
     serializer_class = serializers.FuelTypeSerializer
 
-class EconomyMetricViewSet(viewsets.ModelViewSet):
+class EconomyMetricList(generics.ListAPIView):
     queryset = models.EconomyMetric.objects.all()
     serializer_class = serializers.EconomyMetricSerializer
 
-class ProfileViewSet(viewsets.ModelViewSet):
+class ProfileList(generics.ListAPIView):
+    permission_classes = (IsAdminUser, )
     serializer_class = serializers.ProfileSerializer
     queryset = models.Profile.objects.all()
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserSerializer
     queryset = models.Profile.objects.all()
+
+class UserDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self,pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = serializers.UserSerializer(user)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = serializers.UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 class CurrentUser(APIView):
     permission_classes = (IsAuthenticated,)
@@ -176,17 +207,3 @@ class CurrentUser(APIView):
 
 
 
-
-# https://simpleisbetterthancomplex.com/tutorial/2018/12/19/how-to-use-jwt-authentication-with-django-rest-framework.html
-
-
-
-class HelloView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-
-    def get(self, request):
-        name = request.user.username
-        string_ret = 'hello, '+name
-        content = {'message': string_ret}
-        return Response(content)
