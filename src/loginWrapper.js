@@ -161,8 +161,9 @@ export class LoginWrapper extends React.Component{
 
 
     return(
-      <div>
+      <div className="container bg-warning py-2 my-2">
         {display}
+        <button type="button" className= "btn-outline-warning" onClick={this.props.toggleDisplayUnits}>Change Units</button>
       </div>
     )
   }

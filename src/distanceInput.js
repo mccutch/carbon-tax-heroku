@@ -79,7 +79,7 @@ export class DistanceInput extends React.Component{
 
 
     return(
-      <div className="container bg-warning">
+      <div className="container bg-info py-2">
         {display}
       </div>
     )

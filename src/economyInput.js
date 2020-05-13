@@ -363,7 +363,7 @@ export class EconomyInput extends React.Component{
    
     
     return(
-      <div className='container bg-info'>{display}</div>
+      <div className='container bg-info py-2'>{display}</div>
     )
   }
 }

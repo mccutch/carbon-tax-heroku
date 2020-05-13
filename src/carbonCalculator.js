@@ -8,6 +8,7 @@ export class CarbonCalculator extends React.Component{
   constructor(props){
     super(props)
 
+    // Set default trip name for save
     let tripName
     let maxLen = 60
     if(this.props.data.origin){
@@ -20,21 +21,16 @@ export class CarbonCalculator extends React.Component{
       if(tripName.length>=maxLen){
         console.log("Route name too long")
         tripName = tripName.substring(0,maxLen-1)
-      }
-      
+      } 
     } else {
       tripName="Default Trip Name"
     }
-
-
-
 
     this.state = {
       carbonKg:null,
       date:null,
       tripName:tripName
     }
-
 
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
     this.saveEmission=this.saveEmission.bind(this)
@@ -80,12 +76,9 @@ export class CarbonCalculator extends React.Component{
 
   componentDidMount(){
     this.getFuelCarbon(this.props.data.fuelType)
-
-
   }
 
   saveEmission(){
-
     let tripName = this.state.tripName
 
     let date = getDate.today()
@@ -101,7 +94,6 @@ export class CarbonCalculator extends React.Component{
       "co2_output_kg": this.state.carbonKg,
       "price": 1.0 
     }
-
 
     fetch('/my-emissions/', {
       method: 'POST',
@@ -129,13 +121,11 @@ export class CarbonCalculator extends React.Component{
       });
   }
 
-
   render(){
     let carbon = this.state.carbonKg
-
     
     let memberDisplay
-    if(this.props.data.loggedIn){
+    if(this.props.loggedIn){
         memberDisplay=
           <div>
             <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
