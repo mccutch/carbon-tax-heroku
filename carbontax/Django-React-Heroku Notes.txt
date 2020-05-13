@@ -1,0 +1,24 @@
+
+TUTORIALS
+
+Django-React-Heroku Guide
+https://dev.to/shakib609/deploy-your-django-react-js-app-to-heroku-2bck
+
+
+ENVIRONMENT SETUP
+    pipenv shell
+
+
+GIT COMMIT
+    git add -A
+    git commit - "<message>"
+    git push origin master
+
+HEROKU DEPLOYMENT
+    yarn build
+    pipenv run pip freeze > requirements.txt
+    (git commit)
+    git push heroku master
+
+SECRET KEYS
+    open .gitignore

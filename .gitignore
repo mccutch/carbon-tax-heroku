@@ -25,3 +25,7 @@ yarn-error.log*
 # secret keys
 secret_api_keys.js
 secretkey.py
+.env
+
+# database
+db.sqlite3

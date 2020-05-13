@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import django_heroku
-from .secretkey import returnkey
+#from .secretkey import returnkey
 import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -23,7 +23,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = returnkey()
+# FIND ENVIRONMENT VARIABLES
+import environ
+env_file = os.path.join(BASE_DIR, ".env")
+environ.Env.read_env(env_file)
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+#SECRET_KEY = get_env_value('DJ_KEY')
+SECRET_KEY = env('DJ_KEY')
+#SECRET_KEY = returnkey()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

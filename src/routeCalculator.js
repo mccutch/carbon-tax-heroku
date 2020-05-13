@@ -4,10 +4,13 @@ import {keys} from './secret_api_keys.js';
 import * as units from './unitConversions.js';
 
 const GOOGLE_API_KEY = keys.google_api_key;
+//const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
+
 
 class PlaceInput extends React.Component{
 
   render(){
+    console.log(GOOGLE_API_KEY)
     return(
       <input  type="text"
               onChange={this.props.onChange} 
