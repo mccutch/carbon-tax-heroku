@@ -283,7 +283,7 @@ export class EconomyInput extends React.Component{
       memberDisplay = <button
                         type="button"
                         name="useSavedVehicle"
-                        class="btn-outline-success"
+                        className="btn-outline-success"
                         onClick={this.handleClick}
                       >Use a saved vehicle</button>
 
@@ -301,7 +301,7 @@ export class EconomyInput extends React.Component{
         <button
           type="button"
           name="submitEconomy"
-          class="btn-outline-primary"
+          className="btn-outline-primary"
           onClick={this.handleClick}
         >Use these values</button>
       </div>
@@ -330,13 +330,13 @@ export class EconomyInput extends React.Component{
         <button
           type="button"
           name="cancel"
-          class="btn-outline-danger"
+          className="btn-outline-danger"
           onClick={this.hideForms}
         >Cancel</button>
       </div>
     } else {
-      display = <div class="row">
-                  <div class="col">
+      display = <div className="row">
+                  <div className="col">
                     <input  
                       type="number"
                       id="economy"
@@ -344,15 +344,15 @@ export class EconomyInput extends React.Component{
                       name="economy"
                       placeholder="Fuel economy"
                     />
-                    <label for="economy">{units.displayUnitString(this.props.displayUnits)}</label>
+                    <label htmlFor="economy">{units.displayUnitString(this.props.displayUnits)}</label>
                     <FuelList label="fuelType" onChange={this.handleChange} defaultText="FUEL" sendFuelList={this.receiveFuelList} fuelList={this.state.fuelList}/>
                     {submitDisplay}
                   </div>
-                  <div class="col">
+                  <div className="col">
                     <button
                       type="button"
                       name="displayVehicleForm"
-                      class="btn-outline-success"
+                      className="btn-outline-success"
                       onClick={this.handleClick}
                     >Find US vehicles</button>
                     {memberDisplay}
@@ -363,7 +363,7 @@ export class EconomyInput extends React.Component{
    
     
     return(
-      <div class='container bg-info'>{display}</div>
+      <div className='container bg-info'>{display}</div>
     )
   }
 }

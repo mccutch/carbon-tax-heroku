@@ -103,7 +103,7 @@ export class App extends Component {
     }
 
     return (
-      <div className="App" class="container bg-light">
+      <div className="App" className="container bg-light">
         <Nav
           logged_in={this.state.logged_in}
           display_form={this.display_form}

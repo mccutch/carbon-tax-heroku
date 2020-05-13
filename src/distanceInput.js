@@ -65,13 +65,13 @@ export class DistanceInput extends React.Component{
                   <button
                     type="button"
                     name="submitDistance"
-                    class="btn-outline-primary"
+                    className="btn-outline-primary"
                     onClick={this.handleClick}
                   >Submit distance</button>
                   <button
                     type="button"
                     name="displayRouteCalculator"
-                    class="btn-outline-success"
+                    className="btn-outline-success"
                     onClick={this.handleClick}
                   >Route calculator</button>
                 </div>

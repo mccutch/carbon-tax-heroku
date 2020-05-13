@@ -35,7 +35,7 @@ export class VehicleSaveForm extends React.Component{
           <button
             type="button"
             name="saveVehicle"
-            class="btn-outline-warning"
+            className="btn-outline-warning"
             onClick={this.handleClick}
           >Save this vehicle?</button>
         </div>

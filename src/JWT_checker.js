@@ -180,7 +180,7 @@ export class JWTChecker extends React.Component{
   render(){
 
     return(
-      <div className="App" class="container bg-light">
+      <div className="container bg-light">
         <button name="good" onClick={this.handleLogin}>Good login</button>
         <button name="bad" onClick={this.handleLogin}>Bad login</button>
         <button onClick={this.getUsername}>Get username</button>

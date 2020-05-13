@@ -211,18 +211,18 @@ class VehicleInputFields extends React.Component {
     }
 
     return(
-      <div class="container">
-        <div class="container">
+      <div className="container">
+        <div className="container">
           <h2>US Database Vehicle Input</h2>
         </div>
         <div className="row">
           <button
             type="button"
-            class="btn-outline-danger"
+            className="btn-outline-danger"
             onClick={this.setVehicle}
           >Set Default Vehicle</button>
         </div>
-        <div class="container">
+        <div className="container">
           <ListInput  
             label="Year"
             url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
@@ -333,31 +333,31 @@ class VehicleResult extends React.Component {
     }
 
     return(
-      <div class="container">
-        <div class="row bg-dark text-white text-right">
+      <div className="container">
+        <div className="row bg-dark text-white text-right">
               <h3>{this.props.data.name}</h3>
         </div>
-        <div class="row">
-          <div class="col-sm">
+        <div className="row">
+          <div className="col-sm">
             <p>Highway Economy:</p>
           </div>
-          <div class="col-sm">
+          <div className="col-sm">
             <p>{parseFloat(highwayEconomy).toFixed(1)} {unitText}</p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm">
+        <div className="row">
+          <div className="col-sm">
             <p>City Economy:</p>
           </div>
-          <div class="col-sm">
+          <div className="col-sm">
             <p>{parseFloat(cityEconomy).toFixed(1)} {unitText}</p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm">
+        <div className="row">
+          <div className="col-sm">
             <p>City Driving: </p>
           </div>
-          <div class="col-sm">
+          <div className="col-sm">
             <p>{(this.state.cityProportion*100).toFixed(0)} %</p>
           </div>
         </div>
@@ -370,19 +370,19 @@ class VehicleResult extends React.Component {
           initial={this.state.cityProportion}
           onChange={this.handleSliderChange}
         />
-        <div class="row">
-          <div class="col-sm">
+        <div className="row">
+          <div className="col-sm">
             <p>Estimated Economy: </p>
           </div>
-          <div class="col-sm">
+          <div className="col-sm">
             <p>{parseFloat(estimatedEconomy).toFixed(1)} {unitText}</p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm">
+        <div className="row">
+          <div className="col-sm">
             <p>Fuel Type:</p>
           </div>
-          <div class="col-sm">
+          <div className="col-sm">
             <p>{this.props.data.fuelType}</p>
           </div>
         </div>
@@ -390,14 +390,14 @@ class VehicleResult extends React.Component {
         <div className="row">
           <button
             type="button"
-            class="btn-outline-primary"
+            className="btn-outline-primary"
             onClick={this.handleSubmit}
           >
             Use these values
           </button>
           <button
             type="button"
-            class="btn-outline-danger"
+            className="btn-outline-danger"
             onClick={this.props.hideForm}
           >
             Cancel
@@ -495,7 +495,7 @@ export class VehicleForm extends React.Component {
                   />
                   <button
                     type="button"
-                    class="btn-outline-danger"
+                    className="btn-outline-danger"
                     onClick={this.props.hideForm}
                   >
                     Cancel
@@ -504,7 +504,7 @@ export class VehicleForm extends React.Component {
     }
 
     return(
-      <div class="container-sm bg-success">
+      <div className="container-sm bg-success">
         {display}
       </div>
     );

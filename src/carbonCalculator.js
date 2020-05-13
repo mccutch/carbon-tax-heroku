@@ -143,7 +143,7 @@ export class CarbonCalculator extends React.Component{
             <button
               type="button"
               name="cancel"
-              class="btn-outline-danger"
+              className="btn-outline-danger"
               onClick={this.saveEmission}
             >Save to profile</button>
           </div>

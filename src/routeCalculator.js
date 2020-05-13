@@ -75,7 +75,7 @@ class MapView extends React.Component{
       }
 
     return(
-      <div class="pt-3">
+      <div className="pt-3">
         <iframe title="mapDisplay" width="100%" height="100%" frameBorder="0"
                 src={base_url+url_suffix}
                 allowFullScreen
@@ -103,10 +103,10 @@ class RouteResultView extends React.Component{
   render(){
     
     return(
-      <div class="container">
+      <div className="container">
         <MapView parameters={this.props.parameters}/>
         <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
-        <button type="button" class="btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
+        <button type="button" className="btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
       </div>
     );
   }
@@ -225,7 +225,7 @@ export class RouteCalculator extends React.Component{
 
   render(){
     return(
-      <div class="container bg-success" >
+      <div className="container bg-success" >
         <RouteInputFields submitQuery={(o, d, v)=>this.receiveQuery(o,d,v)}/>
         <RouteResultView 
           parameters={this.state.directionsSuffix}

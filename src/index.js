@@ -92,7 +92,7 @@ class Page extends React.Component {
             <button
               type="button"
               name="economy"
-              class="btn-outline-primary"
+              className="btn-outline-primary"
               onClick={this.handleEdit}
             >Edit</button>
           </div>
@@ -116,7 +116,7 @@ class Page extends React.Component {
             <button
               type="button"
               name="distance"
-              class="btn-outline-primary"
+              className="btn-outline-primary"
               onClick={this.handleEdit}
             >Edit</button>
           </div>
@@ -134,7 +134,7 @@ class Page extends React.Component {
 
     let loginWrapper =  <div className="container bg-info">
                           <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin}/>
-                          <button type="button" class = "btn-outline-warning" onClick={this.toggleDisplayUnits}>Change Units</button>
+                          <button type="button" className= "btn-outline-warning" onClick={this.toggleDisplayUnits}>Change Units</button>
                         </div>
 
     let carbonResult 
@@ -148,8 +148,8 @@ class Page extends React.Component {
 
 
     return(
-      <div class="container-fluid bg-dark">
-        <div class="jumbotron">
+      <div className="container-fluid bg-dark">
+        <div className="jumbotron">
           <h1>Armchair Dissident Carbon Tax</h1>      
           <p>Everything's fucked anyway.</p>
         </div>
@@ -161,7 +161,7 @@ class Page extends React.Component {
           <div>{carbonResult}</div>
           <Sandbox />
         </div>
-        <div class="jumbotron">
+        <div className="jumbotron">
           <h1>Whitespace</h1>
         </div>
       </div>
