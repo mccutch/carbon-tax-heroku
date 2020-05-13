@@ -30,6 +30,8 @@ export class Sandbox extends React.Component{
 
     let todayString = `${yyyy}-${mm}-${dd}`
 
+    console.log(process.env)
+
 
 
 

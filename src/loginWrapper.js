@@ -1,8 +1,9 @@
 import React from 'react';
 import {getToken, refreshToken, clearToken }  from './myJWT.js';
-import {keys} from './secret_api_keys.js';
+//import {keys} from './secret_api_keys.js';
 
-const MEMBER_LOGIN = keys.member_login;
+//const MEMBER_LOGIN = keys.member_login;
+const MEMBER_LOGIN = process.env.REACT_APP_DEMOUSER_LOGIN
 
 class LoginForm extends React.Component{
   constructor(props){
