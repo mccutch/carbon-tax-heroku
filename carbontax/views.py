@@ -70,9 +70,6 @@ class UserVehicleList(APIView):
     def post(self, request, format=None):
 
         print(request.data)
-        print(request.user.username)
-        print(request.user.id)
-
         data=request.data
         #data['owner']='http://localhost:8000/user/2/'
         data['owner']=f'/user/{request.user.id}/'
@@ -150,6 +147,7 @@ class FuelTypeList(generics.ListAPIView):
     serializer_class = serializers.FuelTypeSerializer
 
 class FuelDetail(generics.RetrieveAPIView):
+    queryset = models.FuelType.objects.all()
     serializer_class = serializers.FuelTypeSerializer
 
 class EconomyMetricList(generics.ListAPIView):
@@ -166,7 +164,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = models.Profile.objects.all()
 
 class UserDetail(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
 
     def get_object(self,pk):
         try:

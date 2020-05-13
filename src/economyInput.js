@@ -185,7 +185,7 @@ export class EconomyInput extends React.Component{
     let data = {
       "name":this.state.saveAs,
       "fuel":`/fuel/${fuel_id}/`,
-      "economy":this.state.lPer100km
+      "economy": `${this.state.lPer100km}`
     }
 
     console.log('SAVE AS - DATA:')

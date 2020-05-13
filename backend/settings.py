@@ -151,11 +151,12 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
 
+# Should remove this
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'backend.utils.my_jwt_response_handler'
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=0.2),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
 }
 

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
     #owner = serializers.HyperlinkedRelatedField(view_name="user-detail", queryset=User.objects.all())
-    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
+    fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
 
     class Meta:
         model = models.Vehicle
