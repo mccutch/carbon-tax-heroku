@@ -157,11 +157,11 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ORIGIN_WHITELIST = (
+CORS_ORIGIN_WHITELIST = [
     'https://localhost:3000',
     'http://localhost:3000',
-    "https://carbontax.herokuapp.com/",
-)
+    'https://carbontax.herokuapp.com',
+]
 
 # Should remove this
 JWT_AUTH = {
