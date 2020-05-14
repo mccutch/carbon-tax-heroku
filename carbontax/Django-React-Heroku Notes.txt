@@ -22,3 +22,7 @@ HEROKU DEPLOYMENT
 
 SECRET KEYS
     open .gitignore
+
+PIP INSTALL
+    pip install module
+    pip freeze > requirements.txt
