@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {EmissionCalculator} from './emissionCalculator.js';
 import {LoginWrapper} from './loginWrapper.js';
-import {Sandbox} from './sandbox.js';
+//import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 
 
@@ -41,7 +41,6 @@ class Page extends React.Component {
         <div>
           <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin} toggleDisplayUnits={this.props.toggleDisplayUnits}/>
           <EmissionCalculator loggedIn={this.state.loggedIn} displayUnits={this.state.displayUnits}/>
-          <Sandbox />
         </div>
         <div className="jumbotron">
           <h1>.</h1>
