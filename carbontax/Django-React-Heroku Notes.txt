@@ -23,6 +23,6 @@ HEROKU DEPLOYMENT
 SECRET KEYS
     open .gitignore
 
-PIP INSTALL
-    pip install module
+PIPENV INSTALL
+    pipenv install module
     pip freeze > requirements.txt
