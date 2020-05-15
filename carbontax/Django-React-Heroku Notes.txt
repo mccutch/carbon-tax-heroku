@@ -22,6 +22,7 @@ HEROKU DEPLOYMENT
 
 SECRET KEYS
     open .gitignore
+    store all secrets in environment
 
 PIPENV INSTALL
     pipenv install module

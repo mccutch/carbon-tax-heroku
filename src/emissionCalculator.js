@@ -20,6 +20,7 @@ export class EmissionCalculator extends React.Component{
     this.handleEdit=this.handleEdit.bind(this)
     this.handleSubmitEconomy=this.handleSubmitEconomy.bind(this)
     this.handleSubmitDistance=this.handleSubmitDistance.bind(this)
+    this.exitCalculator=this.exitCalculator.bind(this)
   }
 
   handleSubmitEconomy(lper100km, fuel){
@@ -38,6 +39,10 @@ export class EmissionCalculator extends React.Component{
       distanceKm: distanceKm,
       distanceSubmitted: true,
     })
+  }
+
+  exitCalculator(){
+    this.props.showCalculator(false)
   }
 
   handleEdit(event){
@@ -104,15 +109,21 @@ export class EmissionCalculator extends React.Component{
     if(this.state.economySubmitted && this.state.distanceSubmitted){
       carbonResult = 
         <div>
-          <CarbonCalculator data={this.state} displayUnits={displayUnits} loggedIn={this.props.loggedIn}/>
+          <CarbonCalculator data={this.state} displayUnits={displayUnits} loggedIn={this.props.loggedIn} submitCarbon={this.exitCalculator}/>
         </div>
     }
     
     return(
       <div className="my-2">
-        <div>{distanceDisplay}</div>
-        <div>{economyInput}</div>
-        <div>{carbonResult}</div>
+        <div className="container bg-info">
+          <div className="row">
+            <h3>Carbon Tax Calculator</h3>
+            <button type="button" className="btn-outline-danger" onClick={this.exitCalculator}>Exit</button>
+          </div>
+        </div>
+        {distanceDisplay}
+        {economyInput}
+        {carbonResult}
       </div>
     );
   }

@@ -29,13 +29,17 @@ export class CarbonCalculator extends React.Component{
     this.state = {
       carbonKg:null,
       date:null,
-      tripName:tripName
+      tripName:tripName,
+      submissionFailed:false,
     }
 
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
     this.saveEmission=this.saveEmission.bind(this)
     this.handleChange=this.handleChange.bind(this)
+    this.handleSubmitSuccess=this.handleSubmitSuccess.bind(this)
+    this.handleSubmitFailure=this.handleSubmitFailure.bind(this)
   }
+
 
   handleChange(event){
     if(event.target.name==="date"){
@@ -112,32 +116,50 @@ export class CarbonCalculator extends React.Component{
       })
       .then(json => {
         console.log(json)
+        this.handleSubmitSuccess(json)
       })
       .catch(e => {
         console.log(e.message)
         if(e.message==='401'){
           refreshToken({onSuccess:this.saveEmission})
         }
+        this.handleSubmitFailure()
       });
+  }
+
+  handleSubmitSuccess(){
+    this.props.submitCarbon()
+  }
+
+  handleSubmitFailure(){
+    this.setState({submissionFailed:true})
   }
 
   render(){
     let carbon = this.state.carbonKg
+
+    let failureDisplay
+    if(this.state.submissionFailed){
+      failureDisplay = <h3>Submission failed, sorry.</h3>
+    }
     
     let memberDisplay
     if(this.props.loggedIn){
-        memberDisplay=
-          <div>
-            <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
-            <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
-            <button
-              type="button"
-              name="cancel"
-              className="btn-outline-danger"
-              onClick={this.saveEmission}
-            >Save to profile</button>
-          </div>
-      }
+      memberDisplay=
+        <div>
+          <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
+          <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
+          <button
+            type="button"
+            name="cancel"
+            className="btn-outline-danger"
+            onClick={this.saveEmission}
+          >Save to profile</button>
+          {failureDisplay}
+        </div>
+    } else {
+      memberDisplay = <h3>Log in to save</h3>
+    }
 
     return(
       
