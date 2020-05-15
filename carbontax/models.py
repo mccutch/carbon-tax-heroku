@@ -11,8 +11,7 @@ class EmissionInstance(models.Model):
     distance = models.FloatField(null=True)
     co2_output_kg = models.FloatField(null=True)
     price = models.FloatField(null=True)
-    user = models.CharField(max_length=60, null=True)
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', null=True)
 
 class FuelType(models.Model):
     name = models.CharField(max_length=30, unique=True)

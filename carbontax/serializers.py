@@ -45,4 +45,11 @@ class EmissionSerializer(serializers.HyperlinkedModelSerializer):
         model = models.EmissionInstance
         fields = ['name', 'date', 'travel_mode', 'distance', 'co2_output_kg', 'price', 'user']
 
+class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = models.EmissionInstance
+        fields = ['name', 'date', 'travel_mode', 'distance', 'co2_output_kg', 'price', 'user']
+
 

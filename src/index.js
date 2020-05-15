@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {EmissionCalculator} from './emissionCalculator.js';
 import {LoginWrapper} from './loginWrapper.js';
-import {EmissionList} from './emissionList.js';
+import {EmissionListWrapper} from './emissionList.js';
 //import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 
@@ -54,6 +54,11 @@ class Page extends React.Component {
   
   render(){
 
+    let memberDisplay
+    if(this.state.loggedIn){
+      memberDisplay = <button className="btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button> 
+    }
+
     let display
     if(this.state.displayCalculator){
       display = <EmissionCalculator 
@@ -61,15 +66,16 @@ class Page extends React.Component {
                   displayUnits={this.state.displayUnits} 
                   showCalculator={this.showCalculator}
                 />
-    } else if(this.state.displayEmissions){
-      display = <EmissionList
+    } else if(this.state.displayEmissions && this.state.loggedIn){
+      display = <EmissionListWrapper
                   showEmissions={this.showEmissions}
+                  displayUnits={this.state.displayUnits}
                 />
     } else {
       display = 
         <div className='container my-2'>
           <button className="btn-outline-info" name="showCalculator" onClick={this.handleClick}>Add a carbon emission</button>
-          <button className="btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button>
+          {memberDisplay}
         </div>
     }
 

@@ -28,8 +28,8 @@ export function getToken({data, onSuccess, onFailure}){
       }
     })
     .then(json => {
-      console.log(json.access)
-      console.log(json.refresh)
+      //console.log(json.access)
+      //console.log(json.refresh)
       localStorage.setItem('access', json.access)
       localStorage.setItem('refresh', json.refresh)
       if(onSuccess){
@@ -87,7 +87,7 @@ export function refreshToken({onSuccess, success_args, onFailure}){
       
     })
     .then(json => {
-      console.log(json.access)
+      //console.log(json.access)
       localStorage.setItem('access', json.access)
       if(onSuccess){
         if(success_args){

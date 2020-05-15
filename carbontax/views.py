@@ -59,21 +59,13 @@ class UserVehicleList(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        """
-        This view should return a list of all the purchases
-        for the currently authenticated user.
-        """
         vehicles = models.Vehicle.objects.filter(owner=request.user)
         serializer = serializers.VehicleListSerializer(vehicles, many=True, context={'request':request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
-
-        print(request.data)
         data=request.data
-        #data['owner']='http://localhost:8000/user/2/'
         data['owner']=f'/user/{request.user.id}/'
-        #data['owner']=request.user.id
         print(data)
         serializer = serializers.VehicleSerializer(data=data, context={'request':request})
         if serializer.is_valid():
@@ -88,7 +80,7 @@ class EmissionList(APIView):
     
     def get(self, request, format=None):
         emissions = models.EmissionInstance.objects.all()
-        serializer = serializers.EmissionSerializer(emissions, many=True)
+        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
         return Response(serializer.data)
 
 class UserEmissionList(APIView):
@@ -96,16 +88,13 @@ class UserEmissionList(APIView):
     #List all user's emissions, or create a new one.
     
     def get(self, request, format=None):
-        emissions = models.EmissionInstance.objects.filter(user=request.user.username)
-        serializer = serializers.EmissionSerializer(emissions, many=True)
+        emissions = models.EmissionInstance.objects.filter(user=request.user)
+        serializer = serializers.EmissionListSerializer(emissions, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        print(request.data)
-        print(request.user)
-
         data=request.data
-        data['user']=request.user.username
+        data['user']=f'/user/{request.user.id}/'
         print(data)
         serializer = serializers.EmissionSerializer(data=data, context={'request':request})
         if serializer.is_valid():
