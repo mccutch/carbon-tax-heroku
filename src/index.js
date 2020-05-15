@@ -39,7 +39,7 @@ class Page extends React.Component {
           <p>Everything's fucked anyway.</p>
         </div>
         <div>
-          <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin} toggleDisplayUnits={this.props.toggleDisplayUnits}/>
+          <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin} toggleDisplayUnits={this.toggleDisplayUnits}/>
           <EmissionCalculator loggedIn={this.state.loggedIn} displayUnits={this.state.displayUnits}/>
         </div>
         <div className="jumbotron">
