@@ -104,6 +104,7 @@ class UserEmissionList(APIView):
 
 
 class EmissionDetail(APIView):
+    permission_classes = (IsAuthenticated,)
     """
     Retrieve, update or delete an emission.
     """
