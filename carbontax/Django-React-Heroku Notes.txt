@@ -26,3 +26,15 @@ SECRET KEYS
 PIPENV INSTALL
     pipenv install module
     pip freeze > requirements.txt
+    pipenv lock???
+    pipenv clean -check that new module is still installed
+
+MIGRATE SQLITE3 TO POSTGRES
+    https://medium.com/agatha-codes/painless-postgresql-django-d4f03364989
+    https://dev.to/coderasha/how-to-migrate-data-from-sqlite-to-postgresql-in-django-182h
+
+PUSH LOCAL DB TO HEROKU
+    https://devcenter.heroku.com/articles/heroku-postgresql#pg-push-and-pg-pull
+    heroku pg:push ct_db postgresql-triangular-33986 --app carbontax (requires completely clearing the heroku db)
+
+

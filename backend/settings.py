@@ -37,7 +37,7 @@ SECRET_KEY = env('DJ_KEY')
 #SECRET_KEY = returnkey()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -94,18 +94,25 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-"""DATABASES = {
-    'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PW'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+
+try:
+    DATABASES = {
+        'default': {
+            #'ENGINE': 'django.db.backends.sqlite3',
+            #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PW'),
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}"""
+    DEBUG = True
+    print("IMPORTING LOCAL SETTINGS, DEBUG=TRUE")
+except Exception as e:
+    print(e)
+    print("UNABLE TO LOAD LOCAL SETTINGS")
 
 
 # Password validation
