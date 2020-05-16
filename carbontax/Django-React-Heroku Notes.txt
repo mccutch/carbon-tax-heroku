@@ -23,6 +23,7 @@ HEROKU DEPLOYMENT
 SECRET KEYS
     open .gitignore
     store all secrets in environment
+    restart Yarn after changing .env variables
 
 PIPENV INSTALL
     pipenv install module

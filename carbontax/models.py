@@ -37,6 +37,12 @@ class Profile(models.Model):
         """String for representing the Model object."""
         return self.user.get_username()
 
+"""
+class TaxRate(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', null=True)
+"""
+
 class Vehicle(models.Model):
     name = models.CharField(max_length=30)
     #fuel = models.CharField(max_length=30)

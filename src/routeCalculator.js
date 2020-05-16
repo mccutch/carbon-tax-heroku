@@ -126,10 +126,12 @@ class RouteResultView extends React.Component{
       let distance = units.distanceDisplay(this.props.distance, this.props.displayUnits)
       submitDisplay=
         <div>
-          <h3>Distance: {parseFloat(distance).toFixed(1)}</h3>
+          <h3>Distance: {parseFloat(distance).toFixed(1)}{units.distanceString(this.props.displayUnits)}</h3>
           <button type="button" class = "btn-outline-warning" onClick={this.setReturnTrip}>{returnDisplay}</button>
           <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
         </div>
+    } else {
+      submitDisplay = <p>Loading distance can take ~10s on some days. Submit button will appear here.</p>
     }
     
     return(

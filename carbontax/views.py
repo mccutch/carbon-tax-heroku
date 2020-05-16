@@ -14,7 +14,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -187,6 +187,12 @@ class CurrentUser(APIView):
     def get(self, request):
         content = {'username': request.user.username, 'id':request.user.pk}
         return Response(content)
+
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.CreateUserSerializer
+    permission_classes = (AllowAny, )
 
 
 

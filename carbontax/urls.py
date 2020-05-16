@@ -16,6 +16,7 @@ urlpatterns = [
     path('user/<int:pk>/', views.UserDetail.as_view(), name="user-detail"),
 
     path('profiles/', views.ProfileList.as_view(), name="profiles"),
+    path('account/register/', views.UserCreate.as_view(), name="create-user"),
 
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
     path('vehicles/', views.VehicleList.as_view(), name="vehicles"),
@@ -27,6 +28,8 @@ urlpatterns = [
     path('fueltypes/', views.FuelTypeList.as_view(), name="fuels"),
     path('fuel/<int:pk>/', views.FuelDetail.as_view(), name="fuel-detail"),
     path('economymetrics/', views.EconomyMetricList.as_view(), name="economymetrics"),
+
+
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)

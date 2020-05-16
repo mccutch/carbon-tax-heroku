@@ -3,7 +3,8 @@ import {getToken, refreshToken, clearToken }  from './myJWT.js';
 //import {keys} from './secret_api_keys.js';
 
 //const MEMBER_LOGIN = keys.member_login;
-const MEMBER_LOGIN = process.env.REACT_APP_DEMOUSER_LOGIN
+const DEMO_USERNAME = process.env.REACT_APP_DEMO_USERNAME
+const DEMO_PW = process.env.REACT_APP_DEMOUSER_PW
 
 class LoginForm extends React.Component{
   constructor(props){
@@ -123,8 +124,8 @@ export class LoginWrapper extends React.Component{
   handleClick(event){
     if(event.target.name==="login"){
       let data = {
-        username:"member",
-        password:MEMBER_LOGIN,
+        username:DEMO_USERNAME,
+        password:DEMO_PW,
       }
       getToken({data:data, onSuccess:this.loginSuccess, onFailure:this.loginFailure})
     } else if(event.target.name==="logout"){
@@ -148,7 +149,7 @@ export class LoginWrapper extends React.Component{
     } else if(this.state.loginFailed){
       display=
         <div>
-          <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Auto-login</button>
+          <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Demo User</button>
           <p>Login failed.</p>
           <LoginForm submitForm={this.handleSubmit}/>
         </div>

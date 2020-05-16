@@ -47,9 +47,23 @@ class EmissionSerializer(serializers.HyperlinkedModelSerializer):
 
 class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
-
     class Meta:
         model = models.EmissionInstance
         fields = ['name', 'date', 'travel_mode', 'distance', 'co2_output_kg', 'price', 'user']
+
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'email')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
 
 
