@@ -142,7 +142,7 @@ export class LoginWrapper extends React.Component{
     if(this.props.loggedIn){
       display = 
         <div>
-          <p>Hello {this.state.username}, ID:{this.state.user_id}</p>
+          <p>Hello {this.state.username}</p>
           <button name="logout" onClick={this.handleClick}>Logout</button>
         </div>
     } else if(this.state.loginFailed){
@@ -155,7 +155,7 @@ export class LoginWrapper extends React.Component{
     } else {
       display = 
         <div>
-          <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Auto-login</button>
+          <button name="login" className="btn-outline-danger" onClick={this.handleClick}>Demo User</button>
           <LoginForm submitForm={this.handleSubmit}/>
         </div>
     }

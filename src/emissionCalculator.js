@@ -15,6 +15,7 @@ export class EmissionCalculator extends React.Component{
       distanceKm: null,
       economySubmitted: false,
       distanceSubmitted: false,
+      returnTrip: false,
     }
     
     this.handleEdit=this.handleEdit.bind(this)
@@ -31,13 +32,14 @@ export class EmissionCalculator extends React.Component{
     });
   }
 
-  handleSubmitDistance(origin, destination, distanceKm){
+  handleSubmitDistance(origin, destination, distanceKm, wasReturnTrip){
     /* Expects to receive distance in km */
     this.setState({
       origin: origin,
       destination: destination,
       distanceKm: distanceKm,
       distanceSubmitted: true,
+      returnTrip: wasReturnTrip,
     })
   }
 

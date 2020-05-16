@@ -23,7 +23,7 @@ export class DistanceInput extends React.Component{
     } else if(event.target.name==="submitDistance"){
 
       if(this.state.distance>0){
-        this.props.submitDistance("","",units.convertToKm(this.state.distance, this.props.displayUnits))
+        this.props.submitDistance("","",units.convertToKm(this.state.distance, this.props.displayUnits), false)
       }
     }
   }

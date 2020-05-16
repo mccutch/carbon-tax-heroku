@@ -92,23 +92,50 @@ class MapView extends React.Component{
 class RouteResultView extends React.Component{
   constructor(props){
     super(props);
-    this.handleClick=this.handleClick.bind(this);
+    this.handleClick=this.handleClick.bind(this)
+    this.setReturnTrip=this.setReturnTrip.bind(this)
   }
 
   handleClick(){
     if(this.props.origin && this.props.destination && this.props.distance){
-      this.props.submitDistance(this.props.origin, this.props.destination, this.props.distance);
+      this.props.submitDistance(this.props.origin, this.props.destination, this.props.distance, this.props.returnTrip);
     } else {
       return;
     }
   }
 
+  setReturnTrip(){
+    if(this.props.returnTrip){
+      this.props.setReturnTrip(false)
+    } else {
+      this.props.setReturnTrip(true)
+    }
+  }
+
   render(){
+
+    let returnDisplay
+    if(this.props.returnTrip){
+      returnDisplay="One way?"
+    } else {
+      returnDisplay="Return trip?"
+    }
+
+    let submitDisplay
+    if(this.props.routeFound){
+      let distance = units.distanceDisplay(this.props.distance, this.props.displayUnits)
+      submitDisplay=
+        <div>
+          <h3>Distance: {parseFloat(distance).toFixed(1)}</h3>
+          <button type="button" class = "btn-outline-warning" onClick={this.setReturnTrip}>{returnDisplay}</button>
+          <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
+        </div>
+    }
     
     return(
       <div className="container">
         <MapView parameters={this.props.parameters}/>
-        <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
+        {submitDisplay}
         <button type="button" className="btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
       </div>
     );
@@ -127,9 +154,26 @@ export class RouteCalculator extends React.Component{
       distance: 0,
       directionsSuffix: "units=metric&origin=melbourne&destination=arapiles&key="+GOOGLE_API_KEY,
       inputErrorMessage: "",
+      routeFound:false,
+      returnTrip:false,
     }
 
-    this.receiveQuery=this.receiveQuery.bind(this);
+    this.receiveQuery=this.receiveQuery.bind(this)
+    this.setReturnTrip=this.setReturnTrip.bind(this)
+  }
+
+  setReturnTrip(bool_val){
+    if(bool_val && !this.state.returnTrip){
+      this.setState({
+        returnTrip:true,
+        distance:this.state.distance*2,
+      })
+    } else if(!bool_val && this.state.returnTrip){
+      this.setState({
+        returnTrip:false,
+        distance:this.state.distance/2,
+      })
+    }
   }
 
   receiveQuery(origin, destination, via){
@@ -149,7 +193,9 @@ export class RouteCalculator extends React.Component{
     if(via){
       suffix += '&waypoints=' + encodeURIComponent(via);
     }
-    this.setState({directionsSuffix: suffix});
+    this.setState({
+      directionsSuffix: suffix,
+    });
     this.findDistance(prefix_url+base_url+suffix);
   }
 
@@ -162,7 +208,10 @@ export class RouteCalculator extends React.Component{
             //Check valid inputs
             switch(result.status){
               case "OK": 
-                this.setState({inputErrorMessage: ""})
+                this.setState({
+                  inputErrorMessage: "",
+                  routeFound: true,
+                })
                 break;
               case "NOT_FOUND":
                 for(let i=0; i<result.geocoded_waypoints.length; i++){
@@ -183,13 +232,18 @@ export class RouteCalculator extends React.Component{
                       origin: "",
                       destination: "",
                       via: "",
+                      distance: 0,
+                      routeFound: false,
                     });
                     break;
                   }
                 }
                 return;
               case "ZERO_RESULTS":
-                this.setState({inputErrorMessage: "No routes found between these locations. Try specifying the region."});
+                this.setState({
+                  inputErrorMessage: "No routes found between these locations. Try specifying the region.",
+                  routeFound: false,
+                });
                 return;
               default:
                 console.log("Result status: "+result.status);
@@ -227,6 +281,8 @@ export class RouteCalculator extends React.Component{
   }
 
   render(){
+
+
     return(
       <div className="container bg-success" >
         <RouteInputFields submitQuery={(o, d, v)=>this.receiveQuery(o,d,v)}/>
@@ -237,6 +293,10 @@ export class RouteCalculator extends React.Component{
           destination={this.state.destination}
           distance={this.state.distance}
           hideCalculator={this.props.hideCalculator}
+          routeFound={this.state.routeFound}
+          displayUnits={this.props.displayUnits}
+          setReturnTrip={this.setReturnTrip}
+          returnTrip={this.state.returnTrip}
         />
       </div>
     );

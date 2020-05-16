@@ -18,6 +18,10 @@ export class CarbonCalculator extends React.Component{
       destination = destination.substring(0, destination.indexOf(','));
       tripName = origin +" to "+destination
 
+      if(this.props.data.returnTrip){
+        tripName += " return"
+      }
+
       if(tripName.length>=maxLen){
         console.log("Route name too long")
         tripName = tripName.substring(0,maxLen-1)
