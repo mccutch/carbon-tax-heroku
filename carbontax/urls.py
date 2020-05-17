@@ -5,6 +5,10 @@ from . import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
+from django.http.response import HttpResponseRedirect
+def handler404(request, *args, **kwargs):
+    return HttpResponseRedirect('/')
+
 
 
 urlpatterns = [
@@ -29,7 +33,6 @@ urlpatterns = [
     path('fueltypes/', views.FuelTypeList.as_view(), name="fuels"),
     path('fuel/<int:pk>/', views.FuelDetail.as_view(), name="fuel-detail"),
     path('economymetrics/', views.EconomyMetricList.as_view(), name="economymetrics"),
-
 
 ]
 
