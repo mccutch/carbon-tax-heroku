@@ -1,6 +1,7 @@
 from . import models
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.core.validators import EmailValidator
 
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
@@ -56,11 +57,14 @@ class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'password', 'email')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         password = validated_data.pop('password')
+        email = validated_data['email']
+        print(email)
+
         user = User(**validated_data)
         user.set_password(password)
         user.save()

@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('profiles/', views.ProfileList.as_view(), name="profiles"),
     path('account/register/', views.UserCreate.as_view(), name="create-user"),
+    path('account/check-username/', views.ValidateUsername.as_view(), name="check-username"),
 
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
     path('vehicles/', views.VehicleList.as_view(), name="vehicles"),

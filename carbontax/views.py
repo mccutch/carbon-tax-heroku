@@ -189,6 +189,21 @@ class CurrentUser(APIView):
         return Response(content)
 
 
+class ValidateUsername(APIView):
+    permission_classes = (AllowAny, )
+
+    def post(self, request):
+        print(request.data['username'])
+
+        if User.objects.filter(username=request.data['username']).exists():
+            result="false"
+        else:
+            result="true"
+        content = {"unique":result}
+        return Response(content)
+
+
+
 class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.CreateUserSerializer
