@@ -1,6 +1,7 @@
 {
-  "short_name": "Armchair Tax",
+  "short_name": "Carbon Tax",
   "name": "Armchair Dissident Carbon Tax",
+  "description": "A carbon tax calculator for everyday trips",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,7 +20,7 @@
     }
   ],
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#000000"
 }
