@@ -13,6 +13,12 @@ class EmissionInstance(models.Model):
     price = models.FloatField(null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', null=True)
 
+    class Meta:
+        ordering = ["date"]
+
+    def __str__(self):
+        return f'{self.date}-{self.name}'
+
 class FuelType(models.Model):
     name = models.CharField(max_length=30, unique=True)
     unit = models.CharField(max_length=30)
@@ -52,3 +58,8 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+
+
+
+
