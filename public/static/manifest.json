@@ -4,7 +4,7 @@
   "description": "A carbon tax calculator for everyday trips",
   "icons": [
     {
-      "src": "finger24.ico",
+      "src": "finger.ico",
       "sizes": "128x128 64x64 24x24",
       "type": "image/x-icon"
     },

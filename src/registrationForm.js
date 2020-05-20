@@ -29,7 +29,7 @@ export class RegistrationForm extends React.Component{
   }
 
   checkPasswordStrength(password){
-    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\?!@#\$%\^&\*])(?=.{8,})") 
+    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
     this.setState({strongPassword:strongRegex.test(password)})
   }
 
@@ -45,7 +45,7 @@ export class RegistrationForm extends React.Component{
     }
 
     // Validate password
-    if(this.state.password != this.state.password_check){
+    if(this.state.password !== this.state.password_check){
       this.setState({errorMessage:"Passwords don't match."})
       return
     }
