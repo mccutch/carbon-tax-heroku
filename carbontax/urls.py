@@ -20,6 +20,7 @@ urlpatterns = [
     path('user/<int:pk>/', views.UserDetail.as_view(), name="user-detail"),
 
     path('profiles/', views.ProfileList.as_view(), name="profiles"),
+    path('account/profile/', views.UserProfile.as_view(), name="my-profile"),
     path('account/register/', views.UserCreate.as_view(), name="create-user"),
     path('account/check-username/', views.ValidateUsername.as_view(), name="check-username"),
 

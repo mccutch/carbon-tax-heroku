@@ -2,64 +2,33 @@
 
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
+
 from . import models
-from rest_framework import viewsets
-from rest_framework import permissions
 from . import serializers
-
-from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.decorators import api_view
+
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import generics
-
-
-from django.http import HttpResponse, JsonResponse
-from rest_framework.parsers import JSONParser
 
 
 # Serve Single Page Application
 index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 
-#API Viewsets
 
-
+# -----------VEHICLES-----------
 class VehicleList(generics.ListAPIView):
     permission_classes = (IsAdminUser, )
     queryset = models.Vehicle.objects.all()
     serializer_class = serializers.VehicleSerializer
-"""
-class UserVehicleView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        queryset = models.Vehicle.objects
-        string_ret = 'hello, '+name
-        content = {'message': string_ret}
-        return Response(content)
-"""
-
-"""class UserVehicleList(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = serializers.VehicleSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return models.Vehicle.objects.filter(owner=user)"""
 
 class UserVehicleList(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        vehicles = models.Vehicle.objects.filter(owner=request.user)
+        vehicles = request.user.vehicles.all()
         serializer = serializers.VehicleListSerializer(vehicles, many=True, context={'request':request})
         return Response(serializer.data)
 
@@ -74,6 +43,7 @@ class UserVehicleList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# -----------EMISSIONS-----------
 class EmissionList(APIView):
     permission_classes = (IsAdminUser,)
     #List all emissions
@@ -88,7 +58,7 @@ class UserEmissionList(APIView):
     #List all user's emissions, or create a new one.
     
     def get(self, request, format=None):
-        emissions = models.EmissionInstance.objects.filter(user=request.user)
+        emissions = request.user.emissions.all()
         serializer = serializers.EmissionListSerializer(emissions, many=True)
         return Response(serializer.data)
 
@@ -132,6 +102,8 @@ class EmissionDetail(APIView):
         emission.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+# -----------HELPER MODELS-----------
 class FuelTypeList(generics.ListAPIView):
     queryset = models.FuelType.objects.all()
     serializer_class = serializers.FuelTypeSerializer
@@ -144,14 +116,32 @@ class EconomyMetricList(generics.ListAPIView):
     queryset = models.EconomyMetric.objects.all()
     serializer_class = serializers.EconomyMetricSerializer
 
+
+
+# -----------USER/PROFILE-----------
 class ProfileList(generics.ListAPIView):
     permission_classes = (IsAdminUser, )
     serializer_class = serializers.ProfileSerializer
     queryset = models.Profile.objects.all()
 
-class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.UserSerializer
-    queryset = models.Profile.objects.all()
+class UserProfile(APIView):
+    permission_classes = (IsAuthenticated,)
+    #List all user's emissions, or create a new one.
+    
+    def get(self, request, format=None):
+        profile = request.user.profile
+        serializer = serializers.ProfileSerializer(profile, context={'request':request})
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data=request.data
+        data['user']=f'/user/{request.user.id}/'
+        print(data)
+        serializer = serializers.ProfileSerializer(data=data, context={'request':request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetail(APIView):
     permission_classes = (IsAdminUser,)
@@ -185,7 +175,18 @@ class UserDetail(APIView):
 class CurrentUser(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
-        content = {'username': request.user.username, 'id':request.user.pk}
+        user=request.user
+        email=user.email
+        first=user.first_name
+        last=user.last_name
+
+        content = {
+            'username': user.username, 
+            'id': user.pk,
+            'email': email,
+            'first_name': first,
+            'last_name': last,
+        }
         return Response(content)
 
 
@@ -201,8 +202,6 @@ class ValidateUsername(APIView):
             result="true"
         content = {"unique":result}
         return Response(content)
-
-
 
 class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()

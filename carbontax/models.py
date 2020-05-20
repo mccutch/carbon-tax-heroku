@@ -11,7 +11,7 @@ class EmissionInstance(models.Model):
     distance = models.FloatField(null=True)
     co2_output_kg = models.FloatField(null=True)
     price = models.FloatField(null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
 
     class Meta:
         ordering = ["date"]
@@ -35,13 +35,13 @@ class EconomyMetric(models.Model):
         return self.name
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     location = models.CharField(max_length=60, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 
     def __str__(self):
         """String for representing the Model object."""
-        return self.user.get_username()
+        return f'{self.user.get_username()}, {self.location}'
 
 """
 class TaxRate(models.Model):
@@ -54,7 +54,7 @@ class Vehicle(models.Model):
     #fuel = models.CharField(max_length=30)
     fuel = models.ForeignKey(FuelType, on_delete = models.CASCADE, help_text = 'Select a fuel type for this vehicle.')
     economy = models.FloatField() # MUST BE IN L/100km
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicles')
 
     def __str__(self):
         return f'{self.name}'

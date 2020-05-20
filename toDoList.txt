@@ -1,5 +1,7 @@
 
+Profile signup
 
+User profile view
 
 carbon pricing
 - Attach to user profile
@@ -10,14 +12,8 @@ vehicle save
 + Attach to user profile
 - Edit/delete vehicles through profile
 
-view my emssions
-+ api view
-- create react rendering
-- hide input form
+
 
 fuel support
 - lpg, electric, aviation fuels
 - decide how to repurpose the co2/unit and vehicle economy fields
-
-UI
-- display screen after submit
