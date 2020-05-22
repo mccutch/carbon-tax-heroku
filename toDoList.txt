@@ -1,5 +1,4 @@
 
-Profile signup
 
 User profile view
 
@@ -7,13 +6,22 @@ carbon pricing
 - Attach to user profile
 - Profile editing view
 
+emission view
+- pagination
+- searchable
+
+
 
 vehicle save
-+ Attach to user profile
 - Edit/delete vehicles through profile
-
-
 
 fuel support
 - lpg, electric, aviation fuels
 - decide how to repurpose the co2/unit and vehicle economy fields
+
+Precache to improve loading
+- preload owner's cars
+- preload favourite trips
+- preload profile information
+- autofill place names
+- fueltype list (others?)

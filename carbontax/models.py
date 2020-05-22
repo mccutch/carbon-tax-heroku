@@ -34,6 +34,12 @@ class EconomyMetric(models.Model):
     def __str__(self):
         return self.name
 
+class TaxRate(models.Model):
+    name = models.CharField(max_length=30)
+    price_per_kg = models.FloatField(default=0)
+    category = models.CharField(max_length=30, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='taxes', null=True)
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     location = models.CharField(max_length=60, blank=True)
@@ -43,15 +49,10 @@ class Profile(models.Model):
         """String for representing the Model object."""
         return f'{self.user.get_username()}, {self.location}'
 
-"""
-class TaxRate(models.Model):
-    name = models.CharField(max_length=30, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', null=True)
-"""
+
 
 class Vehicle(models.Model):
     name = models.CharField(max_length=30)
-    #fuel = models.CharField(max_length=30)
     fuel = models.ForeignKey(FuelType, on_delete = models.CASCADE, help_text = 'Select a fuel type for this vehicle.')
     economy = models.FloatField() # MUST BE IN L/100km
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicles')

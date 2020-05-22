@@ -1,6 +1,10 @@
 DJ_KEY=<django secret key>
 REACT_APP_GOOGLE_API_KEY=<google api key>
-REACT_APP_DEMOUSER_LOGIN=<demo user password>
+REACT_APPPDEMO_USERNAME=<demo user username>
+REACT_APP_DEMOUSER_PW=<demo user password>
 DB_NAME=<local postgres database name>
 DB_USER=<local postgres database owner>
 DB_PW=<database ct_admin password>
+
+
+

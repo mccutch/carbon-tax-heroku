@@ -60,20 +60,26 @@ export class LoginWrapper extends React.Component{
     super(props)
     this.state={
       user:{},
+      taxes:{},
       loginFailed:false,
       showRegistration:false,
       showProfile:false,
     }
 
+    this.loginSuccess()
+
     this.handleClick = this.handleClick.bind(this)
-    this.fetchUsername = this.fetchUsername.bind(this)
+    this.fetchUserDetails = this.fetchUserDetails.bind(this)
+    this.fetchTaxes = this.fetchTaxes.bind(this)
     this.loginFailure = this.loginFailure.bind(this)
     this.loginSuccess = this.loginSuccess.bind(this)
     this.logoutSuccess = this.logoutSuccess.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  fetchUsername(){
+  
+
+  fetchUserDetails(){
     fetch('/current-user/', {
       method: 'GET',
       headers: {
@@ -90,6 +96,7 @@ export class LoginWrapper extends React.Component{
       })
       .then(json => {
         this.props.login(true)
+        console.log(json)
         this.setState({
           user:{
             username:json.username,
@@ -99,11 +106,41 @@ export class LoginWrapper extends React.Component{
             last_name:json.last_name,
           }
         })
+
       })
       .catch(error => {
         console.log(error.message)
         if(error.message==='401'){
-          refreshToken({onSuccess:this.fetchUsername, onFailure:this.handleLoginFailure})
+          refreshToken({onSuccess:this.fetchUserDetails, onFailure:this.handleLoginFailure})
+        } 
+      });
+  }
+
+  fetchTaxes(){
+    fetch('/my-taxes/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      }
+    })
+    .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        //console.log(json)
+        this.setState({
+          taxes:json
+        })
+      })
+      .catch(error => {
+        console.log(error.message)
+        if(error.message==='401'){
+          refreshToken({onSuccess:this.fetchTaxes})
         } 
       });
   }
@@ -113,14 +150,15 @@ export class LoginWrapper extends React.Component{
   }
 
   loginSuccess(){
-    this.fetchUsername()
+    this.setState({loginFailed:false, showRegistration:false})
+    this.fetchUserDetails()
+    this.fetchTaxes()
   }
 
   logoutSuccess(){
     this.setState({
       user:{},
-      //username: null,
-      //user_id: null, 
+      taxes:{}, 
       loginFailed:false,
     })
     this.props.login(false)
@@ -148,7 +186,6 @@ export class LoginWrapper extends React.Component{
   }
 
   handleSubmit(data){
-    this.setState({loginFailed:false, showRegistration:false})
     getToken({data:data, onSuccess:this.loginSuccess, onFailure:this.loginFailure})
   }
 
@@ -160,9 +197,9 @@ export class LoginWrapper extends React.Component{
 
     let display
     if(this.state.showProfile){
-      display = <ProfileDisplay onClick={this.handleClick} user={this.state.user}/>
+      display = <ProfileDisplay onClick={this.handleClick} user={this.state.user} taxes={this.state.taxes} refreshTaxes={this.fetchTaxes}/>
     } else if(this.state.showRegistration){
-      display = <RegistrationForm onClick={this.handleClick} login={this.handleSubmit}/>
+      display = <RegistrationForm onClick={this.handleClick} loginSuccess={this.loginSuccess}/>
     } else if(this.props.loggedIn){
       display = 
         <div>

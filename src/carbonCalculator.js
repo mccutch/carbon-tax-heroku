@@ -98,9 +98,9 @@ export class CarbonCalculator extends React.Component{
       "name": tripName,
       "date": date,
       "travel_mode": "Rec driving",
-      "distance": this.props.data.distanceKm,
-      "co2_output_kg": this.state.carbonKg,
-      "price": 1.0 
+      "distance": parseFloat(this.props.data.distanceKm).toFixed(3),
+      "co2_output_kg": parseFloat(this.state.carbonKg).toFixed(3),
+      "price": parseFloat(1.0).toFixed(2)
     }
 
     fetch('/my-emissions/', {

@@ -54,6 +54,17 @@ class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
+class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model=models.TaxRate
+        fields = ['name', 'price_per_kg', 'category', 'user', 'id']
+
+class TaxRateListSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    class Meta:
+        model=models.TaxRate
+        fields = ['name', 'price_per_kg', 'category', 'user', 'id']
+
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

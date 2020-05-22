@@ -81,7 +81,7 @@ class UserVehicleTable extends React.Component{
       let vehicle=this.props.vehicles[i]
       let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
       tableRows.push(
-        <tr>
+        <tr key={i}>
           <td>{vehicle.name}</td>
           <td>{economy.toFixed(1)}</td>
           <td>{units.displayUnitString(this.props.displayUnits)}</td>
@@ -185,7 +185,7 @@ export class EconomyInput extends React.Component{
     let data = {
       "name":this.state.saveAs,
       "fuel":`/fuel/${fuel_id}/`,
-      "economy": `${this.state.lPer100km}`
+      "economy": `${parseFloat(this.state.lPer100km).toFixed(3)}`
     }
 
     console.log('SAVE AS - DATA:')

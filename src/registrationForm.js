@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { defaultTaxes } from './defaultTaxTypes.js';
+import { getToken }  from './myJWT.js';
+
 const MAX_PASSWORD_LEN = 30
 const MAX_EMAIL_LEN = 30
 const MAX_NAME_LEN = 30
@@ -21,11 +24,14 @@ export class RegistrationForm extends React.Component{
       date_of_birth: "",
     }
 
+    
+
     this.handleSubmit=this.handleSubmit.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.createUser=this.createUser.bind(this)
     this.checkPasswordStrength=this.checkPasswordStrength.bind(this)
     this.createProfile=this.createProfile.bind(this)
+    this.createTaxes=this.createTaxes.bind(this)
   }
 
   checkPasswordStrength(password){
@@ -113,12 +119,11 @@ export class RegistrationForm extends React.Component{
         }
       })
       .then(json => {
+        console.log("Create user - success")
         console.log(json)
         let loginData = {username: userData.username, password: userData.password}
-        this.props.login(loginData)
-      })
-      .then(()=>{
-        this.createProfile()
+
+        getToken({data:loginData, onSuccess:this.createProfile})
       })
       .catch(e => {
         console.log(e.message)
@@ -133,11 +138,13 @@ export class RegistrationForm extends React.Component{
   createProfile(){
     let profileData = {
       location: this.state.location,
-      date_of_birth: this.state.date_of_birth,
+    }
+    if(this.state.date_of_birth){
+      profileData['date_of_birth']=this.state.date_of_birth
     }
 
 
-    fetch('/account/profile/', {
+    fetch('my-profile/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -154,10 +161,47 @@ export class RegistrationForm extends React.Component{
     })
     .then(json => {
       console.log(json)
+      this.createTaxes()
     })
     .catch(e => {
       console.log(e.message)
     })
+  }
+
+  createTaxes(){
+
+    for (let i in defaultTaxes){
+      let taxData = {
+        name: defaultTaxes[i]['name'],
+        price_per_kg: defaultTaxes[i]['price'],
+        category: defaultTaxes[i]['category'],
+      }
+
+      console.log(taxData)
+      
+      fetch('/my-taxes/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: "Bearer "+localStorage.getItem('access')
+        },
+        body: JSON.stringify(taxData)
+      })
+      .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        console.log(json)
+        this.props.loginSuccess()
+      })
+      .catch(e => {
+        console.log(e.message)
+      })
+    }
   }
 
   handleSubmit(e){
@@ -187,28 +231,28 @@ export class RegistrationForm extends React.Component{
             type="text"
             name="firstName"
             onChange={this.handleChange}
-            placeHolder="First name"
+            placeholder="First name"
             maxLength={MAX_NAME_LEN}
           />
           <input
             type="text"
             name="lastName"
             onChange={this.handleChange}
-            placeHolder="Last name"
+            placeholder="Last name"
             maxLength={MAX_NAME_LEN}
           />
           <input
             type="text"
             name="username"
             onChange={this.handleChange}
-            placeHolder="Username"
+            placeholder="Username"
           />
           <br/>
           <input
             type="password"
             name="password"
             onChange={this.handleChange}
-            placeHolder="Password"
+            placeholder="Password"
             maxLength={MAX_PASSWORD_LEN}
           />
           <br/>
@@ -216,27 +260,27 @@ export class RegistrationForm extends React.Component{
             type="password"
             name="password_check"
             onChange={this.handleChange}
-            placeHolder="Confirm Password"
+            placeholder="Confirm Password"
           />
           <input
             type="text"
             name="email"
             onChange={this.handleChange}
-            placeHolder="Email"
+            placeholder="Email"
             maxLength={MAX_EMAIL_LEN}
           />
           <input
             type="text"
             name="location"
             onChange={this.handleChange}
-            placeHolder="Location"
+            placeholder="Location"
             maxLength={MAX_NAME_LEN}
           />
           <input
             type="date"
             name="date_of_birth"
             onChange={this.handleChange}
-            placeHolder="Date of Birth"
+            placeholder="Date of Birth"
           />
           <br/>
           <button type="submit" className="btn-outline-primary">Create</button>
