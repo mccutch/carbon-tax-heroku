@@ -10,7 +10,7 @@ import * as units from './unitConversions';
 
 
 
-class Page extends React.Component {
+class App extends React.Component {
   constructor(props){
     super(props)
 
@@ -19,6 +19,7 @@ class Page extends React.Component {
       displayUnits: units.METRIC,
       displayCalculator: true,
       displayEmissions: false,
+      taxes: {},
     }
 
     this.setLogin=this.setLogin.bind(this)
@@ -26,10 +27,17 @@ class Page extends React.Component {
     this.handleClick=this.handleClick.bind(this)
     this.showCalculator=this.showCalculator.bind(this)
     this.showEmissions=this.showEmissions.bind(this)
+    this.setTaxes=this.setTaxes.bind(this)
   }
 
   setLogin(bool_val){
     this.setState({loggedIn: bool_val})
+  }
+
+  setTaxes(json){
+    this.setState({
+      taxes:json,
+    })
   }
 
   toggleDisplayUnits(){
@@ -66,6 +74,7 @@ class Page extends React.Component {
                   loggedIn={this.state.loggedIn} 
                   displayUnits={this.state.displayUnits} 
                   showCalculator={this.showCalculator}
+                  taxes={this.state.taxes}
                 />
     } else if(this.state.displayEmissions && this.state.loggedIn){
       display = <EmissionListWrapper
@@ -87,7 +96,13 @@ class Page extends React.Component {
           <p>Everything's fucked anyway.</p>
         </div>
         <div>
-          <LoginWrapper loggedIn={this.state.loggedIn} login={this.setLogin} toggleDisplayUnits={this.toggleDisplayUnits}/>
+          <LoginWrapper 
+            loggedIn={this.state.loggedIn} 
+            login={this.setLogin} 
+            toggleDisplayUnits={this.toggleDisplayUnits} 
+            taxes={this.state.taxes}
+            returnTaxes={this.setTaxes}
+          />
           {display}
         </div>
         <div className="jumbotron">
@@ -100,4 +115,4 @@ class Page extends React.Component {
 }
 
 
-ReactDOM.render(<Page />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'))

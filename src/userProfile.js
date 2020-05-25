@@ -1,6 +1,7 @@
 import React from 'react';
 import {refreshToken} from './myJWT.js';
 import { defaultTaxes, taxCategories } from './defaultTaxTypes.js';
+import { OptionListInput } from './optionListInput.js';
 
 const TAX_RATE_DECIMALS = 3
 
@@ -17,13 +18,11 @@ class CreateTax extends React.Component{
       categoryList:[],
     }
 
-    
-
     this.buildCategoryList=this.buildCategoryList.bind(this)
     this.handleClick=this.handleClick.bind(this)
     this.handleChange=this.handleChange.bind(this)
+    this.handleSubmit=this.handleSubmit.bind(this)
     this.submitNewTax=this.submitNewTax.bind(this)
-    this.renderCategoryOptions=this.renderCategoryOptions.bind(this)
   }
 
   componentDidMount(){
@@ -31,7 +30,6 @@ class CreateTax extends React.Component{
   }
 
   buildCategoryList(){
-    console.log("buillidng list")
     let categoryList=[]
     for(let i in taxCategories){
       categoryList.push(taxCategories[i]['title'])
@@ -62,9 +60,12 @@ class CreateTax extends React.Component{
     })
   }
 
-  submitNewTax(event){
+  handleSubmit(event){
     event.preventDefault()
+    this.submitNewTax()
+  }
 
+  submitNewTax(){
     let taxData = {
       name: this.state.newName,
       price_per_kg: parseFloat(this.state.newPrice).toFixed(TAX_RATE_DECIMALS),
@@ -99,30 +100,12 @@ class CreateTax extends React.Component{
       .catch(error => {
         console.log(error.message)
         if(error.message==='401'){
-          refreshToken({onSuccess:this.fetchUserProfile})
+          refreshToken({onSuccess:this.submitNewTax})
         }
         this.setState({
           error:true
         })
       });
-  }
-
-  renderCategoryOptions() {
-    let list = this.state.categoryList;
-    let listOptions = [];
-    for(let i=0; i<list.length; i++){
-      listOptions.push(<option 
-                          value={list[i]}
-                          key = {i}
-                        >
-                        {list[i]}</option>)
-    }
-    return  <select
-              onChange = {this.handleChange}
-              name = "newCategory"
-            >
-              {listOptions}
-            </select>
   }
 
   render(){
@@ -142,10 +125,10 @@ class CreateTax extends React.Component{
           </label>
           <label>
             Category:
-            {this.renderCategoryOptions()}
+            <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
           </label>
           <br/>
-          <button type="button" className="btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
+          <button type="button" className="btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
           <button className="btn-outline-danger" name="cancel" onClick={this.handleClick}>Cancel</button>
         </div>
     } else {

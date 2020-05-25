@@ -133,9 +133,12 @@ export class LoginWrapper extends React.Component{
       })
       .then(json => {
         //console.log(json)
+        this.props.returnTaxes(json)
+        /*
         this.setState({
           taxes:json
         })
+        */
       })
       .catch(error => {
         console.log(error.message)
@@ -197,7 +200,7 @@ export class LoginWrapper extends React.Component{
 
     let display
     if(this.state.showProfile){
-      display = <ProfileDisplay onClick={this.handleClick} user={this.state.user} taxes={this.state.taxes} refreshTaxes={this.fetchTaxes}/>
+      display = <ProfileDisplay onClick={this.handleClick} user={this.state.user} taxes={this.props.taxes} refreshTaxes={this.fetchTaxes}/>
     } else if(this.state.showRegistration){
       display = <RegistrationForm onClick={this.handleClick} loginSuccess={this.loginSuccess}/>
     } else if(this.props.loggedIn){

@@ -1,6 +1,7 @@
 import React from 'react';
-import {refreshToken} from './myJWT.js'
-import * as getDate from './getDate.js'
+import {refreshToken} from './myJWT.js';
+import * as getDate from './getDate.js';
+import { OptionListInput } from './optionListInput.js';
 
 
 
@@ -35,6 +36,8 @@ export class CarbonCalculator extends React.Component{
       date:null,
       tripName:tripName,
       submissionFailed:false,
+      relevantTaxes:[],
+      tax:{},
     }
 
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
@@ -42,18 +45,57 @@ export class CarbonCalculator extends React.Component{
     this.handleChange=this.handleChange.bind(this)
     this.handleSubmitSuccess=this.handleSubmitSuccess.bind(this)
     this.handleSubmitFailure=this.handleSubmitFailure.bind(this)
+    this.getRelevantTaxes=this.getRelevantTaxes.bind(this)
+    this.calculatePrice=this.calculatePrice.bind(this)
   }
 
 
   handleChange(event){
+    /*
     if(event.target.name==="date"){
       this.setState({date:event.target.value})
     } else if (event.target.name==="tripName"){
       this.setState({tripName:event.target.value})
     }
+    */
+
+    this.setState({
+      [event.target.name]:event.target.value
+    })
+
+    if(event.target.name==="tax"){
+      this.calculatePrice()
+    }
   }
 
-  getFuelCarbon(fuelType){
+  getRelevantTaxes(){
+    let taxCategory = this.props.taxCategory
+    let allTaxes = this.props.taxes
+    let relevantTaxes = []
+    for(let i in allTaxes){
+      if(allTaxes[i].category===taxCategory){
+        relevantTaxes.push(allTaxes[i].name)
+      }
+    }
+    this.setState({
+      relevantTaxes:relevantTaxes,
+      tax:relevantTaxes[0],
+    })
+  }
+
+  calculatePrice(){
+    let taxes = this.props.taxes
+    for(let i in taxes){
+      if(taxes[i].name===this.state.tax){
+        console.log(taxes[i].price_per_kg)
+        return this.state.carbonKg*taxes[i].price_per_kg
+      }
+    }
+  }
+
+  getFuelCarbon(){
+    let fuelType = this.props.data.fuelType
+
     fetch('/fueltypes/', {
       method: 'GET',
       headers: {
@@ -61,29 +103,31 @@ export class CarbonCalculator extends React.Component{
       }
     })
     .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
+      if(res.ok){
+        return res.json();
+      } else {
+        throw new Error(res.status)
+      }
+    })
+    .then(json => {
 
-        for(let i=0; i<json.length; i++){
-          if(fuelType===json[i].name){
-            let carbonPerL = json[i].co2_per_unit
-            let carbonKg = carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100
-            this.setState({carbonKg:carbonKg})
-          }
+      for(let i=0; i<json.length; i++){
+        if(fuelType===json[i].name){
+          let carbonPerL = json[i].co2_per_unit
+          let carbonKg = carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100
+          this.setState({carbonKg:carbonKg})
         }
-      })
-      .catch(e => {
-        console.log(e)
-      });
+      }
+    })
+    .catch(e => {
+      console.log(e)
+    });
   }
 
   componentDidMount(){
-    this.getFuelCarbon(this.props.data.fuelType)
+    this.getFuelCarbon()
+    this.getRelevantTaxes()
+    
   }
 
   saveEmission(){
@@ -100,7 +144,7 @@ export class CarbonCalculator extends React.Component{
       "travel_mode": "Rec driving",
       "distance": parseFloat(this.props.data.distanceKm).toFixed(3),
       "co2_output_kg": parseFloat(this.state.carbonKg).toFixed(3),
-      "price": parseFloat(1.0).toFixed(2)
+      "price": parseFloat(this.calculatePrice()).toFixed(2)
     }
 
     fetch('/my-emissions/', {
@@ -141,6 +185,7 @@ export class CarbonCalculator extends React.Component{
 
   render(){
     let carbon = this.state.carbonKg
+    let price = this.calculatePrice()
 
     let failureDisplay
     if(this.state.submissionFailed){
@@ -153,6 +198,7 @@ export class CarbonCalculator extends React.Component{
         <div>
           <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
           <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
+          <OptionListInput name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} />
           <button
             type="button"
             name="cancel"
@@ -168,7 +214,7 @@ export class CarbonCalculator extends React.Component{
     return(
       
       <div className="container bg-info">
-        <h1>{parseFloat(carbon).toFixed(2)} kg</h1>
+        <h1>{parseFloat(carbon).toFixed(2)} kg, ${parseFloat(price).toFixed(2)}</h1>
         {memberDisplay}
       </div>
     )

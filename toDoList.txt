@@ -2,6 +2,8 @@
 
 User profile view
 
+users taxes and vehicles must have unique names
+
 carbon pricing
 - Attach to user profile
 - Profile editing view

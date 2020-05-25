@@ -99,15 +99,6 @@ class VehicleInputFields extends React.Component {
     this.makeDefault = "MAKE";
     this.modelDefault = "MODEL";
     this.optionsDefault = "OPTIONS";
-    this.setVehicle = this.setVehicle.bind(this)
-  }
-
-  setVehicle(){
-    this.setState({
-      year: '1998',
-      make: 'Ford',
-      model: 'Escort',
-    })
   }
 
   handleChange(event){
@@ -214,13 +205,6 @@ class VehicleInputFields extends React.Component {
       <div className="container">
         <div className="container">
           <h2>US Database Vehicle Input</h2>
-        </div>
-        <div className="row">
-          <button
-            type="button"
-            className="btn-outline-danger"
-            onClick={this.setVehicle}
-          >Set Default Vehicle</button>
         </div>
         <div className="container">
           <ListInput  

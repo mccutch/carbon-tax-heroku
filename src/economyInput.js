@@ -7,9 +7,7 @@ import {VehicleSaveForm} from './vehicleSave.js';
 class FuelList extends React.Component{
   constructor(props){
     super(props)
-
     this.renderOptions = this.renderOptions.bind(this)
-    this.fetchList = this.fetchList.bind(this)
   }
 
   renderOptions(){
@@ -25,41 +23,11 @@ class FuelList extends React.Component{
       return listOptions;
   }
 
-  componentDidMount(){
-    this.fetchList();
-  }
-
-  fetchList(){
-    let returnList = [this.props.defaultText]
-    fetch('/fueltypes/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        for(let i=0; i<json.length; i++){
-          returnList.push(json[i].name)
-        }
-        this.props.sendFuelList(returnList)
-      })
-      .catch(e => {
-        console.log(e)
-      }); 
-  }
-
   render(){
     return(
       <select
         onChange = {this.props.onChange}
-        name = {this.props.label}
+        name = {this.props.name}
       >
         {this.renderOptions()}
       </select>
@@ -135,11 +103,40 @@ export class EconomyInput extends React.Component{
     this.submitEconomy = this.submitEconomy.bind(this)
     this.saveVehicle = this.saveVehicle.bind(this)
     this.saveAs = this.saveAs.bind(this)
-    this.receiveFuelList = this.receiveFuelList.bind(this)
+    this.fetchFuelList = this.fetchFuelList.bind(this)
   }
 
-  receiveFuelList(list){
-    this.setState({fuelList:list})
+  componentDidMount(){
+    this.fetchFuelList();
+  }
+
+  fetchFuelList(){
+    let returnList = []
+    fetch('/fueltypes/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        for(let i=0; i<json.length; i++){
+          returnList.push(json[i].name)
+        }
+        this.setState({
+          fuelList:returnList,
+          fuel:returnList[0],
+        })
+      })
+      .catch(e => {
+        console.log(e)
+      }); 
   }
 
   handleClick(event){
@@ -234,7 +231,7 @@ export class EconomyInput extends React.Component{
     if(event.target.name==="economy"){
       this.setState({lPer100km: units.convertFromDisplayUnits(value, this.props.displayUnits)})
     } else if(event.target.name==="fuelType"){
-      if(value==="FUEL"){value=null}
+      //if(value==="FUEL"){value=null}
       this.setState({fuel: event.target.value})
     } else if(event.target.name==="vehicleSaveAs"){
       this.setState({saveAs:value})
@@ -345,7 +342,7 @@ export class EconomyInput extends React.Component{
                       placeholder="Fuel economy"
                     />
                     <label htmlFor="economy">{units.displayUnitString(this.props.displayUnits)}</label>
-                    <FuelList label="fuelType" onChange={this.handleChange} defaultText="FUEL" sendFuelList={this.receiveFuelList} fuelList={this.state.fuelList}/>
+                    <FuelList name="fuelType" onChange={this.handleChange} fuelList={this.state.fuelList}/>
                     {submitDisplay}
                   </div>
                   <div className="col">

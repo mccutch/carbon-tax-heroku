@@ -3,6 +3,7 @@ import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';
 import {CarbonCalculator} from './carbonCalculator.js';
 import * as units from './unitConversions';
+import * as taxes from './defaultTaxTypes.js';
 
 export class EmissionCalculator extends React.Component{
   constructor(props){
@@ -111,7 +112,14 @@ export class EmissionCalculator extends React.Component{
     if(this.state.economySubmitted && this.state.distanceSubmitted){
       carbonResult = 
         <div>
-          <CarbonCalculator data={this.state} displayUnits={displayUnits} loggedIn={this.props.loggedIn} submitCarbon={this.exitCalculator}/>
+          <CarbonCalculator 
+            data={this.state} 
+            displayUnits={displayUnits} 
+            loggedIn={this.props.loggedIn} 
+            submitCarbon={this.exitCalculator} 
+            taxCategory={taxes.getCategoryName("road-travel")}
+            taxes={this.props.taxes}
+          />
         </div>
     }
     
