@@ -77,7 +77,7 @@ export class EmissionCalculator extends React.Component{
         </div>
     } else {
       economyInput = <EconomyInput
-                        submitEconomy={(econ,fuel)=>this.handleSubmitEconomy(econ,fuel)}
+                        submitEconomy={this.handleSubmitEconomy}
                         displayUnits={displayUnits}
                         loggedIn={this.props.loggedIn}
                       />
@@ -101,7 +101,7 @@ export class EmissionCalculator extends React.Component{
         </div>
     } else {
       distanceDisplay = <DistanceInput  
-                          submitDistance={(orig,dest,dist)=>this.handleSubmitDistance(orig,dest,dist)}
+                          submitDistance={this.handleSubmitDistance}
                           displayUnits={displayUnits}
                           submitted={this.state.distanceSubmitted}
                         />
