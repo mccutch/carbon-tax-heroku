@@ -2,9 +2,90 @@ import React from 'react';
 import {refreshToken} from './myJWT.js';
 import { defaultTaxes, taxCategories } from './defaultTaxTypes.js';
 import { OptionListInput } from './optionListInput.js';
+import * as helper from './helperFunctions.js';
 
 const TAX_RATE_DECIMALS = 3
 
+const MAX_PASSWORD_LEN = 30
+const MAX_NAME_LEN = 30
+
+class DeleteUser extends React.Component{
+  constructor(props){
+    super(props)
+    this.state={
+      confirmDelete:false,
+      errorMessage:""
+    }
+    this.handleClick=this.handleClick.bind(this)
+    this.deleteUserAccount=this.deleteUserAccount.bind(this)
+  }
+
+
+  handleClick(event){
+    if(event.target.name==="delete"){
+      this.setState({confirmDelete:true})
+    } else if(event.target.name==="cancel"){
+      this.setState({confirmDelete:false})
+    } else if(event.target.name==="confirm"){
+      this.deleteUserAccount()
+    }
+  }
+
+  deleteUserAccount(){
+    let key = parseInt(this.props.user.id).toString()
+    fetch(`/user/${key}/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      },
+    })
+    .then(res => {
+        if(res.ok){
+          //console.log(res)
+          this.setState({
+          errorMessage:"User deleted successfully"
+          })
+          this.props.logout()
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .catch(error => {
+        console.log(error.message)
+        if(error.message==='401'){
+          refreshToken({onSuccess:this.deleteUserAccount})
+        }
+        this.setState({
+          error:"Unable to delete account."
+        })
+      });
+
+  }
+
+
+  render(){
+    let display
+    if(!this.state.confirmDelete){
+      display = <button className="btn-outline-danger" name="delete" onClick={this.handleClick} >Delete account</button>
+    } else {
+      display = 
+        <div>
+          <h4>Delete this account?</h4>
+          <p>All stored data will be removed from the server and cannot be recovered.</p>
+          <p>{this.state.errorMessage}</p>
+          <button className="btn-info" name="cancel" onClick={this.handleClick} >Cancel</button>
+          <button className="btn-danger" name="confirm" onClick={this.handleClick} >Confirm</button>
+        </div>
+    }
+
+    return(
+      <div>
+        {display}
+      </div>
+    )
+  }
+}
 
 class CreateTax extends React.Component{
   constructor(props){
@@ -116,7 +197,7 @@ class CreateTax extends React.Component{
         <div>
           <label>
             Name:
-            <input type="text" name="newName" maxLength="30" onChange={this.handleChange}/>
+            <input type="text" name="newName" maxLength={MAX_NAME_LEN} onChange={this.handleChange}/>
           </label>
           <br/>
           <label>
@@ -157,7 +238,7 @@ class TaxListItem extends React.Component{
     super(props)
     this.state = {
       edit:false,
-      newValue:null,
+      newValue:this.props.tax.price_per_kg,
       error:false,
     }
 
@@ -166,6 +247,40 @@ class TaxListItem extends React.Component{
     this.handleChange=this.handleChange.bind(this)
     this.validateInput=this.validateInput.bind(this)
     this.isDefaultTax=this.isDefaultTax.bind(this)
+    this.deleteTax=this.deleteTax.bind(this)
+  }
+
+  deleteTax(){
+    let key = parseInt(this.props.tax.id).toString()
+
+    fetch(`/tax/${key}/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      },
+    })
+    .then(res => {
+      console.log(res)
+      if(res.ok){
+        this.props.refreshTaxes()
+        this.setState({
+          edit:false,
+          error:false,
+        })
+      } else {
+        throw new Error(res.status)
+      }
+    })
+    .catch(error => {
+      console.log(error.message)
+      if(error.message==='401'){
+        refreshToken({onSuccess:this.deleteTax})
+      }
+      this.setState({
+        error:true
+      })
+    });
   }
 
 
@@ -216,7 +331,7 @@ class TaxListItem extends React.Component{
           console.log(json)
           this.setState({
             edit:false,
-            newValue: null,
+            newValue: this.props.tax.price_per_kg,
             error:false
           })
           this.props.refreshTaxes()
@@ -224,18 +339,13 @@ class TaxListItem extends React.Component{
         .catch(error => {
           console.log(error.message)
           if(error.message==='401'){
-            refreshToken({onSuccess:this.fetchUserProfile})
+            refreshToken({onSuccess:this.saveChange})
           }
           this.setState({
             error:true
           })
         });
-
-
-
-      
-    }
-    
+    } 
   }
 
   handleChange(event){
@@ -244,6 +354,7 @@ class TaxListItem extends React.Component{
 
   isDefaultTax(){
     for(let i in defaultTaxes){
+      console.log(defaultTaxes[i]['name'])
       if(defaultTaxes[i]['name']===this.props.tax.name){  
         return true
       }
@@ -254,9 +365,6 @@ class TaxListItem extends React.Component{
 
   render(){
     let tax = this.props.tax
-
-    
-
     let editDisplay
     if(this.state.edit){
 
@@ -280,7 +388,6 @@ class TaxListItem extends React.Component{
         </td>
     }
 
-
     return(
       <tr key={tax.id}>
         <td>{tax.name}</td>
@@ -293,27 +400,77 @@ class TaxListItem extends React.Component{
 
 }
 
-export class ProfileDisplay extends React.Component{
+class ProfileDetails extends React.Component{
   constructor(props){
     super(props)
-
-    this.state={
-      profile:{}
+    this.state = {
+      editProfile:false,
+      errorMessage:null,
     }
 
-    this.fetchUserProfile=this.fetchUserProfile.bind(this)
-    this.makeTaxTable=this.makeTaxTable.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+    this.saveProfileChanges=this.saveProfileChanges.bind(this)
+    this.handleChange=this.handleChange.bind(this)
   }
 
-  fetchUserProfile(){
-    fetch('/my-profile/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
+  handleClick(event){
+    if(event.target.name==="editProfile"){
+      this.setState({editProfile:true})
+    } else if(event.target.name==="cancelEdit"){
+      this.setState({
+        editProfile:false,
+        firstName:null,
+        lastName:null,
+        location:null,
+        dateOfBirth:null,
+        errorMessage:null,
+      })
+    } else if(event.target.name==="saveChanges"){
+      this.saveProfileChanges()
+    }
+  }
+
+  handleChange(event){
+    this.setState({
+      [event.target.name]: event.target.value
     })
-    .then(res => {
+  }
+
+ 
+
+  saveProfileChanges(){
+    let profileData = {}
+    let userData = {}
+
+    if(this.state.firstName){
+      userData["first_name"]=this.state.firstName
+    }
+    if(this.state.lastName){
+      userData["last_name"]=this.state.lastName
+    }
+    if(this.state.location){
+      profileData["location"]=this.state.location
+    }
+    if(this.state.dateOfBirth){
+      profileData["date_of_birth"]=this.state.dateOfBirth
+    }
+
+
+
+    if(Object.keys(userData).length>0){
+      console.log("Updating user")
+      console.log(userData)
+      let key = parseInt(this.props.user.id).toString()
+
+      fetch(`/user/${key}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: "Bearer "+localStorage.getItem('access')
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(res => {
         if(res.ok){
           return res.json();
         } else {
@@ -323,28 +480,156 @@ export class ProfileDisplay extends React.Component{
       .then(json => {
         console.log(json)
         this.setState({
-          profile:json
+          editProfile:false,
+          errorMessage:null,
+          firstName:null,
+          lastName:null,
         })
+        this.props.refreshProfile()
       })
       .catch(error => {
         console.log(error.message)
         if(error.message==='401'){
-          refreshToken({onSuccess:this.fetchUserProfile})
+          refreshToken({onSuccess:this.saveProfileChanges})
         }
+        this.setState({
+          errorMessage:"Failed to update."
+        })
       });
+    }
+
+    if(Object.keys(profileData).length>0){
+      console.log("Updating profile")
+
+      let key = parseInt(this.props.profile.id).toString()
+
+      fetch(`/profile/${key}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: "Bearer "+localStorage.getItem('access')
+        },
+        body: JSON.stringify(profileData)
+      })
+      .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        console.log(json)
+        this.setState({
+          editProfile:false,
+          errorMessage:null,
+          location:null,
+          dateOfBirth:null,
+        })
+        this.props.refreshProfile()
+      })
+      .catch(error => {
+        console.log(error.message)
+        if(error.message==='401'){
+          refreshToken({onSuccess:this.saveProfileChanges})
+        }
+        this.setState({
+          errorMessage:"Failed to update."
+        })
+      });
+      
+    }
+
+    
+
+
   }
 
+
+  render(){
+    let user=this.props.user
+    let profile=this.props.profile
+
+
+    let profileDisplay
+    if(this.state.editProfile){
+      profileDisplay=
+        <div>
+          <form>
+            <label>
+              First name:
+              <input type="text" name="firstName" defaultValue={user.first_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+            </label>
+            <br/>
+            <label>
+              Last name:
+              <input type="text" name="lastName" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+            </label>
+            <br/>
+            <label>
+              Location:
+              <input type="text" name="location" defaultValue={profile.location} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+            </label>
+            <br/>
+            <label>
+              Date of birth:
+              <input type="date" name="dateOfBirth" defaultValue={profile.date_of_birth} onChange={this.handleChange}/>
+            </label>
+            <br/>
+          </form>
+          <p>{this.state.errorMessage}</p>
+          <button name="saveChanges" className="btn-outline-primary" onClick={this.handleClick}>Save changes</button>
+          <button name="cancelEdit" className="btn-outline-danger" onClick={this.handleClick}>Cancel</button>
+        </div>
+    } else {
+      profileDisplay=
+        <div>
+          <p>Name: {user.first_name} {user.last_name}</p>
+          <p>Location: {profile.location}</p>
+          <p>Date of Birth: {profile.date_of_birth}</p>
+          <p>Email: {user.email}</p>
+          <button name="editProfile" className="btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
+        </div>
+    }
+
+
+    return(
+      <div>
+        <h3>{user.username}</h3>
+        {profileDisplay}
+      </div>
+    )
+  }
+}
+
+export class ProfileDisplay extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state={
+      profile:{},
+    }
+    this.makeTaxTable=this.makeTaxTable.bind(this)
+  }
 
   makeTaxTable(){
     let taxes = this.props.taxes
     let tableRows=[]
     if(taxes){
       for(let i=0; i<taxes.length; i++){
-        tableRows.push(<TaxListItem tax={taxes[i]} refreshTaxes={this.props.refreshTaxes}/>)
+        tableRows.push(<TaxListItem key={taxes[i].id} tax={taxes[i]} refreshTaxes={this.props.refreshTaxes}/>)
       }
     }
     return( 
-      <table>
+      <table className="table table-light">
+        <thead className="thead-dark">
+          <tr>
+            <th>Name</th>
+            <th>Price/kg CO2</th>
+            <th>Category</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           {tableRows}
         </tbody>
@@ -352,26 +637,22 @@ export class ProfileDisplay extends React.Component{
     )
   }
 
-  
-
   componentDidMount(){
-    this.fetchUserProfile()
+    this.props.refreshProfile()
   }
 
   render(){
-    let user=this.props.user
-    let profile=this.state.profile
     let taxTable = this.makeTaxTable()
 
     return(
       <div>
-        <h3>{user.first_name} {user.last_name}</h3>
-        <p>Location: {profile.location}</p>
-        <p>Date of Birth: {profile.date_of_birth}</p>
-        <h4>Taxes</h4>
+        <ProfileDetails user={this.props.user} profile={this.props.profile} refreshProfile={this.props.refreshProfile} refreshUser={this.props.refreshUser}/>
+        <h4>My Taxes</h4>
         {taxTable}
         <CreateTax refreshTaxes={this.props.refreshTaxes}/>
-        <button name="hideProfile" className="btn-outline-danger" onClick={this.props.onClick}>Return</button>
+        <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
+        <button name="logout" className="btn-outline-danger" onClick={this.props.onClick}>Logout</button>
+        <DeleteUser user={this.props.user} logout={this.props.logout}/>
       </div>
     )
   }

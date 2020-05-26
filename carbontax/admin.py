@@ -24,4 +24,4 @@ class EmissionInstanceAdmin(admin.ModelAdmin):
 
 @admin.register(TaxRate)
 class TaxRateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price_per_kg', 'user')
+    list_display = ('name', 'price_per_kg', 'category', 'user')

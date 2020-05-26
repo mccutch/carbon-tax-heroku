@@ -3,6 +3,8 @@ import React from 'react';
 import { defaultTaxes } from './defaultTaxTypes.js';
 import { getToken }  from './myJWT.js';
 
+import * as helper from './helperFunctions.js';
+
 const MAX_PASSWORD_LEN = 30
 const MAX_EMAIL_LEN = 30
 const MAX_NAME_LEN = 30
@@ -20,6 +22,7 @@ export class RegistrationForm extends React.Component{
       email: "",
       errorMessage:"",
       strongPassword: false,
+      validEmail:false,
       location: "",
       date_of_birth: "",
     }
@@ -32,12 +35,20 @@ export class RegistrationForm extends React.Component{
     this.checkPasswordStrength=this.checkPasswordStrength.bind(this)
     this.createProfile=this.createProfile.bind(this)
     this.createTaxes=this.createTaxes.bind(this)
+    this.validateEmail=this.validateEmail.bind(this)
   }
 
   checkPasswordStrength(password){
-    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
+    //const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
+    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})")
     this.setState({strongPassword:strongRegex.test(password)})
   }
+
+  validateEmail(email){
+    this.setState({validEmail:helper.validateEmail(email)})
+  }
+
+  
 
   validateUserData(){
     this.setState({errorMessage:""})
@@ -57,11 +68,15 @@ export class RegistrationForm extends React.Component{
     }
 
     if(!this.state.strongPassword){
-      this.setState({errorMessage:"Password must be 8-30 characters, including a number and special character (?!@#$%^&)"})
+      //this.setState({errorMessage:"Password must be 8-30 characters, including a number and special character (?!@#$%^&)"})
+      this.setState({errorMessage:"Password must be 8-30 characters, including a capital letter and a number"})
       return
     }
-    
 
+    if(!this.state.validEmail){
+      this.setState({errorMessage:"Check email address."})
+      return
+    }
 
     // Validate username
     let data = {username:this.state.username}
@@ -89,6 +104,9 @@ export class RegistrationForm extends React.Component{
       })
       .catch(e => {
         console.log(e.message)
+        if(e.message==="403"){
+          this.setState({errorMessage:"403 - You may be logged in on another tab."})
+        }
       });
   }
 
@@ -102,7 +120,6 @@ export class RegistrationForm extends React.Component{
       password: this.state.password,
       email: this.state.email,
     }
-
 
     fetch('/account/register/', {
       method: 'POST',
@@ -122,13 +139,12 @@ export class RegistrationForm extends React.Component{
         console.log("Create user - success")
         console.log(json)
         let loginData = {username: userData.username, password: userData.password}
-
         getToken({data:loginData, onSuccess:this.createProfile})
       })
       .catch(e => {
         console.log(e.message)
         if(e.message==="400"){
-          this.setState({errorMessage:"Error processing registration, check email address."})
+          this.setState({errorMessage:"Error processing registration, check email address is valid."})
         } else {
           this.setState({errorMessage:"Error processing registration."})
         }
@@ -214,6 +230,8 @@ export class RegistrationForm extends React.Component{
 
     if(event.target.name==="password"){
       this.checkPasswordStrength(event.target.value)
+    } else if(event.target.name==="email"){
+      this.validateEmail(event.target.value)
     }
   }
 
@@ -227,20 +245,7 @@ export class RegistrationForm extends React.Component{
       <div>
         <form onSubmit={this.handleSubmit}>
           {error}
-          <input
-            type="text"
-            name="firstName"
-            onChange={this.handleChange}
-            placeholder="First name"
-            maxLength={MAX_NAME_LEN}
-          />
-          <input
-            type="text"
-            name="lastName"
-            onChange={this.handleChange}
-            placeholder="Last name"
-            maxLength={MAX_NAME_LEN}
-          />
+          <h4>Required Information</h4>
           <input
             type="text"
             name="username"
@@ -262,12 +267,28 @@ export class RegistrationForm extends React.Component{
             onChange={this.handleChange}
             placeholder="Confirm Password"
           />
+          <br/>
           <input
             type="text"
             name="email"
             onChange={this.handleChange}
             placeholder="Email"
             maxLength={MAX_EMAIL_LEN}
+          />
+          <h4>Optional Information</h4>
+          <input
+            type="text"
+            name="firstName"
+            onChange={this.handleChange}
+            placeholder="First name"
+            maxLength={MAX_NAME_LEN}
+          />
+          <input
+            type="text"
+            name="lastName"
+            onChange={this.handleChange}
+            placeholder="Last name"
+            maxLength={MAX_NAME_LEN}
           />
           <input
             type="text"

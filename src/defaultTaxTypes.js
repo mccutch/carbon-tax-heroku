@@ -16,7 +16,7 @@ export const taxCategories = [
 ]
 
 export const taxNames = [
-  {name: "Recreational Farting", type:"rec-driving"},
+  {name: "Recreational Driving", type:"rec-driving"},
   {name: "Essential Driving", type:"ess-driving"},
   {name: "Air Travel", type:"air-travel"},
 ]

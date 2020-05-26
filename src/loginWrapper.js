@@ -59,25 +59,25 @@ export class LoginWrapper extends React.Component{
   constructor(props){
     super(props)
     this.state={
-      user:{},
-      taxes:{},
       loginFailed:false,
       showRegistration:false,
       showProfile:false,
     }
 
-    this.loginSuccess()
-
     this.handleClick = this.handleClick.bind(this)
     this.fetchUserDetails = this.fetchUserDetails.bind(this)
     this.fetchTaxes = this.fetchTaxes.bind(this)
+    this.fetchUserProfile = this.fetchUserProfile.bind(this)
     this.loginFailure = this.loginFailure.bind(this)
     this.loginSuccess = this.loginSuccess.bind(this)
     this.logoutSuccess = this.logoutSuccess.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.logout = this.logout.bind(this)
   }
 
-  
+  componentDidMount(){
+    this.loginSuccess()
+  }
 
   fetchUserDetails(){
     fetch('/current-user/', {
@@ -95,23 +95,15 @@ export class LoginWrapper extends React.Component{
         }
       })
       .then(json => {
-        this.props.login(true)
+        this.props.returnLogin(true)
         console.log(json)
-        this.setState({
-          user:{
-            username:json.username,
-            user_id:json.id,
-            email:json.email,
-            first_name:json.first_name,
-            last_name:json.last_name,
-          }
-        })
+        this.props.returnUser(json)
 
       })
       .catch(error => {
         console.log(error.message)
         if(error.message==='401'){
-          refreshToken({onSuccess:this.fetchUserDetails, onFailure:this.handleLoginFailure})
+          refreshToken({onSuccess:this.fetchUserDetails})
         } 
       });
   }
@@ -148,6 +140,33 @@ export class LoginWrapper extends React.Component{
       });
   }
 
+  fetchUserProfile(){
+    fetch('/my-profile/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      },
+    })
+    .then(res => {
+        if(res.ok){
+          return res.json();
+        } else {
+          throw new Error(res.status)
+        }
+      })
+      .then(json => {
+        console.log(json)
+        this.props.returnProfile(json)
+      })
+      .catch(error => {
+        console.log(error.message)
+        if(error.message==='401'){
+          refreshToken({onSuccess:this.fetchUserProfile})
+        }
+      });
+  }
+
   loginFailure(){
     this.setState({loginFailed:true})
   }
@@ -156,15 +175,19 @@ export class LoginWrapper extends React.Component{
     this.setState({loginFailed:false, showRegistration:false})
     this.fetchUserDetails()
     this.fetchTaxes()
+    this.fetchUserProfile()
+  }
+
+  logout(){
+    clearToken({onSuccess:this.logoutSuccess})
   }
 
   logoutSuccess(){
     this.setState({
-      user:{},
-      taxes:{}, 
       loginFailed:false,
+      showProfile:false,
     })
-    this.props.login(false)
+    this.props.returnLogin(false)
   }
 
 
@@ -176,7 +199,7 @@ export class LoginWrapper extends React.Component{
       }
       getToken({data:data, onSuccess:this.loginSuccess, onFailure:this.loginFailure})
     } else if(event.target.name==="logout"){
-      clearToken({onSuccess:this.logoutSuccess})
+      this.logout()
     } else if(event.target.name==="register"){
       this.setState({showRegistration:true})
     } else if(event.target.name==="hideRegistration"){
@@ -200,13 +223,22 @@ export class LoginWrapper extends React.Component{
 
     let display
     if(this.state.showProfile){
-      display = <ProfileDisplay onClick={this.handleClick} user={this.state.user} taxes={this.props.taxes} refreshTaxes={this.fetchTaxes}/>
+      display = <ProfileDisplay 
+                  onClick={this.handleClick} 
+                  user={this.props.user} 
+                  taxes={this.props.taxes}
+                  profile={this.props.profile} 
+                  refreshTaxes={this.fetchTaxes} 
+                  refreshUser={this.fetchUserDetails}
+                  refreshProfile={this.fetchUserProfile}
+                  logout={this.logout}
+                />
     } else if(this.state.showRegistration){
       display = <RegistrationForm onClick={this.handleClick} loginSuccess={this.loginSuccess}/>
     } else if(this.props.loggedIn){
       display = 
         <div>
-          <p>Hello {this.state.user.username}</p>
+          <p>Hello {this.props.user.username}</p>
           <button name="showProfile" className="btn-outline-success" onClick={this.handleClick}>My profile</button>
           <button name="logout" className="btn-outline-danger" onClick={this.handleClick}>Logout</button>
         </div>

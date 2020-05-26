@@ -19,6 +19,8 @@ class App extends React.Component {
       displayUnits: units.METRIC,
       displayCalculator: true,
       displayEmissions: false,
+      user: {},
+      profile: {},
       taxes: {},
     }
 
@@ -28,15 +30,37 @@ class App extends React.Component {
     this.showCalculator=this.showCalculator.bind(this)
     this.showEmissions=this.showEmissions.bind(this)
     this.setTaxes=this.setTaxes.bind(this)
+    this.setUser=this.setUser.bind(this)
+    this.setProfile=this.setProfile.bind(this)
   }
 
   setLogin(bool_val){
     this.setState({loggedIn: bool_val})
+
+    if(!bool_val){
+      this.setState({
+        user:{},
+        profile:{},
+        taxes:{},
+      })
+    }
   }
 
   setTaxes(json){
     this.setState({
       taxes:json,
+    })
+  }
+
+  setUser(json){
+    this.setState({
+      user:json,
+    })
+  }
+
+  setProfile(json){
+    this.setState({
+      profile:json,
     })
   }
 
@@ -98,10 +122,14 @@ class App extends React.Component {
         <div>
           <LoginWrapper 
             loggedIn={this.state.loggedIn} 
-            login={this.setLogin} 
+            returnLogin={this.setLogin} 
             toggleDisplayUnits={this.toggleDisplayUnits} 
             taxes={this.state.taxes}
+            user={this.state.user}
+            profile={this.state.profile}
             returnTaxes={this.setTaxes}
+            returnUser={this.setUser}
+            returnProfile={this.setProfile}
           />
           {display}
         </div>

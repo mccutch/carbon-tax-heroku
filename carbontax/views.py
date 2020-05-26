@@ -127,6 +127,8 @@ class ProfileList(generics.ListAPIView):
 class UserProfile(APIView):
     permission_classes = (IsAuthenticated,)
     #List all user's emissions, or create a new one.
+
+    
     
     def get(self, request, format=None):
         profile = request.user.profile
@@ -143,8 +145,47 @@ class UserProfile(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    
+
+class ProfileDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self,pk):
+        try:
+            return models.Profile.objects.get(pk=pk)
+        except models.Profile.DoesNotExist:
+            raise Http404
+
+    def is_owner(self, user_object, pk):
+        requested_object = self.get_object(pk)
+        if(user_object == requested_object):
+            return True
+        else:
+            print("User does not own this object")
+            return False
+
+    def get(self, request, pk, format=None):
+        profile = self.get_object(pk)
+        if(not self.is_owner(profile, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = serializers.ProfileSerializer(profile, context={'request':request})
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        profile = request.user.profile
+        if(not self.is_owner(profile, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        print(request.data)
+        data = request.data
+        data['user']=f'/user/{request.user.id}/'
+        serializer = serializers.ProfileSerializer(profile, data=data, context={'request':request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class UserDetail(APIView):
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self,pk):
         try:
@@ -152,13 +193,31 @@ class UserDetail(APIView):
         except User.DoesNotExist:
             raise Http404
 
+    def is_owner(self, user_object, pk):
+        requested_object = self.get_object(pk)
+        if(user_object == requested_object):
+            return True
+        else:
+            print("User does not own this object")
+            return False
+
     def get(self, request, pk, format=None):
         user = self.get_object(pk)
+        if(not self.is_owner(user, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         serializer = serializers.UserSerializer(user)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         user = self.get_object(pk)
+        if(not self.is_owner(user, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        data = request.data
+        data['username']=f'{request.user.username}'
+        print(data)
+
         serializer = serializers.UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -167,6 +226,9 @@ class UserDetail(APIView):
 
     def delete(self, request, pk, format=None):
         user = self.get_object(pk)
+        if(not self.is_owner(user, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

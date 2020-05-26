@@ -24,7 +24,7 @@ class EmissionTable extends React.Component{
       let distString=units.distanceString(displayUnits)
       //let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
       tableRows.push(
-        <tr>
+        <tr key={i}>
           <td>{emission.name}</td>
           <td>{emission.date}</td>
           <td>{emission.travel_mode}</td>

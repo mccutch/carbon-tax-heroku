@@ -18,10 +18,11 @@ urlpatterns = [
 
     path('current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('user/<int:pk>/', views.UserDetail.as_view(), name="user-detail"),
+    path('account/register/', views.UserCreate.as_view(), name="create-user"),
 
     path('profiles/', views.ProfileList.as_view(), name="profiles"),
     path('my-profile/', views.UserProfile.as_view(), name="my-profile"),
-    path('account/register/', views.UserCreate.as_view(), name="create-user"),
+    path('profile/<int:pk>/', views.ProfileDetail.as_view(), name="profile-detail"),
     path('account/check-username/', views.ValidateUsername.as_view(), name="check-username"),
 
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),

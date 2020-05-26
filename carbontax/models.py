@@ -40,6 +40,9 @@ class TaxRate(models.Model):
     category = models.CharField(max_length=30, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='taxes', null=True)
 
+    class Meta:
+        ordering = ["category", "id"]
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     location = models.CharField(max_length=60, blank=True)

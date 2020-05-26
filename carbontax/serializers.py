@@ -34,12 +34,12 @@ class EconomyMetricSerializer(serializers.HyperlinkedModelSerializer):
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Profile
-        fields = ['user', 'location', 'date_of_birth']
+        fields = ['user', 'location', 'date_of_birth', 'id']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ('username', 'first_name', 'last_name')
 
 class EmissionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
