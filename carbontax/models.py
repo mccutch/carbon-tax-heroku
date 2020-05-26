@@ -42,6 +42,7 @@ class TaxRate(models.Model):
 
     class Meta:
         ordering = ["category", "id"]
+        unique_together = ["name", "user"]
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -59,6 +60,11 @@ class Vehicle(models.Model):
     fuel = models.ForeignKey(FuelType, on_delete = models.CASCADE, help_text = 'Select a fuel type for this vehicle.')
     economy = models.FloatField() # MUST BE IN L/100km
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicles')
+
+    """
+    class Meta:
+        ordering = ["id"]
+        unique_together = ["name", "owner"]"""
 
     def __str__(self):
         return f'{self.name}'

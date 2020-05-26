@@ -172,9 +172,9 @@ export class EconomyInput extends React.Component{
   saveVehicle(){
 
     let fuel_id=0
-    for(let i=1;i<this.state.fuelList.length; i++){
+    for(let i=0;i<this.state.fuelList.length; i++){
       if(this.state.fuel===this.state.fuelList[i]){
-        fuel_id=i;
+        fuel_id=i+1;
         break
       }
     }

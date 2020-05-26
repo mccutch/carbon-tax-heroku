@@ -485,7 +485,7 @@ class ProfileDetails extends React.Component{
           firstName:null,
           lastName:null,
         })
-        this.props.refreshProfile()
+        this.props.refreshUser()
       })
       .catch(error => {
         console.log(error.message)

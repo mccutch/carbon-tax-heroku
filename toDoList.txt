@@ -1,18 +1,14 @@
 
 
-User profile view
 
 users taxes and vehicles must have unique names
 
-carbon pricing
-- Attach to user profile
-- Profile editing view
 
 emission view
 - pagination
 - searchable
 
-
+protect model instances from editing by others (is_owner())
 
 vehicle save
 - Edit/delete vehicles through profile
