@@ -1,7 +1,11 @@
 
-
+edit tax rates
 
 users taxes and vehicles must have unique names
+
+choose tax rate to apply
+
+change email in profile view
 
 
 emission view

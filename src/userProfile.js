@@ -354,7 +354,6 @@ class TaxListItem extends React.Component{
 
   isDefaultTax(){
     for(let i in defaultTaxes){
-      console.log(defaultTaxes[i]['name'])
       if(defaultTaxes[i]['name']===this.props.tax.name){  
         return true
       }

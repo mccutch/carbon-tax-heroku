@@ -7,6 +7,12 @@ class EmissionTable extends React.Component{
   constructor(props){
     super(props)
     this.buildTable=this.buildTable.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+  }
+
+  handleClick(event){
+    console.log("Edit table element")
+    console.log(event.target.name)
   }
 
   buildTable(){
@@ -22,25 +28,22 @@ class EmissionTable extends React.Component{
       let emission=emissions[i]
       let distance=units.distanceDisplay(emission.distance, displayUnits)
       let distString=units.distanceString(displayUnits)
-      //let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
+
       tableRows.push(
-        <tr key={i}>
-          <td>{emission.name}</td>
+        <tr key={emission.id}>
+          <td name={emission.id} onClick={this.handleClick}><strong>{emission.name}</strong></td>
           <td>{emission.date}</td>
           <td>{emission.travel_mode}</td>
           <td>{parseFloat(distance).toFixed(1)}{distString}</td>
           <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
           <td>${parseFloat(emission.price).toFixed(2)}</td>
-          <td>
-            <button className="btn-outline-warning" name={i.toString()} onClick={this.props.rubbish}>Edit</button>
-          </td>
         </tr>
       )
     }
 
     return( 
-      <table>
-        <thead>
+      <table className="table table-light">
+        <thead className="thead-dark">
           <tr>
             <th>Trip Name</th>
             <th>Date</th>
@@ -48,6 +51,7 @@ class EmissionTable extends React.Component{
             <th>Distance</th>
             <th>CO2 Output</th>
             <th>Tax</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

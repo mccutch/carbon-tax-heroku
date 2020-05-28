@@ -91,7 +91,7 @@ class EmissionDetail(APIView):
 
     def put(self, request, pk, format=None):
         emission = self.get_object(pk)
-        serializer = serializers.EmissionSerializer(emission, data=request.data)
+        serializer = serializers.EmissionSerializer(emission, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -177,8 +177,8 @@ class ProfileDetail(APIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
         print(request.data)
         data = request.data
-        data['user']=f'/user/{request.user.id}/'
-        serializer = serializers.ProfileSerializer(profile, data=data, context={'request':request})
+        #data['user']=f'/user/{request.user.id}/'
+        serializer = serializers.ProfileSerializer(profile, data=data, context={'request':request}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -215,10 +215,10 @@ class UserDetail(APIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
-        data['username']=f'{request.user.username}'
+        #data['username']=f'{request.user.username}'
         print(data)
 
-        serializer = serializers.UserSerializer(user, data=request.data)
+        serializer = serializers.UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -310,7 +310,7 @@ class TaxDetail(APIView):
 
     def put(self, request, pk, format=None):
         tax = self.get_object(pk)
-        serializer = serializers.TaxRateSerializer(tax, data=request.data, context={'request':request})
+        serializer = serializers.TaxRateSerializer(tax, data=request.data, context={'request':request}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
