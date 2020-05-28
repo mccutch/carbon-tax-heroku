@@ -10,7 +10,7 @@ class VehicleSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Vehicle
-        fields = ['name', 'fuel', 'economy', 'owner']
+        fields = ['name', 'fuel', 'economy', 'owner', 'id']
 
 class VehicleListSerializer(serializers.HyperlinkedModelSerializer):
     #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", read_only=True)
@@ -19,7 +19,7 @@ class VehicleListSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Vehicle
-        fields = ['name', 'fuel', 'economy', 'owner']
+        fields = ['name', 'fuel', 'economy', 'owner', 'id']
 
 class FuelTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

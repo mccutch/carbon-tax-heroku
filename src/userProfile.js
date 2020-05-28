@@ -1,10 +1,8 @@
 import React from 'react';
 import {refreshToken} from './myJWT.js';
-import { defaultTaxes, taxCategories } from './defaultTaxTypes.js';
-import { OptionListInput } from './optionListInput.js';
-import * as helper from './helperFunctions.js';
+import { TaxTable, VehicleTable } from './userTables.js';
+//import * as helper from './helperFunctions.js';
 
-const TAX_RATE_DECIMALS = 3
 
 const MAX_PASSWORD_LEN = 30
 const MAX_NAME_LEN = 30
@@ -19,7 +17,6 @@ class DeleteUser extends React.Component{
     this.handleClick=this.handleClick.bind(this)
     this.deleteUserAccount=this.deleteUserAccount.bind(this)
   }
-
 
   handleClick(event){
     if(event.target.name==="delete"){
@@ -87,307 +84,7 @@ class DeleteUser extends React.Component{
   }
 }
 
-class CreateTax extends React.Component{
-  constructor(props){
-    super(props)
 
-    this.state = {
-      createNew: false,
-      newName: "",
-      newPrice: 0,
-      newCategory: "",
-      categoryList:[],
-    }
-
-    this.buildCategoryList=this.buildCategoryList.bind(this)
-    this.handleClick=this.handleClick.bind(this)
-    this.handleChange=this.handleChange.bind(this)
-    this.handleSubmit=this.handleSubmit.bind(this)
-    this.submitNewTax=this.submitNewTax.bind(this)
-  }
-
-  componentDidMount(){
-    this.buildCategoryList()
-  }
-
-  buildCategoryList(){
-    let categoryList=[]
-    for(let i in taxCategories){
-      categoryList.push(taxCategories[i]['title'])
-    }
-    this.setState({
-      categoryList:categoryList,
-      newCategory:categoryList[0]
-    })
-  }
-
-  handleClick(event){
-    if(event.target.name==="create"){
-      this.setState({createNew:true})
-    } else if(event.target.name==="cancel"){
-      this.setState({
-        createNew:false,
-        newName:"",
-        newPrice:0,
-        newCategory: this.state.categoryList[0],
-        error:false,
-      })
-    }
-  }
-
-  handleChange(event){
-    this.setState({
-      [event.target.name]:event.target.value
-    })
-  }
-
-  handleSubmit(event){
-    event.preventDefault()
-    this.submitNewTax()
-  }
-
-  submitNewTax(){
-    let taxData = {
-      name: this.state.newName,
-      price_per_kg: parseFloat(this.state.newPrice).toFixed(TAX_RATE_DECIMALS),
-      category: this.state.newCategory,
-    }
-
-    fetch('/my-taxes/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-      body: JSON.stringify(taxData)
-    })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        this.setState({
-          createNew:false,
-          newName: null,
-          newPrice: 0,
-          error:false,
-        })
-        this.props.refreshTaxes()
-      })
-      .catch(error => {
-        console.log(error.message)
-        if(error.message==='401'){
-          refreshToken({onSuccess:this.submitNewTax})
-        }
-        this.setState({
-          error:true
-        })
-      });
-  }
-
-  render(){
-
-    let display
-    if(this.state.createNew){
-      display = 
-        <div>
-          <label>
-            Name:
-            <input type="text" name="newName" maxLength={MAX_NAME_LEN} onChange={this.handleChange}/>
-          </label>
-          <br/>
-          <label>
-            Price per kg:
-            <input type="number" name="newPrice" onChange={this.handleChange}/>
-          </label>
-          <label>
-            Category:
-            <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
-          </label>
-          <br/>
-          <button type="button" className="btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
-          <button className="btn-outline-danger" name="cancel" onClick={this.handleClick}>Cancel</button>
-        </div>
-    } else {
-      display = <button className="btn-outline-primary" name="create" onClick={this.handleClick}>Add a tax</button>
-    }
-
-    let errorDisplay
-    if(this.state.error){
-      errorDisplay=<p>{this.state.error}</p>
-    }
-
-    
-    return(
-      <div>
-        {errorDisplay}
-        {display}
-      </div>
-    )
-
-  }
-}
-
-
-class TaxListItem extends React.Component{
-  constructor(props){
-    super(props)
-    this.state = {
-      edit:false,
-      newValue:this.props.tax.price_per_kg,
-      error:false,
-    }
-
-    this.editTax=this.editTax.bind(this)
-    this.saveChange=this.saveChange.bind(this)
-    this.handleChange=this.handleChange.bind(this)
-    this.validateInput=this.validateInput.bind(this)
-    this.isDefaultTax=this.isDefaultTax.bind(this)
-    this.deleteTax=this.deleteTax.bind(this)
-  }
-
-  deleteTax(){
-    let key = parseInt(this.props.tax.id).toString()
-
-    fetch(`/tax/${key}/`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-    })
-    .then(res => {
-      console.log(res)
-      if(res.ok){
-        this.props.refreshTaxes()
-        this.setState({
-          edit:false,
-          error:false,
-        })
-      } else {
-        throw new Error(res.status)
-      }
-    })
-    .catch(error => {
-      console.log(error.message)
-      if(error.message==='401'){
-        refreshToken({onSuccess:this.deleteTax})
-      }
-      this.setState({
-        error:true
-      })
-    });
-  }
-
-
-  editTax(event){
-    if(event.target.name==="cancel"){
-      this.setState({edit:false})
-    } else if(event.target.name==="edit"){
-      this.setState({edit:true})
-    }
-  }
-
-  validateInput(){
-    if(this.state.newValue < 0){
-      return false
-    }
-
-    return true
-  }
-
-
-  saveChange(){
-    if(this.validateInput()){
-
-      let key = parseInt(this.props.tax.id).toString()
-      console.log(key)
-
-      let taxData = {
-        name: this.props.tax.name,
-        price_per_kg: parseFloat(this.state.newValue).toFixed(TAX_RATE_DECIMALS),
-      }
-
-      fetch(`/tax/${key}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: "Bearer "+localStorage.getItem('access')
-        },
-        body: JSON.stringify(taxData)
-      })
-      .then(res => {
-          if(res.ok){
-            return res.json();
-          } else {
-            throw new Error(res.status)
-          }
-        })
-        .then(json => {
-          console.log(json)
-          this.setState({
-            edit:false,
-            newValue: this.props.tax.price_per_kg,
-            error:false
-          })
-          this.props.refreshTaxes()
-        })
-        .catch(error => {
-          console.log(error.message)
-          if(error.message==='401'){
-            refreshToken({onSuccess:this.saveChange})
-          }
-          this.setState({
-            error:true
-          })
-        });
-    } 
-  }
-
-  handleChange(event){
-    this.setState({newValue:event.target.value})
-  }
-
-  render(){
-    let tax = this.props.tax
-    let editDisplay
-    if(this.state.edit){
-
-      let deleteButton
-      if(!tax.isDefault){
-        deleteButton = <button className="btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
-      }
-
-      let existingValue=parseFloat(this.props.tax.price_per_kg)
-      editDisplay = 
-        <td>
-          <input type="number" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01"/>
-          <button className="btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
-          {deleteButton}
-          <button className="btn-outline-danger" name="cancel" onClick={this.editTax}>Cancel</button>
-        </td>
-    } else {
-      editDisplay = 
-        <td>
-          <button className="btn-outline-warning" name="edit" onClick={this.editTax}>Edit</button>
-        </td>
-    }
-
-    return(
-      <tr key={tax.id}>
-        <td>{tax.name}</td>
-        <td>${parseFloat(tax.price_per_kg).toFixed(TAX_RATE_DECIMALS)}/kg CO2</td>
-        <td>{tax.category}</td>
-        {editDisplay}
-      </tr>
-    )
-  }
-
-}
 
 class ProfileDetails extends React.Component{
   constructor(props){
@@ -591,6 +288,8 @@ class ProfileDetails extends React.Component{
   }
 }
 
+
+
 export class ProfileDisplay extends React.Component{
   constructor(props){
     super(props)
@@ -598,32 +297,6 @@ export class ProfileDisplay extends React.Component{
     this.state={
       profile:{},
     }
-    this.makeTaxTable=this.makeTaxTable.bind(this)
-  }
-
-  makeTaxTable(){
-    let taxes = this.props.taxes
-    let tableRows=[]
-    if(taxes){
-      for(let i=0; i<taxes.length; i++){
-        tableRows.push(<TaxListItem key={taxes[i].id} tax={taxes[i]} refreshTaxes={this.props.refreshTaxes}/>)
-      }
-    }
-    return( 
-      <table className="table table-light">
-        <thead className="thead-dark">
-          <tr>
-            <th>Name</th>
-            <th>Price/kg CO2</th>
-            <th>Category</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableRows}
-        </tbody>
-      </table>
-    )
   }
 
   componentDidMount(){
@@ -631,14 +304,19 @@ export class ProfileDisplay extends React.Component{
   }
 
   render(){
-    let taxTable = this.makeTaxTable()
-
     return(
       <div>
-        <ProfileDetails user={this.props.user} profile={this.props.profile} refreshProfile={this.props.refreshProfile} refreshUser={this.props.refreshUser}/>
-        <h4>My Taxes</h4>
-        {taxTable}
-        <CreateTax refreshTaxes={this.props.refreshTaxes}/>
+        <ProfileDetails 
+          user={this.props.user} 
+          profile={this.props.profile} 
+          refreshProfile={this.props.refreshProfile} 
+          refreshUser={this.props.refreshUser}
+        />
+        <h4>My Taxes</h4> 
+        <TaxTable refreshTaxes={this.props.refreshTaxes} taxes={this.props.taxes}/>
+
+        <h4>My Vehicles</h4> 
+        <VehicleTable refreshVehicles={this.props.refreshVehicles} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits}/>
         <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
         <button name="logout" className="btn-outline-danger" onClick={this.props.onClick}>Logout</button>
         <DeleteUser user={this.props.user} logout={this.props.logout}/>

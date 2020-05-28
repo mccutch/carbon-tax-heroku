@@ -7,7 +7,7 @@ Title - visible to user.
 Type - Visible to code
 */
 
-
+export const TAX_RATE_DECIMALS = 3
 
 export const taxCategories = [
   {title: "Driving", type:"road-travel"},

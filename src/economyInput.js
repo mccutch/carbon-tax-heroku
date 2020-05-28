@@ -3,6 +3,7 @@ import {VehicleForm} from './vehicleInput.js';
 import {refreshToken}  from './myJWT.js';
 import * as units from './unitConversions';
 import {VehicleSaveForm} from './vehicleSave.js';
+import { VehicleTable } from './userTables.js';
 
 class FuelList extends React.Component{
   constructor(props){
@@ -36,51 +37,6 @@ class FuelList extends React.Component{
   }
 }
 
-class UserVehicleTable extends React.Component{
-  constructor(props){
-    super(props)
-    this.buildTable=this.buildTable.bind(this)
-  }
-
-  buildTable(){
-    let tableRows=[]
-    for(let i=0; i<this.props.vehicles.length; i++){
-
-      let vehicle=this.props.vehicles[i]
-      let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
-      tableRows.push(
-        <tr key={i}>
-          <td>{vehicle.name}</td>
-          <td>{economy.toFixed(1)}</td>
-          <td>{units.displayUnitString(this.props.displayUnits)}</td>
-          <td>{vehicle.fuel}</td>
-          <td>{vehicle.owner}</td>
-          <td>
-            <button className="btn-outline-warning" name={i.toString()} onClick={this.props.onClick}>Use this vehicle</button>
-          </td>
-        </tr>
-      )
-    }
-
-    return( 
-      <table>
-        <tbody>
-          {tableRows}
-        </tbody>
-      </table>
-    )
-  }
-
-  render(){
-    
-
-    return(
-      this.buildTable()
-    )
-
-  }
-}
-
 export class EconomyInput extends React.Component{
   constructor(props){
     super(props);
@@ -88,7 +44,6 @@ export class EconomyInput extends React.Component{
     this.state = {
       displayVehicleInput: false,
       displayUserVehicles: false,
-      vehicles: null,
       lPer100km: null, // economy must be stored in metric
       fuel: null,
       vehicleWillSave: false,
@@ -98,8 +53,6 @@ export class EconomyInput extends React.Component{
     this.handleClick = this.handleClick.bind(this)
     this.hideForms = this.hideForms.bind(this)
     this.handleChange = this.handleChange.bind(this)
-    this.findSavedVehicle = this.findSavedVehicle.bind(this)
-    this.handleVehicleChoice = this.handleVehicleChoice.bind(this)
     this.submitEconomy = this.submitEconomy.bind(this)
     this.saveVehicle = this.saveVehicle.bind(this)
     this.saveAs = this.saveAs.bind(this)
@@ -148,7 +101,7 @@ export class EconomyInput extends React.Component{
         this.saveVehicle()
       }
     } else if(event.target.name==="useSavedVehicle"){
-      this.findSavedVehicle()
+      this.setState({displayUserVehicles:true})
     } else if(event.target.name==="saveVehicle"){
       this.setState({vehicleWillSave:true})
     }
@@ -231,47 +184,11 @@ export class EconomyInput extends React.Component{
     if(event.target.name==="economy"){
       this.setState({lPer100km: units.convertFromDisplayUnits(value, this.props.displayUnits)})
     } else if(event.target.name==="fuelType"){
-      //if(value==="FUEL"){value=null}
       this.setState({fuel: event.target.value})
     } else if(event.target.name==="vehicleSaveAs"){
       this.setState({saveAs:value})
     }
   }
-
-  findSavedVehicle(){
-    fetch('/my-vehicles/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      }
-    })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        this.setState({displayUserVehicles: true, vehicles:json})
-      })
-      .catch(e => {
-        console.log(e.message)
-        if(e.message==='401'){
-          refreshToken({onSuccess:this.findSavedVehicle})
-        }
-      });
-  }
-
-  handleVehicleChoice(event){
-    let id = event.target.name
-    console.log(this.state.vehicles[id])
-    let chosenVehicle = this.state.vehicles[id]
-    this.props.submitEconomy(chosenVehicle.economy, chosenVehicle.fuel)
-    this.hideForms()
-  }
-
 
   render(){
     let saveVehicleDisplay
@@ -318,9 +235,9 @@ export class EconomyInput extends React.Component{
     } else if(this.state.displayUserVehicles){
       display = 
       <div>
-        <UserVehicleTable 
-          vehicles={this.state.vehicles} 
-          onClick={this.handleVehicleChoice} 
+        <VehicleTable 
+          vehicles={this.props.vehicles} 
+          submitEconomy={this.props.submitEconomy} 
           displayUnits={this.props.displayUnits}
           fuelList={this.state.fuelList}
         />

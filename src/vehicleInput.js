@@ -317,59 +317,44 @@ class VehicleResult extends React.Component {
     }
 
     return(
-      <div className="container">
-        <div className="row bg-dark text-white text-right">
-              <h3>{this.props.data.name}</h3>
-        </div>
-        <div className="row">
-          <div className="col-sm">
-            <p>Highway Economy:</p>
-          </div>
-          <div className="col-sm">
-            <p>{parseFloat(highwayEconomy).toFixed(1)} {unitText}</p>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm">
-            <p>City Economy:</p>
-          </div>
-          <div className="col-sm">
-            <p>{parseFloat(cityEconomy).toFixed(1)} {unitText}</p>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm">
-            <p>City Driving: </p>
-          </div>
-          <div className="col-sm">
-            <p>{(this.state.cityProportion*100).toFixed(0)} %</p>
-          </div>
-        </div>
-        <SliderInput
-          label="Proportion of city driving"
-          name ="cityProportion"
-          start="All city driving"
-          end="All highway driving"
-          increment={0.01}
-          initial={this.state.cityProportion}
-          onChange={this.handleSliderChange}
-        />
-        <div className="row">
-          <div className="col-sm">
-            <p>Estimated Economy: </p>
-          </div>
-          <div className="col-sm">
-            <p>{parseFloat(estimatedEconomy).toFixed(1)} {unitText}</p>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm">
-            <p>Fuel Type:</p>
-          </div>
-          <div className="col-sm">
-            <p>{this.props.data.fuelType}</p>
-          </div>
-        </div>
+      <div>
+        <table className="table table-light">
+          <thead className="thead-dark">
+                <tr><th colSpan="2">{this.props.data.name}</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Highway Economy:</td>
+              <td>{parseFloat(highwayEconomy).toFixed(1)} {unitText}</td>
+            </tr>
+            <tr>
+              <td>City Economy:</td>
+              <td>{parseFloat(cityEconomy).toFixed(1)} {unitText}</td>
+            </tr>
+            <tr>
+              <td>
+                <SliderInput
+                  label="Proportion of city driving"
+                  name ="cityProportion"
+                  start="All city driving"
+                  end="All highway driving"
+                  increment={0.01}
+                  initial={this.state.cityProportion}
+                  onChange={this.handleSliderChange}
+                />
+              </td>
+              <td>{(this.state.cityProportion*100).toFixed(0)} %</td>
+            </tr>
+            <tr>
+              <td>Estimated Economy: </td>
+              <td>{parseFloat(estimatedEconomy).toFixed(1)} {unitText}</td>
+            </tr>
+            <tr>
+              <td>Fuel Type:</td>
+              <td>{this.props.data.fuelType}</td>
+            </tr>
+          </tbody>
+        </table>
         {saveVehicleDisplay}
         <div className="row">
           <button

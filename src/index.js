@@ -22,6 +22,7 @@ class App extends React.Component {
       user: {},
       profile: {},
       taxes: {},
+      vehicles: {},
     }
 
     this.setLogin=this.setLogin.bind(this)
@@ -32,6 +33,7 @@ class App extends React.Component {
     this.setTaxes=this.setTaxes.bind(this)
     this.setUser=this.setUser.bind(this)
     this.setProfile=this.setProfile.bind(this)
+    this.setVehicles=this.setVehicles.bind(this)
   }
 
   setLogin(bool_val){
@@ -42,26 +44,20 @@ class App extends React.Component {
         user:{},
         profile:{},
         taxes:{},
+        vehicles:{},
       })
     }
   }
 
-  setTaxes(json){
-    this.setState({
-      taxes:json,
-    })
-  }
+  setTaxes(json){this.setState({taxes:json,})}
 
-  setUser(json){
-    this.setState({
-      user:json,
-    })
-  }
+  setUser(json){this.setState({user:json,})}
 
-  setProfile(json){
-    this.setState({
-      profile:json,
-    })
+  setProfile(json){this.setState({profile:json,})}
+
+  setVehicles(json){
+    console.log(json)
+    this.setState({vehicles:json})
   }
 
   toggleDisplayUnits(){
@@ -99,6 +95,7 @@ class App extends React.Component {
                   displayUnits={this.state.displayUnits} 
                   showCalculator={this.showCalculator}
                   taxes={this.state.taxes}
+                  vehicles={this.state.vehicles}
                 />
     } else if(this.state.displayEmissions && this.state.loggedIn){
       display = <EmissionListWrapper
@@ -127,9 +124,12 @@ class App extends React.Component {
             taxes={this.state.taxes}
             user={this.state.user}
             profile={this.state.profile}
+            vehicles={this.state.vehicles}
             returnTaxes={this.setTaxes}
             returnUser={this.setUser}
             returnProfile={this.setProfile}
+            returnVehicles={this.setVehicles}
+            displayUnits={this.state.displayUnits}
           />
           {display}
         </div>
