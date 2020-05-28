@@ -352,23 +352,13 @@ class TaxListItem extends React.Component{
     this.setState({newValue:event.target.value})
   }
 
-  isDefaultTax(){
-    for(let i in defaultTaxes){
-      if(defaultTaxes[i]['name']===this.props.tax.name){  
-        return true
-      }
-    }
-    return false
-  }
-
-
   render(){
     let tax = this.props.tax
     let editDisplay
     if(this.state.edit){
 
       let deleteButton
-      if(!this.isDefaultTax()){
+      if(!tax.isDefault){
         deleteButton = <button className="btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
       }
 
@@ -423,6 +413,7 @@ class ProfileDetails extends React.Component{
         location:null,
         dateOfBirth:null,
         errorMessage:null,
+        email:null,
       })
     } else if(event.target.name==="saveChanges"){
       this.saveProfileChanges()
@@ -435,8 +426,6 @@ class ProfileDetails extends React.Component{
     })
   }
 
- 
-
   saveProfileChanges(){
     let profileData = {}
     let userData = {}
@@ -447,14 +436,15 @@ class ProfileDetails extends React.Component{
     if(this.state.lastName){
       userData["last_name"]=this.state.lastName
     }
+    if(this.state.email){
+      userData["email"]=this.state.email
+    }
     if(this.state.location){
       profileData["location"]=this.state.location
     }
     if(this.state.dateOfBirth){
       profileData["date_of_birth"]=this.state.dateOfBirth
     }
-
-
 
     if(Object.keys(userData).length>0){
       console.log("Updating user")
@@ -483,6 +473,7 @@ class ProfileDetails extends React.Component{
           errorMessage:null,
           firstName:null,
           lastName:null,
+          email:null,
         })
         this.props.refreshUser()
       })
@@ -535,13 +526,8 @@ class ProfileDetails extends React.Component{
         this.setState({
           errorMessage:"Failed to update."
         })
-      });
-      
+      });  
     }
-
-    
-
-
   }
 
 
@@ -575,6 +561,10 @@ class ProfileDetails extends React.Component{
               <input type="date" name="dateOfBirth" defaultValue={profile.date_of_birth} onChange={this.handleChange}/>
             </label>
             <br/>
+            <label>
+              Email:
+              <input type="text" name="email" defaultValue={user.email} onChange={this.handleChange}/>
+            </label>
           </form>
           <p>{this.state.errorMessage}</p>
           <button name="saveChanges" className="btn-outline-primary" onClick={this.handleClick}>Save changes</button>

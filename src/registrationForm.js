@@ -191,6 +191,7 @@ export class RegistrationForm extends React.Component{
         name: defaultTaxes[i]['name'],
         price_per_kg: defaultTaxes[i]['price'],
         category: defaultTaxes[i]['category'],
+        isDefault: "True",
       }
 
       console.log(taxData)

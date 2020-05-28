@@ -45,6 +45,6 @@ Method should later include a different price depending on location/currency.
 */
 export const defaultTaxes = [
       {name: getTaxName("rec-driving"), category: getCategoryName("road-travel"), price:0.13},
-      {name: getTaxName("ess-driving"), category: getCategoryName("road-travel"), price:0.45},
-      {name: getTaxName("air-travel"), category: getCategoryName("air-travel"), price:0.45}
+      {name: getTaxName("ess-driving"), category: getCategoryName("road-travel"), price:0.045},
+      {name: getTaxName("air-travel"), category: getCategoryName("air-travel"), price:0.045}
     ]

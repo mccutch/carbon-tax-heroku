@@ -14,7 +14,7 @@ class EmissionInstance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
 
     class Meta:
-        ordering = ["date"]
+        ordering = ["-date", "distance"]
 
     def __str__(self):
         return f'{self.date}-{self.name}'
@@ -39,10 +39,11 @@ class TaxRate(models.Model):
     price_per_kg = models.FloatField(default=0)
     category = models.CharField(max_length=30, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='taxes', null=True)
+    isDefault = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["category", "id"]
-        unique_together = ["name", "user"]
+        unique_together = ["name", "user", "category"]
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

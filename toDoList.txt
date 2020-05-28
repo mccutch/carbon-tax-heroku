@@ -1,11 +1,18 @@
 
-edit tax rates
-
 users taxes and vehicles must have unique names
 
-choose tax rate to apply
+password change
+password reset
 
-change email in profile view
+
+
+choose tax rate to apply
+tax rate save to emission
+
+profile - preferred units
+
+emission list
+ - avoid nan on database (crashes list rendering)
 
 
 emission view

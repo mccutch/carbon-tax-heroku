@@ -39,7 +39,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name')
+        fields = ('username', 'first_name', 'last_name', 'email')
 
 class EmissionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -57,13 +57,13 @@ class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
 class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=models.TaxRate
-        fields = ['name', 'price_per_kg', 'category', 'user', 'id']
+        fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault']
 
 class TaxRateListSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model=models.TaxRate
-        fields = ['name', 'price_per_kg', 'category', 'user', 'id']
+        fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault']
 
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
