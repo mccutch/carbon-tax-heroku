@@ -54,11 +54,14 @@ export function clearToken({onSuccess, }){
   }
 }
 
-export function refreshToken({onSuccess, success_args, onFailure}){
+export function refreshToken({onSuccess, success_args, onFailure, failure_args}){
   /*
   Attempt to refresh the access token, then execute onSuccess (retry request) with success_args.
   If refresh fails, execute onFailure (go to login screen).
-  Input parameters as an object.
+  Supply parameters as an object, where onSuccess and onFailure are methods, and the arguments are provided as a list.
+
+  Example:
+  refreshToken({onSuccess:this.fetchObject, success_args:[url,objectName]})
   */
   console.log("Refreshing token...")
   let data = {}
@@ -93,7 +96,7 @@ export function refreshToken({onSuccess, success_args, onFailure}){
       if(onSuccess){
         if(success_args){
           // This is untested!! Waiting for a request with args.
-          console.log("Args provided.")
+          console.log("Success args provided.")
           onSuccess.apply(this, success_args)
         } else {
           onSuccess()
@@ -108,7 +111,12 @@ export function refreshToken({onSuccess, success_args, onFailure}){
         return
       }
       if(onFailure){
-        onFailure()
+        if(failure_args){
+          console.log("Failure args provided.")
+          onFailure.apply(this, failure_args)
+        } else {
+          onFailure()
+        }
       } else{
         console.log("No onFailure provided")
       }

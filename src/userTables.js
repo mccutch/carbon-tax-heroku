@@ -217,10 +217,10 @@ class CreateTax extends React.Component{
 
     
     return(
-      <div>
+      <td>
         {errorDisplay}
         {display}
-      </div>
+      </td>
     )
 
   }

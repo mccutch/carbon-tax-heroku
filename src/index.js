@@ -6,6 +6,7 @@ import {LoginWrapper} from './loginWrapper.js';
 import {EmissionListWrapper} from './emissionList.js';
 //import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
+import {refreshToken}  from './myJWT.js';
 
 
 
@@ -25,40 +26,81 @@ class App extends React.Component {
       vehicles: {},
     }
 
-    this.setLogin=this.setLogin.bind(this)
+    this.login=this.login.bind(this)
+    this.logout=this.logout.bind(this)
     this.toggleDisplayUnits=this.toggleDisplayUnits.bind(this)
     this.handleClick=this.handleClick.bind(this)
     this.showCalculator=this.showCalculator.bind(this)
     this.showEmissions=this.showEmissions.bind(this)
-    this.setTaxes=this.setTaxes.bind(this)
-    this.setUser=this.setUser.bind(this)
-    this.setProfile=this.setProfile.bind(this)
-    this.setVehicles=this.setVehicles.bind(this)
+    //this.setTaxes=this.setTaxes.bind(this)
+    //this.setUser=this.setUser.bind(this)
+    //this.setProfile=this.setProfile.bind(this)
+    //this.setVehicles=this.setVehicles.bind(this)
+    this.fetchObject = this.fetchObject.bind(this)
+    this.refreshFullProfile = this.refreshFullProfile.bind(this)
   }
 
-  setLogin(bool_val){
-    this.setState({loggedIn: bool_val})
-
-    if(!bool_val){
-      this.setState({
-        user:{},
-        profile:{},
-        taxes:{},
-        vehicles:{},
-      })
-    }
+  fetchObject({url, objectName, onSuccess}){
+    console.log("Url: "+url)
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      }
+    })
+    .then(res => {
+      if(res.ok){
+        return res.json();
+      } else {
+        throw new Error(res.status)
+      }
+    })
+    .then(json => {
+      this.setState({[objectName]:json})
+      onSuccess()
+      console.log(json)
+    })
+    .catch(e => {
+      console.log(e.message)
+      if(e.message==='401'){
+        refreshToken({onSuccess:this.fetchObject, success_args:[url,objectName]})
+      }
+    });
   }
 
-  setTaxes(json){this.setState({taxes:json,})}
+  login(){
+    this.setState({loggedIn: true})
+  }
 
-  setUser(json){this.setState({user:json,})}
+  logout(){
+    this.setState({
+      loggedIn:false,
+      user:{},
+      profile:{},
+      taxes:{},
+      vehicles:{},
+    })
+  }
 
-  setProfile(json){this.setState({profile:json,})}
+  refreshFullProfile(){
+    this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
+    this.fetchObject({url:"/my-profile/", objectName:"profile"})
+    this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
+    this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
+  }
 
+  //setTaxes(json){this.setState({taxes:json,})}
+
+  //setUser(json){this.setState({user:json,})}
+
+  //setProfile(json){this.setState({profile:json,})}
+
+/*
   setVehicles(json){
     console.log(json)
     this.setState({vehicles:json})
-  }
+  }*/
 
   toggleDisplayUnits(){
     this.setState({displayUnits:units.toggle(this.state.displayUnits)})
@@ -80,9 +122,7 @@ class App extends React.Component {
     }
   }
   
-  
   render(){
-
     let memberDisplay
     if(this.state.loggedIn){
       memberDisplay = <button className="btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button> 
@@ -119,17 +159,18 @@ class App extends React.Component {
         <div>
           <LoginWrapper 
             loggedIn={this.state.loggedIn} 
-            returnLogin={this.setLogin} 
+            //returnLogin={this.setLogin} 
             toggleDisplayUnits={this.toggleDisplayUnits} 
             taxes={this.state.taxes}
             user={this.state.user}
             profile={this.state.profile}
             vehicles={this.state.vehicles}
-            returnTaxes={this.setTaxes}
-            returnUser={this.setUser}
-            returnProfile={this.setProfile}
-            returnVehicles={this.setVehicles}
+            //returnTaxes={this.setTaxes}
+            //returnUser={this.setUser}
+            //returnProfile={this.setProfile}
+            //returnVehicles={this.setVehicles}
             displayUnits={this.state.displayUnits}
+            refresh={this.refreshFullProfile}
           />
           {display}
         </div>

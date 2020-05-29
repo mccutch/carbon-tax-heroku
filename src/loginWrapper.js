@@ -73,7 +73,7 @@ export class LoginWrapper extends React.Component{
     this.loginSuccess = this.loginSuccess.bind(this)
     this.logoutSuccess = this.logoutSuccess.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.logout = this.logout.bind(this)
+    this.clearJWT = this.clearJWT.bind(this)
   }
 
   componentDidMount(){
@@ -194,19 +194,24 @@ export class LoginWrapper extends React.Component{
     });
   }
 
+  
+
   loginFailure(){
     this.setState({loginFailed:true})
   }
 
   loginSuccess(){
     this.setState({loginFailed:false, showRegistration:false})
+    this.props.refresh()
+    /*
     this.fetchUser()
     this.fetchTaxes()
     this.fetchProfile()
     this.fetchVehicles()
+    */
   }
 
-  logout(){
+  clearJWT(){
     clearToken({onSuccess:this.logoutSuccess})
   }
 
@@ -215,7 +220,7 @@ export class LoginWrapper extends React.Component{
       loginFailed:false,
       showProfile:false,
     })
-    this.props.returnLogin(false)
+    this.props.logout()
   }
 
 
@@ -261,7 +266,7 @@ export class LoginWrapper extends React.Component{
                   refreshUser={this.fetchUser}
                   refreshProfile={this.fetchProfile}
                   refreshVehicles={this.fetchVehicles}
-                  logout={this.logout}
+                  logout={this.clearJWT}
                   displayUnits={this.props.displayUnits}
                 />
     } else if(this.state.showRegistration){
