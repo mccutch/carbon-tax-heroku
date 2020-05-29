@@ -92,12 +92,13 @@ export function refreshToken({onSuccess, success_args, onFailure, failure_args})
     .then(json => {
       //console.log(json.access)
       localStorage.setItem('access', json.access)
-      console.log(json)
+      //console.log(json)
       if(onSuccess){
         if(success_args){
-          // This is untested!! Waiting for a request with args.
-          console.log("Success args provided.")
+          //console.log("Success args provided.")
+          //console.log(success_args)
           onSuccess.apply(this, success_args)
+
         } else {
           onSuccess()
         }

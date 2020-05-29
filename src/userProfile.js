@@ -172,7 +172,7 @@ class ProfileDetails extends React.Component{
           lastName:null,
           email:null,
         })
-        this.props.refreshUser()
+        this.props.refresh()
       })
       .catch(error => {
         console.log(error.message)
@@ -213,7 +213,7 @@ class ProfileDetails extends React.Component{
           location:null,
           dateOfBirth:null,
         })
-        this.props.refreshProfile()
+        this.props.refresh()
       })
       .catch(error => {
         console.log(error.message)
@@ -300,7 +300,7 @@ export class ProfileDisplay extends React.Component{
   }
 
   componentDidMount(){
-    this.props.refreshProfile()
+    this.props.refresh()
   }
 
   render(){
@@ -309,14 +309,13 @@ export class ProfileDisplay extends React.Component{
         <ProfileDetails 
           user={this.props.user} 
           profile={this.props.profile} 
-          refreshProfile={this.props.refreshProfile} 
-          refreshUser={this.props.refreshUser}
+          refresh={this.props.refresh}
         />
         <h4>My Taxes</h4> 
-        <TaxTable refreshTaxes={this.props.refreshTaxes} taxes={this.props.taxes}/>
+        <TaxTable refresh={this.props.refresh} taxes={this.props.taxes}/>
 
         <h4>My Vehicles</h4> 
-        <VehicleTable refreshVehicles={this.props.refreshVehicles} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits}/>
+        <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits}/>
         <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
         <button name="logout" className="btn-outline-danger" onClick={this.props.onClick}>Logout</button>
         <DeleteUser user={this.props.user} logout={this.props.logout}/>

@@ -32,7 +32,7 @@ export class TaxTable extends React.Component{
     let tableRows=[]
     if(taxes){
       for(let i=0; i<taxes.length; i++){
-        tableRows.push(<TaxDetail key={taxes[i].id} tax={taxes[i]} refreshTaxes={this.props.refreshTaxes}/>)
+        tableRows.push(<TaxDetail key={taxes[i].id} tax={taxes[i]} refresh={this.props.refresh}/>)
       }
     }
     return( 
@@ -47,7 +47,7 @@ export class TaxTable extends React.Component{
         </thead>
         <tbody>
           {tableRows}
-          <tr><CreateTax buttonLabel={"+ New Tax"} refreshTaxes={this.props.refreshTaxes} existingTaxes={this.props.taxes}/></tr>
+          <tr><CreateTax buttonLabel={"+ New Tax"} refresh={this.props.refresh} existingTaxes={this.props.taxes}/></tr>
         </tbody>
       </table>
     )
@@ -170,7 +170,7 @@ class CreateTax extends React.Component{
           newPrice: 0,
           error:false,
         })
-        this.props.refreshTaxes()
+        this.props.refresh()
       })
       .catch(error => {
         console.log(error.message)
@@ -255,7 +255,7 @@ class TaxDetail extends React.Component{
     .then(res => {
       //console.log(res)
       if(res.ok){
-        this.props.refreshTaxes()
+        this.props.refresh()
         this.setState({
           edit:false,
           error:false,
@@ -321,7 +321,7 @@ class TaxDetail extends React.Component{
             newValue: this.props.tax.price_per_kg,
             error:false
           })
-          this.props.refreshTaxes()
+          this.props.refresh()
         })
         .catch(error => {
           console.log(error.message)

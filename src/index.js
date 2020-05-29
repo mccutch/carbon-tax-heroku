@@ -41,7 +41,12 @@ class App extends React.Component {
   }
 
   fetchObject({url, objectName, onSuccess}){
-    console.log("Url: "+url)
+    /* 
+    Function stores the returned data from GET request into this.state.
+    Designed to be used to retrieve objects belonging to the user from the database.
+    If JWT access has expired, a new token is requested, then the function called again.
+    */
+
     fetch(url, {
       method: 'GET',
       headers: {
@@ -58,13 +63,23 @@ class App extends React.Component {
     })
     .then(json => {
       this.setState({[objectName]:json})
-      onSuccess()
-      console.log(json)
+      if(onSuccess){
+        //console.log("onSuccess provided to fetchObject.")
+        onSuccess()
+      }
+      //console.log(json)
     })
     .catch(e => {
       console.log(e.message)
       if(e.message==='401'){
-        refreshToken({onSuccess:this.fetchObject, success_args:[url,objectName]})
+        refreshToken({
+          onSuccess:this.fetchObject, 
+          success_args:[{
+            url:url, 
+            objectName:objectName, 
+            onSuccess:onSuccess
+          }]
+        })
       }
     });
   }
@@ -89,18 +104,6 @@ class App extends React.Component {
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
   }
-
-  //setTaxes(json){this.setState({taxes:json,})}
-
-  //setUser(json){this.setState({user:json,})}
-
-  //setProfile(json){this.setState({profile:json,})}
-
-/*
-  setVehicles(json){
-    console.log(json)
-    this.setState({vehicles:json})
-  }*/
 
   toggleDisplayUnits(){
     this.setState({displayUnits:units.toggle(this.state.displayUnits)})
@@ -136,6 +139,7 @@ class App extends React.Component {
                   showCalculator={this.showCalculator}
                   taxes={this.state.taxes}
                   vehicles={this.state.vehicles}
+                  refresh={this.refreshFullProfile}
                 />
     } else if(this.state.displayEmissions && this.state.loggedIn){
       display = <EmissionListWrapper
@@ -158,7 +162,8 @@ class App extends React.Component {
         </div>
         <div>
           <LoginWrapper 
-            loggedIn={this.state.loggedIn} 
+            loggedIn={this.state.loggedIn}
+            logout={this.logout} 
             //returnLogin={this.setLogin} 
             toggleDisplayUnits={this.toggleDisplayUnits} 
             taxes={this.state.taxes}

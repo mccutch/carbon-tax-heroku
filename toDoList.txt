@@ -7,6 +7,9 @@ password change
 password reset
 
 
+user statistics
+
+
 
 choose tax rate to apply
 tax rate save to emission
