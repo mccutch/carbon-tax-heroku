@@ -1,74 +1,7 @@
 import React from 'react';
 import{refreshToken} from './myJWT.js';
 import * as units from './unitConversions';
-
-
-class EmissionTable extends React.Component{
-  constructor(props){
-    super(props)
-    this.buildTable=this.buildTable.bind(this)
-    this.handleClick=this.handleClick.bind(this)
-  }
-
-  handleClick(event){
-    console.log("Edit table element")
-    console.log(event.target.name)
-  }
-
-  buildTable(){
-    let emissions=this.props.emissions
-    if(emissions.length===0){
-      return <p>No saved emissions found.</p>
-    }
-
-    let displayUnits=this.props.displayUnits
-    let tableRows=[]
-    for(let i=0; i<emissions.length; i++){
-
-      let emission=emissions[i]
-      let distance=units.distanceDisplay(emission.distance, displayUnits)
-      let distString=units.distanceString(displayUnits)
-
-      tableRows.push(
-        <tr key={emission.id}>
-          <td name={emission.id} onClick={this.handleClick}><strong>{emission.name}</strong></td>
-          <td>{emission.date}</td>
-          <td>{emission.travel_mode}</td>
-          <td>{parseFloat(distance).toFixed(1)}{distString}</td>
-          <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
-          <td>${parseFloat(emission.price).toFixed(2)}</td>
-        </tr>
-      )
-    }
-
-    return( 
-      <table className="table table-light">
-        <thead className="thead-dark">
-          <tr>
-            <th>Trip Name</th>
-            <th>Date</th>
-            <th>Travel Mode</th>
-            <th>Distance</th>
-            <th>CO2 Output</th>
-            <th>Tax</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableRows}
-        </tbody>
-      </table>
-    )
-  }
-
-  render(){
-    return(
-      this.buildTable()
-    )
-
-  }
-}
-
+import { EmissionTable } from './userTables.js';
 
 
 

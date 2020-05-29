@@ -421,7 +421,6 @@ class VehicleDetail extends React.Component{
 
 }
 
-
 export class VehicleTable extends React.Component{
   constructor(props){
     super(props)
@@ -442,6 +441,71 @@ export class VehicleTable extends React.Component{
   render(){
     return(
       <ObjectTable tableRows={this.buildRows()} headers={["Name", "Economy", "Fuel", ""]} />
+    )
+  }
+}
+
+
+class EmissionEdit extends React.Component{
+
+  render(){
+    let emission=this.props.emission
+    return(
+      <td><strong>{emission.name}</strong></td>
+    )
+  }
+}
+
+class EmissionDetail extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.handleClick=this.handleClick.bind(this)
+  }
+
+  handleClick(event){
+    console.log("Edit table element")
+    console.log(event.target.name)
+  }
+
+  render(){
+    let displayUnits=this.props.displayUnits
+    let emission=this.props.emission
+    let distance=units.distanceDisplay(emission.distance, displayUnits)
+    let distString=units.distanceString(displayUnits)
+    return(
+      <tr key={emission.id}>
+        <EmissionEdit emission={emission} displayUnits={this.displayUnits} />
+        <td>{emission.date}</td>
+        <td>{emission.travel_mode}</td>
+        <td>{parseFloat(distance).toFixed(1)}{distString}</td>
+        <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
+        <td>${parseFloat(emission.price).toFixed(2)}</td>
+      </tr>
+    )
+  }
+}
+
+export class EmissionTable extends React.Component{
+  constructor(props){
+    super(props)
+    this.buildRows=this.buildRows.bind(this)
+  }
+
+  buildRows(){
+    let emissions=this.props.emissions
+    let tableRows=[]
+    for(let i in emissions){
+      tableRows.push(
+        <EmissionDetail emission={emissions[i]} displayUnits={this.props.displayUnits} />
+      )
+    }
+    return tableRows
+  }
+
+  render(){
+    return(
+      <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Travel Mode", "Distance", "CO2 Output", "Tax"]} />
     )
   }
 }
