@@ -9,25 +9,53 @@ const MAX_NAME_LEN = 30
 /*
 Table and accessory components for listing, using and editing objects belonging to a user.
 
+
 TaxTable
- - TaxDetail
- - CreateTax
+  ObjectTable
+    TaxDetail
+      CreateTax
 
 VehicleTable
- - VehicleDetail
- - Create Vehicle
+  ObjectTable
+    VehicleDetail
+      Create Vehicle
 
 
 
 */
 
+class ObjectTable extends React.Component{
+
+  buildHeader(){
+    let headers = this.props.headers
+    let headerCols = []
+    for(let i in headers){
+      headerCols.push(<th>{headers[i]}</th>)
+    }
+    return <tr>{headerCols}</tr>
+  }
+
+  render(){
+    return(
+      <table className="table table-light">
+        <thead className="thead-dark">
+          {this.buildHeader()}
+        </thead>
+        <tbody>
+          {this.props.tableRows}
+        </tbody>
+      </table>
+    )
+  }
+}
+
 export class TaxTable extends React.Component{
   constructor(props){
     super(props)
-    this.makeTaxTable=this.makeTaxTable.bind(this)
+    this.buildRows=this.buildRows.bind(this)
   }
 
-  makeTaxTable(){
+  buildRows(){
     let taxes = this.props.taxes
     let tableRows=[]
     if(taxes){
@@ -35,29 +63,13 @@ export class TaxTable extends React.Component{
         tableRows.push(<TaxDetail key={taxes[i].id} tax={taxes[i]} refresh={this.props.refresh}/>)
       }
     }
-    return( 
-      <table className="table table-light">
-        <thead className="thead-dark">
-          <tr>
-            <th>Name</th>
-            <th>Price/kg CO2</th>
-            <th>Category</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableRows}
-          <tr><CreateTax buttonLabel={"+ New Tax"} refresh={this.props.refresh} existingTaxes={this.props.taxes}/></tr>
-        </tbody>
-      </table>
-    )
+    tableRows.push(<tr><CreateTax buttonLabel={"+ New Tax"} refresh={this.props.refresh} existingTaxes={this.props.taxes}/></tr>)
+    return tableRows
   }
 
   render(){
     return(
-      <div>
-        {this.makeTaxTable()}
-      </div>
+      <ObjectTable tableRows={this.buildRows()} headers={["Name", "Price", "Category", ""]}/>
     )
   }
 }
@@ -132,7 +144,6 @@ class CreateTax extends React.Component{
       }
     }
     return true
-
   }
 
   submitNewTax(){
@@ -184,7 +195,6 @@ class CreateTax extends React.Component{
   }
 
   render(){
-
     let display
     if(this.state.createNew){
       display = 
@@ -415,38 +425,24 @@ class VehicleDetail extends React.Component{
 export class VehicleTable extends React.Component{
   constructor(props){
     super(props)
-    this.buildTable=this.buildTable.bind(this)
+    this.buildRows=this.buildRows.bind(this)
   }
 
-  buildTable(){
+  buildRows(){
     let tableRows=[]
-    for(let i=0; i<this.props.vehicles.length; i++){
+    let vehicles=this.props.vehicles
+    for(let i=0; i<vehicles.length; i++){
       tableRows.push(
-        <VehicleDetail vehicle={this.props.vehicles[i]} submitEconomy={this.props.submitEconomy} displayUnits={this.props.displayUnits}/>
+        <VehicleDetail key={vehicles[i].id} vehicle={vehicles[i]} submitEconomy={this.props.submitEconomy} displayUnits={this.props.displayUnits}/>
       )
     }
-
-    return(
-      <table className="table table-light">
-        <thead className="thead-dark">
-          <tr>
-            <th>Name</th>
-            <th>Economy</th>
-            <th>Fuel</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableRows}
-        {/*Add a vehicle*/}
-        </tbody>
-      </table>
-    )
+    return tableRows
   }
 
   render(){
     return(
-      this.buildTable()
+      <ObjectTable tableRows={this.buildRows()} headers={["Name", "Economy", "Fuel", ""]} />
     )
   }
 }
+
