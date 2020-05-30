@@ -24,6 +24,7 @@ class App extends React.Component {
       profile: {},
       taxes: {},
       vehicles: {},
+      fuels:{}
     }
 
     this.login=this.login.bind(this)
@@ -32,12 +33,12 @@ class App extends React.Component {
     this.handleClick=this.handleClick.bind(this)
     this.showCalculator=this.showCalculator.bind(this)
     this.showEmissions=this.showEmissions.bind(this)
-    //this.setTaxes=this.setTaxes.bind(this)
-    //this.setUser=this.setUser.bind(this)
-    //this.setProfile=this.setProfile.bind(this)
-    //this.setVehicles=this.setVehicles.bind(this)
     this.fetchObject = this.fetchObject.bind(this)
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
+  }
+
+  componentDidMount(){
+    this.fetchObject({url:"/fueltypes/", objectName:"fuels"})
   }
 
   fetchObject({url, objectName, onSuccess}){
@@ -139,6 +140,7 @@ class App extends React.Component {
                   showCalculator={this.showCalculator}
                   taxes={this.state.taxes}
                   vehicles={this.state.vehicles}
+                  fuels={this.state.fuels}
                   refresh={this.refreshFullProfile}
                 />
     } else if(this.state.displayEmissions && this.state.loggedIn){
@@ -164,17 +166,13 @@ class App extends React.Component {
           <LoginWrapper 
             loggedIn={this.state.loggedIn}
             logout={this.logout} 
-            //returnLogin={this.setLogin} 
             toggleDisplayUnits={this.toggleDisplayUnits} 
             taxes={this.state.taxes}
             user={this.state.user}
             profile={this.state.profile}
             vehicles={this.state.vehicles}
-            //returnTaxes={this.setTaxes}
-            //returnUser={this.setUser}
-            //returnProfile={this.setProfile}
-            //returnVehicles={this.setVehicles}
             displayUnits={this.state.displayUnits}
+            fuels={this.state.fuels}
             refresh={this.refreshFullProfile}
           />
           {display}

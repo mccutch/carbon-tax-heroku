@@ -315,7 +315,7 @@ export class ProfileDisplay extends React.Component{
         <TaxTable refresh={this.props.refresh} taxes={this.props.taxes}/>
 
         <h4>My Vehicles</h4> 
-        <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits}/>
+        <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
         <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
         <button name="logout" className="btn-outline-danger" onClick={this.props.onClick}>Logout</button>
         <DeleteUser user={this.props.user} logout={this.props.logout}/>

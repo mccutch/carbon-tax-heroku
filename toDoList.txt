@@ -1,4 +1,5 @@
-move fuel list fetch into loginwrapper
+include "add a vehicle" to profile
+move object edits into separate file
 
 
 users taxes and vehicles must have unique names

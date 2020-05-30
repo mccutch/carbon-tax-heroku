@@ -138,6 +138,7 @@ export class LoginWrapper extends React.Component{
                   taxes={this.props.taxes}
                   profile={this.props.profile} 
                   vehicles={this.props.vehicles}
+                  fuels={this.props.fuels}
                   refresh={this.props.refresh}
                   logout={this.clearJWT}
                   displayUnits={this.props.displayUnits}

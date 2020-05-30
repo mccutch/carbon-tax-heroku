@@ -2,7 +2,9 @@ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import {refreshToken} from './myJWT.js';
+import { VehicleInput } from './vehicleInput.js';
 import * as units from './unitConversions';
+import { VehicleSaveForm } from './vehicleSave.js';
 
 const MAX_NAME_LEN = 30
 
@@ -421,6 +423,82 @@ class VehicleDetail extends React.Component{
 
 }
 
+class CreateVehicle extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state={
+      createNew:false,
+      lPer100Km:null,
+      fuelId:null,
+      name:"",
+    }
+
+    this.receiveInputs=this.receiveInputs.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+    this.cancelNewVehicle=this.cancelNewVehicle.bind(this)
+    this.handleSave=this.handleSave.bind(this)
+  }
+
+  receiveInputs(lPer100Km, fuelId, name){
+    this.setState({
+      lPer100Km:lPer100Km,
+      fuelId:fuelId,
+      name:name,
+    })
+  }
+
+  cancelNewVehicle(){
+    this.setState({
+      createNew:false,
+      lPer100Km:null,
+      fuelId:null,
+      name:"",
+    })
+  }
+
+  handleClick(event){
+    if(event.target.name==="createVehicle"){
+      this.setState({createNew:true})
+    }
+  }
+
+  handleSave(){
+    console.log("handlesave")
+    this.setState=({
+      createNew:false,
+      lPer100Km:null,
+      fuelId:null,
+      name:"",
+    })
+    this.props.refresh()
+  }
+
+  render(){
+    let display
+    if(!this.state.createNew){
+      display = <td><button name="createVehicle" className="btn btn-outline-primary" onClick={this.handleClick}>+ New Vehicle</button></td>
+    } else {
+      display =
+        <td colspan="4">
+          <VehicleInput 
+            displayUnits={this.props.displayUnits} 
+            fuels={this.props.fuels}
+            returnEconomy={this.receiveInputs}
+          />
+          <VehicleSaveForm 
+            cancel={this.cancelNewVehicle}
+            name={this.state.name}
+            lPer100Km={this.state.lPer100Km}
+            fuelId={this.state.fuelId}
+            onSave={this.handleSave}
+          />
+        </td>
+    }
+    return(display)
+  }
+}
+
 export class VehicleTable extends React.Component{
   constructor(props){
     super(props)
@@ -435,6 +513,7 @@ export class VehicleTable extends React.Component{
         <VehicleDetail key={vehicles[i].id} vehicle={vehicles[i]} submitEconomy={this.props.submitEconomy} displayUnits={this.props.displayUnits}/>
       )
     }
+    tableRows.push(<tr><CreateVehicle displayUnits={this.props.displayUnits} fuels={this.props.fuels} refresh={this.props.refresh}/></tr>)
     return tableRows
   }
 

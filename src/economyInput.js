@@ -4,38 +4,7 @@ import {refreshToken}  from './myJWT.js';
 import * as units from './unitConversions';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
-
-class FuelList extends React.Component{
-  constructor(props){
-    super(props)
-    this.renderOptions = this.renderOptions.bind(this)
-  }
-
-  renderOptions(){
-    let list = this.props.fuelList;
-      let listOptions = [];
-      for(let i=0; i<list.length; i++){
-        listOptions.push(<option 
-                            value={list[i]}
-                            key = {i}
-                          >
-                          {list[i]}</option>)
-      }
-      return listOptions;
-  }
-
-  render(){
-    return(
-      <select
-        onChange = {this.props.onChange}
-        name = {this.props.name}
-      >
-        {this.renderOptions()}
-      </select>
-
-    )
-  }
-}
+import {OptionListInput} from './optionListInput.js';
 
 export class EconomyInput extends React.Component{
   constructor(props){
@@ -123,7 +92,6 @@ export class EconomyInput extends React.Component{
   }
 
   saveVehicle(){
-
     let fuel_id=0
     for(let i=0;i<this.state.fuelList.length; i++){
       if(this.state.fuel===this.state.fuelList[i]){
@@ -164,8 +132,7 @@ export class EconomyInput extends React.Component{
         if(e.message==='401'){
           refreshToken({onSuccess:this.saveVehicle})
         }
-      });
-      
+      });  
   }
 
   submitEconomy(){
@@ -259,7 +226,7 @@ export class EconomyInput extends React.Component{
                       placeholder="Fuel economy"
                     />
                     <label htmlFor="economy">{units.displayUnitString(this.props.displayUnits)}</label>
-                    <FuelList name="fuelType" onChange={this.handleChange} fuelList={this.state.fuelList}/>
+                    <OptionListInput name="fuelType" onChange={this.handleChange} list={this.state.fuelList} />
                     {submitDisplay}
                   </div>
                   <div className="col">
@@ -275,7 +242,6 @@ export class EconomyInput extends React.Component{
     }
 
    
-    
     return(
       <div className='container bg-info py-2'>{display}</div>
     )

@@ -2,6 +2,7 @@ import React from 'react';
 import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
 import {VehicleSaveForm} from './vehicleSave.js';
+import { OptionListInput } from './optionListInput.js';
 
 
 
@@ -17,7 +18,6 @@ class ListInput extends React.Component {
   fetchList(){
     let returnList = [this.props.defaultText]
     if(this.props.suffix){
-      
       console.log("Searching "+this.props.url+this.props.suffix);
       fetch(this.props.url+this.props.suffix)
       .then(res => res.text())
@@ -43,11 +43,9 @@ class ListInput extends React.Component {
     }
   }
 
-  
   componentDidMount(){
     this.fetchList();
   }
-  
   
   componentDidUpdate(prevProps){
     if(prevProps.suffix !== this.props.suffix){
@@ -55,7 +53,6 @@ class ListInput extends React.Component {
       this.fetchList();
     }
   }
-  
 
   renderOptions() {
       let list = this.state.list;
@@ -203,43 +200,38 @@ class VehicleInputFields extends React.Component {
 
     return(
       <div className="container">
-        <div className="container">
-          <h2>US Database Vehicle Input</h2>
-        </div>
-        <div className="container">
-          <ListInput  
-            label="Year"
-            url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
-            suffix="year"
-            type='int'
-            onChange={this.handleChange}
-            defaultText = {this.yearDefault}
-          />
-          <ListInput  
-            label="Make"
-            url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
-            suffix={makeSuffix}
-            type='string'
-            onChange={this.handleChange}
-            defaultText = {this.makeDefault}
-          />
-          <ListInput  
-            label="Model"
-            url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
-            suffix={modelSuffix}
-            type='string'
-            onChange={this.handleChange}
-            defaultText = {this.modelDefault}
-          />
-          <ListInput  
-            label="Options"
-            url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
-            suffix={optionsSuffix}
-            type='options'
-            onChange={this.handleChange}
-            defaultText = {this.optionsDefault}
-          /> 
-        </div>
+        <ListInput  
+          label="Year"
+          url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
+          suffix="year"
+          type='int'
+          onChange={this.handleChange}
+          defaultText = {this.yearDefault}
+        />
+        <ListInput  
+          label="Make"
+          url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
+          suffix={makeSuffix}
+          type='string'
+          onChange={this.handleChange}
+          defaultText = {this.makeDefault}
+        />
+        <ListInput  
+          label="Model"
+          url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
+          suffix={modelSuffix}
+          type='string'
+          onChange={this.handleChange}
+          defaultText = {this.modelDefault}
+        />
+        <ListInput  
+          label="Options"
+          url="https://www.fueleconomy.gov/ws/rest/vehicle/menu/"
+          suffix={optionsSuffix}
+          type='options'
+          onChange={this.handleChange}
+          defaultText = {this.optionsDefault}
+        /> 
       </div>
     );
   }
@@ -269,36 +261,32 @@ class VehicleResult extends React.Component {
     super(props);
     this.state = {
       cityProportion: 0.55,
-      saveAs: this.props.data.name,
     }
     this.handleSliderChange = this.handleSliderChange.bind(this);
-    this.handleSubmit=this.handleSubmit.bind(this)
-    this.saveAs=this.saveAs.bind(this)
+    this.findEconomy=this.findEconomy.bind(this)
+  }
+
+  componentDidMount(){
+    this.returnVehicle()
   }
 
   handleSliderChange(event){
-    this.setState({cityProportion: event.target.value})
+    this.setState({cityProportion: event.target.value}, this.returnVehicle)
   }
 
-  handleSubmit(){
-    if(this.props.data.vehicleId){
-      this.props.submitVehicle(this.findEconomy(), this.props.data.fuelType);
-      this.props.saveVehicle()
-      this.props.hideForm()
-    }
+  returnVehicle(){
+    let vehicle = this.props.data
+    this.props.returnVehicle(this.findEconomy(), vehicle.fuelType, vehicle.name)
   }
-
-  saveAs(name){
-    this.props.saveAs(name, this.findEconomy(), this.props.data.fuelType)
-  }
-  
 
   findEconomy(){
-    /* return vehicle economy in metric */
-    return(
-      (this.state.cityProportion * this.props.data.cityLper100Km) 
-        + (1-this.state.cityProportion)*this.props.data.highwayLper100Km
-    );
+    /* return vehicle economy based on slider input */
+    console.log("findEconomy")
+    let economy = (this.state.cityProportion * this.props.data.cityLper100Km) 
+                  + (1-this.state.cityProportion)*this.props.data.highwayLper100Km
+    console.log(economy)
+    console.log(economy)
+    return economy
   }
 
   render(){
@@ -307,17 +295,7 @@ class VehicleResult extends React.Component {
     let cityEconomy = units.convert(this.props.data.cityLper100Km, this.props.displayUnits);
     let unitText = units.displayUnitString(this.props.displayUnits);
 
-    let saveVehicleDisplay
-    if(this.props.loggedIn){
-      saveVehicleDisplay = <VehicleSaveForm
-                            saveAs={this.saveAs}     
-                            vehicleName={this.state.saveAs}
-                            vehicleWillSave={this.props.vehicleWillSave}
-                          />
-    }
-
     return(
-      <div>
         <table className="table table-light">
           <thead className="thead-dark">
                 <tr><th colSpan="2">{this.props.data.name}</th></tr>
@@ -345,34 +323,16 @@ class VehicleResult extends React.Component {
               </td>
               <td>{(this.state.cityProportion*100).toFixed(0)} %</td>
             </tr>
-            <tr>
+            <tr className="bg-info">
               <td>Estimated Economy: </td>
               <td>{parseFloat(estimatedEconomy).toFixed(1)} {unitText}</td>
             </tr>
-            <tr>
+            <tr className="bg-info">
               <td>Fuel Type:</td>
               <td>{this.props.data.fuelType}</td>
             </tr>
           </tbody>
         </table>
-        {saveVehicleDisplay}
-        <div className="row">
-          <button
-            type="button"
-            className="btn-outline-primary"
-            onClick={this.handleSubmit}
-          >
-            Use these values
-          </button>
-          <button
-            type="button"
-            className="btn-outline-danger"
-            onClick={this.props.hideForm}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
     );
   }
 }
@@ -392,6 +352,7 @@ export class VehicleForm extends React.Component {
     }
 
     this.normaliseFuelType = this.normaliseFuelType.bind(this)
+    this.receiveVehicleId = this.receiveVehicleId.bind(this)
   }
 
   normaliseFuelType(fuelRaw){
@@ -401,82 +362,188 @@ export class VehicleForm extends React.Component {
 
   receiveVehicleId(name, num){
     if (!num){
-      this.setState({ name: null,
-                      vehicleId: null,
-                      highwayLper100Km: 0,
-                      cityLper100Km: 0,
-                      fuelType: null,
-                    })
+      this.setState({ 
+        name: null,
+        vehicleId: null,
+        highwayLper100Km: 0,
+        cityLper100Km: 0,
+        fuelType: null,
+      })
       return;
     }
 
     //console.log("Searching for economy by ID..." +num);
-    this.setState({name: name});
-    this.setState({vehicleId: num});
+    
 
     let url="https://www.fueleconomy.gov/ws/rest/vehicle/"
     let suffix = num
 
     fetch(url+suffix)
     .then(res => res.text())
-    .then(
-      (result) => {
-          let parser = new DOMParser();
-          let xmlDoc = parser.parseFromString(result, "text/xml");
+    .then((result) => {
+      let parser = new DOMParser();
+      let xmlDoc = parser.parseFromString(result, "text/xml");
 
-          let highwayMpg = xmlDoc.getElementsByTagName('highway08');
-          this.setState({highwayLper100Km: units.USMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
+      let highwayMpg = xmlDoc.getElementsByTagName('highway08');
+      this.setState({highwayLper100Km: units.USMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
 
-          let cityMpg = xmlDoc.getElementsByTagName('city08');
-          this.setState({cityLper100Km: units.USMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
+      let cityMpg = xmlDoc.getElementsByTagName('city08');
+      this.setState({cityLper100Km: units.USMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
 
-          let fuelType = xmlDoc.getElementsByTagName('fuelType1');
-          this.normaliseFuelType((fuelType[0].childNodes[0].nodeValue))
-        },
-      (error) => {
-          console.log("Error");
-      }
+      let fuelType = xmlDoc.getElementsByTagName('fuelType1');
+      this.normaliseFuelType((fuelType[0].childNodes[0].nodeValue))
+
+      this.setState({
+        name: name,
+        vehicleId: num
+      });
+    },
+    (error) => {
+      console.log("Error");
+    }
     ) 
   }
 
   render(){
-    let display
+    let resultDisplay
     if(this.state.vehicleId){
-      display = <div>
-                  <VehicleInputFields 
-                    returnVehicleId ={(name,num) => this.receiveVehicleId(name,num)}
-                  />
-                  <VehicleResult  
-                    data = {this.state}
-                    submitVehicle = {this.props.submitVehicle}
-                    displayUnits = {this.props.displayUnits}
-                    hideForm = {this.props.hideForm}
-                    saveVehicle = {this.props.saveVehicle}
-                    loggedIn={this.props.loggedIn}
-                    saveAs={this.props.saveAs}
-                    vehicleWillSave={this.props.vehicleWillSave}
-                  />
-                </div>
-    } else {
-      display = <div>
-                  <VehicleInputFields 
-                    returnVehicleId ={(name,num) => this.receiveVehicleId(name,num)}
-                  />
-                  <button
-                    type="button"
-                    className="btn-outline-danger"
-                    onClick={this.props.hideForm}
-                  >
-                    Cancel
-                  </button>
-                </div>
+      resultDisplay = 
+        <VehicleResult  
+          data = {this.state}
+          returnVehicle = {this.props.returnVehicle}
+          displayUnits = {this.props.displayUnits}
+        />
     }
 
     return(
       <div className="container-sm bg-success">
-        {display}
+        <div className="container">
+          <h2>US Database Vehicle Input</h2>
+          <button className="btn btn-outline-danger" onClick={this.props.hideForm}>Return to manual entry</button>
+        </div>
+        <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
+        {resultDisplay}
       </div>
     );
+  }
+}
+
+
+
+
+export class VehicleInput extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state={
+      vehicleLookup:false,
+      fuelList:[],
+      fuel:null,
+      lPer100Km:null,
+      name:"",
+    }
+    this.handleChange=this.handleChange.bind(this)
+    this.hideForm=this.hideForm.bind(this)
+    this.showForm=this.showForm.bind(this)
+    this.returnEconomy=this.returnEconomy.bind(this)
+    this.getFuelList=this.getFuelList.bind(this)
+    this.getFuelId=this.getFuelId.bind(this)
+    this.receiveVehicle=this.receiveVehicle.bind(this)
+  }
+
+  componentDidMount(){
+    this.getFuelList()
+  }
+
+  handleChange(event){
+    if(event.target.name==="economy"){
+      this.setState({lPer100Km:units.convert(event.target.value, this.props.displayUnits)}, this.returnEconomy)
+    } else {
+      this.setState({[event.target.name]: event.target.value}, this.returnEconomy)
+    }
+    
+  }
+
+  receiveVehicle(lPer100Km, fuel, name){
+    this.setState({
+      lPer100Km:lPer100Km,
+      fuel:fuel,
+      name:name,
+    }, this.returnEconomy)
+  }
+
+  hideForm(){
+    this.setState({
+      vehicleLookup:false,
+      fuel:this.state.fuelList[0],
+      lPer100Km:null,
+      name:"",
+    }, this.returnEconomy)
+  }
+
+  showForm(){
+    this.setState({
+      vehicleLookup:true,
+      lPer100Km:null,
+      fuel:null,
+      name:"",
+    }, this.returnEconomy)
+  }
+
+  returnEconomy(){
+    this.props.returnEconomy(this.state.lPer100Km, this.getFuelId(), this.state.name)
+  }
+
+  getFuelList(){
+    let fuelList=[]
+    for(let i in this.props.fuels){
+      fuelList.push(this.props.fuels[i].name)
+    }
+    this.setState({
+      fuelList:fuelList,
+      fuel:fuelList[0],
+    })
+  }
+
+  getFuelId(){
+    for(let i=0;i<this.state.fuelList.length; i++){
+      if(this.state.fuel===this.state.fuelList[i]){
+        return i+1
+      }
+    }
+  }
+  
+
+  render(){
+    let display
+    if(!this.state.vehicleLookup){
+      display=
+        <div>
+          <label>
+            <input  
+              type="number"
+              onChange={this.handleChange} 
+              name="economy"
+              placeholder="Fuel economy"
+            />
+            {units.displayUnitString(this.props.displayUnits)}
+          </label>
+          <OptionListInput name="fuel" onChange={this.handleChange} list={this.state.fuelList}/>
+          <button className="btn btn-outline-primary" onClick={this.showForm}>Look up US vehicle</button>
+        </div>
+      
+    } else {
+      display = 
+        <VehicleForm 
+          returnVehicle={this.receiveVehicle}
+          displayUnits={this.props.displayUnits}
+          hideForm={this.hideForm}
+        />
+    }
+
+    return(
+      display
+    )
   }
 }
 

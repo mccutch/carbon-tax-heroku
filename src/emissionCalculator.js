@@ -82,6 +82,7 @@ export class EmissionCalculator extends React.Component{
                         displayUnits={displayUnits}
                         loggedIn={this.props.loggedIn}
                         vehicles={this.props.vehicles}
+                        fuels={this.props.fuels}
                       />
     }
 

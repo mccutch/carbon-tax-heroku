@@ -1,50 +1,89 @@
 import React from 'react';
+import { createObject } from './helperFunctions.js';
 
 
 export class VehicleSaveForm extends React.Component{
   constructor(props){
     super(props)
-    this.handleClick=this.handleClick.bind(this)
+
+
+
+    this.state = {
+      vehicleName:""
+    }
     this.handleChange=this.handleChange.bind(this)
+    this.saveVehicle=this.saveVehicle.bind(this)
+    this.onSaveSuccess=this.onSaveSuccess.bind(this)
   }
 
-  handleClick(){
-    this.props.saveAs(this.props.vehicleName)
+  componentDidMount(){
+    this.setState({
+      vehicleName:this.props.name
+    })
   }
 
   handleChange(event){
-    this.props.saveAs(event.target.value)
+    this.setState({[event.target.name]:event.target.value})
   }
 
+  onSaveSuccess(){
+    console.log("Vehicle saved successfully.")
+    this.props.onSave()
+    console.log("DOne")
+  }
+
+  saveVehicle(){
+
+    let saveAs
+    if(this.state.vehicleName){
+      saveAs = this.state.vehicleName
+    } else if(this.props.name){
+      saveAs = this.props.name
+    } else {
+      saveAs = "My Vehicle"
+    }
+
+    let vehicleData = {
+      "name":saveAs,
+      "economy":`${parseFloat(this.props.lPer100Km).toFixed(3)}`,
+      "fuel":`/fuel/${this.props.fuelId}/`
+    }
+
+    console.log(vehicleData)
+
+    createObject({
+      data:vehicleData,
+      url:"/my-vehicles/",
+      onSuccess:this.onSaveSuccess,
+    })
+  }
+
+
   render(){
+    let saveAs
+    if(this.state.vehicleName){
+      saveAs = this.state.vehicleName
+    } else if(this.props.name){
+      saveAs = this.props.name
+    } else {
+      saveAs = "My Vehicle"
+    }
 
     let display
-    if(this.props.vehicleWillSave){
-      //Will be saved as...
-      
+    if(this.props.lPer100Km && this.props.fuelId){
       display = 
         <div>
-          <h3>Save as</h3>
-          <input name="vehicleSaveAs" type="text" defaultValue={this.props.vehicleName}  onChange={this.handleChange}/>
+          <input name="vehicleName" type="text" defaultValue={saveAs} onChange={this.handleChange}/>
+          <button name="save" className="btn btn-outline-primary" onClick={this.saveVehicle}>Save</button>
+          <button name="cancel" className="btn btn-outline-danger" onClick={this.props.cancel}>Cancel new vehicle</button>
         </div>
-
-    }else {
-      //save this ?
+    } else {
       display = 
-        <div className="row">
-          <button
-            type="button"
-            name="saveVehicle"
-            className="btn-outline-warning"
-            onClick={this.handleClick}
-          >Save this vehicle?</button>
+        <div>
+          <button name="cancel" className="btn btn-outline-danger" onClick={this.props.cancel}>Cancel new vehicle</button>
         </div>
     }
 
-    return(
-      <div>
-        {display}
-      </div>
-    )
+    return display
   }
 }
