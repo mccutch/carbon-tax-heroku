@@ -281,11 +281,8 @@ class VehicleResult extends React.Component {
 
   findEconomy(){
     /* return vehicle economy based on slider input */
-    console.log("findEconomy")
     let economy = (this.state.cityProportion * this.props.data.cityLper100Km) 
                   + (1-this.state.cityProportion)*this.props.data.highwayLper100Km
-    console.log(economy)
-    console.log(economy)
     return economy
   }
 

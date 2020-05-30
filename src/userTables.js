@@ -464,7 +464,6 @@ class CreateVehicle extends React.Component{
   }
 
   handleSave(){
-    console.log("handlesave")
     this.setState=({
       createNew:false,
       lPer100Km:null,

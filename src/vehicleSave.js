@@ -29,7 +29,6 @@ export class VehicleSaveForm extends React.Component{
   onSaveSuccess(){
     console.log("Vehicle saved successfully.")
     this.props.onSave()
-    console.log("DOne")
   }
 
   saveVehicle(){
