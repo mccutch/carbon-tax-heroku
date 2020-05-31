@@ -6,6 +6,7 @@ import { VehicleInput } from './vehicleInput.js';
 import * as units from './unitConversions';
 import { VehicleSaveForm } from './vehicleSave.js';
 import { createObject } from './helperFunctions.js';
+import {fetchObject} from './helperFunctions.js';
 
 const MAX_NAME_LEN = 30
 
@@ -241,11 +242,21 @@ class TaxDetail extends React.Component{
     this.handleChange=this.handleChange.bind(this)
     this.validateInput=this.validateInput.bind(this)
     this.deleteTax=this.deleteTax.bind(this)
+    this.editSuccess=this.editSuccess.bind(this)
+    this.editFailure=this.editFailure.bind(this)
+    this.deleteSuccess=this.deleteSuccess.bind(this)
   }
 
   deleteTax(){
     let key = parseInt(this.props.tax.id).toString()
 
+    fetchObject({
+      url:`/tax/${key}/`,
+      method:'DELETE',
+      onSuccess:this.deleteSuccess,
+      onFailure:this.editFailure,
+    })
+    /*
     fetch(`/tax/${key}/`, {
       method: 'DELETE',
       headers: {
@@ -274,6 +285,15 @@ class TaxDetail extends React.Component{
         error:true
       })
     });
+    */
+  }
+
+  deleteSuccess(){
+    this.setState({
+      edit:false,
+      error:false,
+    })
+    this.props.refresh()
   }
 
 
@@ -300,40 +320,29 @@ class TaxDetail extends React.Component{
         price_per_kg: parseFloat(this.state.newValue).toFixed(TAX_RATE_DECIMALS),
       }
 
-      fetch(`/tax/${key}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: "Bearer "+localStorage.getItem('access')
-        },
-        body: JSON.stringify(taxData)
+      fetchObject({
+        url:`/tax/${key}/`,
+        method:'PUT',
+        data:taxData,
+        onSuccess:this.editSuccess,
+        onFailure:this.editFailure,
       })
-      .then(res => {
-          if(res.ok){
-            return res.json();
-          } else {
-            throw new Error(res.status)
-          }
-        })
-        .then(json => {
-          console.log(json)
-          this.setState({
-            edit:false,
-            newValue: this.props.tax.price_per_kg,
-            error:false
-          })
-          this.props.refresh()
-        })
-        .catch(error => {
-          console.log(error.message)
-          if(error.message==='401'){
-            refreshToken({onSuccess:this.saveChange})
-          }
-          this.setState({
-            error:true
-          })
-        });
     } 
+  }
+
+  editSuccess(){
+    this.setState({
+      edit:false,
+      newValue: this.props.tax.price_per_kg,
+      error:false
+    })
+    this.props.refresh()
+  }
+
+  editFailure(){
+    this.setState({
+      error:true
+    })
   }
 
   handleChange(event){

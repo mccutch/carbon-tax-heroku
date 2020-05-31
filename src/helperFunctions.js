@@ -110,6 +110,10 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     }
   }
 
+  if(!method){
+    let method='GET'
+  }
+
   // SET BODY - No body required for GET
   let fetchData
   if(data){
@@ -128,10 +132,10 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
 
   fetch(url, fetchData)
   .then(res => {
-    console.log(res)
+    //console.log(res)
     if(res.ok){
       if(res.status===204){
-        console.log("204 no data")
+        //console.log("204 no data")
         onSuccess(res)
         return;
       }
@@ -141,7 +145,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     }
   })
   .then(json => {
-    console.log(json)
+    //console.log(json)
     if(onSuccess){
       onSuccess(json)
     }
