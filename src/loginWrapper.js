@@ -90,6 +90,7 @@ export class LoginWrapper extends React.Component{
   }
 
   clearJWT(){
+    console.log("JWT cleared.")
     clearToken({onSuccess:this.logoutSuccess})
   }
 

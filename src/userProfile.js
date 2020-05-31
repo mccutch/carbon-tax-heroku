@@ -2,6 +2,7 @@ import React from 'react';
 import {refreshToken} from './myJWT.js';
 import { TaxTable, VehicleTable } from './userTables.js';
 //import * as helper from './helperFunctions.js';
+import { fetchObject } from './helperFunctions.js';
 
 
 const MAX_PASSWORD_LEN = 30
@@ -16,6 +17,8 @@ class DeleteUser extends React.Component{
     }
     this.handleClick=this.handleClick.bind(this)
     this.deleteUserAccount=this.deleteUserAccount.bind(this)
+    this.deleteSuccess=this.deleteSuccess.bind(this)
+    this.deleteFailure=this.deleteFailure.bind(this)
   }
 
   handleClick(event){
@@ -30,34 +33,27 @@ class DeleteUser extends React.Component{
 
   deleteUserAccount(){
     let key = parseInt(this.props.user.id).toString()
-    fetch(`/user/${key}/`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-    })
-    .then(res => {
-        if(res.ok){
-          //console.log(res)
-          this.setState({
-          errorMessage:"User deleted successfully"
-          })
-          this.props.logout()
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .catch(error => {
-        console.log(error.message)
-        if(error.message==='401'){
-          refreshToken({onSuccess:this.deleteUserAccount})
-        }
-        this.setState({
-          error:"Unable to delete account."
-        })
-      });
 
+    fetchObject({
+      url:`/user/${key}/`,
+      onSuccess:this.deleteSuccess,
+      onFailure:this.deleteFailure,
+      method:'DELETE'
+    })
+  }
+
+  deleteSuccess(){
+    console.log("Delete successful.")
+    this.setState({
+      errorMessage:"User deleted successfully"
+    })
+    this.props.logout()
+  }
+
+  deleteFailure(){
+    this.setState({
+      error:"Unable to delete account."
+    })
   }
 
 
@@ -97,6 +93,9 @@ class ProfileDetails extends React.Component{
     this.handleClick=this.handleClick.bind(this)
     this.saveProfileChanges=this.saveProfileChanges.bind(this)
     this.handleChange=this.handleChange.bind(this)
+    this.updateFailure=this.updateFailure.bind(this)
+    this.userUpdateSuccess=this.userUpdateSuccess.bind(this)
+    this.profileUpdateSuccess=this.profileUpdateSuccess.bind(this)
   }
 
   handleClick(event){
@@ -148,6 +147,14 @@ class ProfileDetails extends React.Component{
       console.log(userData)
       let key = parseInt(this.props.user.id).toString()
 
+      fetchObject({
+        url:`/user/${key}/`,
+        method:'PUT',
+        data:userData,
+        onSuccess:this.userUpdateSuccess,
+        onFailure:this.updateFailure,
+      })
+      /*
       fetch(`/user/${key}/`, {
         method: 'PUT',
         headers: {
@@ -183,13 +190,23 @@ class ProfileDetails extends React.Component{
           errorMessage:"Failed to update."
         })
       });
+      */
     }
+    
 
     if(Object.keys(profileData).length>0){
       console.log("Updating profile")
 
       let key = parseInt(this.props.profile.id).toString()
 
+      fetchObject({
+        url:`/profile/${key}/`,
+        method:'PUT',
+        data:profileData,
+        onSuccess:this.profileUpdateSuccess,
+        onFailure:this.updateFailure,
+      })
+      /*
       fetch(`/profile/${key}/`, {
         method: 'PUT',
         headers: {
@@ -223,8 +240,36 @@ class ProfileDetails extends React.Component{
         this.setState({
           errorMessage:"Failed to update."
         })
-      });  
+      }); 
+      */ 
     }
+  }
+
+  updateFailure(){
+    this.setState({
+      errorMessage:"Failed to update."
+    })
+  }
+
+  userUpdateSuccess(){
+    this.setState({
+          editProfile:false,
+          errorMessage:null,
+          firstName:null,
+          lastName:null,
+          email:null,
+        })
+        this.props.refresh()
+  }
+
+  profileUpdateSuccess(){
+    this.setState({
+      editProfile:false,
+      errorMessage:null,
+      location:null,
+      dateOfBirth:null,
+    })
+    this.props.refresh()
   }
 
 

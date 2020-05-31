@@ -7,6 +7,7 @@ import {EmissionListWrapper} from './emissionList.js';
 //import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
+import {fetchObject} from './helperFunctions.js';
 
 
 
@@ -35,11 +36,27 @@ class App extends React.Component {
     this.showEmissions=this.showEmissions.bind(this)
     this.fetchObject = this.fetchObject.bind(this)
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
+    this.setFuels = this.setFuels.bind(this)
+    this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
   }
 
   componentDidMount(){
-    this.fetchObject({url:"/fueltypes/", objectName:"fuels"})
+    fetchObject({
+      url:"/fueltypes/", 
+      onSuccess:this.setFuels,
+      onFailure:this.serverConnectionFailure,
+      noAuth:true,
+    })
   }
+
+  serverConnectionFailure(){
+    this.setState({serverConnectionFailure:true})
+  }
+
+  setFuels(json){
+    this.setState({fuels:json})
+  }
+
 
   fetchObject({url, objectName, onSuccess}){
     /* 
@@ -90,6 +107,7 @@ class App extends React.Component {
   }
 
   logout(){
+    console.log("Logout successful.")
     this.setState({
       loggedIn:false,
       user:{},
@@ -104,6 +122,11 @@ class App extends React.Component {
     this.fetchObject({url:"/my-profile/", objectName:"profile"})
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
+    fetchObject({
+      url:"/fueltypes/", 
+      onSuccess:this.setFuels,
+      noAuth:true,
+    })
   }
 
   toggleDisplayUnits(){
@@ -156,10 +179,16 @@ class App extends React.Component {
         </div>
     }
 
+    let serverFailure
+    if(this.state.serverConnectionFailure){
+      serverFailure = <h4>Error connecting to server.</h4>
+    }
+
     return( 
       <div className="container-fluid bg-dark">
         <div className="jumbotron">
-          <h1>Armchair Dissident Carbon Tax</h1>      
+          <h1>Armchair Dissident Carbon Tax</h1>  
+          {serverFailure}    
           <p>Everything's fucked anyway.</p>
         </div>
         <div>

@@ -97,24 +97,44 @@ export function editObject({data, url, onSuccess, onFailure}){
 
 export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
 
-
-  let headers = {
-      'Content-Type': 'application/json',
-      Authorization: "Bearer "+localStorage.getItem('access')
-    }
+  // SET HEADERS - No authorisation required for some APIs
+  let headers 
   if(noAuth){
     headers = {
       'Content-Type': 'application/json',
     }
+  } else {
+    headers = {
+      'Content-Type': 'application/json',
+      Authorization: "Bearer "+localStorage.getItem('access'),
+    }
   }
 
-  fetch(url, {
-    method: method,
-    headers: headers,
-    body: JSON.stringify(data)
-  })
+  // SET BODY - No body required for GET
+  let fetchData
+  if(data){
+    fetchData = {
+      method: method,
+      headers: headers,
+      body: JSON.stringify(data),
+    }
+  } else {
+    fetchData = {
+      method: method,
+      headers: headers,
+    }
+  }
+
+
+  fetch(url, fetchData)
   .then(res => {
+    console.log(res)
     if(res.ok){
+      if(res.status===204){
+        console.log("204 no data")
+        onSuccess(res)
+        return;
+      }
       return res.json();
     } else {
       throw new Error(res.status)
@@ -130,8 +150,9 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     console.log(error.message)
     if(error.message==='401'){
       refreshToken({
-        onSuccess:editObject,
+        onSuccess:fetchObject,
         success_args:[{
+          method:method,
           data:data,
           url:url,
           onSuccess:onSuccess,
