@@ -395,7 +395,7 @@ class VehicleDetail extends React.Component{
   }
 
   useVehicle(){
-    this.props.submitEconomy(this.props.vehicle.economy, this.props.vehicle.fuel)
+    this.props.submitEconomy(this.props.vehicle.economy, this.props.vehicle.fuel, this.props.vehicle.name)
   }
 
   render(){
@@ -424,6 +424,10 @@ class VehicleDetail extends React.Component{
 }
 
 class CreateVehicle extends React.Component{
+  /*
+  Render a VehicleInput and VehiceSaveForm.
+  Maintain state on vehicle input to render the save form.
+  */
   constructor(props){
     super(props)
 

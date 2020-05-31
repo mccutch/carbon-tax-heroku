@@ -1,8 +1,14 @@
 import React from 'react';
 import { createObject } from './helperFunctions.js';
 
+const DEFAULT_VEHICLE_NAME = "My Vehicle"
 
 export class VehicleSaveForm extends React.Component{
+  /*
+    Display a name input, save and cancel buttons.
+    Save vehicle to a user's profile, then execute an onSuccess provided by parent. 
+    If props.name is blank, default to My Vehicle
+  */
   constructor(props){
     super(props)
 
@@ -32,14 +38,13 @@ export class VehicleSaveForm extends React.Component{
   }
 
   saveVehicle(){
-
     let saveAs
     if(this.state.vehicleName){
       saveAs = this.state.vehicleName
     } else if(this.props.name){
       saveAs = this.props.name
     } else {
-      saveAs = "My Vehicle"
+      saveAs = DEFAULT_VEHICLE_NAME
     }
 
     let vehicleData = {
@@ -65,7 +70,7 @@ export class VehicleSaveForm extends React.Component{
     } else if(this.props.name){
       saveAs = this.props.name
     } else {
-      saveAs = "My Vehicle"
+      saveAs = DEFAULT_VEHICLE_NAME
     }
 
     let display

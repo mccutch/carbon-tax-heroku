@@ -10,7 +10,7 @@ export class EmissionCalculator extends React.Component{
     super(props);
     this.state = {
       lPer100km: 0,
-      fuelType: null,
+      fuelId: null,
       origin: null,
       destination: null,
       distanceKm: null,
@@ -25,10 +25,10 @@ export class EmissionCalculator extends React.Component{
     this.exitCalculator=this.exitCalculator.bind(this)
   }
 
-  handleSubmitEconomy(lper100km, fuel){
+  handleSubmitEconomy(lper100km, fuelId){
     this.setState({
       lPer100km: lper100km,
-      fuelType: fuel,
+      fuelId: fuelId,
       economySubmitted: true,
     });
   }
@@ -60,13 +60,17 @@ export class EmissionCalculator extends React.Component{
     let displayUnits=this.props.displayUnits
 
 
+
+
     let economyInput
     if(this.state.economySubmitted){
+      let fuelName=this.props.fuels[parseInt(this.state.fuelId)-1].name
+
       economyInput = 
         <div className="container bg-success text-white" >
           <div className="row">
             <h3>
-              {parseFloat(units.convert(this.state.lPer100km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {this.state.fuelType}
+              {parseFloat(units.convert(this.state.lPer100km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}
             </h3>
             <button
               type="button"
@@ -83,6 +87,7 @@ export class EmissionCalculator extends React.Component{
                         loggedIn={this.props.loggedIn}
                         vehicles={this.props.vehicles}
                         fuels={this.props.fuels}
+                        refresh={this.props.refresh}
                       />
     }
 
@@ -121,6 +126,7 @@ export class EmissionCalculator extends React.Component{
             submitCarbon={this.exitCalculator} 
             taxCategory={taxes.getCategoryName("road-travel")}
             taxes={this.props.taxes}
+            fuels={this.props.fuels}
           />
         </div>
     }

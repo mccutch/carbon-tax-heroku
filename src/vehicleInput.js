@@ -452,6 +452,12 @@ export class VehicleInput extends React.Component{
     this.getFuelList()
   }
 
+  componentDidUpdate(prevProps){
+    if(prevProps.fuels !== this.props.fuels){
+      this.getFuelList()
+    }
+  }
+
   handleChange(event){
     if(event.target.name==="economy"){
       this.setState({lPer100Km:units.convert(event.target.value, this.props.displayUnits)}, this.returnEconomy)
@@ -509,9 +515,13 @@ export class VehicleInput extends React.Component{
       }
     }
   }
+
+
   
 
   render(){
+
+
     let display
     if(!this.state.vehicleLookup){
       display=

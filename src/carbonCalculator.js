@@ -94,8 +94,14 @@ export class CarbonCalculator extends React.Component{
   }
 
   getFuelCarbon(){
-    let fuelType = this.props.data.fuelType
+    let fuelId = this.props.data.fuelId
+    let fuel = this.props.fuels[parseInt(fuelId)-1]
 
+    let carbonPerL = fuel.co2_per_unit
+    let carbonKg = carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100
+    this.setState({carbonKg:carbonKg})
+
+    /*
     fetch('/fueltypes/', {
       method: 'GET',
       headers: {
@@ -122,6 +128,7 @@ export class CarbonCalculator extends React.Component{
     .catch(e => {
       console.log(e)
     });
+    */
   }
 
   componentDidMount(){

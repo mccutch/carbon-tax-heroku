@@ -48,7 +48,46 @@ export function createObject({data, url, onSuccess}){
         })
         }
       });
+}
 
+export function editObject({data, url, onSuccess, onFailure}){
 
-
+  fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: "Bearer "+localStorage.getItem('access')
+    },
+    body: JSON.stringify(data)
+  })
+  .then(res => {
+    if(res.ok){
+      return res.json();
+    } else {
+      throw new Error(res.status)
+    }
+  })
+  .then(json => {
+    console.log(json)
+    if(onSuccess){
+      onSuccess()
+    }
+  })
+  .catch(error => {
+    console.log(error.message)
+    if(error.message==='401'){
+      refreshToken({
+        onSuccess:editObject,
+        success_args:[{
+          data:data,
+          url:url,
+          onSuccess:onSuccess,
+          onFailure:onFailure,
+        }]
+      })
+    }
+    if(onFailure){
+      onFailure()
+    }
+  });
 }
