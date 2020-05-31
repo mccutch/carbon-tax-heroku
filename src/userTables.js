@@ -392,10 +392,19 @@ class VehicleDetail extends React.Component{
     super(props)
 
     this.useVehicle=this.useVehicle.bind(this)
+    this.getFuedId=this.getFuelId.bind(this)
+  }
+
+  getFuelId(){
+    for(let i in this.props.fuels){
+      if(this.props.fuels[i].name===this.props.vehicle.fuel){
+        return i+1
+      }
+    }
   }
 
   useVehicle(){
-    this.props.submitEconomy(this.props.vehicle.economy, this.props.vehicle.fuel, this.props.vehicle.name)
+    this.props.submitEconomy(this.props.vehicle.economy, this.getFuelId(), this.props.vehicle.name)
   }
 
   render(){
@@ -513,7 +522,13 @@ export class VehicleTable extends React.Component{
     let vehicles=this.props.vehicles
     for(let i=0; i<vehicles.length; i++){
       tableRows.push(
-        <VehicleDetail key={vehicles[i].id} vehicle={vehicles[i]} submitEconomy={this.props.submitEconomy} displayUnits={this.props.displayUnits}/>
+        <VehicleDetail 
+          key={vehicles[i].id} 
+          vehicle={vehicles[i]} 
+          submitEconomy={this.props.submitEconomy} 
+          displayUnits={this.props.displayUnits}
+          fuels={this.props.fuels}
+        />
       )
     }
     tableRows.push(<tr><CreateVehicle displayUnits={this.props.displayUnits} fuels={this.props.fuels} refresh={this.props.refresh}/></tr>)

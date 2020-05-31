@@ -27,6 +27,7 @@ export class EconomyInput extends React.Component{
 
     this.receiveEconomy=this.receiveEconomy.bind(this)
     this.submitEconomy=this.submitEconomy.bind(this)
+    this.receiveUserVehicle=this.receiveUserVehicle.bind(this)
   }
 
   showUserVehicles(){
@@ -67,6 +68,15 @@ export class EconomyInput extends React.Component{
     })
   }
 
+  receiveUserVehicle(lPer100Km, fuelId, name){
+    this.setState({
+      lPer100Km:lPer100Km,
+      fuelId:fuelId,
+      name:name,
+    }, this.submitEconomy)
+  }
+
+
   submitEconomy(){
     this.props.submitEconomy(this.state.lPer100Km, this.state.fuelId)
   }
@@ -94,11 +104,11 @@ export class EconomyInput extends React.Component{
         displayUnits={this.props.displayUnits}
         vehicles={this.props.vehicles}
         fuels={this.props.fuels}
-        submitEconomy={this.receiveEconomy}
+        submitEconomy={this.receiveUserVehicle}
         refresh={this.props.refresh}
       />
 
-      myVehiclesBtn = <button className="btn btn-outline-primary" onClick={this.displayUserVehicles}>Use a saved vehicle</button>
+      myVehiclesBtn = <button className="btn btn-outline-primary" onClick={this.showUserVehicles}>Use a saved vehicle</button>
 
       if(this.state.lPer100Km && this.state.fuelId){
         if(this.state.vehicleDidSave){
