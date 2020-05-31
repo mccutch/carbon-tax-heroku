@@ -2,6 +2,7 @@ import React from 'react';
 import {refreshToken} from './myJWT.js';
 import * as getDate from './getDate.js';
 import { OptionListInput } from './optionListInput.js';
+import { createObject } from './helperFunctions.js';
 
 
 
@@ -43,7 +44,6 @@ export class CarbonCalculator extends React.Component{
     this.getFuelCarbon=this.getFuelCarbon.bind(this)
     this.saveEmission=this.saveEmission.bind(this)
     this.handleChange=this.handleChange.bind(this)
-    this.handleSubmitSuccess=this.handleSubmitSuccess.bind(this)
     this.handleSubmitFailure=this.handleSubmitFailure.bind(this)
     this.getRelevantTaxes=this.getRelevantTaxes.bind(this)
     this.calculatePrice=this.calculatePrice.bind(this)
@@ -51,14 +51,6 @@ export class CarbonCalculator extends React.Component{
 
 
   handleChange(event){
-    /*
-    if(event.target.name==="date"){
-      this.setState({date:event.target.value})
-    } else if (event.target.name==="tripName"){
-      this.setState({tripName:event.target.value})
-    }
-    */
-
     this.setState({
       [event.target.name]:event.target.value
     })
@@ -96,57 +88,25 @@ export class CarbonCalculator extends React.Component{
   getFuelCarbon(){
     let fuelId = this.props.data.fuelId
     let fuel = this.props.fuels[parseInt(fuelId)-1]
-
     let carbonPerL = fuel.co2_per_unit
     let carbonKg = carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100
     this.setState({carbonKg:carbonKg})
-
-    /*
-    fetch('/fueltypes/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then(res => {
-      if(res.ok){
-        return res.json();
-      } else {
-        throw new Error(res.status)
-      }
-    })
-    .then(json => {
-
-      for(let i=0; i<json.length; i++){
-        if(fuelType===json[i].name){
-          let carbonPerL = json[i].co2_per_unit
-          let carbonKg = carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100
-          this.setState({carbonKg:carbonKg})
-        }
-      }
-    })
-    .catch(e => {
-      console.log(e)
-    });
-    */
   }
 
   componentDidMount(){
     this.getFuelCarbon()
     this.getRelevantTaxes()
-    
   }
 
   saveEmission(){
-    let tripName = this.state.tripName
 
     let date = getDate.today()
     if(this.state.date){
       date = this.state.date
     }
 
-    let data = {
-      "name": tripName,
+    let emissionData = {
+      "name": this.state.tripName,
       "date": date,
       "travel_mode": this.state.tax,
       "distance": parseFloat(this.props.data.distanceKm).toFixed(3),
@@ -154,40 +114,17 @@ export class CarbonCalculator extends React.Component{
       "price": parseFloat(this.calculatePrice()).toFixed(2)
     }
 
-    fetch('/my-emissions/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-      body: JSON.stringify(data)
+    createObject({
+      url:'/my-emissions/',
+      data:emissionData,
+      onSuccess:this.props.submitCarbon,
+      onFailure:this.handleSubmitFailure,
     })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        this.handleSubmitSuccess(json)
-      })
-      .catch(e => {
-        console.log(e.message)
-        if(e.message==='401'){
-          refreshToken({onSuccess:this.saveEmission})
-        }
-        this.handleSubmitFailure()
-      });
-  }
 
-  handleSubmitSuccess(){
-    this.props.submitCarbon()
   }
 
   handleSubmitFailure(){
-    this.setState({submissionFailed:true})
+    this.setState({submissionFailed:"Unable to save emission."})
   }
 
   render(){
@@ -196,7 +133,7 @@ export class CarbonCalculator extends React.Component{
 
     let failureDisplay
     if(this.state.submissionFailed){
-      failureDisplay = <h3>Submission failed, sorry.</h3>
+      failureDisplay = <h4>{this.state.submissionFailed}</h4>
     }
     
     let memberDisplay

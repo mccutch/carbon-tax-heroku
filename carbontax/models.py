@@ -14,7 +14,7 @@ class EmissionInstance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
 
     class Meta:
-        ordering = ["-date", "distance"]
+        ordering = ["-date", "-id"]
 
     def __str__(self):
         return f'{self.date}-{self.name}'

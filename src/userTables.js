@@ -5,6 +5,7 @@ import {refreshToken} from './myJWT.js';
 import { VehicleInput } from './vehicleInput.js';
 import * as units from './unitConversions';
 import { VehicleSaveForm } from './vehicleSave.js';
+import { createObject } from './helperFunctions.js';
 
 const MAX_NAME_LEN = 30
 
@@ -92,6 +93,8 @@ class CreateTax extends React.Component{
     this.handleClick=this.handleClick.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.handleSubmit=this.handleSubmit.bind(this)
+    this.handlePostSuccess=this.handlePostSuccess.bind(this)
+    this.handlePostFailure=this.handlePostFailure.bind(this)
     this.submitNewTax=this.submitNewTax.bind(this)
     this.validateNewTax=this.validateNewTax.bind(this)
   }
@@ -160,40 +163,26 @@ class CreateTax extends React.Component{
       category: this.state.newCategory,
     }
 
-    fetch('/my-taxes/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-      body: JSON.stringify(taxData)
+    createObject({
+      url:'/my-taxes/',
+      data:taxData,
+      onSuccess:this.handlePostSuccess,
+      onFailure:this.handlePostFailure,
     })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        this.setState({
-          createNew:false,
-          newName: null,
-          newPrice: 0,
-          error:false,
-        })
-        this.props.refresh()
-      })
-      .catch(error => {
-        console.log(error.message)
-        if(error.message==='401'){
-          refreshToken({onSuccess:this.submitNewTax})
-        }
-        this.setState({
-          error:"Unable to create new tax."
-        })
-      });
+  }
+
+  handlePostSuccess(){
+    this.setState({
+      createNew:false,
+      newName: null,
+      newPrice: 0,
+      error:false,
+    })
+    this.props.refresh()
+  }
+
+  handlePostFailure(){
+    this.setState({error: "Unable to create new tax"})
   }
 
   render(){
@@ -215,11 +204,11 @@ class CreateTax extends React.Component{
             <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
           </label>
           <br/>
-          <button type="button" className="btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
-          <button className="btn-outline-danger" name="cancel" onClick={this.handleClick}>Cancel</button>
+          <button type="button" className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+          <button className="btn btn-outline-danger" name="cancel" onClick={this.handleClick}>Cancel</button>
         </div>
     } else {
-      display = <button className="btn-outline-primary" name="create" onClick={this.handleClick}>{this.props.buttonLabel}</button>
+      display = <button className="btn btn-outline-primary" name="create" onClick={this.handleClick}>{this.props.buttonLabel}</button>
     }
 
     let errorDisplay
@@ -358,21 +347,21 @@ class TaxDetail extends React.Component{
 
       let deleteButton
       if(!tax.isDefault){
-        deleteButton = <button className="btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
+        deleteButton = <button className="btn btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
       }
 
       let existingValue=parseFloat(this.props.tax.price_per_kg)
       editDisplay = 
         <td>
           <input type="number" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01"/>
-          <button className="btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
+          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
           {deleteButton}
-          <button className="btn-outline-danger" name="cancel" onClick={this.editTax}>Cancel</button>
+          <button className="btn btn-outline-danger" name="cancel" onClick={this.editTax}>Cancel</button>
         </td>
     } else {
       editDisplay = 
         <td>
-          <button className="btn-outline-warning" name="edit" onClick={this.editTax}>Edit</button>
+          <button className="btn btn-outline-warning" name="edit" onClick={this.editTax}>Edit</button>
         </td>
     }
 

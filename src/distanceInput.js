@@ -57,30 +57,27 @@ export class DistanceInput extends React.Component{
       display = <div>
                   <input  
                     type="number"
-                    id="distance"
                     onChange={this.handleChange} 
                     name="distance"
                     placeholder={placeholderText}
                   />
                   <button
-                    type="button"
-                    name="submitDistance"
-                    className="btn-outline-primary"
-                    onClick={this.handleClick}
-                  >Submit distance</button>
-                  <button
-                    type="button"
                     name="displayRouteCalculator"
-                    className="btn-outline-success"
+                    className=" btn btn-outline-success"
                     onClick={this.handleClick}
                   >Route calculator</button>
                 </div>
     }
 
+    let submitDisplay 
+    if(this.state.distance){
+      submitDisplay = <button name="submitDistance" className=" btn btn-outline-primary" onClick={this.handleClick} >Continue to Vehicle Economy</button>
+    }
 
     return(
       <div className="container bg-info py-2">
         {display}
+        {submitDisplay}
       </div>
     )
   }

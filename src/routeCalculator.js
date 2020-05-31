@@ -58,7 +58,7 @@ class RouteInputFields extends React.Component{
         <PlaceInput label="Origin" name="origin" onChange={this.handleChange} />
         <PlaceInput label="Destination" name="destination" onChange={this.handleChange} />
         <PlaceInput label="Via" name="via" onChange={this.handleChange} />
-        <button type="button" class = "btn-outline-secondary" onClick={this.handleClick}>Check Route</button>
+        <button class = "btn btn-outline-secondary" onClick={this.handleClick}>Check Route</button>
       </div>
     );
   }
@@ -127,8 +127,8 @@ class RouteResultView extends React.Component{
       submitDisplay=
         <div>
           <h3>Distance: {parseFloat(distance).toFixed(1)}{units.distanceString(this.props.displayUnits)}</h3>
-          <button type="button" class = "btn-outline-warning" onClick={this.setReturnTrip}>{returnDisplay}</button>
-          <button type="button" class = "btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
+          <button class = "btn btn-outline-warning" onClick={this.setReturnTrip}>{returnDisplay}</button>
+          <button class = "btn btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
         </div>
     } else {
       submitDisplay = <p>Loading distance can take ~10s on some days. Submit button will appear here.</p>
@@ -138,7 +138,7 @@ class RouteResultView extends React.Component{
       <div className="container">
         <MapView parameters={this.props.parameters}/>
         {submitDisplay}
-        <button type="button" className="btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
+        <button className="btn btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
       </div>
     );
   }
@@ -287,7 +287,7 @@ export class RouteCalculator extends React.Component{
 
     return(
       <div className="container bg-success" >
-        <RouteInputFields submitQuery={(o, d, v)=>this.receiveQuery(o,d,v)}/>
+        <RouteInputFields submitQuery={this.receiveQuery}/>
         <RouteResultView 
           parameters={this.state.directionsSuffix}
           submitDistance={this.props.submitDistance}

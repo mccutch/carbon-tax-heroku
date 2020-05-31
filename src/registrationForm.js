@@ -4,6 +4,7 @@ import { defaultTaxes } from './defaultTaxTypes.js';
 import { getToken }  from './myJWT.js';
 
 import * as helper from './helperFunctions.js';
+import { fetchObject } from './helperFunctions.js';
 
 const MAX_PASSWORD_LEN = 30
 const MAX_EMAIL_LEN = 30
@@ -27,8 +28,6 @@ export class RegistrationForm extends React.Component{
       date_of_birth: "",
     }
 
-    
-
     this.handleSubmit=this.handleSubmit.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.createUser=this.createUser.bind(this)
@@ -36,6 +35,25 @@ export class RegistrationForm extends React.Component{
     this.createProfile=this.createProfile.bind(this)
     this.createTaxes=this.createTaxes.bind(this)
     this.validateEmail=this.validateEmail.bind(this)
+    this.usernameReponse=this.usernameReponse.bind(this)
+    this.postFailure=this.postFailure.bind(this)
+    this.createUserFailure=this.createUserFailure.bind(this)
+    this.createUserSuccess=this.createUserSuccess.bind(this)
+  }
+
+  handleSubmit(e){
+    e.preventDefault()
+    this.validateUserData()
+  }
+
+  handleChange(event){
+    this.setState({[event.target.name]:event.target.value})
+
+    if(event.target.name==="password"){
+      this.checkPasswordStrength(event.target.value)
+    } else if(event.target.name==="email"){
+      this.validateEmail(event.target.value)
+    }
   }
 
   checkPasswordStrength(password){
@@ -47,8 +65,6 @@ export class RegistrationForm extends React.Component{
   validateEmail(email){
     this.setState({validEmail:helper.validateEmail(email)})
   }
-
-  
 
   validateUserData(){
     this.setState({errorMessage:""})
@@ -80,39 +96,40 @@ export class RegistrationForm extends React.Component{
 
     // Validate username
     let data = {username:this.state.username}
-    fetch('/account/check-username/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
+
+    fetchObject({
+      method:'POST',
+      url:'/account/check-username/',
+      data:data,
+      onSuccess:this.usernameReponse,
+      onFailure:this.postFailure,
+      noAuth:true,
     })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        if(json.unique==="false"){
-          this.setState({errorMessage:"Username is already in use."})
-        } else {
-          this.createUser()
-        }
-      })
-      .catch(e => {
-        console.log(e.message)
-        if(e.message==="403"){
-          this.setState({errorMessage:"403 - You may be logged in on another tab."})
-        }
-      });
   }
 
+  usernameReponse(json){
+    if(json.unique==="false"){
+      this.setState({errorMessage:"Username is already in use."})
+    } else {
+      this.createUser()
+    }
+  }
+
+  postFailure(message){
+    this.setState({errorMessage:"Error occurred while creating profile."})
+  }
+
+  createUserFailure(message){
+    this.setState({errorMessage:"Unable to create user."})
+  }
+
+  createUserSuccess(){
+    console.log("Create user - Success")
+    let loginData = {username: this.state.username, password: this.state.password}
+    getToken({data:loginData, onSuccess:this.createProfile})
+  }
 
   createUser(){
-
     let userData = {
       first_name: this.state.firstName,
       last_name: this.state.lastName,
@@ -121,36 +138,18 @@ export class RegistrationForm extends React.Component{
       email: this.state.email,
     }
 
-    fetch('/account/register/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData)
+    console.log(userData)
+
+    fetchObject({
+      method:'POST',
+      url:'/account/register/',
+      data:userData,
+      onSuccess:this.createUserSuccess,
+      onFailure:this.createUserFailure,
+      noAuth:true,
     })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log("Create user - success")
-        console.log(json)
-        let loginData = {username: userData.username, password: userData.password}
-        getToken({data:loginData, onSuccess:this.createProfile})
-      })
-      .catch(e => {
-        console.log(e.message)
-        if(e.message==="400"){
-          this.setState({errorMessage:"Error processing registration, check email address is valid."})
-        } else {
-          this.setState({errorMessage:"Error processing registration."})
-        }
-      });
   }
-  
+
   createProfile(){
     let profileData = {
       location: this.state.location,
@@ -159,28 +158,12 @@ export class RegistrationForm extends React.Component{
       profileData['date_of_birth']=this.state.date_of_birth
     }
 
-
-    fetch('my-profile/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-      body: JSON.stringify(profileData)
-    })
-    .then(res => {
-      if(res.ok){
-        return res.json();
-      } else {
-        throw new Error(res.status)
-      }
-    })
-    .then(json => {
-      console.log(json)
-      this.createTaxes()
-    })
-    .catch(e => {
-      console.log(e.message)
+    fetchObject({
+      method:'POST',
+      url:'/my-profile/',
+      data:profileData,
+      onSuccess:this.createTaxes,
+      onFailure:this.postFailure,
     })
   }
 
@@ -194,45 +177,13 @@ export class RegistrationForm extends React.Component{
         isDefault: "True",
       }
 
-      console.log(taxData)
-      
-      fetch('/my-taxes/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: "Bearer "+localStorage.getItem('access')
-        },
-        body: JSON.stringify(taxData)
+      fetchObject({
+        method:'POST',
+        url:'/my-taxes/',
+        data:taxData,
+        onSuccess:this.props.loginSuccess,
+        onFailure:this.postFailure,
       })
-      .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        this.props.loginSuccess()
-      })
-      .catch(e => {
-        console.log(e.message)
-      })
-    }
-  }
-
-  handleSubmit(e){
-    e.preventDefault()
-    this.validateUserData()
-  }
-
-  handleChange(event){
-    this.setState({[event.target.name]:event.target.value})
-
-    if(event.target.name==="password"){
-      this.checkPasswordStrength(event.target.value)
-    } else if(event.target.name==="email"){
-      this.validateEmail(event.target.value)
     }
   }
 
