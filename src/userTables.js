@@ -45,14 +45,16 @@ class ObjectTable extends React.Component{
 
   render(){
     return(
-      <table className="table table-light">
-        <thead className="thead-dark">
-          {this.buildHeader()}
-        </thead>
-        <tbody>
-          {this.props.tableRows}
-        </tbody>
-      </table>
+      <div className="table-responsive">
+        <table className="table table-light">
+          <thead className="thead-dark">
+            {this.buildHeader()}
+          </thead>
+          <tbody>
+            {this.props.tableRows}
+          </tbody>
+        </table>
+      </div>
     )
   }
 }
