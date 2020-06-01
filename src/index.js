@@ -177,7 +177,7 @@ class App extends React.Component {
                 />
     } else {
       display = 
-        <div className='container my-2'>
+        <div className='container bg-light my-2'>
           <button className="btn-outline-info" name="showCalculator" onClick={this.handleClick}>Add a carbon emission</button>
           {memberDisplay}
         </div>

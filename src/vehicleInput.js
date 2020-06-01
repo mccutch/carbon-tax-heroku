@@ -536,7 +536,8 @@ export class VehicleInput extends React.Component{
             {units.displayUnitString(this.props.displayUnits)}
           </label>
           <OptionListInput name="fuel" onChange={this.handleChange} list={this.state.fuelList}/>
-          <button className="btn btn-outline-primary" onClick={this.showForm}>Look up US vehicle</button>
+          <br/>
+          <button className="btn btn-outline-info" onClick={this.showForm}>Look up US vehicle</button>
         </div>
       
     } else {

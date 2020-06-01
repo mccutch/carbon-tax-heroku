@@ -108,7 +108,7 @@ export class EconomyInput extends React.Component{
         refresh={this.props.refresh}
       />
 
-      myVehiclesBtn = <button className="btn btn-outline-primary" onClick={this.showUserVehicles}>Use a saved vehicle</button>
+      myVehiclesBtn = <button className="btn btn-outline-info" onClick={this.showUserVehicles}>Use a saved vehicle</button>
 
       if(this.state.lPer100Km && this.state.fuelId){
         if(this.state.vehicleDidSave){
@@ -155,7 +155,7 @@ export class EconomyInput extends React.Component{
     
    
     return(
-      <div className='container bg-info py-2'>
+      <div className='container bg-light py-2'>
         {display}
         {continueDisplay}
       </div>

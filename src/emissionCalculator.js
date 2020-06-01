@@ -67,7 +67,7 @@ export class EmissionCalculator extends React.Component{
       let fuelName=this.props.fuels[parseInt(this.state.fuelId)-1].name
 
       economyInput = 
-        <div className="container bg-success text-white" >
+        <div className="container bg-light" >
           <div className="row">
             <h3>
               {parseFloat(units.convert(this.state.lPer100km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}
@@ -75,7 +75,7 @@ export class EmissionCalculator extends React.Component{
             <button
               type="button"
               name="economy"
-              className="btn-outline-primary"
+              className="btn btn-outline-primary"
               onClick={this.handleEdit}
             >Edit</button>
           </div>
@@ -94,7 +94,7 @@ export class EmissionCalculator extends React.Component{
     let distanceDisplay
     if(this.state.distanceSubmitted){
       distanceDisplay = 
-        <div className="container bg-success text-white" >
+        <div className="container bg-light" >
           <div className="row">
             <h3>
               {parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}
@@ -102,7 +102,7 @@ export class EmissionCalculator extends React.Component{
             <button
               type="button"
               name="distance"
-              className="btn-outline-primary"
+              className="btn btn-outline-primary"
               onClick={this.handleEdit}
             >Edit</button>
           </div>
@@ -133,10 +133,10 @@ export class EmissionCalculator extends React.Component{
     
     return(
       <div className="my-2">
-        <div className="container bg-info">
+        <div className="container bg-light">
           <div className="row">
             <h3>Carbon Tax Calculator</h3>
-            <button type="button" className="btn-outline-danger" onClick={this.exitCalculator}>Exit</button>
+            <button type="button" className="btn btn-outline-danger" onClick={this.exitCalculator}>Exit</button>
           </div>
         </div>
         {distanceDisplay}

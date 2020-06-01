@@ -63,7 +63,7 @@ export class DistanceInput extends React.Component{
                   />
                   <button
                     name="displayRouteCalculator"
-                    className=" btn btn-outline-success"
+                    className=" btn btn-outline-info"
                     onClick={this.handleClick}
                   >Route calculator</button>
                 </div>
@@ -75,7 +75,7 @@ export class DistanceInput extends React.Component{
     }
 
     return(
-      <div className="container bg-info py-2">
+      <div className="container bg-light py-2">
         {display}
         {submitDisplay}
       </div>

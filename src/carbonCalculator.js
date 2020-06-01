@@ -157,7 +157,7 @@ export class CarbonCalculator extends React.Component{
 
     return(
       
-      <div className="container bg-info">
+      <div className="container bg-light">
         <h1>{parseFloat(carbon).toFixed(2)} kg, ${parseFloat(price).toFixed(2)}</h1>
         {memberDisplay}
       </div>

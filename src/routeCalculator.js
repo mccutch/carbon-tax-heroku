@@ -138,7 +138,7 @@ class RouteResultView extends React.Component{
       <div className="container">
         <MapView parameters={this.props.parameters}/>
         {submitDisplay}
-        <button className="btn btn-outline-danger" onClick={this.props.hideCalculator}>Cancel</button>
+        <button className="btn btn-outline-danger" onClick={this.props.hideCalculator}>Return to manual entry</button>
       </div>
     );
   }
@@ -286,7 +286,7 @@ export class RouteCalculator extends React.Component{
 
 
     return(
-      <div className="container bg-success" >
+      <div className="container bg-light" >
         <RouteInputFields submitQuery={this.receiveQuery}/>
         <RouteResultView 
           parameters={this.state.directionsSuffix}
