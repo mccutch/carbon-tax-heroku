@@ -1,6 +1,6 @@
 import React from 'react';
 import {refreshToken} from './myJWT.js';
-import { TaxTable, VehicleTable } from './userTables.js';
+import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
 //import * as helper from './helperFunctions.js';
 import { fetchObject } from './helperFunctions.js';
 
@@ -299,7 +299,7 @@ class TabbedListDisplay extends React.Component{
     } else if(this.state.activeTab==="vehicles"){
       table = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
     } else if(this.state.activeTab==="emissions"){
-      table = <p>Not finished yet.</p>
+      table = <EmissionTable emissions={this.props.emissions} displayUnits={this.props.displayUnits} />
     }
 
     return(
@@ -351,6 +351,7 @@ export class ProfileDisplay extends React.Component{
           vehicles={this.props.vehicles}
           fuels={this.props.fuels}
           displayUnits={this.props.displayUnits}
+          emissions={this.props.emissions}
         />
         
         <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>

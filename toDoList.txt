@@ -1,4 +1,6 @@
-tabbed table display on profile
+edit fuel type of vehicle
+
+edit emissions
 
 user profile/delete user (needs to be abstracted)
 
@@ -15,6 +17,8 @@ password reset
 
 
 user statistics
+
+backdate changes to tax pricing
 
 
 profile - preferred units

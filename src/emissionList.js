@@ -10,15 +10,9 @@ export class EmissionListWrapper extends React.Component{
     super(props)
     this.state = {
       displayEmissions: false,
-      emissions: null,
     }
 
     this.exitList=this.exitList.bind(this)
-    this.fetchEmissions=this.fetchEmissions.bind(this)
-  }
-
-  componentDidMount(){
-    this.fetchEmissions()
   }
 
   exitList(){
@@ -26,44 +20,15 @@ export class EmissionListWrapper extends React.Component{
   }
 
 
-  fetchEmissions(){
-    fetch('/my-emissions/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      }
-    })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        this.setState({displayEmissions: true, emissions:json})
-      })
-      .catch(e => {
-        console.log(e.message)
-        if(e.message==='401'){
-          refreshToken({onSuccess:this.fetchEmissions})
-        }
-      });
-  }
-
-
   render(){
-    let emissionTable
-    if(this.state.displayEmissions){
-      emissionTable = 
+    let emissionTable = 
         <div>
           <EmissionTable 
-            emissions={this.state.emissions} 
+            emissions={this.props.emissions} 
             displayUnits={this.props.displayUnits}
           />
         </div>
-    }
+
 
     return(
       <div className="container bg-info my-2">

@@ -25,7 +25,8 @@ class App extends React.Component {
       profile: {},
       taxes: {},
       vehicles: {},
-      fuels:{}
+      fuels:{},
+      emissions:{},
     }
 
     this.login=this.login.bind(this)
@@ -114,6 +115,7 @@ class App extends React.Component {
       profile:{},
       taxes:{},
       vehicles:{},
+      emissions:{},
     })
   }
 
@@ -122,6 +124,7 @@ class App extends React.Component {
     this.fetchObject({url:"/my-profile/", objectName:"profile"})
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
+    this.fetchObject({url:"/my-emissions/", objectName:"emissions"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,
@@ -170,6 +173,7 @@ class App extends React.Component {
       display = <EmissionListWrapper
                   showEmissions={this.showEmissions}
                   displayUnits={this.state.displayUnits}
+                  emissions={this.state.emissions}
                 />
     } else {
       display = 
@@ -200,6 +204,7 @@ class App extends React.Component {
             user={this.state.user}
             profile={this.state.profile}
             vehicles={this.state.vehicles}
+            emissions={this.state.emissions}
             displayUnits={this.state.displayUnits}
             fuels={this.state.fuels}
             refresh={this.refreshFullProfile}
