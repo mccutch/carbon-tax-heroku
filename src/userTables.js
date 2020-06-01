@@ -7,6 +7,7 @@ import * as units from './unitConversions';
 import { VehicleSaveForm } from './vehicleSave.js';
 import { createObject } from './helperFunctions.js';
 import {fetchObject} from './helperFunctions.js';
+import {ECONOMY_DECIMALS} from './fuelTypes.js';
 
 const MAX_NAME_LEN = 30
 
@@ -233,7 +234,7 @@ class TaxDetail extends React.Component{
     super(props)
     this.state = {
       edit:false,
-      newValue:this.props.tax.price_per_kg,
+      newValue:null,
       error:false,
     }
 
@@ -244,7 +245,6 @@ class TaxDetail extends React.Component{
     this.deleteTax=this.deleteTax.bind(this)
     this.editSuccess=this.editSuccess.bind(this)
     this.editFailure=this.editFailure.bind(this)
-    this.deleteSuccess=this.deleteSuccess.bind(this)
   }
 
   deleteTax(){
@@ -253,53 +253,17 @@ class TaxDetail extends React.Component{
     fetchObject({
       url:`/tax/${key}/`,
       method:'DELETE',
-      onSuccess:this.deleteSuccess,
+      onSuccess:this.editSuccess,
       onFailure:this.editFailure,
     })
-    /*
-    fetch(`/tax/${key}/`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-    })
-    .then(res => {
-      //console.log(res)
-      if(res.ok){
-        this.props.refresh()
-        this.setState({
-          edit:false,
-          error:false,
-        })
-      } else {
-        throw new Error(res.status)
-      }
-    })
-    .catch(error => {
-      console.log(error.message)
-      if(error.message==='401'){
-        refreshToken({onSuccess:this.deleteTax})
-      }
-      this.setState({
-        error:true
-      })
-    });
-    */
   }
-
-  deleteSuccess(){
-    this.setState({
-      edit:false,
-      error:false,
-    })
-    this.props.refresh()
-  }
-
 
   editTax(event){
     if(event.target.name==="cancel"){
-      this.setState({edit:false})
+      this.setState({
+        edit:false,
+        newValue:null,
+      })
     } else if(event.target.name==="edit"){
       this.setState({edit:true})
     }
@@ -307,7 +271,11 @@ class TaxDetail extends React.Component{
 
   validateInput(){
     //No validation to apply yet.
-    return true
+    if(this.state.newValue){
+      return true
+    } else {
+      return false
+    }
   }
 
 
@@ -333,7 +301,7 @@ class TaxDetail extends React.Component{
   editSuccess(){
     this.setState({
       edit:false,
-      newValue: this.props.tax.price_per_kg,
+      newValue: null,
       error:false
     })
     this.props.refresh()
@@ -388,9 +356,20 @@ class TaxDetail extends React.Component{
 class VehicleDetail extends React.Component{
   constructor(props){
     super(props)
+    this.state = {
+      edit:false,
+    }
 
     this.useVehicle=this.useVehicle.bind(this)
     this.getFuedId=this.getFuelId.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+    this.editVehicle=this.editVehicle.bind(this)
+    this.cancelEdit=this.cancelEdit.bind(this)
+    this.deleteVehicle=this.deleteVehicle.bind(this)
+    this.saveChange=this.saveChange.bind(this)
+    this.validateInput=this.validateInput.bind(this)
+    this.editSuccess=this.editSuccess.bind(this)
+    this.editFailure=this.editFailure.bind(this)
   }
 
   getFuelId(){
@@ -401,9 +380,103 @@ class VehicleDetail extends React.Component{
     }
   }
 
+  handleChange(event){
+    if(event.target.name==="economy"){
+      this.setState({lPer100Km: units.convert(event.target.value, this.props.displayUnits)})
+    } else {
+      this.setState({name:event.target.value})
+    }
+  }
+
   useVehicle(){
     this.props.submitEconomy(this.props.vehicle.economy, this.getFuelId(), this.props.vehicle.name)
   }
+
+  editVehicle(){
+    this.setState({edit:true})
+  }
+
+  cancelEdit(){
+    this.setState({
+      edit:false,
+      name:null,
+      lPer100Km:null,
+    })
+  }
+
+  deleteVehicle(){
+    console.log("DELETE VEHICLE")
+  }
+
+  validateInput(){
+    //No validation to apply yet.
+    if(this.state.name || this.state.lPer100Km){
+      return true
+    } else {
+      return false
+    }
+  }
+
+  saveChange(){
+    if(this.validateInput){
+      console.log("SAVE CHANGE")
+      let key = parseInt(this.props.vehicle.id).toString()
+
+      let vehicleData ={}
+      if(this.state.name){
+        vehicleData['name']=this.state.name
+      }
+      if(this.state.lPer100Km){
+        vehicleData['economy']=parseFloat(this.state.lPer100Km).toFixed(ECONOMY_DECIMALS)
+      }
+
+      console.log(vehicleData)
+
+      fetchObject({
+        url:`/vehicle/${key}/`,
+        method:'PUT',
+        data:vehicleData,
+        onSuccess:this.editSuccess,
+        onFailure:this.editFailure,
+      })
+    }
+  }
+
+  editSuccess(){
+    this.setState({
+      edit:false,
+      name:null,
+      lPer100Km:null,
+      error:false,
+    })
+    this.props.refresh()
+  }
+
+  editFailure(){
+    this.setState({
+      error:true
+    })
+  }
+
+  deleteVehicle(){
+    let key = parseInt(this.props.vehicle.id).toString()
+
+    fetchObject({
+      url:`/vehicle/${key}/`,
+      method:'DELETE',
+      onSuccess:this.editSuccess,
+      onFailure:this.editFailure,
+    })
+  }
+
+  deleteSuccess(){
+    this.setState({
+      edit:false,
+      error:false,
+    })
+    this.props.refresh()
+  }
+  
 
   render(){
     let vehicle=this.props.vehicle
@@ -416,14 +489,40 @@ class VehicleDetail extends React.Component{
       vehicleName=<td>{vehicle.name}</td>
     }
 
+    let errorDisplay
+    if(this.state.error){
+      errorDisplay = <p>Unable to save changes.</p>
+    }
+
+    let editDisplay
+    if(this.state.edit){
+
+      let existingLPer100Km=units.convert(parseFloat(vehicle.economy), this.props.displayUnits)
+      editDisplay = 
+        <td>
+          {errorDisplay}
+          <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} />
+          <label>
+            <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1"/>
+            {units.string(this.props.displayUnits)}
+          </label>
+          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
+          <button className="btn btn-outline-danger" name="cancel" onClick={this.cancelEdit}>Cancel</button>
+          <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
+        </td>
+    } else {
+      editDisplay = 
+        <td>
+          <button className="btn btn-outline-warning" name="edit" onClick={this.editVehicle}>Edit</button>
+        </td>
+    }
+
     return(
       <tr key={vehicle.id}>
         {vehicleName}
         <td>{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
         <td>{vehicle.fuel}</td>
-        <td>
-          <button className="btn btn-outline-warning">Edit</button>
-        </td>
+        {editDisplay}
       </tr>
     )
   }
@@ -526,6 +625,7 @@ export class VehicleTable extends React.Component{
           submitEconomy={this.props.submitEconomy} 
           displayUnits={this.props.displayUnits}
           fuels={this.props.fuels}
+          refresh={this.props.refresh}
         />
       )
     }

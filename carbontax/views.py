@@ -42,6 +42,50 @@ class UserVehicleList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class VehicleDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+    """
+    Retrieve, update or delete a vehicle.
+    """
+    def is_owner(self, user_object, pk):
+        requested_object = self.get_object(pk)
+        if(user_object == requested_object):
+            return True
+        else:
+            print("User does not own this object")
+            return False
+
+    def get_object(self,pk):
+        try:
+            return models.Vehicle.objects.get(pk=pk)
+        except models.Vehicle.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        vehicle = self.get_object(pk)
+        if(not self.is_owner(vehicle, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = serializers.VehicleSerializer(vehicle)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        vehicle = self.get_object(pk)
+        if(not self.is_owner(vehicle, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        serializer = serializers.VehicleSerializer(vehicle, data=request.data, context={'request':request}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        vehicle = self.get_object(pk)
+        if(not self.is_owner(vehicle, pk)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        vehicle.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 # -----------EMISSIONS-----------
 class EmissionList(APIView):

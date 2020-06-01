@@ -27,6 +27,7 @@ urlpatterns = [
 
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
     path('vehicles/', views.VehicleList.as_view(), name="vehicles"),
+    path('vehicle/<int:pk>/', views.VehicleDetail.as_view(), name="vehicle-detail"),
 
     path('my-emissions/', views.UserEmissionList.as_view(), name="my-emissions"),
     path('emissions/', views.EmissionList.as_view(), name="emissions"),

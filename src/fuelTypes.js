@@ -13,6 +13,7 @@ const dbFuels = {
   electric: 'Electric',
 }
 
+export const ECONOMY_DECIMALS = 1
 
 export function findFuel(fuelRaw){
   let fuelLwr=fuelRaw.toLowerCase()
