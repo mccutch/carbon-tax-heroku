@@ -82,6 +82,8 @@ class DeleteUser extends React.Component{
 
 
 
+
+
 class ProfileDetails extends React.Component{
   constructor(props){
     super(props)
@@ -154,43 +156,6 @@ class ProfileDetails extends React.Component{
         onSuccess:this.userUpdateSuccess,
         onFailure:this.updateFailure,
       })
-      /*
-      fetch(`/user/${key}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: "Bearer "+localStorage.getItem('access')
-        },
-        body: JSON.stringify(userData)
-      })
-      .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        this.setState({
-          editProfile:false,
-          errorMessage:null,
-          firstName:null,
-          lastName:null,
-          email:null,
-        })
-        this.props.refresh()
-      })
-      .catch(error => {
-        console.log(error.message)
-        if(error.message==='401'){
-          refreshToken({onSuccess:this.saveProfileChanges})
-        }
-        this.setState({
-          errorMessage:"Failed to update."
-        })
-      });
-      */
     }
     
 
@@ -206,42 +171,6 @@ class ProfileDetails extends React.Component{
         onSuccess:this.profileUpdateSuccess,
         onFailure:this.updateFailure,
       })
-      /*
-      fetch(`/profile/${key}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: "Bearer "+localStorage.getItem('access')
-        },
-        body: JSON.stringify(profileData)
-      })
-      .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        this.setState({
-          editProfile:false,
-          errorMessage:null,
-          location:null,
-          dateOfBirth:null,
-        })
-        this.props.refresh()
-      })
-      .catch(error => {
-        console.log(error.message)
-        if(error.message==='401'){
-          refreshToken({onSuccess:this.saveProfileChanges})
-        }
-        this.setState({
-          errorMessage:"Failed to update."
-        })
-      }); 
-      */ 
     }
   }
 
@@ -333,6 +262,65 @@ class ProfileDetails extends React.Component{
   }
 }
 
+class TabbedListDisplay extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state={
+      activeTab:"taxes",
+    }
+
+    this.makeTab=this.makeTab.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+  }
+
+  handleClick(event){
+    console.log(event.target.name)
+    this.setState({
+      activeTab:event.target.name
+    })
+  }
+
+  makeTab(name, label){
+    let className
+    if(this.state.activeTab === name){
+      className="nav-link active"
+    } else {
+      className="nav-link"
+    }
+    return <strong><a name={name} className={className} onClick={this.handleClick}>{label}</a></strong>
+  }
+
+  render(){
+
+    let table
+    if(this.state.activeTab==="taxes"){
+      table = <TaxTable refresh={this.props.refresh} taxes={this.props.taxes}/>
+    } else if(this.state.activeTab==="vehicles"){
+      table = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
+    } else if(this.state.activeTab==="emissions"){
+      table = <p>Not finished yet.</p>
+    }
+
+    return(
+      <div className="container py-2">
+        <ul className="nav nav-tabs">
+          <li className="nav-item">
+            {this.makeTab("taxes", "My Taxes")}
+          </li>
+          <li className="nav-item">
+            {this.makeTab("vehicles", "My Vehicles")}
+          </li>
+          <li className="nav-item">
+            {this.makeTab("emissions", "My Emissions")}
+          </li>
+        </ul>
+        {table}
+      </div>
+    )
+  }
+}
+
 
 
 export class ProfileDisplay extends React.Component{
@@ -350,17 +338,21 @@ export class ProfileDisplay extends React.Component{
 
   render(){
     return(
+
       <div>
         <ProfileDetails 
           user={this.props.user} 
           profile={this.props.profile} 
           refresh={this.props.refresh}
         />
-        <h4>My Taxes</h4> 
-        <TaxTable refresh={this.props.refresh} taxes={this.props.taxes}/>
-
-        <h4>My Vehicles</h4> 
-        <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
+        <TabbedListDisplay 
+          refresh={this.props.refresh}
+          taxes={this.props.taxes}
+          vehicles={this.props.vehicles}
+          fuels={this.props.fuels}
+          displayUnits={this.props.displayUnits}
+        />
+        
         <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
         <button name="logout" className="btn-outline-danger" onClick={this.props.onClick}>Logout</button>
         <DeleteUser user={this.props.user} logout={this.props.logout}/>

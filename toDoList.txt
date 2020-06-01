@@ -1,10 +1,14 @@
-edit vehicles through table
-move object edits into separate file
+tabbed table display on profile
+
+user profile/delete user (needs to be abstracted)
 
 migrate post requests into "createObject"
 
 allow prefernce ordering of taxes
 
+tabbed view on profile
+
+create saved trips
 
 password change
 password reset
