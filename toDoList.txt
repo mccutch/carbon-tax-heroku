@@ -1,12 +1,14 @@
-edit fuel type of vehicle
+order taxes by usage count
+
+
+fix isOwner method
+
+
+views- move is_owner into get_object
 
 edit emissions
 
-user profile/delete user (needs to be abstracted)
-
-migrate post requests into "createObject"
-
-allow prefernce ordering of taxes
+allow preference ordering of taxes
 
 tabbed view on profile
 

@@ -1,7 +1,5 @@
 import React from 'react';
-import {refreshToken} from './myJWT.js';
 import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
-//import * as helper from './helperFunctions.js';
 import { fetchObject } from './helperFunctions.js';
 
 

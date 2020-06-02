@@ -15,6 +15,7 @@ export class OptionListInput extends React.Component{
       return  <select
                 onChange = {this.props.onChange}
                 name = {this.props.name}
+                defaultValue = {this.props.defaultValue}
               >
                 {listOptions}
               </select>

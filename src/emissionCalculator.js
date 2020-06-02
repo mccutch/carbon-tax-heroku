@@ -127,6 +127,7 @@ export class EmissionCalculator extends React.Component{
             taxCategory={taxes.getCategoryName("road-travel")}
             taxes={this.props.taxes}
             fuels={this.props.fuels}
+            refresh={this.props.refresh}
           />
         </div>
     }

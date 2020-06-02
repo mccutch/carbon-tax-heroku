@@ -339,8 +339,17 @@ class UserTaxList(APIView):
 class TaxDetail(APIView):
     permission_classes = (IsAuthenticated,)
     """
-    Retrieve, update or delete an emission.
+    Retrieve, update or delete a tax.
     """
+
+    def is_owner(self, user_object, pk):
+        requested_object = self.get_object(pk)
+        if(user_object == requested_object):
+            return True
+        else:
+            print("User does not own this object")
+            return False
+
     def get_object(self,pk):
         try:
             return models.TaxRate.objects.get(pk=pk)

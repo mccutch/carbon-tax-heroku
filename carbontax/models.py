@@ -40,9 +40,10 @@ class TaxRate(models.Model):
     category = models.CharField(max_length=30, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='taxes', null=True)
     isDefault = models.BooleanField(default=False)
+    usage = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ["category", "id"]
+        ordering = ["category", "-usage", "id"]
         unique_together = ["name", "user", "category"]
 
 class Profile(models.Model):
@@ -62,10 +63,9 @@ class Vehicle(models.Model):
     economy = models.FloatField() # MUST BE IN L/100km
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicles')
 
-    """
+    
     class Meta:
         ordering = ["id"]
-        unique_together = ["name", "owner"]"""
 
     def __str__(self):
         return f'{self.name}'

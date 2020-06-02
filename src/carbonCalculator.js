@@ -2,7 +2,7 @@ import React from 'react';
 import {refreshToken} from './myJWT.js';
 import * as getDate from './getDate.js';
 import { OptionListInput } from './optionListInput.js';
-import { createObject } from './helperFunctions.js';
+import { createObject, fetchObject } from './helperFunctions.js';
 
 
 
@@ -47,6 +47,7 @@ export class CarbonCalculator extends React.Component{
     this.handleSubmitFailure=this.handleSubmitFailure.bind(this)
     this.getRelevantTaxes=this.getRelevantTaxes.bind(this)
     this.calculatePrice=this.calculatePrice.bind(this)
+    this.incrementTaxUsage=this.incrementTaxUsage.bind(this)
   }
 
 
@@ -85,6 +86,29 @@ export class CarbonCalculator extends React.Component{
     }
   }
 
+  incrementTaxUsage(){
+    let taxes = this.props.taxes
+    let usedTax
+    for(let i in taxes){
+      if(taxes[i].name===this.state.tax){
+        usedTax=taxes[i]
+        break;
+      }
+    }
+    let taxData = {
+      usage:(parseInt(usedTax.usage)+1).toString()
+    }
+
+    let key = usedTax.id
+    fetchObject({
+      url:`/tax/${key}/`,
+      method:'PUT',
+      data:taxData,
+      onSuccess:this.props.refresh,
+    })
+
+  }
+
   getFuelCarbon(){
     let fuelId = this.props.data.fuelId
     let fuel = this.props.fuels[parseInt(fuelId)-1]
@@ -121,6 +145,7 @@ export class CarbonCalculator extends React.Component{
       onFailure:this.handleSubmitFailure,
     })
 
+    this.incrementTaxUsage()
   }
 
   handleSubmitFailure(){

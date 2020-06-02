@@ -4,7 +4,6 @@ import {refreshToken}  from './myJWT.js';
 import * as units from './unitConversions';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
-import {OptionListInput} from './optionListInput.js';
 
 
 export class EconomyInput extends React.Component{
