@@ -1,6 +1,7 @@
 isOWner permission
 
 change views to generic
+ - change PUT to PATCH
 
 paginate emission list
 

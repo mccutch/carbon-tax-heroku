@@ -149,7 +149,7 @@ class ProfileDetails extends React.Component{
 
       fetchObject({
         url:`/user/${key}/`,
-        method:'PUT',
+        method:'PATCH',
         data:userData,
         onSuccess:this.userUpdateSuccess,
         onFailure:this.updateFailure,
@@ -164,7 +164,7 @@ class ProfileDetails extends React.Component{
 
       fetchObject({
         url:`/profile/${key}/`,
-        method:'PUT',
+        method:'PATCH',
         data:profileData,
         onSuccess:this.profileUpdateSuccess,
         onFailure:this.updateFailure,

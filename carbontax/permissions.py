@@ -9,14 +9,18 @@ class IsOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Write/read permissions are only allowed to the owner of the object.
-        print(f'Request user:{request.user}')
-        print(f'obj.user:{obj.user}')
-        print(f'Object:{obj}')
-        if(obj.user):
+        
+        try:
+            # Most models have been named with an attribute "user"
             return obj.user == request.user
-        elif(obj.owner):
+        except:
+            pass
+
+        try:
+            # Models should have an attribute "owner"
             return obj.owner == request.user
-        else:
-            print(f'Request user:{request.user}')
-            print(f'Object:{obj}')
-            return False
+        except:
+            # For the case where object is the user itself
+            return obj == request.user
+
+        

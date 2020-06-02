@@ -73,7 +73,7 @@ export class TaxDetail extends React.Component{
 
       fetchObject({
         url:`/tax/${key}/`,
-        method:'PUT',
+        method:'PATCH',
         data:taxData,
         onSuccess:this.editSuccess,
         onFailure:this.editFailure,
@@ -230,7 +230,7 @@ export class VehicleDetail extends React.Component{
 
       fetchObject({
         url:`/vehicle/${key}/`,
-        method:'PUT',
+        method:'PATCH',
         data:vehicleData,
         onSuccess:this.editSuccess,
         onFailure:this.editFailure,

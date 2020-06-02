@@ -43,52 +43,17 @@ class UserVehicleList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class VehicleDetail(APIView):
-    permission_classes = (IsAuthenticated,)
-    """
-    Retrieve, update or delete a vehicle.
-    """
-    def is_owner(self, user_object, pk):
-        requested_object = self.get_object(pk)
-        if(user_object == requested_object):
-            return True
-        else:
-            print("User does not own this object")
-            return False
-
-    def get_object(self,pk):
-        try:
-            return models.Vehicle.objects.get(pk=pk)
-        except models.Vehicle.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        vehicle = self.get_object(pk)
-        if(not self.is_owner(vehicle, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        serializer = serializers.VehicleSerializer(vehicle)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        vehicle = self.get_object(pk)
-        if(not self.is_owner(vehicle, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        serializer = serializers.VehicleSerializer(vehicle, data=request.data, context={'request':request}, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        vehicle = self.get_object(pk)
-        if(not self.is_owner(vehicle, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        vehicle.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class VehicleDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner,)
+    serializer_class = serializers.VehicleSerializer
+    def get_queryset(self):
+        print(self.request)
+        user = self.request.user
+        return user.vehicles.all()
 
 
 # -----------EMISSIONS-----------
+"""
 class EmissionList(APIView):
     permission_classes = (IsAdminUser,)
     #List all emissions
@@ -97,6 +62,7 @@ class EmissionList(APIView):
         emissions = models.EmissionInstance.objects.all()
         serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
         return Response(serializer.data)
+"""
 """
 class UserEmissionList(APIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
@@ -136,11 +102,15 @@ class UserEmissionList(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class EmissionDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
+    serializer_class = serializers.EmissionSerializer
+"""
 class EmissionDetail(APIView):
     permission_classes = [IsAuthenticated, ]
-    """
-    Retrieve, update or delete an emission.
-    """
+    
+    #Retrieve, update or delete an emission.
+    
     def get_object(self,pk):
         try:
             return models.EmissionInstance.objects.get(pk=pk)
@@ -164,7 +134,7 @@ class EmissionDetail(APIView):
         emission = self.get_object(pk)
         emission.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+"""
 
 # -----------HELPER MODELS-----------
 class FuelTypeList(generics.ListAPIView):
@@ -208,8 +178,11 @@ class UserProfile(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
-
+class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
+    serializer_class = serializers.ProfileSerializer
+    queryset = models.Profile.objects.all()   
+"""
 class ProfileDetail(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -246,7 +219,12 @@ class ProfileDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+"""
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
+"""
 class UserDetail(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -294,7 +272,7 @@ class UserDetail(APIView):
 
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+"""
 
 
 class CurrentUser(APIView):
@@ -355,11 +333,16 @@ class UserTaxList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class TaxDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
+    serializer_class = serializers.TaxRateSerializer
+    queryset = models.TaxRate.objects.all()
+"""
 class TaxDetail(APIView):
     permission_classes = (IsAuthenticated,)
-    """
-    Retrieve, update or delete a tax.
-    """
+    
+    #Retrieve, update or delete a tax.
+    
 
     def is_owner(self, user_object, pk):
         requested_object = self.get_object(pk)
@@ -393,6 +376,4 @@ class TaxDetail(APIView):
         tax.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-
-
+"""
