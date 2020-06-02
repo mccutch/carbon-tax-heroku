@@ -53,36 +53,7 @@ class VehicleDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 # -----------EMISSIONS-----------
-"""
-class EmissionList(APIView):
-    permission_classes = (IsAdminUser,)
-    #List all emissions
-    
-    def get(self, request, format=None):
-        emissions = models.EmissionInstance.objects.all()
-        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
-        return Response(serializer.data)
-"""
-"""
-class UserEmissionList(APIView):
-    permission_classes = (IsAuthenticated, permissions.IsOwner)
-    #List all user's emissions, or create a new one.
-    
-    def get(self, request, format=None):
-        emissions = request.user.emissions.all()
-        serializer = serializers.EmissionListSerializer(emissions, many=True)
-        return Response(serializer.data)
 
-    def post(self, request, format=None):
-        data=request.data
-        data['user']=f'/user/{request.user.id}/'
-        print(data)
-        serializer = serializers.EmissionSerializer(data=data, context={'request':request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-"""
 class UserEmissionList(generics.ListCreateAPIView):
     #queryset = models.EmissionInstance.objects.all()
     permission_classes = (IsAuthenticated, )
@@ -105,36 +76,7 @@ class UserEmissionList(generics.ListCreateAPIView):
 class EmissionDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
     serializer_class = serializers.EmissionSerializer
-"""
-class EmissionDetail(APIView):
-    permission_classes = [IsAuthenticated, ]
-    
-    #Retrieve, update or delete an emission.
-    
-    def get_object(self,pk):
-        try:
-            return models.EmissionInstance.objects.get(pk=pk)
-        except models.EmissionInstance.DoesNotExist:
-            raise Http404
 
-    def get(self, request, pk, format=None):
-        emission = self.get_object(pk)
-        serializer = serializers.EmissionSerializer(emission, context={'request':request})
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        emission = self.get_object(pk)
-        serializer = serializers.EmissionSerializer(emission, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        emission = self.get_object(pk)
-        emission.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-"""
 
 # -----------HELPER MODELS-----------
 class FuelTypeList(generics.ListAPIView):
@@ -159,9 +101,6 @@ class ProfileList(generics.ListAPIView):
 
 class UserProfile(APIView):
     permission_classes = (IsAuthenticated,)
-    #List all user's emissions, or create a new one.
-
-    
     
     def get(self, request, format=None):
         profile = request.user.profile
@@ -182,98 +121,11 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
     serializer_class = serializers.ProfileSerializer
     queryset = models.Profile.objects.all()   
-"""
-class ProfileDetail(APIView):
-    permission_classes = (IsAuthenticated,)
 
-    def get_object(self,pk):
-        try:
-            return models.Profile.objects.get(pk=pk)
-        except models.Profile.DoesNotExist:
-            raise Http404
-
-    def is_owner(self, user_object, pk):
-        requested_object = self.get_object(pk)
-        if(user_object == requested_object):
-            return True
-        else:
-            print("User does not own this object")
-            return False
-
-    def get(self, request, pk, format=None):
-        profile = self.get_object(pk)
-        if(not self.is_owner(profile, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        serializer = serializers.ProfileSerializer(profile, context={'request':request})
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        profile = request.user.profile
-        if(not self.is_owner(profile, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        print(request.data)
-        data = request.data
-        #data['user']=f'/user/{request.user.id}/'
-        serializer = serializers.ProfileSerializer(profile, data=data, context={'request':request}, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-"""
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
-"""
-class UserDetail(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self,pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            raise Http404
-
-    def is_owner(self, user_object, pk):
-        requested_object = self.get_object(pk)
-        if(user_object == requested_object):
-            return True
-        else:
-            print("User does not own this object")
-            return False
-
-    def get(self, request, pk, format=None):
-        user = self.get_object(pk)
-        if(not self.is_owner(user, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        serializer = serializers.UserSerializer(user)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        user = self.get_object(pk)
-        if(not self.is_owner(user, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        data = request.data
-        #data['username']=f'{request.user.username}'
-        print(data)
-
-        serializer = serializers.UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        user = self.get_object(pk)
-        if(not self.is_owner(user, pk)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-"""
-
 
 class CurrentUser(APIView):
     permission_classes = (IsAuthenticated,)
@@ -291,7 +143,6 @@ class CurrentUser(APIView):
             'last_name': last,
         }
         return Response(content)
-
 
 class ValidateUsername(APIView):
     permission_classes = (AllowAny, )
@@ -337,43 +188,3 @@ class TaxDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
     serializer_class = serializers.TaxRateSerializer
     queryset = models.TaxRate.objects.all()
-"""
-class TaxDetail(APIView):
-    permission_classes = (IsAuthenticated,)
-    
-    #Retrieve, update or delete a tax.
-    
-
-    def is_owner(self, user_object, pk):
-        requested_object = self.get_object(pk)
-        if(user_object == requested_object):
-            return True
-        else:
-            print("User does not own this object")
-            return False
-
-    def get_object(self,pk):
-        try:
-            return models.TaxRate.objects.get(pk=pk)
-        except models.TaxRate.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        tax = self.get_object(pk)
-        serializer = serializers.TaxRateSerializer(tax)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        tax = self.get_object(pk)
-        serializer = serializers.TaxRateSerializer(tax, data=request.data, context={'request':request}, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        tax = self.get_object(pk)
-        tax.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-"""

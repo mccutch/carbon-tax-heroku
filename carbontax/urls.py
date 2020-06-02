@@ -31,7 +31,6 @@ urlpatterns = [
     path('vehicle/<int:pk>/', views.VehicleDetail.as_view(), name="vehicle-detail"),
 
     path('my-emissions/', views.UserEmissionList.as_view(), name="my-emissions"),
-    #path('emissions/', views.EmissionList.as_view(), name="emissions"),
     path('emission/<int:pk>/', views.EmissionDetail.as_view(), name="emission-detail"),
     
     path('fueltypes/', views.FuelTypeList.as_view(), name="fuels"),
