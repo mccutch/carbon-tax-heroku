@@ -1,16 +1,15 @@
-order taxes by usage count
+isOWner permission
+
+change views to generic
+
+paginate emission list
+
 
 
 fix isOwner method
-
-
 views- move is_owner into get_object
 
 edit emissions
-
-allow preference ordering of taxes
-
-tabbed view on profile
 
 create saved trips
 

@@ -11,6 +11,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from . import permissions
 
 
 # Serve Single Page Application
@@ -96,9 +97,9 @@ class EmissionList(APIView):
         emissions = models.EmissionInstance.objects.all()
         serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
         return Response(serializer.data)
-
+"""
 class UserEmissionList(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
     #List all user's emissions, or create a new one.
     
     def get(self, request, format=None):
@@ -115,10 +116,28 @@ class UserEmissionList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""
+class UserEmissionList(generics.ListCreateAPIView):
+    #queryset = models.EmissionInstance.objects.all()
+    permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.EmissionSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        return user.emissions.all()
+
+    def post(self, request, format=None):
+        data=request.data
+        data['user']=f'/user/{request.user.id}/'
+        print(data)
+        serializer = serializers.EmissionSerializer(data=data, context={'request':request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EmissionDetail(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated, ]
     """
     Retrieve, update or delete an emission.
     """
@@ -130,7 +149,7 @@ class EmissionDetail(APIView):
 
     def get(self, request, pk, format=None):
         emission = self.get_object(pk)
-        serializer = serializers.EmissionSerializer(emission)
+        serializer = serializers.EmissionSerializer(emission, context={'request':request})
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
