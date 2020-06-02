@@ -168,6 +168,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5
 }
 
 CORS_ORIGIN_WHITELIST = [
@@ -177,9 +179,9 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 # Should remove this
-JWT_AUTH = {
+"""JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'backend.utils.my_jwt_response_handler'
-}
+}"""
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=0.2),

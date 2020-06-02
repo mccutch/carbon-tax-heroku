@@ -134,7 +134,7 @@ export class EmissionTable extends React.Component{
   }
 
   buildRows(){
-    let emissions=this.props.emissions
+    let emissions=this.props.emissions.results
     let tableRows=[]
     for(let i in emissions){
       tableRows.push(

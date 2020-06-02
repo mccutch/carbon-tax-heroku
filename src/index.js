@@ -55,7 +55,8 @@ class App extends React.Component {
   }
 
   setFuels(json){
-    this.setState({fuels:json})
+    // fueltypes returns as a paginated view
+    this.setState({fuels:json.results})
   }
 
 

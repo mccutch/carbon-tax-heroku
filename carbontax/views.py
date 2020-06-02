@@ -20,10 +20,10 @@ index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 
 # -----------VEHICLES-----------
-class VehicleList(generics.ListAPIView):
+"""class VehicleList(generics.ListAPIView):
     permission_classes = (IsAdminUser, )
     queryset = models.Vehicle.objects.all()
-    serializer_class = serializers.VehicleSerializer
+    serializer_class = serializers.VehicleSerializer"""
 
 class UserVehicleList(APIView):
     permission_classes = (IsAuthenticated,)
@@ -87,17 +87,17 @@ class FuelDetail(generics.RetrieveAPIView):
     queryset = models.FuelType.objects.all()
     serializer_class = serializers.FuelTypeSerializer
 
-class EconomyMetricList(generics.ListAPIView):
+"""class EconomyMetricList(generics.ListAPIView):
     queryset = models.EconomyMetric.objects.all()
-    serializer_class = serializers.EconomyMetricSerializer
+    serializer_class = serializers.EconomyMetricSerializer"""
 
 
 
 # -----------USER/PROFILE-----------
-class ProfileList(generics.ListAPIView):
+"""class ProfileList(generics.ListAPIView):
     permission_classes = (IsAdminUser, )
     serializer_class = serializers.ProfileSerializer
-    queryset = models.Profile.objects.all()
+    queryset = models.Profile.objects.all()"""
 
 class UserProfile(APIView):
     permission_classes = (IsAuthenticated,)

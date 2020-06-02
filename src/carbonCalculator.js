@@ -102,7 +102,7 @@ export class CarbonCalculator extends React.Component{
     let key = usedTax.id
     fetchObject({
       url:`/tax/${key}/`,
-      method:'PUT',
+      method:'PATCH',
       data:taxData,
       onSuccess:this.props.refresh,
     })
