@@ -156,7 +156,7 @@ class App extends React.Component {
   render(){
     let memberDisplay
     if(this.state.loggedIn){
-      memberDisplay = <button className="btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button> 
+      memberDisplay = <button className="btn btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button> 
     }
 
     let display
@@ -179,7 +179,7 @@ class App extends React.Component {
     } else {
       display = 
         <div className='container bg-light py-2 my-2'>
-          <button className="btn-outline-info" name="showCalculator" onClick={this.handleClick}>Add a carbon emission</button>
+          <button className="btn btn-outline-info" name="showCalculator" onClick={this.handleClick}>Add a carbon emission</button>
           {memberDisplay}
         </div>
     }

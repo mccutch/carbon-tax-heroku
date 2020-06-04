@@ -58,15 +58,15 @@ class DeleteUser extends React.Component{
   render(){
     let display
     if(!this.state.confirmDelete){
-      display = <button className="btn-outline-danger" name="delete" onClick={this.handleClick} >Delete account</button>
+      display = <button className="btn btn-outline-danger" name="delete" onClick={this.handleClick} >Delete account</button>
     } else {
       display = 
         <div>
           <h4>Delete this account?</h4>
           <p>All stored data will be removed from the server and cannot be recovered.</p>
           <p>{this.state.errorMessage}</p>
-          <button className="btn-info" name="cancel" onClick={this.handleClick} >Cancel</button>
-          <button className="btn-danger" name="confirm" onClick={this.handleClick} >Confirm</button>
+          <button className="btn btn-info" name="cancel" onClick={this.handleClick} >Cancel</button>
+          <button className="btn btn-danger" name="confirm" onClick={this.handleClick} >Confirm</button>
         </div>
     }
 
@@ -236,8 +236,8 @@ class ProfileDetails extends React.Component{
             </label>
           </form>
           <p>{this.state.errorMessage}</p>
-          <button name="saveChanges" className="btn-outline-primary" onClick={this.handleClick}>Save changes</button>
-          <button name="cancelEdit" className="btn-outline-danger" onClick={this.handleClick}>Cancel</button>
+          <button name="saveChanges" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
+          <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel</button>
         </div>
     } else {
       profileDisplay=
@@ -246,7 +246,7 @@ class ProfileDetails extends React.Component{
           <p>Location: {profile.location}</p>
           <p>Date of Birth: {profile.date_of_birth}</p>
           <p>Email: {user.email}</p>
-          <button name="editProfile" className="btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
+          <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
         </div>
     }
 
@@ -352,8 +352,8 @@ export class ProfileDisplay extends React.Component{
           emissions={this.props.emissions}
         />
         
-        <button name="hideProfile" className="btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
-        <button name="logout" className="btn-outline-danger" onClick={this.props.onClick}>Logout</button>
+        <button name="hideProfile" className="btn btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
+        <button name="logout" className="btn btn-outline-danger" onClick={this.props.onClick}>Logout</button>
         <DeleteUser user={this.props.user} logout={this.props.logout}/>
       </div>
     )

@@ -33,8 +33,8 @@ export class EmissionListWrapper extends React.Component{
     return(
       <div className="container bg-info my-2">
         <div className="my-2 row">
-          <h3>My saved emissions</h3>
-          <button type="button" className="btn-outline-danger" onClick={this.exitList}>Exit</button>
+          <h3 className="px-2">My saved emissions</h3>
+          <button type="button" className="btn btn-outline-danger px-2" onClick={this.exitList}>Exit</button>
         </div>
         {emissionTable}
       </div>

@@ -48,7 +48,7 @@ class LoginForm extends React.Component{
           name="password"
           onChange={this.handleChange}
         />
-        <button type="submit" className="btn-outline-primary">Login</button>
+        <button type="submit" className="btn btn-outline-primary">Login</button>
       </form>
     )
   }
@@ -151,14 +151,14 @@ export class LoginWrapper extends React.Component{
       display = 
         <div>
           <p>Hello {this.props.user.username}</p>
-          <button name="showProfile" className="btn-outline-success" onClick={this.handleClick}>My profile</button>
-          <button name="logout" className="btn-outline-danger" onClick={this.handleClick}>Logout</button>
+          <button name="showProfile" className="btn btn-outline-success" onClick={this.handleClick}>My profile</button>
+          <button name="logout" className="btn btn-outline-danger" onClick={this.handleClick}>Logout</button>
         </div>
     } else {
       display=
         <div>
-          <button name="demoLogin" className="btn-outline-danger" onClick={this.handleClick}>Demo User</button>
-          <button name="register" className="btn-outline-success" onClick={this.handleClick}>Create an account</button>
+          <button name="demoLogin" className="btn btn-outline-danger" onClick={this.handleClick}>Demo User</button>
+          <button name="register" className="btn btn-outline-success" onClick={this.handleClick}>Create an account</button>
           {failureText}
           <LoginForm submitForm={this.getJWT}/>
         </div>
@@ -170,7 +170,7 @@ export class LoginWrapper extends React.Component{
           {display}
         </div>
         <div className="container bg-warning py-2 my-2">
-          <button type="button" className= "btn-outline-info" onClick={this.props.toggleDisplayUnits}>Change Units</button>
+          <button type="button" className= "btn btn-outline-info" onClick={this.props.toggleDisplayUnits}>Change Units</button>
         </div>
       </div>
     )
