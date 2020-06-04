@@ -5,8 +5,7 @@ import {refreshToken} from './myJWT.js';
 import { VehicleInput } from './vehicleInput.js';
 import * as units from './unitConversions';
 import { VehicleSaveForm } from './vehicleSave.js';
-import { createObject } from './helperFunctions.js';
-import {fetchObject} from './helperFunctions.js';
+import { createObject, fetchObject } from './helperFunctions.js';
 import {ECONOMY_DECIMALS} from './fuelTypes.js';
 
 import { TaxDetail, VehicleDetail, EmissionDetail } from './objectDetail.js';
@@ -125,6 +124,67 @@ export class VehicleTable extends React.Component{
   }
 }
 
+export class FilterNav extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state = {
+      searchQuery:"",
+    }
+
+    this.handleChange=this.handleChange.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+    this.clearFilters=this.clearFilters.bind(this)
+    this.search=this.search.bind(this)
+    this.returnResults=this.returnResults.bind(this)
+  }
+
+  handleChange(event){
+    this.setState({
+      [event.target.name]:event.target.value
+    })
+  }
+
+  handleClick(event){
+    event.preventDefault()
+    if(event.target.name==="search"){
+      this.search()
+    } else if(event.target.name==="clearAll"){
+      this.clearFilters()
+    }
+  }
+
+  clearFilters(){
+    this.props.returnResults(this.props.default)
+    this.setState({
+      searchQuery:""
+    })
+    document.getElementById("searchQuery").value = ""
+  }
+
+  search(){
+    fetchObject({
+      url:`${this.props.baseUrl}?search=${this.state.searchQuery}`,
+      method:'GET',
+      onSuccess: this.returnResults,
+    })
+  }
+
+  returnResults(json){
+    this.props.returnResults(json)
+  }
+
+  render(){
+    return(
+      <form>
+        <input placeholder="Search" className="mx-2" type="text" name="searchQuery" id="searchQuery" onChange={this.handleChange} />
+        <button type="submit" name="search" className="btn btn-outline-primary mx-2" onClick={this.handleClick}>Search</button>
+        <button name="clearAll" className="btn btn-outline-danger mx-2" onClick={this.handleClick}>Clear</button>
+      </form>
+    )
+  }
+}
+
 export class PaginatedNav extends React.Component{
   constructor(props){
     super(props)
@@ -218,10 +278,10 @@ export class EmissionTable extends React.Component{
       page:1,
     }
     this.buildRows=this.buildRows.bind(this)
-    this.changePage=this.changePage.bind(this)
+    this.changeResults=this.changeResults.bind(this)
   }
 
-  changePage(emissionsToDisplay, newPage){
+  changeResults(emissionsToDisplay, newPage=1){
     this.setState({
       displayedEmissions:emissionsToDisplay,
       page:newPage,
@@ -248,14 +308,15 @@ export class EmissionTable extends React.Component{
     if(this.state.displayedEmissions.length !== 0){
       paginatedTableHeader = 
         <div className="container my-2 py-2 bg-dark">
-          <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changePage} />
+          <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changeResults} />
+          <FilterNav baseUrl="/my-emissions/" default={this.props.emissions} returnResults={this.changeResults}/>
         </div>
     }
 
     return(
       <div>
         {paginatedTableHeader}
-        <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Travel Mode", "Distance", "CO2 Output", "Tax"]} />
+        <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Tax Type", "Distance", "CO2 Output", "Tax"]} />
       </div>
     )
   }
