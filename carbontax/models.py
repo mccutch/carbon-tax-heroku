@@ -7,7 +7,7 @@ class EmissionInstance(models.Model):
     """
     name = models.CharField(max_length=60, null=True)
     date = models.DateField(null=True)
-    travel_mode = models.CharField(max_length=30, null=True)
+    tax_type = models.CharField(max_length=30, null=True)
     distance = models.FloatField(null=True)
     co2_output_kg = models.FloatField(null=True)
     price = models.FloatField(null=True)

@@ -13,6 +13,9 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from . import permissions
 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+
 
 # Serve Single Page Application
 index = never_cache(TemplateView.as_view(template_name='index.html'))
@@ -58,6 +61,9 @@ class UserEmissionList(generics.ListCreateAPIView):
     #queryset = models.EmissionInstance.objects.all()
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.EmissionSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_fields = ['tax_type']
+    search_fields = ['name']
 
     def get_queryset(self):
         user = self.request.user

@@ -125,7 +125,7 @@ export class VehicleTable extends React.Component{
   }
 }
 
-export class PaginatedTableHeader extends React.Component{
+export class PaginatedNav extends React.Component{
   constructor(props){
     super(props)
     
@@ -197,15 +197,13 @@ export class PaginatedTableHeader extends React.Component{
     let prevActive
      
     return(
-      <div className="container my-2 py-2 bg-dark">
-        <nav aria-label="Table navigation" className="row">
-          <p className="text-light px-2">Showing result{plural} {displayedResultsString} of {this.props.tableData.count}</p>
-          <ul className="pagination px-2">
-            <li className={this.disablableItem(this.props.tableData.previous)}><a className="page-link" name="prev" onClick={this.handleClick}>Previous</a></li>
-            <li className={this.disablableItem(this.props.tableData.next)}><a className="page-link" name="next" onClick={this.handleClick}>Next</a></li>
-          </ul>
-        </nav>
-      </div>
+      <nav aria-label="Table navigation" className="row">
+        <p className="text-light px-2">Showing result{plural} {displayedResultsString} of {this.props.tableData.count}</p>
+        <ul className="pagination px-2">
+          <li className={this.disablableItem(this.props.tableData.previous)}><a className="page-link" name="prev" onClick={this.handleClick}>Previous</a></li>
+          <li className={this.disablableItem(this.props.tableData.next)}><a className="page-link" name="next" onClick={this.handleClick}>Next</a></li>
+        </ul>
+      </nav>
     )
   }
 }
@@ -248,7 +246,10 @@ export class EmissionTable extends React.Component{
   render(){
     let paginatedTableHeader
     if(this.state.displayedEmissions.length !== 0){
-      paginatedTableHeader = <PaginatedTableHeader tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changePage} />
+      paginatedTableHeader = 
+        <div className="container my-2 py-2 bg-dark">
+          <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changePage} />
+        </div>
     }
 
     return(

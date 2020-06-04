@@ -28,8 +28,8 @@ SECRET KEYS
 PIPENV INSTALL
     pipenv install module
     pip freeze > requirements.txt
-    pipenv lock???
-    pipenv clean -check that new module is still installed
+    pipenv clean (wipe everything that isn't in piplock)
+    pipenv graph (view all installed modules) 
 
 MIGRATE SQLITE3 TO POSTGRES
     https://medium.com/agatha-codes/painless-postgresql-django-d4f03364989

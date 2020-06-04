@@ -1,5 +1,10 @@
+filter emissions by:
+ - travel mode (applied tax)
+ - date range
+ - search by name
 
-paginate emission table
+
+ username must be a single word
 
 
 
@@ -38,3 +43,7 @@ Precache to improve loading
 - preload profile information
 - autofill place names
 - fueltype list (others?)
+
+Find other users
+ - Search by username, email, location?
+ - Request read-only view permission

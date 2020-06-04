@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic', #added
     'django.contrib.staticfiles',
 
-    'rest_framework', #added
+    'rest_framework',
+    'django_filters',
     'corsheaders',
     'carbontax',
 ]
@@ -169,7 +170,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 5 # change constant in src/userTables.js
+    'PAGE_SIZE': 5, # change constant in src/userTables.js
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 CORS_ORIGIN_WHITELIST = [

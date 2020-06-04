@@ -369,7 +369,7 @@ export class EmissionDetail extends React.Component{
       <tr key={emission.id}>
         <EmissionEdit emission={emission} displayUnits={this.displayUnits} />
         <td>{emission.date}</td>
-        <td>{emission.travel_mode}</td>
+        <td>{emission.tax_type}</td>
         <td>{parseFloat(distance).toFixed(1)}{distString}</td>
         <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
         <td>${parseFloat(emission.price).toFixed(2)}</td>
