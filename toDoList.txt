@@ -7,6 +7,11 @@ filter emissions by:
  username must be a single word
 
 
+ objectInputList
+ - create using a list of objects, setting a field to use as the object, and field for the value
+ - Eg label is "Petrol" but value is "1".
+
+
 
 edit emissions
 

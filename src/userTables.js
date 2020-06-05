@@ -11,6 +11,8 @@ import {ECONOMY_DECIMALS} from './fuelTypes.js';
 import { TaxDetail, VehicleDetail, EmissionDetail } from './objectDetail.js';
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 
+import * as getDate from './getDate.js';
+
 const MAX_NAME_LEN = 30
 const PAGINATATION_RESULTS_PER_PAGE = 5 // change this with settings.py
 
@@ -124,24 +126,50 @@ export class VehicleTable extends React.Component{
   }
 }
 
-export class FilterNav extends React.Component{
+
+
+
+export class EmissionFilterNav extends React.Component{
   constructor(props){
     super(props)
 
     this.state = {
+      showFilters:true,
       searchQuery:"",
+      taxFilter:"",
     }
 
     this.handleChange=this.handleChange.bind(this)
+    this.makeTaxList=this.makeTaxList.bind(this)
     this.handleClick=this.handleClick.bind(this)
     this.clearFilters=this.clearFilters.bind(this)
     this.search=this.search.bind(this)
     this.returnResults=this.returnResults.bind(this)
+    this.editTaxFilter=this.editTaxFilter.bind(this)
+  }
+
+  componentDidMount(){
+  }
+
+
+  makeTaxList(){
+    let taxes = this.props.taxes
+    let taxList=["All Taxes"]
+    for(let i in taxes){
+      taxList.push(taxes[i].name)
+    }
+    return taxList
   }
 
   handleChange(event){
     this.setState({
       [event.target.name]:event.target.value
+    })
+  }
+
+  editTaxFilter(event){
+    this.setState({
+      taxFilter:event.target.value
     })
   }
 
@@ -151,20 +179,33 @@ export class FilterNav extends React.Component{
       this.search()
     } else if(event.target.name==="clearAll"){
       this.clearFilters()
+    } else if(event.target.name==="hideFilters"){
+      this.setState({showFilters:false})
+      this.clearFilters()
+    } else if(event.target.name==="showFilters"){
+      this.setState({showFilters:true})
     }
   }
 
   clearFilters(){
     this.props.returnResults(this.props.default)
     this.setState({
-      searchQuery:""
+      searchQuery:"",
+      taxFilter:"",
     })
     document.getElementById("searchQuery").value = ""
+    document.getElementById("taxFilter").value = "All Taxes"
   }
 
   search(){
+    let searchUrl = ((this.state.searchQuery) ? `search=${this.state.searchQuery}` : "")
+
+    let taxFilterUrl = ((this.state.taxFilter) ? `tax_type=${this.state.taxFilter}` : "" )
+
+    let _and_ = ((this.state.searchQuery && this.state.taxFilter) ? "&" : "" )
+
     fetchObject({
-      url:`${this.props.baseUrl}?search=${this.state.searchQuery}`,
+      url:`${this.props.baseUrl}?${searchUrl}${_and_}${taxFilterUrl}`,
       method:'GET',
       onSuccess: this.returnResults,
     })
@@ -174,13 +215,44 @@ export class FilterNav extends React.Component{
     this.props.returnResults(json)
   }
 
+  
+
+
+
   render(){
+    let display
+    if(this.state.showFilters){
+      display = 
+        <form className="container bg-light py-2">
+          <label>
+            Filter by Tax Type:
+            <OptionListInput name={"taxFilter"} list={this.makeTaxList()} onChange={this.editTaxFilter} />
+          </label>
+          <br/>
+          <label>
+            Search by name:
+            <input placeholder="Search" className="mx-2" type="text" name="searchQuery" id="searchQuery" onChange={this.handleChange} />
+          </label>
+          <br/>
+          <label>
+            From:
+            <input defaultValue={getDate.lastYear()} type="date" name="startDate" onChange={this.handleChange} className="mx-2"/>
+          </label>
+          <label>
+            Until:
+            <input defaultValue={getDate.today()} type="date" name="endDate" onChange={this.handleChange} className="mx-2"/>
+          </label>
+          <br/>
+          <button type="submit" name="search" className="btn btn-outline-primary mx-2" onClick={this.handleClick}>Apply filters</button>
+          <button name="clearAll" className="btn btn-outline-danger mx-2" onClick={this.handleClick}>Clear</button>
+          <button className="btn btn-outline-warning" name="hideFilters" onClick={this.handleClick}>Hide filters</button>
+        </form>
+    } else {
+      display = <button className="btn btn-outline-warning" name="showFilters" onClick={this.handleClick}>Show filters</button>
+    }
+
     return(
-      <form>
-        <input placeholder="Search" className="mx-2" type="text" name="searchQuery" id="searchQuery" onChange={this.handleChange} />
-        <button type="submit" name="search" className="btn btn-outline-primary mx-2" onClick={this.handleClick}>Search</button>
-        <button name="clearAll" className="btn btn-outline-danger mx-2" onClick={this.handleClick}>Clear</button>
-      </form>
+      display
     )
   }
 }
@@ -279,6 +351,7 @@ export class EmissionTable extends React.Component{
     }
     this.buildRows=this.buildRows.bind(this)
     this.changeResults=this.changeResults.bind(this)
+    //this.makeTaxList=this.makeTaxList.bind(this)
   }
 
   changeResults(emissionsToDisplay, newPage=1){
@@ -303,13 +376,37 @@ export class EmissionTable extends React.Component{
     return tableRows
   }
 
+  /*
+  makeTaxList(){
+    let taxes = this.props.taxes
+    let taxList=[]
+    for(let i in taxes){
+      taxList.push(taxes[i].name)
+    }
+    return taxList
+  }
+  */
+
   render(){
+    /*
+    let filters = [
+      {
+        propertyName:'tax_type',
+        options:this.makeTaxList(),
+        defaultDisplay:"All Taxes",
+      }
+    ]
+    */
+
+
+
+
     let paginatedTableHeader
     if(this.state.displayedEmissions.length !== 0){
       paginatedTableHeader = 
         <div className="container my-2 py-2 bg-dark">
           <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changeResults} />
-          <FilterNav baseUrl="/my-emissions/" default={this.props.emissions} returnResults={this.changeResults}/>
+          <EmissionFilterNav baseUrl="/my-emissions/" default={this.props.emissions} returnResults={this.changeResults} taxes={this.props.taxes}/>
         </div>
     }
 

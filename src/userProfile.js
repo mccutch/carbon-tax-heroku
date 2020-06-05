@@ -297,7 +297,7 @@ class TabbedListDisplay extends React.Component{
     } else if(this.state.activeTab==="vehicles"){
       table = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
     } else if(this.state.activeTab==="emissions"){
-      table = <EmissionTable emissions={this.props.emissions} displayUnits={this.props.displayUnits} />
+      table = <EmissionTable emissions={this.props.emissions} displayUnits={this.props.displayUnits} taxes={this.props.taxes}/>
     }
 
     return(

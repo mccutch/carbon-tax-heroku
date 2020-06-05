@@ -175,6 +175,7 @@ class App extends React.Component {
                   showEmissions={this.showEmissions}
                   displayUnits={this.state.displayUnits}
                   emissions={this.state.emissions}
+                  taxes={this.state.taxes}
                 />
     } else {
       display = 

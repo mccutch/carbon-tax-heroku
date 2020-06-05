@@ -13,6 +13,7 @@ export class OptionListInput extends React.Component{
                           {list[i]}</option>)
       }
       return  <select
+                id = {this.props.name}
                 onChange = {this.props.onChange}
                 name = {this.props.name}
                 defaultValue = {this.props.defaultValue}
