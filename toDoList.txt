@@ -3,8 +3,9 @@ filter emissions by:
  - date range
  - search by name
 
+emission table should return with a list of all tax types used
 
- username must be a single word
+username must be a single word
 
 
  objectInputList

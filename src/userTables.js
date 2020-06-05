@@ -137,6 +137,8 @@ export class EmissionFilterNav extends React.Component{
       showFilters:true,
       searchQuery:"",
       taxFilter:"",
+      startDate:"",
+      endDate:"",
     }
 
     this.handleChange=this.handleChange.bind(this)
@@ -146,6 +148,8 @@ export class EmissionFilterNav extends React.Component{
     this.search=this.search.bind(this)
     this.returnResults=this.returnResults.bind(this)
     this.editTaxFilter=this.editTaxFilter.bind(this)
+
+    this.defaultTaxDisplayText = "All Taxis"
   }
 
   componentDidMount(){
@@ -154,7 +158,7 @@ export class EmissionFilterNav extends React.Component{
 
   makeTaxList(){
     let taxes = this.props.taxes
-    let taxList=["All Taxes"]
+    let taxList=[this.defaultTaxDisplayText]
     for(let i in taxes){
       taxList.push(taxes[i].name)
     }
@@ -162,14 +166,23 @@ export class EmissionFilterNav extends React.Component{
   }
 
   handleChange(event){
+    let property = event.target.name
+    let value = event.target.value
+
     this.setState({
-      [event.target.name]:event.target.value
-    })
+      [property]:value
+    }) 
   }
 
   editTaxFilter(event){
+    let value = event.target.value
+
+    if(value===this.defaultTaxDisplayText){
+      value=""
+    }
+
     this.setState({
-      taxFilter:event.target.value
+      taxFilter:value
     })
   }
 
@@ -192,20 +205,34 @@ export class EmissionFilterNav extends React.Component{
     this.setState({
       searchQuery:"",
       taxFilter:"",
+      startDate:"",
+      endDate:"",
     })
     document.getElementById("searchQuery").value = ""
-    document.getElementById("taxFilter").value = "All Taxes"
+    document.getElementById("taxFilter").value = this.defaultTaxDisplayText
   }
 
   search(){
-    let searchUrl = ((this.state.searchQuery) ? `search=${this.state.searchQuery}` : "")
 
-    let taxFilterUrl = ((this.state.taxFilter) ? `tax_type=${this.state.taxFilter}` : "" )
+    let params = {}
+    if(this.state.searchQuery){params['search']=this.state.searchQuery}
+    if(this.state.taxFilter){params['tax_type']=this.state.taxFilter}
+    if(this.state.startDate){params['date__gte']=this.state.startDate}
+    if(this.state.endDate){params['date__lte']=this.state.endDate}
 
-    let _and_ = ((this.state.searchQuery && this.state.taxFilter) ? "&" : "" )
+
+    var filterUrl = "";
+    for (var key in params) {
+      if (filterUrl != "") {
+        filterUrl += "&";
+      }
+      filterUrl += key + "=" + encodeURIComponent(params[key]);
+    }
+
+    console.log(filterUrl)
 
     fetchObject({
-      url:`${this.props.baseUrl}?${searchUrl}${_and_}${taxFilterUrl}`,
+      url:`${this.props.baseUrl}?${filterUrl}`,
       method:'GET',
       onSuccess: this.returnResults,
     })
@@ -236,7 +263,7 @@ export class EmissionFilterNav extends React.Component{
           <br/>
           <label>
             From:
-            <input defaultValue={getDate.lastYear()} type="date" name="startDate" onChange={this.handleChange} className="mx-2"/>
+            <input type="date" name="startDate" onChange={this.handleChange} className="mx-2"/>
           </label>
           <label>
             Until:
