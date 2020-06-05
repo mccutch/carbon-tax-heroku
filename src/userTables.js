@@ -149,10 +149,7 @@ export class EmissionFilterNav extends React.Component{
     this.returnResults=this.returnResults.bind(this)
     this.editTaxFilter=this.editTaxFilter.bind(this)
 
-    this.defaultTaxDisplayText = "All Taxis"
-  }
-
-  componentDidMount(){
+    this.defaultTaxDisplayText = "All Taxes"
   }
 
 
@@ -241,10 +238,6 @@ export class EmissionFilterNav extends React.Component{
   returnResults(json){
     this.props.returnResults(json)
   }
-
-  
-
-
 
   render(){
     let display
