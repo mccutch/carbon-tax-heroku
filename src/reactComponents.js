@@ -41,6 +41,7 @@ export class CurrencySelection extends React.Component{
       currencyList.push(
         {
           name:`${symbols[key]} (${key})`,
+          //name:key,
           symbol:key
         }
       )
@@ -54,7 +55,14 @@ export class CurrencySelection extends React.Component{
   render(){
     let currencies = this.state.currencies
 
-    return <ObjectSelectionList name="currency" onChange={this.props.onChange} list={currencies} value="symbol" label="name"/>
+    let display
+    if(currencies.length>0){
+      display = <ObjectSelectionList name="currency" onChange={this.props.onChange} list={currencies} value="symbol" label="name" defaultValue={this.props.defaultValue}/>
+    } else {
+      display = <select></select>
+    }
+
+    return display
   }
 }
 

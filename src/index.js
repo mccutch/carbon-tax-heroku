@@ -223,7 +223,7 @@ class App extends React.Component {
           />
           {display}
         </div>
-        <Sandbox />
+        {/*<Sandbox />*/}
         <div className="jumbotron">
           <h1>.</h1>
         </div>

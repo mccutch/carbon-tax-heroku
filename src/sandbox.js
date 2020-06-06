@@ -29,8 +29,8 @@ export class Sandbox extends React.Component{
     return(
       <div className="container bg-light">
         <h1>Sandbox</h1>
-        <CurrencySelection />
-        <ObjectSelectionList list={units.allUnits} value="str" label="label" />
+        <CurrencySelection defaultValue="AUD" onChange={this.handleChange}/>
+        <ObjectSelectionList list={units.allUnits} value="str" label="label"/>
       </div>
     )
   }

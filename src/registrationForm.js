@@ -12,7 +12,7 @@ const MAX_PASSWORD_LEN = 30
 const MAX_EMAIL_LEN = 30
 const MAX_NAME_LEN = 30
 
-
+const DEFAULT_CURRENCY = "AUD"
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -23,7 +23,7 @@ export class RegistrationForm extends React.Component{
       lastName: "",
       username: "",
 
-      currency: "",
+      currency: DEFAULT_CURRENCY,
       currency_symbol:"",
       display_units:"",
       location: "",
@@ -261,7 +261,7 @@ export class RegistrationForm extends React.Component{
           <br/>
           <label>
             Currency:
-            <CurrencySelection onChange={this.handleChange} />
+            <CurrencySelection defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
           </label>
           <br/>
           <h4>Optional Information</h4>
