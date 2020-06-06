@@ -1,12 +1,12 @@
 import {refreshToken}  from './myJWT.js';
 
 
+
+
 export function validateEmail(email){
   let emailRegex = new RegExp(".+@.+.[A-Za-z]+$")
   return emailRegex.test(email)
 }
-
-
 
 
 export function createObject({data, url, onSuccess, onFailure}){
@@ -55,7 +55,6 @@ export function createObject({data, url, onSuccess, onFailure}){
 
 export function editObject({data, url, onSuccess, onFailure}){
 
-  
   fetch(url, {
     method: 'PUT',
     headers: {
@@ -164,7 +163,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
         }]
       })
     } else if(onFailure){
-      onFailure(error.message)
+      onFailure(error)
     }
   });
 }

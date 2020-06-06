@@ -1,10 +1,13 @@
 import React from 'react';
 
+import {fetchObject} from './helperFunctions.js';
+
+import {CurrencySelection} from './reactComponents.js';
+
 export class Sandbox extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      date:null,
     }
     
     this.handleChange = this.handleChange.bind(this)
@@ -12,35 +15,19 @@ export class Sandbox extends React.Component{
 
   handleChange(event){
     console.log(event.target.value)
-    this.setState({date:event.target.value})
+    this.setState({[event.target.name]:event.target.value})
   }
 
+  
+
+  
+
   render(){
-
-    let date
-    if(this.state.date){
-      date = <p>{this.state.date}</p>
-    }
-
-    let today = new Date()
-
-    let dd = String(today.getDate()).padStart(2, '0')
-    let mm = String(today.getMonth() + 1).padStart(2, '0');
-    let yyyy = today.getFullYear();
-
-    let todayString = `${yyyy}-${mm}-${dd}`
-
-    console.log(process.env)
-
-
-
 
     return(
       <div className="container bg-light">
         <h1>Sandbox</h1>
-        <input type="date" name="date" onChange={this.handleChange}/>
-        {date}
-        <p>{todayString}</p>
+        <CurrencySelection />
       </div>
     )
   }

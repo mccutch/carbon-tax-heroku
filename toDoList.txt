@@ -1,18 +1,9 @@
-filter emissions by:
- - travel mode (applied tax)
- - date range
- - search by name
+profile currency selection
+ - edit default taxes by currency
 
-emission table should return with a list of all tax types used
+profile units selection
 
-username must be a single word
-
-
- objectInputList
- - create using a list of objects, setting a field to use as the object, and field for the value
- - Eg label is "Petrol" but value is "1".
-
-
+change filter search input type to "search"
 
 edit emissions
 

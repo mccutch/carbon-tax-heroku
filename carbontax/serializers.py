@@ -24,7 +24,7 @@ class VehicleListSerializer(serializers.HyperlinkedModelSerializer):
 class FuelTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.FuelType
-        fields = ['name', 'unit', 'co2_per_unit']
+        fields = ['name', 'unit', 'co2_per_unit', 'id']
 
 class EconomyMetricSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

@@ -3,6 +3,7 @@ import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { OptionListInput } from './optionListInput.js';
+import { ObjectSelectionList } from './reactComponents.js';
 
 
 
@@ -434,8 +435,7 @@ export class VehicleInput extends React.Component{
 
     this.state={
       vehicleLookup:false,
-      fuelList:[],
-      fuel:null,
+      fuelId:null,
       lPer100Km:null,
       name:"",
     }
@@ -443,18 +443,18 @@ export class VehicleInput extends React.Component{
     this.hideForm=this.hideForm.bind(this)
     this.showForm=this.showForm.bind(this)
     this.returnEconomy=this.returnEconomy.bind(this)
-    this.getFuelList=this.getFuelList.bind(this)
-    this.getFuelId=this.getFuelId.bind(this)
+    this.setFuel=this.setFuel.bind(this)
+    //this.getFuelId=this.getFuelId.bind(this)
     this.receiveVehicle=this.receiveVehicle.bind(this)
   }
 
   componentDidMount(){
-    this.getFuelList()
+    this.setFuel()
   }
 
   componentDidUpdate(prevProps){
     if(prevProps.fuels !== this.props.fuels){
-      this.getFuelList()
+      this.setFuel()
     }
   }
 
@@ -467,10 +467,18 @@ export class VehicleInput extends React.Component{
     
   }
 
-  receiveVehicle(lPer100Km, fuel, name){
+  receiveVehicle(lPer100Km, fuelName, name){
+    let fuelId
+    for(let i in this.props.fuels){
+      if(fuelName===this.props.fuels[i].name){
+        fuelId=parseInt(i)+1
+        break
+      }
+    }
+
     this.setState({
       lPer100Km:lPer100Km,
-      fuel:fuel,
+      fuelId:fuelId,
       name:name,
     }, this.returnEconomy)
   }
@@ -478,7 +486,7 @@ export class VehicleInput extends React.Component{
   hideForm(){
     this.setState({
       vehicleLookup:false,
-      fuel:this.state.fuelList[0],
+      fuelId:this.props.fuels[0]['id'],
       lPer100Km:null,
       name:"",
     }, this.returnEconomy)
@@ -488,36 +496,22 @@ export class VehicleInput extends React.Component{
     this.setState({
       vehicleLookup:true,
       lPer100Km:null,
-      fuel:null,
+      fuelId:null,
       name:"",
     }, this.returnEconomy)
   }
 
   returnEconomy(){
-    this.props.returnEconomy(this.state.lPer100Km, this.getFuelId(), this.state.name)
+    this.props.returnEconomy(this.state.lPer100Km, this.state.fuelId, this.state.name)
   }
 
-  getFuelList(){
-    let fuelList=[]
-    for(let i in this.props.fuels){
-      fuelList.push(this.props.fuels[i].name)
-    }
-    this.setState({
-      fuelList:fuelList,
-      fuel:fuelList[0],
-    })
-  }
-
-  getFuelId(){
-    for(let i=0;i<this.state.fuelList.length; i++){
-      if(this.state.fuel===this.state.fuelList[i]){
-        return i+1
-      }
+  setFuel(){
+    if(this.props.fuels.length>0){
+      this.setState({
+        fuelId:this.props.fuels[0]['id'],
+      })
     }
   }
-
-
-  
 
   render(){
 
@@ -535,7 +529,7 @@ export class VehicleInput extends React.Component{
             />
             {units.displayUnitString(this.props.displayUnits)}
           </label>
-          <OptionListInput name="fuel" onChange={this.handleChange} list={this.state.fuelList}/>
+          <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" />
           <br/>
           <button className="btn btn-outline-info" onClick={this.showForm}>Look up US vehicle</button>
         </div>

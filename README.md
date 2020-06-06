@@ -11,6 +11,8 @@ Hosted on hobby-level Heroku server.
 Currently utilising [Cors-Anywhere](https://cors-anywhere.herokuapp.com/) to fetch Google Distance Matrix API from client side,
 but will probably need to change this to use Google's Javascript API.
 
+Currency conversions provided using free API key from [Fixer.io](https://fixer.io/).
+
 
 
 

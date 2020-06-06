@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {EmissionCalculator} from './emissionCalculator.js';
 import {LoginWrapper} from './loginWrapper.js';
 import {EmissionListWrapper} from './emissionList.js';
-//import {Sandbox} from './sandbox.js';
+import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
 import {fetchObject} from './helperFunctions.js';
@@ -213,6 +213,7 @@ class App extends React.Component {
           />
           {display}
         </div>
+        <Sandbox />
         <div className="jumbotron">
           <h1>.</h1>
         </div>

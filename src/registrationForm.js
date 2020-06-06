@@ -6,9 +6,13 @@ import { getToken }  from './myJWT.js';
 import * as helper from './helperFunctions.js';
 import { fetchObject } from './helperFunctions.js';
 
+import { CurrencySelection } from './reactComponents.js';
+
 const MAX_PASSWORD_LEN = 30
 const MAX_EMAIL_LEN = 30
 const MAX_NAME_LEN = 30
+
+
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -24,6 +28,7 @@ export class RegistrationForm extends React.Component{
       errorMessage:"",
       strongPassword: false,
       validEmail:false,
+      validUsername:false,
       location: "",
       date_of_birth: "",
     }
@@ -39,6 +44,7 @@ export class RegistrationForm extends React.Component{
     this.postFailure=this.postFailure.bind(this)
     this.createUserFailure=this.createUserFailure.bind(this)
     this.createUserSuccess=this.createUserSuccess.bind(this)
+    this.validateUsernameRegex=this.validateUsernameRegex.bind(this)
   }
 
   handleSubmit(e){
@@ -53,6 +59,8 @@ export class RegistrationForm extends React.Component{
       this.checkPasswordStrength(event.target.value)
     } else if(event.target.name==="email"){
       this.validateEmail(event.target.value)
+    } else if(event.target.name==="username"){
+      this.validateUsernameRegex(event.target.value)
     }
   }
 
@@ -66,6 +74,11 @@ export class RegistrationForm extends React.Component{
     this.setState({validEmail:helper.validateEmail(email)})
   }
 
+  validateUsernameRegex(username){
+    const validUsername = new RegExp("^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")
+    this.setState({validUsername: validUsername.test(username)})
+  }
+
   validateUserData(){
     this.setState({errorMessage:""})
 
@@ -74,6 +87,12 @@ export class RegistrationForm extends React.Component{
     // Check required inputs
     if(!this.state.username || !this.state.password){
       this.setState({errorMessage:"Fill in required fields."})
+      return
+    }
+
+    // Validate username regex
+    if(!this.state.validUsername){
+      this.setState({errorMessage:"Invalid username format."})
       return
     }
 
@@ -227,6 +246,12 @@ export class RegistrationForm extends React.Component{
             placeholder="Email"
             maxLength={MAX_EMAIL_LEN}
           />
+          <br/>
+          <label>
+            Currency:
+            <CurrencySelection onChange={this.handleChange} />
+          </label>
+          <br/>
           <h4>Optional Information</h4>
           <input
             type="text"
