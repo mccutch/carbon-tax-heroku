@@ -72,7 +72,7 @@ export class TaxTable extends React.Component{
     let tableRows=[]
     if(taxes){
       for(let i=0; i<taxes.length; i++){
-        tableRows.push(<TaxDetail key={taxes[i].id} tax={taxes[i]} refresh={this.props.refresh}/>)
+        tableRows.push(<TaxDetail key={taxes[i].id} tax={taxes[i]} refresh={this.props.refresh} profile={this.props.profile}/>)
       }
     }
     tableRows.push(<tr><CreateTax buttonLabel={"+ New Tax"} refresh={this.props.refresh} existingTaxes={this.props.taxes}/></tr>)
@@ -390,7 +390,7 @@ export class EmissionTable extends React.Component{
     let tableRows=[]
     for(let i in emissions){
       tableRows.push(
-        <EmissionDetail emission={emissions[i]} displayUnits={this.props.displayUnits} />
+        <EmissionDetail emission={emissions[i]} displayUnits={this.props.displayUnits} profile={this.props.profile}/>
       )
     }
     return tableRows

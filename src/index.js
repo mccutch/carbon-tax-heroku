@@ -176,6 +176,7 @@ class App extends React.Component {
                   taxes={this.state.taxes}
                   vehicles={this.state.vehicles}
                   fuels={this.state.fuels}
+                  profile={this.state.profile}
                   refresh={this.refreshFullProfile}
                 />
     } else if(this.state.displayEmissions && this.state.loggedIn){
@@ -184,6 +185,7 @@ class App extends React.Component {
                   displayUnits={this.state.displayUnits}
                   emissions={this.state.emissions}
                   taxes={this.state.taxes}
+                  profile={this.state.profile}
                 />
     } else {
       display = 

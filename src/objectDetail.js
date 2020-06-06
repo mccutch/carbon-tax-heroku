@@ -126,10 +126,12 @@ export class TaxDetail extends React.Component{
         </td>
     }
 
+    let sym = this.props.profile.currency_symbol
+
     return(
       <tr key={tax.id}>
         <td>{tax.name}</td>
-        <td>${parseFloat(tax.price_per_kg).toFixed(TAX_RATE_DECIMALS)}/kg CO2</td>
+        <td>{sym}{parseFloat(tax.price_per_kg).toFixed(TAX_RATE_DECIMALS)}/kg CO2</td>
         <td>{tax.category}</td>
         {editDisplay}
       </tr>
@@ -365,6 +367,7 @@ export class EmissionDetail extends React.Component{
     let emission=this.props.emission
     let distance=units.distanceDisplay(emission.distance, displayUnits)
     let distString=units.distanceString(displayUnits)
+    let sym=this.props.profile.currency_symbol
     return(
       <tr key={emission.id}>
         <EmissionEdit emission={emission} displayUnits={this.displayUnits} />
@@ -372,7 +375,7 @@ export class EmissionDetail extends React.Component{
         <td>{emission.tax_type}</td>
         <td>{parseFloat(distance).toFixed(1)}{distString}</td>
         <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
-        <td>${parseFloat(emission.price).toFixed(2)}</td>
+        <td>{sym}{parseFloat(emission.price).toFixed(2)}</td>
       </tr>
     )
   }

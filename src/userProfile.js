@@ -266,11 +266,11 @@ class ProfileDetails extends React.Component{
             <br/>
             <label>
               Currency symbol:
-              <input type="text" maxLength="1" name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange}/>
+              <input type="text" size="1" maxLength="1" name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange}/>
             </label>
             <br/>
             <label>
-              Units:
+              Economy units:
               <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
             </label>
           </form>
@@ -334,11 +334,11 @@ class TabbedListDisplay extends React.Component{
 
     let table
     if(this.state.activeTab==="taxes"){
-      table = <TaxTable refresh={this.props.refresh} taxes={this.props.taxes}/>
+      table = <TaxTable refresh={this.props.refresh} taxes={this.props.taxes} profile={this.props.profile}/>
     } else if(this.state.activeTab==="vehicles"){
       table = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
     } else if(this.state.activeTab==="emissions"){
-      table = <EmissionTable emissions={this.props.emissions} displayUnits={this.props.displayUnits} taxes={this.props.taxes}/>
+      table = <EmissionTable emissions={this.props.emissions} displayUnits={this.props.displayUnits} taxes={this.props.taxes} profile={this.props.profile}/>
     }
 
     return(
@@ -391,6 +391,7 @@ export class ProfileDisplay extends React.Component{
           fuels={this.props.fuels}
           displayUnits={this.props.displayUnits}
           emissions={this.props.emissions}
+          profile={this.props.profile}
         />
         
         <button name="hideProfile" className="btn btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
