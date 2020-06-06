@@ -39,6 +39,7 @@ class App extends React.Component {
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
     this.setFuels = this.setFuels.bind(this)
     this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
+    this.setDisplayUnits = this.setDisplayUnits.bind(this)
   }
 
   componentDidMount(){
@@ -85,7 +86,7 @@ class App extends React.Component {
       this.setState({[objectName]:json})
       if(onSuccess){
         //console.log("onSuccess provided to fetchObject.")
-        onSuccess()
+        onSuccess(json)
       }
       //console.log(json)
     })
@@ -105,7 +106,14 @@ class App extends React.Component {
   }
 
   login(){
-    this.setState({loggedIn: true})
+    this.setState({
+      loggedIn: true,
+    })
+  }
+
+  setDisplayUnits(profile){
+    console.log(profile)
+    this.setState({displayUnits: profile.display_units})
   }
 
   logout(){
@@ -122,7 +130,7 @@ class App extends React.Component {
 
   refreshFullProfile(){
     this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
-    this.fetchObject({url:"/my-profile/", objectName:"profile"})
+    this.fetchObject({url:"/my-profile/", objectName:"profile", onSuccess:this.setDisplayUnits})
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
     this.fetchObject({url:"/my-emissions/", objectName:"emissions"})
