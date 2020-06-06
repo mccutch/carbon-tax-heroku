@@ -1,7 +1,8 @@
 import React from 'react';
 import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
 import { fetchObject } from './helperFunctions.js';
-
+import * as units from './unitConversions';
+import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
 
 const MAX_PASSWORD_LEN = 30
 const MAX_NAME_LEN = 30
@@ -110,6 +111,9 @@ class ProfileDetails extends React.Component{
         dateOfBirth:null,
         errorMessage:null,
         email:null,
+        currency:null,
+        currency_symbol:null,
+        display_units:null,
       })
     } else if(event.target.name==="saveChanges"){
       this.saveProfileChanges()
@@ -126,6 +130,7 @@ class ProfileDetails extends React.Component{
     let profileData = {}
     let userData = {}
 
+    /*
     if(this.state.firstName){
       userData["first_name"]=this.state.firstName
     }
@@ -135,11 +140,28 @@ class ProfileDetails extends React.Component{
     if(this.state.email){
       userData["email"]=this.state.email
     }
+    
     if(this.state.location){
       profileData["location"]=this.state.location
     }
     if(this.state.dateOfBirth){
       profileData["date_of_birth"]=this.state.dateOfBirth
+    }
+    */
+
+    let userAttributes = ["first_name", "last_name", "email"]
+    for(let i in userAttributes){
+      if(this.state[userAttributes[i]]){
+        userData[userAttributes[i]]=this.state[userAttributes[i]]
+      }
+    }
+
+    let profileAttributes = ["date_of_birth", "location", "currency", "currency_symbol", "display_units"]
+
+    for(let i in profileAttributes){
+      if(this.state[profileAttributes[i]]){
+        profileData[profileAttributes[i]]=this.state[profileAttributes[i]]
+      }
     }
 
     if(Object.keys(userData).length>0){
@@ -205,6 +227,8 @@ class ProfileDetails extends React.Component{
     let profile=this.props.profile
 
 
+
+
     let profileDisplay
     if(this.state.editProfile){
       profileDisplay=
@@ -212,12 +236,12 @@ class ProfileDetails extends React.Component{
           <form>
             <label>
               First name:
-              <input type="text" name="firstName" defaultValue={user.first_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+              <input type="text" name="first_name" defaultValue={user.first_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
             </label>
             <br/>
             <label>
               Last name:
-              <input type="text" name="lastName" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+              <input type="text" name="last_name" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
             </label>
             <br/>
             <label>
@@ -227,12 +251,27 @@ class ProfileDetails extends React.Component{
             <br/>
             <label>
               Date of birth:
-              <input type="date" name="dateOfBirth" defaultValue={profile.date_of_birth} onChange={this.handleChange}/>
+              <input type="date" name="date_of_birth" defaultValue={profile.date_of_birth} onChange={this.handleChange}/>
             </label>
             <br/>
             <label>
               Email:
               <input type="text" name="email" defaultValue={user.email} onChange={this.handleChange}/>
+            </label>
+            <br/>
+            <label>
+              Currency:
+              <CurrencySelection defaultValue={profile.currency} onChange={this.handleChange}/>
+            </label>
+            <br/>
+            <label>
+              Currency symbol:
+              <input type="text" maxLength="1" name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange}/>
+            </label>
+            <br/>
+            <label>
+              Units:
+              <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
             </label>
           </form>
           <p>{this.state.errorMessage}</p>
@@ -246,6 +285,8 @@ class ProfileDetails extends React.Component{
           <p>Location: {profile.location}</p>
           <p>Date of Birth: {profile.date_of_birth}</p>
           <p>Email: {user.email}</p>
+          <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
+          <p>Units: {units.string(profile.display_units)}</p>
           <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
         </div>
     }

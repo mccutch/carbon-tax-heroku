@@ -9,7 +9,6 @@ export class CurrencySelection extends React.Component{
     }
     this.fetchCurrencies = this.fetchCurrencies.bind(this)
     this.receiveCurrencies = this.receiveCurrencies.bind(this)
-    this.handleFailure = this.handleFailure.bind(this)
   }
 
   componentDidMount(){
@@ -18,26 +17,20 @@ export class CurrencySelection extends React.Component{
 
   fetchCurrencies(){
     const FIXER_API_KEY = process.env.REACT_APP_FIXER_API_KEY
-
     let url = `http://data.fixer.io/api/symbols?access_key=${FIXER_API_KEY}`
 
     fetch(url)
     .then(res => {
-      console.log(res)
+      //console.log(res)
       return res.json()
     })
     .then(json => {
-      console.log(json)
+      //console.log(json)
       this.receiveCurrencies(json)
     })
     .catch(error => {
       console.log(error)
     });
-
-  }
-
-  handleFailure(json){
-    console.log(json)
   }
 
   receiveCurrencies(json){
@@ -57,9 +50,6 @@ export class CurrencySelection extends React.Component{
       currencies:currencyList
     })
   }
-
-
-
 
   render(){
     let currencies = this.state.currencies

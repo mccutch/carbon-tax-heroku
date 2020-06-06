@@ -50,6 +50,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     location = models.CharField(max_length=60, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    currency = models.CharField(max_length=10, default="AUD")
+    currency_symbol = models.CharField(max_length=10, default="$")
+    display_units = models.CharField(max_length=10, default="lPer100Km")
 
     def __str__(self):
         """String for representing the Model object."""

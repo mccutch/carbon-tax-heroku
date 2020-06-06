@@ -24,6 +24,21 @@ const USmpgToMetric = 100*3.785411784/1.609344
 const UStoUKGallon = 1.201
 const mileToKm = 1.609344
 
+export const allUnits = [
+  {
+    str: US,
+    label: string(US)
+  },
+  {
+    str: UK,
+    label: string(UK)
+  },
+  {
+    str:METRIC,
+    label: string(METRIC)
+  },
+]
+
 //*********** Shorthand Methods ***************
 export function string(displayUnits){
   return(displayUnitString(displayUnits))

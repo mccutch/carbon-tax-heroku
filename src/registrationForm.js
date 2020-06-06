@@ -22,6 +22,13 @@ export class RegistrationForm extends React.Component{
       firstName: "",
       lastName: "",
       username: "",
+
+      currency: "",
+      currency_symbol:"",
+      display_units:"",
+      location: "",
+      date_of_birth: "",
+
       password: "",
       password_check: "__",
       email: "",
@@ -29,8 +36,7 @@ export class RegistrationForm extends React.Component{
       strongPassword: false,
       validEmail:false,
       validUsername:false,
-      location: "",
-      date_of_birth: "",
+      
     }
 
     this.handleSubmit=this.handleSubmit.bind(this)
@@ -172,6 +178,9 @@ export class RegistrationForm extends React.Component{
   createProfile(){
     let profileData = {
       location: this.state.location,
+      currency: this.state.currency,
+      currency_symbol: this.state.currency_symbol,
+      display_units: this.state.display_units,
     }
     if(this.state.date_of_birth){
       profileData['date_of_birth']=this.state.date_of_birth
