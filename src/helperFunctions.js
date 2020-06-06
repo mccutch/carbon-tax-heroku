@@ -2,11 +2,12 @@ import {refreshToken}  from './myJWT.js';
 
 
 
-
+/*
 export function validateEmail(email){
   let emailRegex = new RegExp(".+@.+.[A-Za-z]+$")
   return emailRegex.test(email)
 }
+*/
 
 
 export function createObject({data, url, onSuccess, onFailure}){

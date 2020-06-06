@@ -130,34 +130,14 @@ class ProfileDetails extends React.Component{
     let profileData = {}
     let userData = {}
 
-    /*
-    if(this.state.firstName){
-      userData["first_name"]=this.state.firstName
-    }
-    if(this.state.lastName){
-      userData["last_name"]=this.state.lastName
-    }
-    if(this.state.email){
-      userData["email"]=this.state.email
-    }
-    
-    if(this.state.location){
-      profileData["location"]=this.state.location
-    }
-    if(this.state.dateOfBirth){
-      profileData["date_of_birth"]=this.state.dateOfBirth
-    }
-    */
-
     let userAttributes = ["first_name", "last_name", "email"]
+    let profileAttributes = ["date_of_birth", "location", "currency", "currency_symbol", "display_units"]
+    
     for(let i in userAttributes){
       if(this.state[userAttributes[i]]){
         userData[userAttributes[i]]=this.state[userAttributes[i]]
       }
     }
-
-    let profileAttributes = ["date_of_birth", "location", "currency", "currency_symbol", "display_units"]
-
     for(let i in profileAttributes){
       if(this.state[profileAttributes[i]]){
         profileData[profileAttributes[i]]=this.state[profileAttributes[i]]

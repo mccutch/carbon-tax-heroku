@@ -332,7 +332,6 @@ export class PaginatedNav extends React.Component{
   }
 
   render(){
-    //let resultsPerPage = this.props.tableData.results.length
     let resultsPerPage = PAGINATATION_RESULTS_PER_PAGE
     let firstResult = 1 + (this.props.page-1)*(resultsPerPage)
     let lastResult = firstResult+this.props.tableData.results.length-1
@@ -371,7 +370,6 @@ export class EmissionTable extends React.Component{
     }
     this.buildRows=this.buildRows.bind(this)
     this.changeResults=this.changeResults.bind(this)
-    //this.makeTaxList=this.makeTaxList.bind(this)
   }
 
   changeResults(emissionsToDisplay, newPage=1){
@@ -396,30 +394,7 @@ export class EmissionTable extends React.Component{
     return tableRows
   }
 
-  /*
-  makeTaxList(){
-    let taxes = this.props.taxes
-    let taxList=[]
-    for(let i in taxes){
-      taxList.push(taxes[i].name)
-    }
-    return taxList
-  }
-  */
-
   render(){
-    /*
-    let filters = [
-      {
-        propertyName:'tax_type',
-        options:this.makeTaxList(),
-        defaultDisplay:"All Taxes",
-      }
-    ]
-    */
-
-
-
 
     let paginatedTableHeader
     if(this.state.displayedEmissions.length !== 0){

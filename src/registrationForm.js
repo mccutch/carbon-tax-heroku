@@ -77,7 +77,8 @@ export class RegistrationForm extends React.Component{
   }
 
   validateEmail(email){
-    this.setState({validEmail:helper.validateEmail(email)})
+    let emailRegex = new RegExp(".+@.+.[A-Za-z]+$")
+    this.setState({validEmail:emailRegex.test(email)})
   }
 
   validateUsernameRegex(username){
@@ -177,13 +178,15 @@ export class RegistrationForm extends React.Component{
 
   createProfile(){
     let profileData = {
-      location: this.state.location,
-      currency: this.state.currency,
-      currency_symbol: this.state.currency_symbol,
-      display_units: this.state.display_units,
+      location:""
     }
-    if(this.state.date_of_birth){
-      profileData['date_of_birth']=this.state.date_of_birth
+
+    let profileAttributes = ["date_of_birth", "currency", "currency_symbol", "display_units"]
+
+    for(let i in profileAttributes){
+      if(this.state[profileAttributes[i]]){
+        profileData[profileAttributes[i]]=this.state[profileAttributes[i]]
+      }
     }
 
     fetchObject({

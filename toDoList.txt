@@ -1,8 +1,6 @@
 profile currency selection
  - edit default taxes by currency
 
-profile units selection
-
 change filter search input type to "search"
 
 edit emissions
