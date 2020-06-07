@@ -37,6 +37,8 @@ urlpatterns = [
 
     path('my-taxes/', views.UserTaxList.as_view(), name="my-taxes"),
     path('tax/<int:pk>/', views.TaxDetail.as_view(), name="tax-detail"),
+
+    path('my-stats/', views.UserStats.as_view(), name="my-stats"),
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)
