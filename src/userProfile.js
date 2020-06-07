@@ -265,12 +265,12 @@ class ProfileDetails extends React.Component{
             <br/>
             <label>
               Currency:
-              <CurrencySelection defaultValue={profile.currency} onChange={this.handleChange}/>
+              <CurrencySelection name="currency" defaultValue={profile.currency} onChange={this.handleChange}/>
             </label>
             <br/>
             <label>
               Currency symbol:
-              <input type="text" size="1" maxLength="1" name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange}/>
+              <input type="text" size="3" maxLength="3" name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange}/>
             </label>
             <br/>
             <label>

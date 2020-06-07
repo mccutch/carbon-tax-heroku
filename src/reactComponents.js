@@ -1,4 +1,30 @@
 import React from 'react';
+import * as units from './unitConversions.js';
+
+
+export class DisplayUnitSelection extends React.Component{
+  render(){
+    return(
+      <ObjectSelectionList name={this.props.name} list={units.allUnits} defaultValue={this.props.defaultValue} value="str" label="label" onChange={this.props.onChange}/>
+    )
+  }
+}
+
+export class CurrencySymbolSelection extends React.Component{
+
+  render(){
+    let list = [
+      {symbol: "$"},
+      {symbol: "€"},
+      {symbol: "¥"},
+      {symbol: "£"},
+    ]
+
+    return(
+      <ObjectSelectionList name={this.props.name} list={list} value="symbol" label="symbol" onChange={this.props.onChange} defaultValue={this.props.defaultValue}/>
+    )
+  }
+}
 
 export class CurrencySelection extends React.Component{
   constructor(props){
@@ -57,7 +83,7 @@ export class CurrencySelection extends React.Component{
 
     let display
     if(currencies.length>0){
-      display = <ObjectSelectionList name="currency" onChange={this.props.onChange} list={currencies} value="symbol" label="name" defaultValue={this.props.defaultValue}/>
+      display = <ObjectSelectionList name={this.props.name} onChange={this.props.onChange} list={currencies} value="symbol" label="name" defaultValue={this.props.defaultValue}/>
     } else {
       display = <select></select>
     }

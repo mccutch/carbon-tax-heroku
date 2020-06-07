@@ -5,14 +5,16 @@ import { getToken }  from './myJWT.js';
 
 import * as helper from './helperFunctions.js';
 import { fetchObject, convertCurrency } from './helperFunctions.js';
-
-import { CurrencySelection } from './reactComponents.js';
+import * as units from './unitConversions.js';
+import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection } from './reactComponents.js';
 
 const MAX_PASSWORD_LEN = 30
 const MAX_EMAIL_LEN = 30
 const MAX_NAME_LEN = 30
 
 const DEFAULT_CURRENCY = "AUD"
+const DEFAULT_CURRENCY_SYMBOL = "$"
+const DEFAULT_DISPLAY_UNITS = units.METRIC
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -25,7 +27,7 @@ export class RegistrationForm extends React.Component{
 
       currency: DEFAULT_CURRENCY,
       currencyFactor:1,
-      currency_symbol:"",
+      currency_symbol:DEFAULT_CURRENCY_SYMBOL,
       display_units:"",
       location: "",
       date_of_birth: "",
@@ -279,8 +281,15 @@ export class RegistrationForm extends React.Component{
           <br/>
           <label>
             Currency:
-            <CurrencySelection defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
+            <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
           </label>
+          <br/>
+          <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
+          <br/>
+          <label>
+            Economy units:
+            <DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />
+           </label>
           <br/>
           <h4>Optional Information</h4>
           <input

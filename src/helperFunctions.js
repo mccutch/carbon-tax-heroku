@@ -1,6 +1,17 @@
 import {refreshToken}  from './myJWT.js';
 
+//----------------------------------------------------------------------------------------------------------------------------
+/*
+convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure})
+conversionStepTwo({convertFrom, convertTo, amount, onSuccess, onFailure})
 
+createObject({data, url, onSuccess, onFailure})
+editObject({data, url, onSuccess, onFailure})
+fetchObject({method, data, url, onSuccess, onFailure, noAuth})
+
+
+*/
+//----------------------------------------------------------------------------------------------------------------------------
 
 /*
 export function validateEmail(email){
