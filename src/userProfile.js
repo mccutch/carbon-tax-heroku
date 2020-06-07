@@ -236,7 +236,7 @@ class ProfileDetails extends React.Component{
     let profileDisplay
     if(this.state.editProfile){
       profileDisplay=
-        <div>
+        <div className="container bg-light">
           <form>
             <label>
               First name:
@@ -284,14 +284,19 @@ class ProfileDetails extends React.Component{
         </div>
     } else {
       profileDisplay=
-        <div>
-          <p>Name: {user.first_name} {user.last_name}</p>
-          <p>Location: {profile.location}</p>
-          <p>Date of Birth: {profile.date_of_birth}</p>
-          <p>Email: {user.email}</p>
-          <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
-          <p>Units: {units.string(profile.display_units)}</p>
-          <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
+        <div className="row">
+          <div className="col-sm-5 bg-light mx-2 my-2">
+            <p>Name: {user.first_name} {user.last_name}</p>
+            <p>Location: {profile.location}</p>
+            <p>Date of Birth: {profile.date_of_birth}</p>
+            <p>Email: {user.email}</p>
+            <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
+            <p>Units: {units.string(profile.display_units)}</p>
+            <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
+          </div>
+          <div className="col-sm-5 bg-light mx-2 my-2">
+            <h4>Dashboard</h4>
+          </div>
         </div>
     }
 

@@ -251,7 +251,7 @@ export class EmissionFilterNav extends React.Component{
           <br/>
           <label>
             Search by name:
-            <input placeholder="Search" className="mx-2" type="text" name="searchQuery" id="searchQuery" onChange={this.handleChange} />
+            <input placeholder="Search" className="mx-2" type="search" name="searchQuery" id="searchQuery" onChange={this.handleChange} />
           </label>
           <br/>
           <label>

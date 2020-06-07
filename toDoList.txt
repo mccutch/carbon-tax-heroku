@@ -1,11 +1,13 @@
-profile currency selection
- - edit default taxes by currency
-
-regitration - optionlist of currency symbols
-
-change filter search input type to "search"
 
 edit emissions
+
+
+Dashboard
+ - Total outstanding
+ - Total paid
+ - Proportion CO2 by tax types (all time)
+ - Graph CO2 by week/month/year
+
 
 create saved trips
 
@@ -17,18 +19,14 @@ user statistics
 
 backdate changes to tax pricing
 
-
-profile - preferred units
+report an error
 
 emission list
  - avoid nan on database (crashes list rendering)
 
-emission view
-- pagination
-- searchable
-
-protect model instances from editing by others (is_owner())
-
+Home screen
+- Explanation
+- Graph of total carbon by use
 
 fuel support
 - lpg, electric, aviation fuels
