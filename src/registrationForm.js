@@ -4,7 +4,7 @@ import { defaultTaxes } from './defaultTaxTypes.js';
 import { getToken }  from './myJWT.js';
 
 import * as helper from './helperFunctions.js';
-import { fetchObject } from './helperFunctions.js';
+import { fetchObject, convertCurrency } from './helperFunctions.js';
 
 import { CurrencySelection } from './reactComponents.js';
 
@@ -24,6 +24,7 @@ export class RegistrationForm extends React.Component{
       username: "",
 
       currency: DEFAULT_CURRENCY,
+      currencyFactor:1,
       currency_symbol:"",
       display_units:"",
       location: "",
@@ -51,6 +52,8 @@ export class RegistrationForm extends React.Component{
     this.createUserFailure=this.createUserFailure.bind(this)
     this.createUserSuccess=this.createUserSuccess.bind(this)
     this.validateUsernameRegex=this.validateUsernameRegex.bind(this)
+    this.convertCurrency=this.convertCurrency.bind(this)
+    this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
   }
 
   handleSubmit(e){
@@ -67,6 +70,8 @@ export class RegistrationForm extends React.Component{
       this.validateEmail(event.target.value)
     } else if(event.target.name==="username"){
       this.validateUsernameRegex(event.target.value)
+    } else if(event.target.name==="currency"){
+      this.convertCurrency(event.target.value)
     }
   }
 
@@ -84,6 +89,19 @@ export class RegistrationForm extends React.Component{
   validateUsernameRegex(username){
     const validUsername = new RegExp("^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")
     this.setState({validUsername: validUsername.test(username)})
+  }
+
+  convertCurrency(CUR){
+    convertCurrency({
+      convertFrom:"AUD",
+      convertTo:CUR,
+      amount:1,
+      onSuccess:this.setCurrencyFactor,
+    })
+  }
+
+  setCurrencyFactor(factor){
+    this.setState({conversion_factor:factor})
   }
 
   validateUserData(){
@@ -181,7 +199,7 @@ export class RegistrationForm extends React.Component{
       location:""
     }
 
-    let profileAttributes = ["date_of_birth", "currency", "currency_symbol", "display_units"]
+    let profileAttributes = ["date_of_birth", "currency", "currency_symbol", "display_units", "conversion_factor"]
 
     for(let i in profileAttributes){
       if(this.state[profileAttributes[i]]){

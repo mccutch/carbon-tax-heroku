@@ -1,6 +1,6 @@
 import React from 'react';
 import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
-import { fetchObject } from './helperFunctions.js';
+import { fetchObject, convertCurrency } from './helperFunctions.js';
 import * as units from './unitConversions';
 import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
 
@@ -97,6 +97,8 @@ class ProfileDetails extends React.Component{
     this.updateFailure=this.updateFailure.bind(this)
     this.userUpdateSuccess=this.userUpdateSuccess.bind(this)
     this.profileUpdateSuccess=this.profileUpdateSuccess.bind(this)
+    this.convertCurrency=this.convertCurrency.bind(this)
+    this.setConversionFactor=this.setConversionFactor.bind(this)
   }
 
   handleClick(event){
@@ -114,6 +116,7 @@ class ProfileDetails extends React.Component{
         currency:null,
         currency_symbol:null,
         display_units:null,
+        conversion_factor:null,
       })
     } else if(event.target.name==="saveChanges"){
       this.saveProfileChanges()
@@ -124,6 +127,23 @@ class ProfileDetails extends React.Component{
     this.setState({
       [event.target.name]: event.target.value
     })
+    if(event.target.name==="currency"){
+      this.convertCurrency(event.target.value)
+    }
+  }
+
+  convertCurrency(CUR){
+    console.log("convert")
+    convertCurrency({
+      convertFrom:"AUD",
+      convertTo:CUR,
+      amount:1,
+      onSuccess:this.setConversionFactor,
+    })
+  }
+
+  setConversionFactor(factor){
+    this.setState({conversion_factor:factor})
   }
 
   saveProfileChanges(){
@@ -131,7 +151,7 @@ class ProfileDetails extends React.Component{
     let userData = {}
 
     let userAttributes = ["first_name", "last_name", "email"]
-    let profileAttributes = ["date_of_birth", "location", "currency", "currency_symbol", "display_units"]
+    let profileAttributes = ["date_of_birth", "location", "currency", "currency_symbol", "display_units", "conversion_factor"]
     
     for(let i in userAttributes){
       if(this.state[userAttributes[i]]){
@@ -182,13 +202,13 @@ class ProfileDetails extends React.Component{
 
   userUpdateSuccess(){
     this.setState({
-          editProfile:false,
-          errorMessage:null,
-          firstName:null,
-          lastName:null,
-          email:null,
-        })
-        this.props.refresh()
+      editProfile:false,
+      errorMessage:null,
+      firstName:null,
+      lastName:null,
+      email:null,
+    })
+    this.props.refresh()
   }
 
   profileUpdateSuccess(){
@@ -197,6 +217,10 @@ class ProfileDetails extends React.Component{
       errorMessage:null,
       location:null,
       dateOfBirth:null,
+      currency:null,
+      currency_symbol:null,
+      display_units:null,
+      conversion_factor:null,
     })
     this.props.refresh()
   }

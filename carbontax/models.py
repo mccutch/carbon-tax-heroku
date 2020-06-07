@@ -52,6 +52,7 @@ class Profile(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     currency = models.CharField(max_length=10, default="AUD")
     currency_symbol = models.CharField(max_length=10, default="$")
+    conversion_factor = models.FloatField(default=1)
     display_units = models.CharField(max_length=10, default="lPer100Km")
 
     def __str__(self):

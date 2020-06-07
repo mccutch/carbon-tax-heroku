@@ -181,11 +181,12 @@ export class CarbonCalculator extends React.Component{
     }
 
     let sym = this.props.profile.currency_symbol
+    let currencyFactor = this.props.profile.conversion_factor
 
     return(
       
       <div className="container bg-light">
-        <h1>{parseFloat(carbon).toFixed(2)} kg, {sym}{parseFloat(price).toFixed(2)}</h1>
+        <h1>{parseFloat(carbon).toFixed(2)} kg, {sym}{parseFloat(currencyFactor*price).toFixed(2)}</h1>
         {memberDisplay}
       </div>
     )

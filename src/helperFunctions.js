@@ -9,6 +9,55 @@ export function validateEmail(email){
 }
 */
 
+export function convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure}){
+  let url = "http://data.fixer.io/api/latest"
+  const FIXER_API_KEY = process.env.REACT_APP_FIXER_API_KEY
+  url += `?access_key=${FIXER_API_KEY}`
+  url += `&base=EUR&symbols=${convertFrom}`
+
+  fetch(url)
+  .then(res => {
+      return res.json()
+    })
+    .then(json => {
+      let amountEUR=amount/json.rates[convertFrom]
+      conversionStepTwo({
+        convertFrom:"EUR",
+        convertTo:convertTo,
+        amount:amountEUR,
+        onSuccess:onSuccess, 
+        onFailure:onFailure,
+      })  
+    })
+    .catch(e => {
+      console.log(e.message)
+      if(onFailure){
+        onFailure(e.message)
+      }
+    });
+}
+
+function conversionStepTwo({convertFrom, convertTo, amount, onSuccess, onFailure}){
+  let url = "http://data.fixer.io/api/latest"
+  const FIXER_API_KEY = process.env.REACT_APP_FIXER_API_KEY
+  url += `?access_key=${FIXER_API_KEY}`
+  url += `&base=EUR&symbols=${convertTo}`
+
+  fetch(url)
+  .then(res => {
+      return res.json()
+    })
+    .then(json => {
+      onSuccess(json.rates[convertTo]*amount)
+    })
+    .catch(e => {
+      console.log(e.message)
+      if(onFailure){
+        onFailure(e.message)
+      }
+    });
+}
+
 
 export function createObject({data, url, onSuccess, onFailure}){
  

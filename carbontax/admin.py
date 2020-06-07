@@ -8,7 +8,7 @@ class FuelTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date_of_birth', 'location', 'currency', 'currency_symbol', 'display_units')
+    list_display = ('user', 'date_of_birth', 'location', 'currency', 'currency_symbol', 'conversion_factor', 'display_units')
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {fetchObject} from './helperFunctions.js';
+import {fetchObject, convertCurrency} from './helperFunctions.js';
 
 import {CurrencySelection, ObjectSelectionList} from './reactComponents.js';
 
@@ -13,6 +13,8 @@ export class Sandbox extends React.Component{
     }
     
     this.handleChange = this.handleChange.bind(this)
+    this.convert=this.convert.bind(this)
+    this.receive=this.receive.bind(this)
   }
 
   handleChange(event){
@@ -20,6 +22,20 @@ export class Sandbox extends React.Component{
     this.setState({[event.target.name]:event.target.value})
   }
 
+  convert(event){
+    convertCurrency({
+      amount:event.target.value,
+      convertFrom:"AUD",
+      convertTo:"USD",
+      onSuccess:this.receive,
+    })
+  }
+
+  receive(amount){
+    this.setState({
+      convertedNum:amount
+    })
+  }
   
 
   
@@ -31,6 +47,8 @@ export class Sandbox extends React.Component{
         <h1>Sandbox</h1>
         <CurrencySelection defaultValue="AUD" onChange={this.handleChange}/>
         <ObjectSelectionList list={units.allUnits} value="str" label="label"/>
+        <input type="number" name="inputNum" onChange={this.convert} />
+        <p>{this.state.convertedNum}</p>
       </div>
     )
   }
