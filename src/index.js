@@ -226,7 +226,7 @@ class App extends React.Component {
         {/*<Sandbox />*/}
         
         <div className="jumbotron">
-          <h1>.</h1>
+          <h1>__</h1>
         </div>
      
       </div>
