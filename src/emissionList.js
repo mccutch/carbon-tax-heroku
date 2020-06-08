@@ -28,6 +28,7 @@ export class EmissionListWrapper extends React.Component{
             displayUnits={this.props.displayUnits}
             taxes={this.props.taxes}
             profile={this.props.profile}
+            refresh={this.props.refresh}
           />
         </div>
 

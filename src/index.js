@@ -186,6 +186,7 @@ class App extends React.Component {
                   emissions={this.state.emissions}
                   taxes={this.state.taxes}
                   profile={this.state.profile}
+                  refresh={this.refreshFullProfile}
                 />
     } else {
       display = 
