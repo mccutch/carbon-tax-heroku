@@ -43,7 +43,8 @@ export class CurrencySelection extends React.Component{
 
   fetchCurrencies(){
     const FIXER_API_KEY = process.env.REACT_APP_FIXER_API_KEY
-    let url = `http://data.fixer.io/api/symbols?access_key=${FIXER_API_KEY}`
+    const HTTP = process.env.REACT_APP_HTTP //http on localhost, https on heroku
+    let url = `${HTTP}://data.fixer.io/api/symbols?access_key=${FIXER_API_KEY}`
 
     fetch(url)
     .then(res => {
