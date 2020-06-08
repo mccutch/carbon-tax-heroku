@@ -42,11 +42,9 @@ export class CurrencySelection extends React.Component{
   }
 
   fetchCurrencies(){
-    const FIXER_API_KEY = process.env.REACT_APP_FIXER_API_KEY
-    const HTTP = process.env.REACT_APP_HTTP //http on localhost, https on heroku
-    let url = `${HTTP}://data.fixer.io/api/symbols?access_key=${FIXER_API_KEY}`
-    //let url = `https://data.fixer.io/api/symbols?access_key=${FIXER_API_KEY}`
-    console.log(`FixerURL: ${url}`)
+    const CURRENCY_API = process.env.REACT_APP_CURRENCY_API
+    let url = `https://free.currconv.com/api/v7/currencies?apiKey=${CURRENCY_API}`
+    console.log(`CurrencyURL: ${url}`)
 
     fetch(url)
     .then(res => {
@@ -63,13 +61,14 @@ export class CurrencySelection extends React.Component{
   }
 
   receiveCurrencies(json){
-    let symbols = json.symbols
-
+    let symbols = json.results
+    //console.log(symbols)
     let currencyList = []
     for(let key in symbols){
+      //console.log(key)
       currencyList.push(
         {
-          name:`${symbols[key]} (${key})`,
+          name:`${symbols[key]['currencyName']} (${key})`,
           //name:key,
           symbol:key
         }
