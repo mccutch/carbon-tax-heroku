@@ -8,6 +8,7 @@ import { VehicleSaveForm } from './vehicleSave.js';
 import { createObject } from './helperFunctions.js';
 import {fetchObject} from './helperFunctions.js';
 import {ECONOMY_DECIMALS} from './fuelTypes.js';
+import { ObjectSelectionList } from './reactComponents.js';
 
 const MAX_NAME_LEN = 30
 
@@ -342,11 +343,147 @@ export class VehicleDetail extends React.Component{
 
 
 class EmissionEdit extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state = {
+      errorMessage:""
+    }
+
+    this.handleClick=this.handleClick.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+    this.prepareData=this.prepareData.bind(this)
+    this.saveNew=this.saveNew.bind(this)
+    this.saveChanges=this.saveChanges.bind(this)
+    this.saveSuccess=this.saveSuccess.bind(this)
+    this.updateFailure=this.updateFailure.bind(this)
+    this.cloneFailure=this.cloneFailure.bind(this)
+    this.delete=this.delete.bind(this)
+    this.deleteFailure=this.deleteFailure.bind(this)
+  }
+
+  handleClick(event){
+    event.preventDefault()
+    let name = event.target.name
+    let value = event.target.value
+
+    if(name==="cancelEdit"){
+      this.props.hideEdit()
+    } else if(name==="clone" || name==="update"){
+      this.prepareData(name)
+    } else if(name==="delete"){
+      this.delete()
+    }
+  }
+
+  handleChange(event){
+    this.setState({
+      [event.target.name]:event.target.value
+    })
+  }
+
+  prepareData(method){
+    this.setState({errorMessage:""})
+    let emissionAttributes = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price']
+    let emissionData = {}
+    for(let i in emissionAttributes){
+      let attribute = emissionAttributes[i]
+      if(this.state[attribute]){
+        emissionData[attribute]=this.state[attribute]
+      } else if(method==="clone"){
+        emissionData[attribute]=this.props.emission[attribute]
+      }
+    }
+    if(method==="clone"){
+      this.saveNew(emissionData)
+    } else if(method==="update"){
+      this.saveChanges(emissionData)
+    }
+  }
+
+  saveNew(data){
+    fetchObject({
+      url:`/my-emissions/`,
+      method:'POST',
+      data:data,
+      onSuccess:this.saveSuccess,
+      onFailure:this.cloneFailure,
+    })
+  }
+
+  saveChanges(data){
+    let key = this.props.emission.id
+    fetchObject({
+      url:`/emission/${key}/`,
+      method:'PATCH',
+      data:data,
+      onSuccess:this.saveSuccess,
+      onFailure:this.updateFailure,
+    })
+  }
+
+  saveSuccess(){
+    console.log("Save success")
+    this.props.refresh()
+    this.props.hideEdit()
+  }
+
+  cloneFailure(){
+    this.setState({errorMessage:"Unable to clone emission."})
+  }
+
+  updateFailure(){
+    this.setState({errorMessage:"Unable to save changes."})
+  }
+
+  delete(){
+    let key = this.props.emission.id
+    fetchObject({
+      url:`/emission/${key}/`,
+      method:'DELETE',
+      onSuccess:this.saveSuccess,
+      onFailure:this.deleteFailure,
+    })
+  }
+
+  deleteFailure(){
+    this.setState({errorMessage:"Unable to delete emission."})
+  }
 
   render(){
     let emission=this.props.emission
     return(
-      <td><strong>{emission.name}</strong></td>
+      <form>
+        <p>{this.state.errorMessage}</p>
+        <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={this.props.emission.name} onChange={this.handleChange} />
+        <input type="date" name="date" defaultValue={this.props.emission.date} onChange={this.handleChange} />
+        <br/>
+        <label>
+          Tax Type:
+          <ObjectSelectionList name="tax_type" defaultValue={this.props.emission.tax_type} list={this.props.taxes} value="name" label="name" onChange={this.handleChange}/>
+        </label>
+        <br/>
+        <label>
+          Distance:
+          <input type="number" name="distance" defaultValue={this.props.emission.distance} onChange={this.handleChange} />
+          {units.distanceString(this.props.displayUnits)}
+        </label>
+        <br/>
+        <label>
+          CO2 Output (kg)
+          <input type="number" name="co2_output_kg" defaultValue={this.props.emission.co2_output_kg} onChange={this.handleChange} />
+        </label>
+        <br/>
+        <label>
+          Price: {this.props.profile.currency_symbol}
+          <input type="number" name="price" defaultValue={this.props.emission.price} onChange={this.handleChange} />
+        </label>
+        <br/>
+        <button name="update" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
+        <button name="clone" className="btn btn-outline-success" onClick={this.handleClick}>Save as new</button>
+        <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel edit</button>
+        <button name="delete" className="btn btn-outline-dark" onClick={this.handleClick}>Delete</button>
+      </form>
     )
   }
 }
@@ -354,13 +491,19 @@ class EmissionEdit extends React.Component{
 export class EmissionDetail extends React.Component{
   constructor(props){
     super(props)
-
-    this.handleClick=this.handleClick.bind(this)
+    this.state = {
+      edit:false,
+    }
+    this.hideEdit=this.hideEdit.bind(this)
+    this.edit=this.edit.bind(this)
   }
 
-  handleClick(event){
-    console.log("Edit table element")
-    console.log(event.target.name)
+  hideEdit(){
+    this.setState({edit:false})
+  }
+
+  edit(){
+    this.setState({edit:true})
   }
 
   render(){
@@ -370,15 +513,32 @@ export class EmissionDetail extends React.Component{
     let distString=units.distanceString(displayUnits)
     let sym=this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
-    return(
-      <tr key={emission.id}>
-        <EmissionEdit emission={emission} displayUnits={this.displayUnits} />
-        <td>{emission.date}</td>
-        <td>{emission.tax_type}</td>
-        <td>{parseFloat(distance).toFixed(1)}{distString}</td>
-        <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
-        <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
-      </tr>
-    )
+
+    let display 
+    if(this.state.edit){
+      display = 
+        <tr><td colSpan={6}>
+          <EmissionEdit 
+            emission={emission} 
+            displayUnits={this.props.displayUnits} 
+            profile={this.props.profile} 
+            taxes={this.props.taxes} 
+            hideEdit={this.hideEdit} 
+            refresh={this.props.refresh}
+          />
+        </td></tr>
+    } else {
+      display = 
+        <tr key={emission.id}>
+          <td><button className="btn btn-outline-primary" onClick={this.edit}><strong>{emission.name}</strong></button></td>
+          <td>{emission.date}</td>
+          <td>{emission.tax_type}</td>
+          <td>{parseFloat(distance).toFixed(1)}{distString}</td>
+          <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
+          <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
+        </tr>
+    }
+
+    return display
   }
 }

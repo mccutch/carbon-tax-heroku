@@ -1,6 +1,8 @@
 
 edit emissions
 
+how does currency factor work????
+
 
 Dashboard
  - Total outstanding
@@ -18,6 +20,7 @@ password reset
 user statistics
 
 backdate changes to tax pricing
+ - POST a list of emissions to update, with a ratio of new to old tax rate
 
 report an error
 

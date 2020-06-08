@@ -383,12 +383,21 @@ export class EmissionTable extends React.Component{
     this.setState({displayedEmissions:this.props.emissions})
   }
 
+  componentDidUpdate(prevProps){
+    if(this.props.emissions!==prevProps.emissions){
+      this.setState({
+        displayedEmissions:this.props.emissions,
+        page:1
+      })
+    }
+  }
+
   buildRows(){
     let emissions = this.state.displayedEmissions.results
     let tableRows=[]
     for(let i in emissions){
       tableRows.push(
-        <EmissionDetail emission={emissions[i]} displayUnits={this.props.displayUnits} profile={this.props.profile}/>
+        <EmissionDetail emission={emissions[i]} displayUnits={this.props.displayUnits} profile={this.props.profile} taxes={this.props.taxes} refresh={this.props.refresh}/>
       )
     }
     return tableRows

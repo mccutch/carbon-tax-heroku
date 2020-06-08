@@ -85,6 +85,10 @@ class UserEmissionList(generics.ListCreateAPIView):
 class EmissionDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
     serializer_class = serializers.EmissionSerializer
+    def get_queryset(self):
+        print(self.request)
+        user = self.request.user
+        return user.emissions.all()
 
 
 # -----------HELPER MODELS-----------
@@ -206,8 +210,11 @@ class TaxDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserStats(APIView):
     permission_classes = (IsAuthenticated, )
 
-    def get_tax_types(self, request):
+    def all_emissions(self, request):
         emissions = request.user.emissions.all()
+        return emissions
+
+    def get_tax_types(self, request, emissions):
         taxes_used = []
         for emission in emissions:
             if not emission.tax_type:
@@ -216,9 +223,8 @@ class UserStats(APIView):
                 taxes_used.append(emission.tax_type)
         return taxes_used
 
-    def get_months(self, request):
+    def get_months(self, request, emissions):
         months = []
-        emissions = request.user.emissions.all()
         
         if len(emissions) == 0:
             return months
@@ -252,7 +258,7 @@ class UserStats(APIView):
     def get_emissions_by_tax(self, request):
         emissions_by_tax = {}
         emissions_by_tax["total"]={}
-        tax_types = self.get_tax_types(request)
+        tax_types = self.get_tax_types(request, self.all_emissions(request))
 
         co2_total = 0
         price_total = 0
@@ -265,7 +271,7 @@ class UserStats(APIView):
             for emission in emissions:
                 #print(emission.co2_output_kg)
                 co2_tax_total += emission.co2_output_kg
-                price_tax_total += emission.price
+                price_tax_total += emission.price*request.user.profile.conversion_factor
 
             emissions_by_tax[tax_type]['co2_kg']=co2_tax_total
             emissions_by_tax[tax_type]['price']=price_tax_total
@@ -279,8 +285,8 @@ class UserStats(APIView):
     def get_emissions_by_month_and_tax(self, request):
         emissions_by_month_and_tax  = {}
         
-        months = self.get_months(request)
-        tax_types = self.get_tax_types(request)
+        months = self.get_months(request, self.all_emissions(request))
+        tax_types = self.get_tax_types(request, self.all_emissions(request))
 
         for month in months:
             thisMonth = month['month']
@@ -301,7 +307,7 @@ class UserStats(APIView):
                 for emission in emissions:
                     if(emission.date.year==thisYear and emission.date.month==thisMonth):
                         co2_total += emission.co2_output_kg
-                        price_total += emission.price
+                        price_total += emission.price*request.user.profile.conversion_factor
 
                 
                 emissions_by_month_and_tax[monthString][tax_type]['co2_kg']=co2_total
@@ -314,15 +320,13 @@ class UserStats(APIView):
 
         return emissions_by_month_and_tax
 
-    def get_summary(self, request):
-        emissions = request.user.emissions.all()
-
+    def get_summary(self, request, emissions):
         total_paid = 0
         total_co2 = 0
         total_distance = 0
 
         for emission in emissions:
-            total_paid += emission.price
+            total_paid += emission.price*request.user.profile.conversion_factor
             total_co2 += emission.co2_output_kg
             total_distance += emission.distance
 
@@ -330,16 +334,17 @@ class UserStats(APIView):
             'total_paid':total_paid,
             'total_co2':total_co2,
             'total_distance':total_distance,
+            'currency':request.user.profile.currency,
         }
 
 
     def get(self, request):
         content = {
-            'summary': self.get_summary(request),
+            'summary': self.get_summary(request, self.all_emissions(request)),
+            'taxes': self.get_tax_types(request, self.all_emissions(request)),
             'emissions_by_tax': self.get_emissions_by_tax(request),
             'emissions_by_month_and_tax': self.get_emissions_by_month_and_tax(request),
-            'months': self.get_months(request),
-            'taxes': self.get_tax_types(request),
+            'months': self.get_months(request, self.all_emissions(request)),
         }
         return Response(content)
 
