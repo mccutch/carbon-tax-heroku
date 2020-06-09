@@ -1,7 +1,5 @@
-
-edit emissions
-
-how does currency factor work????
+password change
+password reset
 
 
 Dashboard
@@ -13,11 +11,9 @@ Dashboard
 
 create saved trips
 
-password change
-password reset
 
 
-user statistics
+
 
 backdate changes to tax pricing
  - POST a list of emissions to update, with a ratio of new to old tax rate
@@ -26,6 +22,8 @@ report an error
 
 emission list
  - avoid nan on database (crashes list rendering)
+
+django password validation
 
 Home screen
 - Explanation

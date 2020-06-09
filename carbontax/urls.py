@@ -5,15 +5,17 @@ from . import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from django.http.response import HttpResponseRedirect
+"""from django.http.response import HttpResponseRedirect
 def handler404(request, *args, **kwargs):
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/')"""
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    #path('', views.index, name='index'),
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('api-auth/', include('rest_framework.urls')),
+
+    path('', include('django.contrib.auth.urls')), # password reset views
 
     path('current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('user/<int:pk>/', views.UserDetail.as_view(), name="user-detail"),

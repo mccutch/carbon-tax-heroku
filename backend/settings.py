@@ -189,3 +189,5 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=0.2),
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
