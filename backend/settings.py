@@ -37,7 +37,8 @@ SECRET_KEY = env('DJ_KEY')
 #SECRET_KEY = returnkey()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+#DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 

@@ -17,6 +17,12 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 
+from django.http.response import HttpResponseRedirect
+def handler404(request, *args, **kwargs):
+    print("!!!!!!!404!!!!!!")
+    return HttpResponseRedirect('/')
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
