@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'carbontax',
+    #'django.contrib.auth',
 ]
 
 MIDDLEWARE = [
