@@ -5,9 +5,9 @@ from . import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
-"""from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect
 def handler404(request, *args, **kwargs):
-    return HttpResponseRedirect('/')"""
+    return HttpResponseRedirect('/')
 
 urlpatterns = [
     path('', views.index, name='index'),
