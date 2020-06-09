@@ -128,7 +128,7 @@ export class LoginWrapper extends React.Component{
   render(){
     let failureText
     if(this.state.loginFailed){
-      failureText = <p>Login failed.</p>
+      failureText = <p>Login failed. <a href='/password_reset/'>Forgot your password?</a></p>
     }
 
     let display
