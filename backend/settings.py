@@ -38,7 +38,6 @@ SECRET_KEY = env('DJ_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = False
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -115,6 +114,7 @@ try:
     print("IMPORTING LOCAL SETTINGS, DEBUG=TRUE")
 except Exception as e:
     print(e)
+    DEBUG = False
     print("UNABLE TO LOAD LOCAL SETTINGS")
 
 
