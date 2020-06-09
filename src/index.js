@@ -206,7 +206,7 @@ class App extends React.Component {
         <div className="jumbotron">
           <h1>Armchair Dissident Carbon Tax</h1>  
           {serverFailure}    
-          <p>Everything's fucked anyway.</p>
+          <p>Guilt-driven taxation for the people.</p>
         </div>
         <div>
           <LoginWrapper 

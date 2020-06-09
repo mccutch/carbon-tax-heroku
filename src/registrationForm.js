@@ -56,6 +56,7 @@ export class RegistrationForm extends React.Component{
     this.validateUsernameRegex=this.validateUsernameRegex.bind(this)
     this.convertCurrency=this.convertCurrency.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
+    this.uniqueResponse=this.uniqueResponse.bind(this)
   }
 
   handleSubmit(e){
@@ -111,6 +112,8 @@ export class RegistrationForm extends React.Component{
 
     // Insert reCAPTCHAv2?
 
+    // Check unique email
+
     // Check required inputs
     if(!this.state.username || !this.state.password){
       this.setState({errorMessage:"Fill in required fields."})
@@ -140,17 +143,33 @@ export class RegistrationForm extends React.Component{
       return
     }
 
+
+
     // Validate username
-    let data = {username:this.state.username}
+    let data = {
+      username:this.state.username,
+      email:this.state.email,
+    }
 
     fetchObject({
       method:'POST',
-      url:'/account/check-username/',
+      url:'/registration/check-unique/',
       data:data,
-      onSuccess:this.usernameReponse,
+      onSuccess:this.uniqueResponse,
       onFailure:this.postFailure,
       noAuth:true,
     })
+  }
+
+  uniqueResponse(json){
+    console.log(json)
+    if(json.uniqueUsername===false){
+      this.setState({errorMessage:"Username is already in use."})
+    } else if(json.uniqueEmail===false){
+      this.setState({errorMessage:"Email is already in use."})
+    } else {
+      this.createUser()
+    }
   }
 
   usernameReponse(json){
@@ -281,7 +300,7 @@ export class RegistrationForm extends React.Component{
           <br/>
           <label>
             Currency:
-            <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
+            {/*<CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />*/}
           </label>
           <br/>
           <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />

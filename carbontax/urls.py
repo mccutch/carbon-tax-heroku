@@ -5,12 +5,7 @@ from . import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from django.http.response import HttpResponseRedirect
-def handle404(request, *args, **kwargs):
-    print("!!!!!!!404!!!!!!")
-    return HttpResponseRedirect('/')
 
-handler404 = handle404
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -28,6 +23,8 @@ urlpatterns = [
     path('my-profile/', views.UserProfile.as_view(), name="my-profile"),
     path('profile/<int:pk>/', views.ProfileDetail.as_view(), name="profile-detail"),
     path('account/check-username/', views.ValidateUsername.as_view(), name="check-username"),
+    path('account/check-email/', views.ValidateEmail.as_view(), name="check-email"),
+    path('registration/check-unique/', views.CheckUnique.as_view(), name="check-unique"),
 
     path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
     #path('vehicles/', views.VehicleList.as_view(), name="vehicles"),

@@ -1,6 +1,9 @@
 password change
 password reset
 
+email must be unique
+
+
 
 Dashboard
  - Total outstanding
