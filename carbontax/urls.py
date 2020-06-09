@@ -4,6 +4,7 @@ from django.urls import path, include
 from . import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
+from django.contrib.auth import views as auth_views
 
 
 
@@ -14,6 +15,13 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     path('', include('django.contrib.auth.urls')), # password reset views
+    path(
+        'change-password/',
+        auth_views.PasswordChangeView.as_view(
+            success_url = '/'
+        ),
+        name='change_password'
+    ),
 
     path('current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('user/<int:pk>/', views.UserDetail.as_view(), name="user-detail"),

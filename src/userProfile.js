@@ -277,6 +277,7 @@ class ProfileDetails extends React.Component{
               Economy units:
               <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
             </label>
+            <p><a href="/change-password/">Change Password</a></p>
           </form>
           <p>{this.state.errorMessage}</p>
           <button name="saveChanges" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
