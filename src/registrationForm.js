@@ -8,9 +8,9 @@ import { fetchObject, convertCurrency } from './helperFunctions.js';
 import * as units from './unitConversions.js';
 import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection } from './reactComponents.js';
 
-const MAX_PASSWORD_LEN = 30
-const MAX_EMAIL_LEN = 30
-const MAX_NAME_LEN = 30
+import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
+import * as validation from './validation.js';
+import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
 const DEFAULT_CURRENCY = "AUD"
 const DEFAULT_CURRENCY_SYMBOL = "$"
@@ -42,56 +42,32 @@ export class RegistrationForm extends React.Component{
       
     }
 
-    this.handleSubmit=this.handleSubmit.bind(this)
     this.handleChange=this.handleChange.bind(this)
+
     this.createUser=this.createUser.bind(this)
-    this.checkPasswordStrength=this.checkPasswordStrength.bind(this)
     this.createProfile=this.createProfile.bind(this)
     this.createTaxes=this.createTaxes.bind(this)
-    this.validateEmail=this.validateEmail.bind(this)
-    this.usernameReponse=this.usernameReponse.bind(this)
+
     this.postFailure=this.postFailure.bind(this)
     this.createUserFailure=this.createUserFailure.bind(this)
     this.createUserSuccess=this.createUserSuccess.bind(this)
-    this.validateUsernameRegex=this.validateUsernameRegex.bind(this)
     this.convertCurrency=this.convertCurrency.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
-  }
-
-  handleSubmit(e){
-    e.preventDefault()
-    this.validateUserData()
   }
 
   handleChange(event){
     this.setState({[event.target.name]:event.target.value})
 
     if(event.target.name==="password"){
-      this.checkPasswordStrength(event.target.value)
+      this.setState({strongPassword:checkPasswordStrength(event.target.value)})
     } else if(event.target.name==="email"){
-      this.validateEmail(event.target.value)
+      this.setState({validEmail:validateEmailRegex(event.target.value)})
     } else if(event.target.name==="username"){
-      this.validateUsernameRegex(event.target.value)
+      this.setState({validUsername:validateUsernameRegex(event.target.value)})
     } else if(event.target.name==="currency"){
       this.convertCurrency(event.target.value)
     }
-  }
-
-  checkPasswordStrength(password){
-    //const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
-    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})")
-    this.setState({strongPassword:strongRegex.test(password)})
-  }
-
-  validateEmail(email){
-    let emailRegex = new RegExp(".+@.+.[A-Za-z]+$")
-    this.setState({validEmail:emailRegex.test(email)})
-  }
-
-  validateUsernameRegex(username){
-    const validUsername = new RegExp("^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")
-    this.setState({validUsername: validUsername.test(username)})
   }
 
   convertCurrency(CUR){
@@ -107,12 +83,12 @@ export class RegistrationForm extends React.Component{
     this.setState({conversion_factor:factor})
   }
 
-  validateUserData(){
+  validateUserData(event){
+    event.preventDefault()
+
     this.setState({errorMessage:""})
 
     // Insert reCAPTCHAv2?
-
-    // Check unique email
 
     // Check required inputs
     if(!this.state.username || !this.state.password){
@@ -122,7 +98,7 @@ export class RegistrationForm extends React.Component{
 
     // Validate username regex
     if(!this.state.validUsername){
-      this.setState({errorMessage:"Invalid username format."})
+      this.setState({errorMessage:validation.USERNAME_ERR})
       return
     }
 
@@ -133,19 +109,16 @@ export class RegistrationForm extends React.Component{
     }
 
     if(!this.state.strongPassword){
-      //this.setState({errorMessage:"Password must be 8-30 characters, including a number and special character (?!@#$%^&)"})
-      this.setState({errorMessage:"Password must be 8-30 characters, including a capital letter and a number"})
+      this.setState({errorMessage:validation.PASSWORD_ERR})
       return
     }
 
     if(!this.state.validEmail){
-      this.setState({errorMessage:"Check email address."})
+      this.setState({errorMessage:validation.EMAIL_ERR})
       return
     }
 
-
-
-    // Validate username
+    // Check uniqueness of username and password
     let data = {
       username:this.state.username,
       email:this.state.email,
@@ -167,14 +140,6 @@ export class RegistrationForm extends React.Component{
       this.setState({errorMessage:"Username is already in use."})
     } else if(json.uniqueEmail===false){
       this.setState({errorMessage:"Email is already in use."})
-    } else {
-      this.createUser()
-    }
-  }
-
-  usernameReponse(json){
-    if(json.unique==="false"){
-      this.setState({errorMessage:"Username is already in use."})
     } else {
       this.createUser()
     }
@@ -202,7 +167,6 @@ export class RegistrationForm extends React.Component{
       password: this.state.password,
       email: this.state.email,
     }
-
     console.log(userData)
 
     fetchObject({
@@ -238,7 +202,6 @@ export class RegistrationForm extends React.Component{
   }
 
   createTaxes(){
-
     for (let i in defaultTaxes){
       let taxData = {
         name: defaultTaxes[i]['name'],
@@ -265,7 +228,7 @@ export class RegistrationForm extends React.Component{
 
     return(
       <div>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.validateUserData}>
           {error}
           <h4>Required Information</h4>
           <input
