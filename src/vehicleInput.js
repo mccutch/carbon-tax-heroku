@@ -1,12 +1,7 @@
 import React from 'react';
 import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
-import {VehicleSaveForm} from './vehicleSave.js';
-import { OptionListInput } from './optionListInput.js';
 import { ObjectSelectionList } from './reactComponents.js';
-
-
-
 
 class ListInput extends React.Component {
   constructor(props){

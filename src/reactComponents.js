@@ -81,7 +81,7 @@ export class CurrencySelection extends React.Component{
   }
 
   render(){
-    console.log("Render currency list")
+    //console.log("Render currency list")
     let currencies = this.state.currencies
 
     let display

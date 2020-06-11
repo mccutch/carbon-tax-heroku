@@ -31,7 +31,7 @@ class PasswordChange extends React.Component{
     //event.preventDefault()
     this.setState({[event.target.name]:event.target.value})
 
-    if(event.target.name=="new_password"){
+    if(event.target.name==="new_password"){
       this.checkPasswordStrength(event.target.value)
     }
   }
@@ -262,7 +262,7 @@ class ProfileDetails extends React.Component{
     let profileData = {}
     let userData = {}
 
-    let userAttributes = ["first_name", "last_name", "email", "password"]
+    let userAttributes = ["first_name", "last_name", "email"]
     let profileAttributes = ["date_of_birth", "location", "currency", "currency_symbol", "display_units", "conversion_factor"]
     
     for(let i in userAttributes){
@@ -319,7 +319,6 @@ class ProfileDetails extends React.Component{
       firstName:null,
       lastName:null,
       email:null,
-      password:null,
     })
     this.props.refresh()
   }
@@ -392,11 +391,6 @@ class ProfileDetails extends React.Component{
               Economy units:
               <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
             </label>
-            <label>
-              Password:
-              <input type="password" name="password" onChange={this.handleChange}/>
-            </label>
-            <p><a href="/password_reset/">Reset Password</a></p>
           </form>
           <p>{this.state.errorMessage}</p>
           <button name="saveChanges" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>

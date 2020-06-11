@@ -1,7 +1,4 @@
-password change
-password reset
-
-email must be unique
+check email is valid and unique in profile edit
 
 
 

@@ -1,17 +1,10 @@
 import React from 'react';
 import { OptionListInput } from './optionListInput.js';
-import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
-import {refreshToken} from './myJWT.js';
-import { VehicleInput } from './vehicleInput.js';
+import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
-import { VehicleSaveForm } from './vehicleSave.js';
-import { createObject } from './helperFunctions.js';
-import {fetchObject} from './helperFunctions.js';
-import {ECONOMY_DECIMALS} from './fuelTypes.js';
+import { fetchObject } from './helperFunctions.js';
+import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList } from './reactComponents.js';
-
-const MAX_NAME_LEN = 30
-
 
 export class TaxDetail extends React.Component{
   constructor(props){
@@ -201,10 +194,6 @@ export class VehicleDetail extends React.Component{
     })
   }
 
-  deleteVehicle(){
-    console.log("DELETE VEHICLE")
-  }
-
   validateInput(){
     //No validation to apply yet.
     if(this.state.name || this.state.lPer100Km){
@@ -365,7 +354,6 @@ class EmissionEdit extends React.Component{
   handleClick(event){
     event.preventDefault()
     let name = event.target.name
-    let value = event.target.value
 
     if(name==="cancelEdit"){
       this.props.hideEdit()
@@ -455,28 +443,28 @@ class EmissionEdit extends React.Component{
     return(
       <form>
         <p>{this.state.errorMessage}</p>
-        <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={this.props.emission.name} onChange={this.handleChange} />
-        <input type="date" name="date" defaultValue={this.props.emission.date} onChange={this.handleChange} />
+        <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} />
+        <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} />
         <br/>
         <label>
           Tax Type:
-          <ObjectSelectionList name="tax_type" defaultValue={this.props.emission.tax_type} list={this.props.taxes} value="name" label="name" onChange={this.handleChange}/>
+          <ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="name" label="name" onChange={this.handleChange}/>
         </label>
         <br/>
         <label>
           Distance:
-          <input type="number" name="distance" defaultValue={this.props.emission.distance} onChange={this.handleChange} />
+          <input type="number" name="distance" defaultValue={emission.distance} onChange={this.handleChange} />
           {units.distanceString(this.props.displayUnits)}
         </label>
         <br/>
         <label>
           CO2 Output (kg)
-          <input type="number" name="co2_output_kg" defaultValue={this.props.emission.co2_output_kg} onChange={this.handleChange} />
+          <input type="number" name="co2_output_kg" defaultValue={emission.co2_output_kg} onChange={this.handleChange} />
         </label>
         <br/>
         <label>
           Price: {this.props.profile.currency_symbol}
-          <input type="number" name="price" defaultValue={this.props.emission.price} onChange={this.handleChange} />
+          <input type="number" name="price" defaultValue={emission.price} onChange={this.handleChange} />
         </label>
         <br/>
         <button name="update" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>

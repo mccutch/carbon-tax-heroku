@@ -1,7 +1,5 @@
 import React from 'react';
 import {VehicleInput} from './vehicleInput.js';
-import {refreshToken}  from './myJWT.js';
-import * as units from './unitConversions';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
 
@@ -80,9 +78,6 @@ export class EconomyInput extends React.Component{
     this.props.submitEconomy(this.state.lPer100Km, this.state.fuelId)
   }
 
-  
-
-  
   render(){
 
     let vehicleInput=
@@ -147,12 +142,7 @@ export class EconomyInput extends React.Component{
           {saveDisplay}
         </div>
     }
-
-
-
-
     
-   
     return(
       <div className='container bg-light py-2'>
         {display}

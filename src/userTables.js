@@ -1,19 +1,12 @@
 import React from 'react';
 import { OptionListInput } from './optionListInput.js';
-import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
-import {refreshToken} from './myJWT.js';
-import { VehicleInput } from './vehicleInput.js';
-import * as units from './unitConversions';
-import { VehicleSaveForm } from './vehicleSave.js';
-import { createObject, fetchObject } from './helperFunctions.js';
-import {ECONOMY_DECIMALS} from './fuelTypes.js';
+import { fetchObject } from './helperFunctions.js';
 
 import { TaxDetail, VehicleDetail, EmissionDetail } from './objectDetail.js';
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 
 import * as getDate from './getDate.js';
 
-const MAX_NAME_LEN = 30
 const PAGINATATION_RESULTS_PER_PAGE = 5 // change this with settings.py
 
 /*
@@ -220,7 +213,7 @@ export class EmissionFilterNav extends React.Component{
 
     var filterUrl = "";
     for (var key in params) {
-      if (filterUrl != "") {
+      if (filterUrl !== "") {
         filterUrl += "&";
       }
       filterUrl += key + "=" + encodeURIComponent(params[key]);
@@ -344,8 +337,6 @@ export class PaginatedNav extends React.Component{
     } else {
       displayedResultsString = `${firstResult.toString()}`
     }
-
-    let prevActive
      
     return(
       <nav aria-label="Table navigation" className="row">
