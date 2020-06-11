@@ -7,6 +7,114 @@ import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
 const MAX_PASSWORD_LEN = 30
 const MAX_NAME_LEN = 30
 
+class PasswordChange extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      errorMessage:"",
+      strongPassword:false,
+    }
+    this.cancel=this.cancel.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+    this.checkPasswordStrength=this.checkPasswordStrength.bind(this)
+    this.submit=this.submit.bind(this)
+    this.handleResponse=this.handleResponse.bind(this)
+    this.updateFailure=this.updateFailure.bind(this)
+  }
+
+  cancel(event){
+    event.preventDefault()
+    this.props.cancel(event)
+  }
+
+  handleChange(event){
+    //event.preventDefault()
+    this.setState({[event.target.name]:event.target.value})
+
+    if(event.target.name=="new_password"){
+      this.checkPasswordStrength(event.target.value)
+    }
+  }
+
+  checkPasswordStrength(password){
+    //const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
+    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})")
+    this.setState({strongPassword:strongRegex.test(password)})
+  }
+
+  submit(event){
+    event.preventDefault()
+    if(!this.state.old_password || !this.state.new_password || !this.state.confirm_password){
+      this.setState({errorMessage:"Fill in required fields."})
+      return
+    }
+
+    // Validate password
+    if(this.state.new_password !== this.state.confirm_password){
+      this.setState({errorMessage:"Passwords don't match."})
+      return
+    }
+
+    if(!this.state.strongPassword){
+      //this.setState({errorMessage:"Password must be 8-30 characters, including a number and special character (?!@#$%^&)"})
+      this.setState({errorMessage:"Password must be 8-30 characters, including a capital letter and a number"})
+      return
+    }
+
+    let passwordData = {
+      old_password:this.state.old_password,
+      new_password:this.state.new_password,
+    }
+
+    //console.log(passwordData)
+
+    fetchObject({
+      url:"/account/update-password/",
+      method:"PUT",
+      data:passwordData,
+      onSuccess:this.handleResponse,
+      onFailure:this.updateFailure,
+    })
+  }
+
+  handleResponse(json){
+    this.setState({success:true})
+  }
+
+  updateFailure(json){
+    this.setState({
+      errorMessage:"Unable to change password."
+    })
+  }
+
+  render(){
+
+    let display
+    if(this.state.success){
+      display=
+        <div>
+          <p>Password changed successfully.</p>
+          <button name="cancelEdit" className="btn btn-outline-success" onClick={this.cancel}>Return to profile.</button>
+        </div>
+    } else {
+      display = 
+        <form>
+          <p>{this.state.errorMessage}</p>
+          <input type="password" name="old_password" placeholder="Old password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+          <br/>
+          <input type="password" name="new_password" placeholder="New password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+          <br/>
+          <input type="password" name="confirm_password" placeholder="Confirm password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+          <br/>
+          <button type="submit" className="btn btn-outline-primary" onClick={this.submit}>Submit</button>
+          <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.cancel}>Cancel</button>
+        </form>
+    }
+
+    return display
+  }
+}
+
 class DeleteUser extends React.Component{
   constructor(props){
     super(props)
@@ -88,6 +196,7 @@ class ProfileDetails extends React.Component{
     super(props)
     this.state = {
       editProfile:false,
+      changePassword:false,
       errorMessage:null,
     }
 
@@ -107,6 +216,7 @@ class ProfileDetails extends React.Component{
     } else if(event.target.name==="cancelEdit"){
       this.setState({
         editProfile:false,
+        changePassword:false,
         firstName:null,
         lastName:null,
         location:null,
@@ -120,6 +230,8 @@ class ProfileDetails extends React.Component{
       })
     } else if(event.target.name==="saveChanges"){
       this.saveProfileChanges()
+    } else if(event.target.name==="changePassword"){
+      this.setState({changePassword:true})
     }
   }
 
@@ -235,7 +347,9 @@ class ProfileDetails extends React.Component{
 
 
     let profileDisplay
-    if(this.state.editProfile){
+    if(this.state.changePassword){
+      profileDisplay = <PasswordChange cancel={this.handleClick}/>
+    } else if(this.state.editProfile){
       profileDisplay=
         <div className="container bg-light">
           <form>
@@ -299,6 +413,7 @@ class ProfileDetails extends React.Component{
             <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
             <p>Units: {units.string(profile.display_units)}</p>
             <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
+            <button name="changePassword" className="btn btn-outline-dark" onClick={this.handleClick}>Change password</button>
           </div>
           <div className="col-sm-5 bg-light mx-2 my-2">
             <h4>Dashboard</h4>
