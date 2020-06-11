@@ -7,10 +7,8 @@ import * as units from './unitConversions';
 import { VehicleSaveForm } from './vehicleSave.js';
 import { createObject } from './helperFunctions.js';
 import {fetchObject} from './helperFunctions.js';
-import {ECONOMY_DECIMALS} from './fuelTypes.js';
-
-const MAX_NAME_LEN = 30
-
+import { ECONOMY_DECIMALS } from './fuelTypes.js';
+import { MAX_NAME_LEN } from './validation.js';
 
 export class CreateTax extends React.Component{
   constructor(props){

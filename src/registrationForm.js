@@ -4,7 +4,7 @@ import { defaultTaxes } from './defaultTaxTypes.js';
 import { getToken }  from './myJWT.js';
 
 import * as helper from './helperFunctions.js';
-import { fetchObject, convertCurrency } from './helperFunctions.js';
+import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
 import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection } from './reactComponents.js';
 
@@ -12,9 +12,7 @@ import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from
 import * as validation from './validation.js';
 import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
-const DEFAULT_CURRENCY = "AUD"
-const DEFAULT_CURRENCY_SYMBOL = "$"
-const DEFAULT_DISPLAY_UNITS = units.METRIC
+import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS } from './constants.js';
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -51,7 +49,6 @@ export class RegistrationForm extends React.Component{
     this.postFailure=this.postFailure.bind(this)
     this.createUserFailure=this.createUserFailure.bind(this)
     this.createUserSuccess=this.createUserSuccess.bind(this)
-    this.convertCurrency=this.convertCurrency.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
   }
@@ -66,17 +63,8 @@ export class RegistrationForm extends React.Component{
     } else if(event.target.name==="username"){
       this.setState({validUsername:validateUsernameRegex(event.target.value)})
     } else if(event.target.name==="currency"){
-      this.convertCurrency(event.target.value)
+      getCurrencyFactor({currency:event.target.name, onSuccess:this.setCurrencyFactor})
     }
-  }
-
-  convertCurrency(CUR){
-    convertCurrency({
-      convertFrom:"AUD",
-      convertTo:CUR,
-      amount:1,
-      onSuccess:this.setCurrencyFactor,
-    })
   }
 
   setCurrencyFactor(factor){

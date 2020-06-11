@@ -1,11 +1,12 @@
 import React from 'react';
 import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
-import { fetchObject, convertCurrency } from './helperFunctions.js';
+import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
 import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
 
-const MAX_PASSWORD_LEN = 30
-const MAX_NAME_LEN = 30
+import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
+import * as validation from './validation.js';
+import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
 class PasswordChange extends React.Component{
   constructor(props){
@@ -16,7 +17,6 @@ class PasswordChange extends React.Component{
     }
     this.cancel=this.cancel.bind(this)
     this.handleChange=this.handleChange.bind(this)
-    this.checkPasswordStrength=this.checkPasswordStrength.bind(this)
     this.submit=this.submit.bind(this)
     this.handleResponse=this.handleResponse.bind(this)
     this.updateFailure=this.updateFailure.bind(this)
@@ -24,22 +24,15 @@ class PasswordChange extends React.Component{
 
   cancel(event){
     event.preventDefault()
-    this.props.cancel(event)
+    this.props.cancel()
   }
 
   handleChange(event){
-    //event.preventDefault()
     this.setState({[event.target.name]:event.target.value})
 
     if(event.target.name==="new_password"){
-      this.checkPasswordStrength(event.target.value)
+      this.setState({strongPassword:checkPasswordStrength(event.target.value)})
     }
-  }
-
-  checkPasswordStrength(password){
-    //const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
-    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})")
-    this.setState({strongPassword:strongRegex.test(password)})
   }
 
   submit(event){
@@ -56,8 +49,7 @@ class PasswordChange extends React.Component{
     }
 
     if(!this.state.strongPassword){
-      //this.setState({errorMessage:"Password must be 8-30 characters, including a number and special character (?!@#$%^&)"})
-      this.setState({errorMessage:"Password must be 8-30 characters, including a capital letter and a number"})
+      this.setState({errorMessage:validation.PASSWORD_ERR})
       return
     }
 
@@ -65,8 +57,6 @@ class PasswordChange extends React.Component{
       old_password:this.state.old_password,
       new_password:this.state.new_password,
     }
-
-    //console.log(passwordData)
 
     fetchObject({
       url:"/account/update-password/",
@@ -139,7 +129,7 @@ class DeleteUser extends React.Component{
   }
 
   deleteUserAccount(){
-    let key = parseInt(this.props.user.id).toString()
+    let key = this.props.user.id
 
     fetchObject({
       url:`/user/${key}/`,
@@ -163,7 +153,6 @@ class DeleteUser extends React.Component{
     })
   }
 
-
   render(){
     let display
     if(!this.state.confirmDelete){
@@ -179,79 +168,47 @@ class DeleteUser extends React.Component{
         </div>
     }
 
-    return(
-      <div>
-        {display}
-      </div>
-    )
+    return display 
   }
 }
 
-
-
-
-
-class ProfileDetails extends React.Component{
+class ProfileEdit extends React.Component{
   constructor(props){
     super(props)
+
     this.state = {
-      editProfile:false,
-      changePassword:false,
-      errorMessage:null,
+      errorMessage:"",
     }
 
     this.handleClick=this.handleClick.bind(this)
-    this.saveProfileChanges=this.saveProfileChanges.bind(this)
     this.handleChange=this.handleChange.bind(this)
+    this.setConversionFactor=this.setConversionFactor.bind(this)
+    this.saveProfileChanges=this.saveProfileChanges.bind(this)
     this.updateFailure=this.updateFailure.bind(this)
     this.userUpdateSuccess=this.userUpdateSuccess.bind(this)
     this.profileUpdateSuccess=this.profileUpdateSuccess.bind(this)
-    this.convertCurrency=this.convertCurrency.bind(this)
-    this.setConversionFactor=this.setConversionFactor.bind(this)
+    this.finishEdit=this.finishEdit.bind(this)
   }
 
   handleClick(event){
-    if(event.target.name==="editProfile"){
-      this.setState({editProfile:true})
-    } else if(event.target.name==="cancelEdit"){
-      this.setState({
-        editProfile:false,
-        changePassword:false,
-        firstName:null,
-        lastName:null,
-        location:null,
-        dateOfBirth:null,
-        errorMessage:null,
-        email:null,
-        currency:null,
-        currency_symbol:null,
-        display_units:null,
-        conversion_factor:null,
-      })
+    event.preventDefault()
+
+    if(event.target.name==="cancelEdit"){
+      this.props.cancel()
     } else if(event.target.name==="saveChanges"){
       this.saveProfileChanges()
-    } else if(event.target.name==="changePassword"){
-      this.setState({changePassword:true})
     }
   }
 
   handleChange(event){
-    this.setState({
-      [event.target.name]: event.target.value
-    })
-    if(event.target.name==="currency"){
-      this.convertCurrency(event.target.value)
-    }
-  }
+    
+    this.setState({[event.target.name]: event.target.value})
 
-  convertCurrency(CUR){
-    console.log("convert")
-    convertCurrency({
-      convertFrom:"AUD",
-      convertTo:CUR,
-      amount:1,
-      onSuccess:this.setConversionFactor,
-    })
+    if(event.target.name==="currency"){
+      getCurrencyFactor({currency:event.target.value, onSuccess:this.setConversionFactor})
+    } else if(event.target.name==="email"){
+      this.setState({validEmail: validateEmailRegex(event.target.value)})
+    }
   }
 
   setConversionFactor(factor){
@@ -259,6 +216,12 @@ class ProfileDetails extends React.Component{
   }
 
   saveProfileChanges(){
+    if(this.state.email && !this.state.validEmail){
+      this.setState({errorMessage: validation.EMAIL_ERR})
+      return
+    }
+
+    this.setState({errorMessage:""})
     let profileData = {}
     let userData = {}
 
@@ -277,9 +240,10 @@ class ProfileDetails extends React.Component{
     }
 
     if(Object.keys(userData).length>0){
+      this.setState({updatingUser:true})
       console.log("Updating user")
       console.log(userData)
-      let key = parseInt(this.props.user.id).toString()
+      let key = this.props.user.id
 
       fetchObject({
         url:`/user/${key}/`,
@@ -289,12 +253,12 @@ class ProfileDetails extends React.Component{
         onFailure:this.updateFailure,
       })
     }
-    
 
     if(Object.keys(profileData).length>0){
+      this.setState({updatingProfile:true})
       console.log("Updating profile")
-
-      let key = parseInt(this.props.profile.id).toString()
+      console.log(profileData)
+      let key = this.props.profile.id
 
       fetchObject({
         url:`/profile/${key}/`,
@@ -314,43 +278,39 @@ class ProfileDetails extends React.Component{
 
   userUpdateSuccess(){
     this.setState({
-      editProfile:false,
-      errorMessage:null,
+      updatingUser:false,
       firstName:null,
       lastName:null,
       email:null,
-    })
-    this.props.refresh()
+    }, this.finishEdit)
   }
 
   profileUpdateSuccess(){
     this.setState({
-      editProfile:false,
-      errorMessage:null,
+      updatingProfile:false,
       location:null,
       dateOfBirth:null,
       currency:null,
       currency_symbol:null,
       display_units:null,
       conversion_factor:null,
-    })
+    }, this.finishEdit)
+  }
+
+  finishEdit(){
     this.props.refresh()
+    if(!this.state.updatingProfile && !this.state.updatingUser){
+      this.props.cancel()
+    }
   }
 
 
   render(){
+
     let user=this.props.user
     let profile=this.props.profile
 
-
-
-
-    let profileDisplay
-    if(this.state.changePassword){
-      profileDisplay = <PasswordChange cancel={this.handleClick}/>
-    } else if(this.state.editProfile){
-      profileDisplay=
-        <div className="container bg-light">
+    return(<div className="container bg-light">
           <form>
             <label>
               First name:
@@ -392,10 +352,52 @@ class ProfileDetails extends React.Component{
               <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
             </label>
           </form>
-          <p>{this.state.errorMessage}</p>
+          <p><strong>{this.state.errorMessage}</strong></p>
           <button name="saveChanges" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
           <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel</button>
+          <DeleteUser user={user} logout={this.props.logout}/>
         </div>
+    )
+  }
+}
+
+class ProfileDetails extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      editProfile:false,
+      changePassword:false,
+    }
+
+    this.handleClick=this.handleClick.bind(this)
+    this.hideForms=this.hideForms.bind(this)
+  }
+
+  handleClick(event){
+    if(event.target.name==="editProfile"){
+      this.setState({editProfile:true})
+    } else if(event.target.name==="changePassword"){
+      this.setState({changePassword:true})
+    } 
+  }
+
+  hideForms(){
+    this.setState({
+      editProfile:false,
+      changePassword:false,
+    })
+  }
+  
+  render(){
+    let user=this.props.user
+    let profile=this.props.profile
+
+    let profileDisplay
+    if(this.state.changePassword){
+      profileDisplay = <PasswordChange cancel={this.hideForms}/>
+    } else if(this.state.editProfile){
+      profileDisplay = <ProfileEdit user={this.props.user} profile={this.props.profile} cancel={this.hideForms} refresh={this.props.refresh} logout={this.props.logout}/>
+        
     } else {
       profileDisplay=
         <div className="row">
@@ -414,7 +416,6 @@ class ProfileDetails extends React.Component{
           </div>
         </div>
     }
-
 
     return(
       <div>
@@ -507,6 +508,7 @@ export class ProfileDisplay extends React.Component{
           user={this.props.user} 
           profile={this.props.profile} 
           refresh={this.props.refresh}
+          logout={this.props.logout}
         />
         <TabbedListDisplay 
           refresh={this.props.refresh}
@@ -520,7 +522,6 @@ export class ProfileDisplay extends React.Component{
         
         <button name="hideProfile" className="btn btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
         <button name="logout" className="btn btn-outline-danger" onClick={this.props.onClick}>Logout</button>
-        <DeleteUser user={this.props.user} logout={this.props.logout}/>
       </div>
     )
   }

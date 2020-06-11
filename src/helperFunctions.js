@@ -13,12 +13,16 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 */
 //----------------------------------------------------------------------------------------------------------------------------
 
-/*
-export function validateEmail(email){
-  let emailRegex = new RegExp(".+@.+.[A-Za-z]+$")
-  return emailRegex.test(email)
+
+
+export function getCurrencyFactor({currency,onSuccess}){
+  convertCurrency({
+    convertFrom:"AUD",
+    convertTo:currency,
+    amount:1,
+    onSuccess:onSuccess,
+  })
 }
-*/
 
 export function convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure}){
   const CURRENCY_API_KEY = process.env.REACT_APP_CURRENCY_API
