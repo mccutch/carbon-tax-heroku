@@ -1,6 +1,3 @@
-check email is valid and unique in profile edit
-
-
 
 Dashboard
  - Total outstanding
@@ -12,8 +9,10 @@ Dashboard
 create saved trips
 
 
+rebuild route input
+ - google js api
 
-
+flight input
 
 backdate changes to tax pricing
  - POST a list of emissions to update, with a ratio of new to old tax rate

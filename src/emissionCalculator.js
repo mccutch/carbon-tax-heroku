@@ -58,11 +58,8 @@ export class EmissionCalculator extends React.Component{
 
   render(){
     let displayUnits=this.props.displayUnits
-
-
-
-
     let economyInput
+    
     if(this.state.economySubmitted){
       let fuelName=this.props.fuels[parseInt(this.state.fuelId)-1].name
 

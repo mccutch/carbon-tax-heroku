@@ -125,6 +125,7 @@ class App extends React.Component {
       taxes:{},
       vehicles:{},
       emissions:{},
+      stats:{},
     })
   }
 
@@ -134,6 +135,7 @@ class App extends React.Component {
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
     this.fetchObject({url:"/my-emissions/", objectName:"emissions"})
+    this.fetchObject({url:"/my-stats/", objectName:"stats"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,
@@ -220,6 +222,7 @@ class App extends React.Component {
             emissions={this.state.emissions}
             displayUnits={this.state.displayUnits}
             fuels={this.state.fuels}
+            stats={this.state.stats}
             refresh={this.refreshFullProfile}
           />
           {display}

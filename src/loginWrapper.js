@@ -144,6 +144,7 @@ export class LoginWrapper extends React.Component{
                   refresh={this.props.refresh}
                   logout={this.clearJWT}
                   displayUnits={this.props.displayUnits}
+                  stats={this.props.stats}
                 />
     } else if(this.state.showRegistration){
       display = <RegistrationForm onClick={this.handleClick} loginSuccess={this.loginSuccess}/>
