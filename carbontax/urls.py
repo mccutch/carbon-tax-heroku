@@ -43,6 +43,11 @@ urlpatterns = [
 
     path('my-stats/', views.UserStats.as_view(), name="my-stats"),
 
+    path('my-payments/', views.UserPayments.as_view(), name="my-payments"),
+    path('payment/<int:pk>/', views.PaymentDetail.as_view(), name="payment-detail"),
+
+    path('donation-recipients/', views.DonationRecipients.as_view(), name="donation-recipients"),
+    path('donation-recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="donationrecipient-detail"),
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)

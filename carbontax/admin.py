@@ -1,7 +1,15 @@
 from django.contrib import admin
-from .models import FuelType, EmissionInstance, Profile, Vehicle, EconomyMetric, TaxRate
+from .models import FuelType, EmissionInstance, Profile, Vehicle, EconomyMetric, TaxRate, Payment, DonationRecipient
 
 # Register your models here.
+@admin.register(DonationRecipient)
+class DonationRecipientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'website', 'donation_link', 'currency', 'description')
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('amount', 'currency', 'recipient', 'date', 'user')
+
 @admin.register(FuelType)
 class FuelTypeAdmin(admin.ModelAdmin):
     list_display = ('name','unit','co2_per_unit')

@@ -1,9 +1,14 @@
+Proportion split of fuel
+
 
 Dashboard
  - Total outstanding
  - Total paid
  - Proportion CO2 by tax types (all time)
  - Graph CO2 by week/month/year
+ - Cumulative graph of tax and payments
+
+Object table of payments and donation recipients
 
 
 create saved trips
@@ -23,6 +28,8 @@ emission list
  - avoid nan on database (crashes list rendering)
 
 django password validation
+
+tag donation recipients by type, eg #offset, #political, #cultural, #reforestation, #local
 
 Home screen
 - Explanation

@@ -1,6 +1,27 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class DonationRecipient(models.Model):
+    name = models.CharField(max_length=60)
+    country = models.CharField(max_length=60, null=True)
+    website = models.URLField(max_length=100, null=True)
+    donation_link = models.URLField(max_length=100, null=True)
+    currency = models.CharField(max_length=10, null=True)
+    description = models.TextField(null=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+class Payment(models.Model):
+    amount = models.FloatField() # Store payments in the database currency
+    currency = models.CharField(max_length=10, null=True)
+    recipient = models.ForeignKey(DonationRecipient, on_delete=models.SET_NULL, related_name='payments', null=True)
+    date = models.DateField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+
+    def __str__(self):
+        return f'{self.date}-{self.recipient.name}-{self.amount}'
+
 class EmissionInstance(models.Model):
     """
     Created when an entry is created from inputs.
@@ -11,7 +32,9 @@ class EmissionInstance(models.Model):
     distance = models.FloatField(null=True)
     co2_output_kg = models.FloatField(null=True)
     price = models.FloatField(null=True)
+    #paid = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)
 
     class Meta:
         ordering = ["-date", "-id"]

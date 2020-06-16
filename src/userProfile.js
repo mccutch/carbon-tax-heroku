@@ -371,6 +371,7 @@ class Dashboard extends React.Component{
       taxHistoryCo2:[],
       taxHistoryPrice:[],
       taxList:[],
+      paymentHistory:[],
       activeTab:"0",
     }
 
@@ -395,18 +396,20 @@ class Dashboard extends React.Component{
     let historyDataCo2 = []
     let historyDataPrice = []
     let taxList = []
+    let paymentHistory = []
 
     let taxData = this.props.stats.emissions_by_tax
     let emissionHistoryData = this.props.stats.emissions_by_month_and_tax
+    let paymentHistoryData = this.props.stats.payments_by_month
     
-    let totalCo2 = taxData.total.co2_kg
-    let totalCost = taxData.total.price
+    //let totalCo2 = taxData.total.co2_kg
+    //let totalCost = taxData.total.price
 
     for(let key in taxData){
       taxList.push(key)
       if(key!=="total"){
-        histogramDataCo2.push({tax:key, co2_kg:taxData[key].co2_kg/totalCo2})
-        histogramDataPrice.push({tax:key, price:taxData[key].price/totalCost})
+        histogramDataCo2.push({tax:key, co2_kg:taxData[key].co2_kg})
+        histogramDataPrice.push({tax:key, price:taxData[key].price})
       }
     }
 
@@ -419,6 +422,10 @@ class Dashboard extends React.Component{
       }
       historyDataCo2.push(dataPointCo2)
       historyDataPrice.push(dataPointPrice)
+    }
+
+    for(let month in paymentHistoryData){
+      paymentHistory.push({month:month, Paid:paymentHistoryData[month]['paid'], Taxed:paymentHistoryData[month]['tax']})
     }
 
     // Sort histogram data
@@ -436,6 +443,7 @@ class Dashboard extends React.Component{
       taxHistoryCo2:historyDataCo2,
       taxHistoryPrice:historyDataPrice,
       taxList:taxList,
+      paymentHistory:paymentHistory,
     })
   }
 
@@ -464,6 +472,8 @@ class Dashboard extends React.Component{
       plot = <Histogram data={this.state.histogramDataCo2} labelKey="tax" barValues={['co2_kg']} title="CO2 Proportion"/>
     } else if(this.state.activeTab==="3"){
       plot = <Histogram data={this.state.histogramDataPrice} labelKey="tax" barValues={['price']} title="Cost Proportion"/>
+    } else if(this.state.activeTab==="4"){
+      plot = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
     }
     
     return(
@@ -477,10 +487,13 @@ class Dashboard extends React.Component{
             {this.makeTab("1", "History - Cost")}
           </li>
           <li className="nav-item">
-            {this.makeTab("2", "Proportion - CO2")}
+            {this.makeTab("2", "Total CO2")}
           </li>
           <li className="nav-item">
-            {this.makeTab("3", "Proportion - Cost")}
+            {this.makeTab("3", "Total Cost")}
+          </li>
+          <li className="nav-item">
+            {this.makeTab("4", "Payments")}
           </li>
         </ul>
         {plot}

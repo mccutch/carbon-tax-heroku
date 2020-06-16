@@ -4,6 +4,16 @@ from django.contrib.auth.models import User
 from django.core.validators import EmailValidator
 from django.contrib.auth.password_validation import validate_password
 
+class DonationRecipientSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.DonationRecipient
+        fields = ['name', 'country', 'website', 'donation_link', 'currency', 'description']
+
+class PaymentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Payment
+        fields = ['amount', 'currency', 'recipient', 'date', 'user']
+
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
     #owner = serializers.HyperlinkedRelatedField(view_name="user-detail", queryset=User.objects.all())
@@ -52,8 +62,6 @@ class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.EmissionInstance
         fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'id']
-
-
 
 class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

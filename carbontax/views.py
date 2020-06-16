@@ -2,6 +2,7 @@
 
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
+from django.db.models import Sum
 
 from . import models
 from . import serializers
@@ -70,6 +71,7 @@ class UserEmissionList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        print(user)
         return user.emissions.all()
 
     def post(self, request, format=None):
@@ -227,6 +229,57 @@ class TaxDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.TaxRate.objects.all()
 
 
+# ---------PAYMENTS---------------
+class UserPayments(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.PaymentSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_fields = {
+        'recipient': ['exact'],
+        'date': ['lte', 'gte'],
+    }
+    search_fields = ['recipient']
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.payments.all()
+
+    def post(self, request, format=None):
+        data=request.data
+        data['user']=f'/user/{request.user.id}/'
+        print(data)
+        serializer = serializers.PaymentSerializer(data=data, context={'request':request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PaymentDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
+    serializer_class = serializers.PaymentSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return user.payments.all()
+
+
+
+#--------DONATION RECIPIENTS----------------
+class DonationRecipients(generics.ListCreateAPIView):
+    permission_classes = (AllowAny, )
+    serializer_class = serializers.DonationRecipientSerializer
+    queryset = models.DonationRecipient.objects.all()
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_fields = {
+        'country': ['exact'],
+    }
+    search_fields = ['name', 'description']
+
+
+class DonationRecipientDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.DonationRecipientSerializer
+    queryset = models.DonationRecipient.objects.all()
+
 """class AllUserStats(APIView){
     
 }"""
@@ -344,18 +397,55 @@ class UserStats(APIView):
 
         return emissions_by_month_and_tax
 
-    def get_summary(self, request, emissions):
+    def get_cumulative_payments_by_month(self, request):
+        payments_by_month  = {}
+        
+        months = self.get_months(request, self.all_emissions(request))
+        emissions = request.user.emissions.all()
+        payments = request.user.payments.all()
+        conversion_factor = request.user.profile.conversion_factor
+
+        tax_total=0
+        payment_total=0
+
+        for month in months:
+            thisMonth = month['month']
+            thisYear = month['year']
+            monthString=f'{thisYear}-{thisMonth}'
+
+            payments_by_month[monthString] = {}
+            
+            for emission in emissions:
+                if(emission.date.year==thisYear and emission.date.month==thisMonth):
+                    tax_total += emission.price*conversion_factor
+            for payment in payments:
+                if(payment.date.year==thisYear and payment.date.month==thisMonth):
+                    payment_total += payment.amount*conversion_factor
+                
+            payments_by_month[monthString]['tax']=tax_total
+            payments_by_month[monthString]['paid']=payment_total
+
+        return payments_by_month
+
+    def get_summary(self, request):
         total_paid = 0
+        total_tax = 0
         total_co2 = 0
         total_distance = 0
 
+        emissions = request.user.emissions.all()
         for emission in emissions:
-            total_paid += emission.price*request.user.profile.conversion_factor
+            total_tax += emission.price*request.user.profile.conversion_factor
             total_co2 += emission.co2_output_kg
             total_distance += emission.distance
 
+        payments = request.user.payments.all()
+        for payment in payments:
+            total_paid += payment.amount*request.user.profile.conversion_factor
+
         return {
             'total_paid':total_paid,
+            'total_tax':total_tax,
             'total_co2':total_co2,
             'total_distance':total_distance,
             'currency':request.user.profile.currency,
@@ -364,11 +454,12 @@ class UserStats(APIView):
 
     def get(self, request):
         content = {
-            'summary': self.get_summary(request, self.all_emissions(request)),
+            'summary': self.get_summary(request),
             'taxes': self.get_tax_types(request, self.all_emissions(request)),
             'emissions_by_tax': self.get_emissions_by_tax(request),
             'emissions_by_month_and_tax': self.get_emissions_by_month_and_tax(request),
             'months': self.get_months(request, self.all_emissions(request)),
+            'payments_by_month': self.get_cumulative_payments_by_month(request),
         }
         return Response(content)
 
