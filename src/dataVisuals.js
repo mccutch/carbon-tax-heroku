@@ -29,11 +29,6 @@ export class Histogram extends React.Component{
   render(){
 
     let data = this.props.data
-    if(this.props.sort){
-      data.sort(function(a, b) { 
-        return b[this.props.barValues[0]] - a[this.props.barValues[0]];
-      })
-    }
 
     let legend 
     if(this.props.barValues.length>1){

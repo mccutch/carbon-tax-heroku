@@ -1,6 +1,7 @@
-Tabbed emission input
 
 Modals for inputs and edits
+
+carbon tax calculation for logged out user
 
 Proportion split of fuel
 

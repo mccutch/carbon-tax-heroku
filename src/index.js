@@ -7,6 +7,7 @@ import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
 import {fetchObject} from './helperFunctions.js';
 import {MainView} from './mainView.js';
+import {NavBar} from './navBar.js';
 
 
 
@@ -151,16 +152,17 @@ class App extends React.Component {
 
     let serverFailure
     if(this.state.serverConnectionFailure){
-      serverFailure = <h4>Error connecting to server.</h4>
+      serverFailure = 
+        <div className="bg-light">
+          <h4>Error connecting to server.</h4>
+        </div>
     }
 
     return( 
       <div className="bg-dark">
-        <div className="jumbotron">
-          <h1>Armchair Dissident Carbon Tax</h1>  
-          {serverFailure}    
-          <p>Guilt-driven taxation for the people.</p>
-        </div>
+        <NavBar 
+          loggedIn={this.state.loggedIn}
+        />
         <div>
           <LoginWrapper 
             loggedIn={this.state.loggedIn}
@@ -193,11 +195,9 @@ class App extends React.Component {
         <div className="jumbotron">
           <h1>__</h1>
         </div>
-     
       </div>
     )
   }
-  
 }
 
 

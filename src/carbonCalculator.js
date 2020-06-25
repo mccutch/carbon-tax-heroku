@@ -1,7 +1,7 @@
 import React from 'react';
 import * as getDate from './getDate.js';
 import { OptionListInput } from './optionListInput.js';
-import { createObject, fetchObject } from './helperFunctions.js';
+import { fetchObject } from './helperFunctions.js';
 
 
 
