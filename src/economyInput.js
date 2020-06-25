@@ -102,7 +102,7 @@ export class EconomyInput extends React.Component{
         refresh={this.props.refresh}
       />
 
-      myVehiclesBtn = <button className="btn btn-outline-info" onClick={this.showUserVehicles}>Use a saved vehicle</button>
+      myVehiclesBtn = <button className="btn btn-outline-info m-2" onClick={this.showUserVehicles}>Use a saved vehicle</button>
 
       if(this.state.lPer100Km && this.state.fuelId){
         if(this.state.vehicleDidSave){
@@ -117,14 +117,14 @@ export class EconomyInput extends React.Component{
               onSave={this.handleSave}
             />
         } else {
-          saveDisplay = <button className="btn btn-outline-primary" onClick={this.saveVehicle}>Save this vehicle</button>
+          saveDisplay = <button className="btn btn-outline-primary m-2" onClick={this.saveVehicle}>Save this vehicle</button>
         }
       }
     }
 
     let continueDisplay
     if(this.state.lPer100Km && this.state.fuelId){
-      continueDisplay = <button className="btn btn-outline-success" onClick={this.submitEconomy}>Continue to carbon calculator</button>
+      continueDisplay = <button className="btn btn-success m-2" onClick={this.submitEconomy}>Continue to carbon calculator</button>
     }
 
     let display
@@ -132,7 +132,7 @@ export class EconomyInput extends React.Component{
       display = 
         <div>
           {userVehicles}
-          <button className="btn btn-outline-danger" onClick={this.hideUserVehicles}>Return to input</button>
+          <button className="btn btn-outline-danger m-2" onClick={this.hideUserVehicles}>Return to input</button>
         </div>
     } else {
       display = 
@@ -144,7 +144,7 @@ export class EconomyInput extends React.Component{
     }
     
     return(
-      <div className='container bg-light py-2'>
+      <div className='bg-light py-2'>
         {display}
         {continueDisplay}
       </div>

@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {EmissionCalculator} from './emissionCalculator.js';
 import {LoginWrapper} from './loginWrapper.js';
-import {EmissionListWrapper} from './emissionList.js';
 import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
 import {fetchObject} from './helperFunctions.js';
+import {MainView} from './mainView.js';
 
 
 
@@ -32,9 +31,7 @@ class App extends React.Component {
     this.login=this.login.bind(this)
     this.logout=this.logout.bind(this)
     this.toggleDisplayUnits=this.toggleDisplayUnits.bind(this)
-    this.handleClick=this.handleClick.bind(this)
-    this.showCalculator=this.showCalculator.bind(this)
-    this.showEmissions=this.showEmissions.bind(this)
+    
     this.fetchObject = this.fetchObject.bind(this)
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
     this.setFuels = this.setFuels.bind(this)
@@ -147,56 +144,10 @@ class App extends React.Component {
     this.setState({displayUnits:units.toggle(this.state.displayUnits)})
   }
 
-  showCalculator(bool_val){
-    this.setState({displayCalculator: bool_val})
-  }
-
-  showEmissions(bool_val){
-    this.setState({displayEmissions: bool_val})
-  }
-
-  handleClick(event){
-    if(event.target.name==="showCalculator"){
-      this.showCalculator(true)
-    } else if(event.target.name==="showEmissions"){
-      this.showEmissions(true)
-    }
-  }
+  
   
   render(){
-    let memberDisplay
-    if(this.state.loggedIn){
-      memberDisplay = <button className="btn btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button> 
-    }
-
-    let display
-    if(this.state.displayCalculator){
-      display = <EmissionCalculator 
-                  loggedIn={this.state.loggedIn} 
-                  displayUnits={this.state.displayUnits} 
-                  showCalculator={this.showCalculator}
-                  taxes={this.state.taxes}
-                  vehicles={this.state.vehicles}
-                  fuels={this.state.fuels}
-                  profile={this.state.profile}
-                  refresh={this.refreshFullProfile}
-                />
-    } else if(this.state.displayEmissions && this.state.loggedIn){
-      display = <EmissionListWrapper
-                  showEmissions={this.showEmissions}
-                  displayUnits={this.state.displayUnits}
-                  emissions={this.state.emissions}
-                  taxes={this.state.taxes}
-                  profile={this.state.profile}
-                  refresh={this.refreshFullProfile}
-                />
-    } else {
-      display = 
-        <div className='container bg-light py-2 my-2'>
-          <button className="btn btn-outline-info" name="showCalculator" onClick={this.handleClick}>Add a carbon emission</button>
-          {memberDisplay}
-        </div>
-    }
+    
 
     let serverFailure
     if(this.state.serverConnectionFailure){
@@ -204,7 +155,7 @@ class App extends React.Component {
     }
 
     return( 
-      <div className="container-fluid bg-dark">
+      <div className="bg-dark">
         <div className="jumbotron">
           <h1>Armchair Dissident Carbon Tax</h1>  
           {serverFailure}    
@@ -225,9 +176,19 @@ class App extends React.Component {
             stats={this.state.stats}
             refresh={this.refreshFullProfile}
           />
-          {display}
+          <MainView
+            loggedIn={this.state.loggedIn} 
+            displayUnits={this.state.displayUnits} 
+            showCalculator={this.showCalculator}
+            taxes={this.state.taxes}
+            vehicles={this.state.vehicles}
+            emissions={this.state.emissions}
+            fuels={this.state.fuels}
+            profile={this.state.profile}
+            refresh={this.refreshFullProfile}
+          />
         </div>
-        {/*<Sandbox />*/}
+        <Sandbox />
         
         <div className="jumbotron">
           <h1>__</h1>

@@ -137,8 +137,9 @@ export class CarbonCalculator extends React.Component{
       "price": parseFloat(this.calculatePrice()).toFixed(2)
     }
 
-    createObject({
+    fetchObject({
       url:'/my-emissions/',
+      method:'POST',
       data:emissionData,
       onSuccess:this.props.submitCarbon,
       onFailure:this.handleSubmitFailure,
@@ -167,10 +168,11 @@ export class CarbonCalculator extends React.Component{
           <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
           <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
           <OptionListInput name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} />
+          <br/>
           <button
             type="button"
             name="cancel"
-            className="btn-outline-danger"
+            className="btn btn-success m-2"
             onClick={this.saveEmission}
           >Save to profile</button>
           {failureDisplay}

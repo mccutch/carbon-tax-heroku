@@ -1,13 +1,9 @@
 import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
-import {refreshToken} from './myJWT.js';
 import { VehicleInput } from './vehicleInput.js';
-import * as units from './unitConversions';
 import { VehicleSaveForm } from './vehicleSave.js';
-import { createObject } from './helperFunctions.js';
 import {fetchObject} from './helperFunctions.js';
-import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { MAX_NAME_LEN } from './validation.js';
 
 export class CreateTax extends React.Component{
@@ -96,8 +92,9 @@ export class CreateTax extends React.Component{
       category: this.state.newCategory,
     }
 
-    createObject({
+    fetchObject({
       url:'/my-taxes/',
+      method:'POST',
       data:taxData,
       onSuccess:this.handlePostSuccess,
       onFailure:this.handlePostFailure,

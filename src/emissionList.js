@@ -7,14 +7,14 @@ export class EmissionListWrapper extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      displayEmissions: false,
+      displayEmissions: {},
     }
 
     this.exitList=this.exitList.bind(this)
   }
 
   exitList(){
-    this.props.showEmissions(false)
+    this.props.exit()
   }
 
 

@@ -409,13 +409,13 @@ export class VehicleForm extends React.Component {
     }
 
     return(
-      <div className="container-sm bg-success">
+      <div>
         <div className="container">
-          <h2>US Database Vehicle Input</h2>
-          <button className="btn btn-outline-danger" onClick={this.props.hideForm}>Return to manual entry</button>
+          <h2>US Database Vehicle Input</h2>  
         </div>
         <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
         {resultDisplay}
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideForm}>Return to manual entry</button>
       </div>
     );
   }
@@ -526,7 +526,7 @@ export class VehicleInput extends React.Component{
           </label>
           <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" />
           <br/>
-          <button className="btn btn-outline-info" onClick={this.showForm}>Look up US vehicle</button>
+          <button className="btn btn-outline-info m-2" onClick={this.showForm}>Look up US vehicle</button>
         </div>
       
     } else {

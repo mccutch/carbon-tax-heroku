@@ -160,19 +160,15 @@ export class LoginWrapper extends React.Component{
         <div>
           <button name="demoLogin" className="btn btn-outline-danger" onClick={this.handleClick}>Demo User</button>
           <button name="register" className="btn btn-outline-success" onClick={this.handleClick}>Create an account</button>
+          <button type="button" className= "btn btn-outline-info" onClick={this.props.toggleDisplayUnits}>Change Units</button>
           {failureText}
           <LoginForm submitForm={this.getJWT}/>
         </div>
     }
 
     return(
-      <div>
-        <div className="container bg-warning py-2 my-2">
-          {display}
-        </div>
-        <div className="container bg-warning py-2 my-2">
-          <button type="button" className= "btn btn-outline-info" onClick={this.props.toggleDisplayUnits}>Change Units</button>
-        </div>
+      <div className="container bg-warning py-2 my-2">
+        {display}
       </div>
     )
   }

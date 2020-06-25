@@ -1,18 +1,12 @@
+Tabbed emission input
+
+Modals for inputs and edits
+
 Proportion split of fuel
-
-
-Dashboard
- - Total outstanding
- - Total paid
- - Proportion CO2 by tax types (all time)
- - Graph CO2 by week/month/year
- - Cumulative graph of tax and payments
 
 Object table of payments and donation recipients
 
-
 create saved trips
-
 
 rebuild route input
  - google js api
