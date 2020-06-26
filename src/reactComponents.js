@@ -2,6 +2,77 @@ import React from 'react';
 import * as units from './unitConversions.js';
 
 
+
+export class TabbedDisplay extends React.Component{
+  /*
+  this.props.tabData = [
+    {
+      label:<tab label 1>,
+      display:<tab display 1>,
+    },
+    {
+      label:<tab label 2>,
+      display:<tab display 2>,
+    },
+    ...
+  ]
+  */
+
+  constructor(props){
+    super(props)
+
+    this.state={
+      activeTab:"0",
+    }
+
+    this.makeTab=this.makeTab.bind(this)
+    this.makeTabNavBar=this.makeTabNavBar.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+  }
+
+  handleClick(event){
+    console.log(event.target.name)
+    this.setState({
+      activeTab:event.target.name
+    })
+  }
+
+  makeTab(tabIndex, label){
+    let className
+    if(this.state.activeTab === tabIndex){
+      className="nav-link active"
+    } else {
+      className="nav-link"
+    }
+    return <strong><a name={tabIndex} className={className} onClick={this.handleClick}>{label}</a></strong>
+  }
+
+  makeTabNavBar(){
+    let tabData = this.props.tabData
+    let navBar = []
+    for(let i in tabData){
+      navBar.push(<li className="nav-item">{this.makeTab(i.toString(), tabData[i].label)}</li>)
+    }
+    return navBar
+  }
+
+  render(){
+    let activeTab = parseInt(this.state.activeTab)
+    let display = this.props.tabData[activeTab].display
+
+    let style = "nav "+this.props.style
+
+    return(
+      <div className="container py-2">
+        <ul className={style}>
+          {this.makeTabNavBar()}
+        </ul>
+        {display}
+      </div>
+    )
+  }
+}
+
 export class DisplayUnitSelection extends React.Component{
   render(){
     return(

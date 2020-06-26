@@ -2,6 +2,8 @@ import React from 'react';
 import {EmissionCalculator} from './emissionCalculator.js';
 import {EmissionListWrapper} from './emissionList.js';
 import {Dashboard} from './dashboard.js';
+import {ProfileDisplay} from './userProfile.js';
+import {HomeView} from './homeView.js';
 
 export class MainView extends React.Component{
   constructor(props){
@@ -21,7 +23,7 @@ export class MainView extends React.Component{
     this.setState({
       newEmission: null,
     })
-    this.props.setView("options")
+    this.props.setView("home")
   }
 
   handleEmissionSave(json){
@@ -36,12 +38,6 @@ export class MainView extends React.Component{
   }
 
   render(){
-
-
-    let memberDisplay
-    if(this.props.loggedIn){
-      memberDisplay = <button className="btn btn-outline-info" name="dashboard" onClick={this.selectView}>My Dashboard</button> 
-    }
 
     let newEmissionMessage
     if(this.state.newEmission){
@@ -64,19 +60,34 @@ export class MainView extends React.Component{
                   refresh={this.props.refresh}
                   onEmissionSave={this.handleEmissionSave}
                 />
-    } else if(this.props.display==="dashboard" && this.props.loggedIn){
-      display = <Dashboard stats={this.props.stats}/>
+    } else if(this.props.display==="dashboard"){
+      display = <Dashboard 
+                  stats={this.props.stats}
+                  user={this.props.user}
+                  profile={this.props.profile}
+                  taxes={this.props.taxes}
+                  vehicles={this.props.vehicles}
+                  fuels={this.props.fuels}
+                  displayUnits={this.props.displayUnits}
+                  emissions={this.props.emissions}
+                  refresh={this.props.refresh}
+                  logout={this.props.logout}
+                />
+    } else if(this.props.display==="home"){
+      display = <HomeView 
+                  loggedIn={this.props.loggedIn}
+                  selectView={this.selectView}
+                />
     } else {
       display = 
         <div>
           {newEmissionMessage}
-          <button className="btn btn-outline-info" name="emissionCalculator" onClick={this.selectView}>+ Add a carbon emission</button>
-          {memberDisplay}
+          
         </div>
     }
 
     return(
-      <div className='container bg-light py-2 my-2'>
+      <div >
         {display}
       </div>
     )

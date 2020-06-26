@@ -8,6 +8,7 @@ import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from
 import * as validation from './validation.js';
 import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 import { LinePlot, Histogram } from './dataVisuals.js';
+import {TabbedDisplay} from './reactComponents.js';
 
 class PasswordChange extends React.Component{
   constructor(props){
@@ -362,145 +363,7 @@ class ProfileEdit extends React.Component{
   }
 }
 
-class Dashboard extends React.Component{
-  constructor(props){
-    super(props)
 
-    this.state = {
-      histogramData:[],
-      taxHistoryCo2:[],
-      taxHistoryPrice:[],
-      taxList:[],
-      paymentHistory:[],
-      activeTab:"0",
-    }
-
-    this.buildTables=this.buildTables.bind(this)
-    this.makeTab=this.makeTab.bind(this)
-    this.tabChange=this.tabChange.bind(this)
-  }
-
-  componentDidMount(){
-    this.buildTables()
-  }
-
-  componentDidUpdate(prevProps){
-    if(this.props !== prevProps){
-      this.buildTables()
-    }
-  }
-
-  buildTables(){
-    let histogramDataCo2 = []
-    let histogramDataPrice = []
-    let historyDataCo2 = []
-    let historyDataPrice = []
-    let taxList = []
-    let paymentHistory = []
-
-    let taxData = this.props.stats.emissions_by_tax
-    let emissionHistoryData = this.props.stats.emissions_by_month_and_tax
-    let paymentHistoryData = this.props.stats.payments_by_month
-    
-    //let totalCo2 = taxData.total.co2_kg
-    //let totalCost = taxData.total.price
-
-    for(let key in taxData){
-      taxList.push(key)
-      if(key!=="total"){
-        histogramDataCo2.push({tax:key, co2_kg:taxData[key].co2_kg})
-        histogramDataPrice.push({tax:key, price:taxData[key].price})
-      }
-    }
-
-    for(let month in emissionHistoryData){
-      let dataPointCo2 = {month:month}
-      let dataPointPrice = {month:month}
-      for(let taxKey in emissionHistoryData[month]){
-        dataPointCo2[taxKey] = emissionHistoryData[month][taxKey].co2_kg
-        dataPointPrice[taxKey] = emissionHistoryData[month][taxKey].price
-      }
-      historyDataCo2.push(dataPointCo2)
-      historyDataPrice.push(dataPointPrice)
-    }
-
-    for(let month in paymentHistoryData){
-      paymentHistory.push({month:month, Paid:paymentHistoryData[month]['paid'], Taxed:paymentHistoryData[month]['tax']})
-    }
-
-    // Sort histogram data
-    histogramDataCo2.sort(function(b, a) { 
-      return a.co2_kg - b.co2_kg;
-    })
-    histogramDataPrice.sort(function(b, a) { 
-      return a.price - b.price;
-    })
-
-
-    this.setState({
-      histogramDataCo2:histogramDataCo2,
-      histogramDataPrice:histogramDataPrice,
-      taxHistoryCo2:historyDataCo2,
-      taxHistoryPrice:historyDataPrice,
-      taxList:taxList,
-      paymentHistory:paymentHistory,
-    })
-  }
-
-  makeTab(name, label){
-    let className
-    if(this.state.activeTab === name){
-      className="nav-link active"
-    } else {
-      className="nav-link"
-    }
-    return <strong><a name={name} className={className} onClick={this.tabChange}>{label}</a></strong>
-  }
-
-  tabChange(event){
-    this.setState({activeTab:event.target.name})
-  }
-
-  render(){
-
-    let plot
-    if(this.state.activeTab==="0"){
-      plot = <LinePlot data={this.state.taxHistoryCo2} x_key="month" dataSeries={this.state.taxList} title="CO2 Output History" />
-    } else if(this.state.activeTab==="1"){
-      plot = <LinePlot data={this.state.taxHistoryPrice} x_key="month" dataSeries={this.state.taxList} title="Tax Cost History" />
-    } else if(this.state.activeTab==="2"){
-      plot = <Histogram data={this.state.histogramDataCo2} labelKey="tax" barValues={['co2_kg']} title="CO2 Proportion"/>
-    } else if(this.state.activeTab==="3"){
-      plot = <Histogram data={this.state.histogramDataPrice} labelKey="tax" barValues={['price']} title="Cost Proportion"/>
-    } else if(this.state.activeTab==="4"){
-      plot = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
-    }
-    
-    return(
-      <div className="container">
-        <h4>Dashboard</h4>
-        <ul className="nav nav-tabs">
-          <li className="nav-item">
-            {this.makeTab("0", "History - CO2")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("1", "History - Cost")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("2", "Total CO2")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("3", "Total Cost")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("4", "Payments")}
-          </li>
-        </ul>
-        {plot}
-      </div>
-    )
-  }
-}
 
 class ProfileDetails extends React.Component{
   constructor(props){
@@ -552,80 +415,56 @@ class ProfileDetails extends React.Component{
             <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
             <button name="changePassword" className="btn btn-outline-dark" onClick={this.handleClick}>Change password</button>
           </div>
-          <div className="col-sm-5 bg-light mx-2 my-2">
-            <Dashboard stats={this.props.stats}/>
-          </div>
         </div>
     }
 
     return(
       <div>
-        <h3>{user.username}</h3>
         {profileDisplay}
       </div>
     )
   }
 }
 
-class TabbedListDisplay extends React.Component{
-  constructor(props){
-    super(props)
 
-    this.state={
-      activeTab:"taxes",
-    }
 
-    this.makeTab=this.makeTab.bind(this)
-    this.handleClick=this.handleClick.bind(this)
-  }
-
-  handleClick(event){
-    console.log(event.target.name)
-    this.setState({
-      activeTab:event.target.name
-    })
-  }
-
-  makeTab(name, label){
-    let className
-    if(this.state.activeTab === name){
-      className="nav-link active"
-    } else {
-      className="nav-link"
-    }
-    return <strong><a name={name} className={className} onClick={this.handleClick}>{label}</a></strong>
-  }
-
+export class HistoryLists extends React.Component{
   render(){
+    let emissions = <EmissionTable refresh={this.props.refresh} emissions={this.props.emissions} displayUnits={this.props.displayUnits} taxes={this.props.taxes} profile={this.props.profile}/>
+    let payments = <div className="container"><h5>Payment table not built yet.</h5></div>
 
-    let table
-    if(this.state.activeTab==="taxes"){
-      table = <TaxTable refresh={this.props.refresh} taxes={this.props.taxes} profile={this.props.profile}/>
-    } else if(this.state.activeTab==="vehicles"){
-      table = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
-    } else if(this.state.activeTab==="emissions"){
-      table = <EmissionTable refresh={this.props.refresh} emissions={this.props.emissions} displayUnits={this.props.displayUnits} taxes={this.props.taxes} profile={this.props.profile}/>
-    }
-
-    return(
-      <div className="container py-2">
-        <ul className="nav nav-tabs">
-          <li className="nav-item">
-            {this.makeTab("taxes", "My Taxes")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("vehicles", "My Vehicles")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("emissions", "My Emissions")}
-          </li>
-        </ul>
-        {table}
-      </div>
-    )
+    let tabData = [
+      {
+        label: "Emission History",
+        display: emissions,
+      },
+      {
+        label: "Payment History",
+        display: payments,
+      }
+    ]
+    return <TabbedDisplay style="nav-tabs" tabData={tabData} />
   }
 }
 
+class SettingsLists extends React.Component{
+  render(){
+    let taxTable = <TaxTable refresh={this.props.refresh} taxes={this.props.taxes} profile={this.props.profile}/>
+    let vehicleTable = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
+
+    let tabData = [
+      {
+        label: "My Taxes",
+        display: taxTable,
+      },
+      {
+        label: "My Vehicles",
+        display: vehicleTable,
+      },
+    ]
+    return <TabbedDisplay style="nav-tabs" tabData={tabData} />
+  }
+}
 
 
 export class ProfileDisplay extends React.Component{
@@ -652,18 +491,16 @@ export class ProfileDisplay extends React.Component{
           refresh={this.props.refresh}
           logout={this.props.logout}
         />
-        <TabbedListDisplay 
+        
+        <SettingsLists
           refresh={this.props.refresh}
           taxes={this.props.taxes}
           vehicles={this.props.vehicles}
           fuels={this.props.fuels}
           displayUnits={this.props.displayUnits}
-          emissions={this.props.emissions}
           profile={this.props.profile}
         />
-        
-        <button name="hideProfile" className="btn btn-outline-success" onClick={this.props.onClick}>Hide profile</button>
-        <button name="logout" className="btn btn-outline-danger" onClick={this.props.onClick}>Logout</button>
+
       </div>
     )
   }

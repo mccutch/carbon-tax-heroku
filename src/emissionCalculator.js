@@ -166,11 +166,12 @@ export class EmissionCalculator extends React.Component{
     }
     
     return(
-      <div className="container bg-light my-2">
+      <div className="container-sm bg-light my-2">
         <div className="row mx-2">
           <h3>Carbon Tax Calculator</h3>
           <button type="button" className="btn btn-outline-danger m-2" onClick={this.exitCalculator}>Exit</button>
         </div>
+      
         <ul className="nav nav-tabs">
           <li className="nav-item">
             {this.makeTab("distance", "Distance")}

@@ -156,15 +156,19 @@ export class CarbonCalculator extends React.Component{
     let carbon = this.state.carbonKg
     let price = this.calculatePrice()
 
+    let sym = this.props.profile.currency_symbol
+    let currencyFactor = this.props.profile.conversion_factor
+
     let failureDisplay
     if(this.state.submissionFailed){
       failureDisplay = <h4>{this.state.submissionFailed}</h4>
     }
     
-    let memberDisplay
+    let display
     if(this.props.loggedIn){
-      memberDisplay=
+      display=
         <div>
+          <h1>{parseFloat(carbon).toFixed(2)} kg, {sym}{parseFloat(currencyFactor*price).toFixed(2)}</h1>
           <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
           <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
           <OptionListInput name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} />
@@ -178,17 +182,16 @@ export class CarbonCalculator extends React.Component{
           {failureDisplay}
         </div>
     } else {
-      memberDisplay = <h3>Log in to save</h3>
+      display = 
+        <div>
+          <h1>{parseFloat(carbon).toFixed(2)} kg</h1>
+          <p>Create an account to save emissions and calculate carbon tax.</p>
+        </div>
     }
 
-    let sym = this.props.profile.currency_symbol
-    let currencyFactor = this.props.profile.conversion_factor
-
     return(
-      
       <div className="container bg-light">
-        <h1>{parseFloat(carbon).toFixed(2)} kg, {sym}{parseFloat(currencyFactor*price).toFixed(2)}</h1>
-        {memberDisplay}
+        {display}
       </div>
     )
     

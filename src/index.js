@@ -28,11 +28,12 @@ class App extends React.Component {
       fuels:{},
       emissions:{},
       modal:null,
-      mainView:"emissionCalculator",
+      mainView:"home",
     }
 
     this.login=this.login.bind(this)
     this.logout=this.logout.bind(this)
+    this.logoutSuccess=this.logoutSuccess.bind(this)
     this.toggleDisplayUnits=this.toggleDisplayUnits.bind(this)
     
     this.fetchObject = this.fetchObject.bind(this)
@@ -124,6 +125,10 @@ class App extends React.Component {
   }
 
   logout(){
+    logoutBrowser({onSuccess:this.logoutSuccess})
+  }
+
+  logoutSuccess(){
     console.log("Logout successful.")
     this.setState({
       loggedIn:false,
@@ -133,6 +138,7 @@ class App extends React.Component {
       vehicles:{},
       emissions:{},
       stats:{},
+      mainView:"home",
     })
   }
 
@@ -173,7 +179,7 @@ class App extends React.Component {
       this.setModal("login")
 
     } else if(nav==="logout"){
-      logoutBrowser({onSuccess:this.logout})
+      this.logout()
 
     } else if(nav==="demoUser"){
       demoLogin({onSuccess:this.login})
@@ -195,6 +201,9 @@ class App extends React.Component {
 
     } else if(nav==="about"){
       this.setMainView("about")
+
+    } else if(nav==="home"){
+      this.setMainView("home")
     }
   }
   
@@ -217,7 +226,11 @@ class App extends React.Component {
     }
 
     return( 
-      <div className="bg-dark">
+      <div className="bg-dark" style={{ backgroundImage: `url("/static/pointPerp.jpg")`, 
+                                        /*backgroundRepeat:'no-repeat',*/
+                                        backgroundSize:'cover',
+                                        height: "200vh",
+                                      }}>
         <NavBar 
           loggedIn={this.state.loggedIn}
           onClick={this.handleNavClick}
@@ -249,15 +262,12 @@ class App extends React.Component {
             fuels={this.state.fuels}
             profile={this.state.profile}
             stats={this.state.stats}
+            user={this.state.user}
             refresh={this.refreshFullProfile}
             display={this.state.mainView}
             setView={this.setMainView}
+            logout={this.logout}
           />
-        </div>
-        <Sandbox />
-        
-        <div className="jumbotron">
-          <h1>__</h1>
         </div>
       </div>
     )

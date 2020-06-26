@@ -1,7 +1,11 @@
 import React from 'react';
 import { LinePlot, Histogram } from './dataVisuals.js';
+import { UserObjectLists } from './userProfile.js';
+import { TabbedDisplay } from './reactComponents.js';
+import { ProfileDisplay, HistoryLists } from './userProfile.js';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
-export class Dashboard extends React.Component{
+export class StatsDisplay extends React.Component{
   constructor(props){
     super(props)
 
@@ -11,12 +15,9 @@ export class Dashboard extends React.Component{
       taxHistoryPrice:[],
       taxList:[],
       paymentHistory:[],
-      activeTab:"0",
     }
 
     this.buildTables=this.buildTables.bind(this)
-    this.makeTab=this.makeTab.bind(this)
-    this.tabChange=this.tabChange.bind(this)
   }
 
   componentDidMount(){
@@ -86,57 +87,101 @@ export class Dashboard extends React.Component{
     })
   }
 
-  makeTab(name, label){
-    let className
-    if(this.state.activeTab === name){
-      className="nav-link active"
-    } else {
-      className="nav-link"
+  render(){
+
+    let co2History = <LinePlot data={this.state.taxHistoryCo2} x_key="month" dataSeries={this.state.taxList} title="CO2 Output History" />
+    let costHistory = <LinePlot data={this.state.taxHistoryPrice} x_key="month" dataSeries={this.state.taxList} title="Tax Cost History" />
+    let co2Total = <Histogram data={this.state.histogramDataCo2} labelKey="tax" barValues={['co2_kg']} title="Total CO2"/>
+    let costTotal = <Histogram data={this.state.histogramDataPrice} labelKey="tax" barValues={['price']} title="Total Costs"/>
+    let paymentHistory = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
+    
+    let tabData = [
+      {
+        label: "History - CO2",
+        display: co2History,
+      },
+      {
+        label: "History - Cost",
+        display: costHistory,
+      },
+      {
+        label: "Total CO2",
+        display: co2Total,
+      },
+      {
+        label: "Total Costs",
+        display: costTotal,
+      },
+      {
+        label: "Payments",
+        display: paymentHistory,
+      }
+    ]
+    return <TabbedDisplay style="nav-tabs" tabData={tabData} />
+  }
+}
+
+
+
+export class Dashboard extends React.Component{
+
+  constructor(props){
+    super(props)
+    this.state = {
+      display:"stats",
     }
-    return <strong><a name={name} className={className} onClick={this.tabChange}>{label}</a></strong>
+
+    this.changeDisplay=this.changeDisplay.bind(this)
   }
 
-  tabChange(event){
-    this.setState({activeTab:event.target.name})
+  changeDisplay(event){
+    this.setState({display:event.target.name})
   }
 
   render(){
-
-    let plot
-    if(this.state.activeTab==="0"){
-      plot = <LinePlot data={this.state.taxHistoryCo2} x_key="month" dataSeries={this.state.taxList} title="CO2 Output History" />
-    } else if(this.state.activeTab==="1"){
-      plot = <LinePlot data={this.state.taxHistoryPrice} x_key="month" dataSeries={this.state.taxList} title="Tax Cost History" />
-    } else if(this.state.activeTab==="2"){
-      plot = <Histogram data={this.state.histogramDataCo2} labelKey="tax" barValues={['co2_kg']} title="CO2 Proportion"/>
-    } else if(this.state.activeTab==="3"){
-      plot = <Histogram data={this.state.histogramDataPrice} labelKey="tax" barValues={['price']} title="Cost Proportion"/>
-    } else if(this.state.activeTab==="4"){
-      plot = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
+    let display
+    if(this.state.display==="stats"){
+      display = <StatsDisplay stats={this.props.stats} />
+    } else if(this.state.display==="profile"){
+      display = 
+        <ProfileDisplay
+          user={this.props.user}
+          profile={this.props.profile}
+          taxes={this.props.taxes}
+          vehicles={this.props.vehicles}
+          fuels={this.props.fuels}
+          displayUnits={this.props.displayUnits}
+          emissions={this.props.emissions}
+          refresh={this.props.refresh}
+          logout={this.props.logout}
+        />
+    } else if(this.state.display==="history"){
+      display = 
+        <HistoryLists 
+          refresh={this.props.refresh}
+          taxes={this.props.taxes}
+          displayUnits={this.props.displayUnits}
+          emissions={this.props.emissions}
+          profile={this.props.profile}
+        />
     }
-    
-
+      
     return(
-      <div className="container bg-light">
-        <h4>Dashboard</h4>
-        <ul className="nav nav-tabs">
-          <li className="nav-item">
-            {this.makeTab("0", "History - CO2")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("1", "History - Cost")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("2", "Total CO2")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("3", "Total Cost")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("4", "Payments")}
-          </li>
-        </ul>
-        {plot}
+      // Add -15px margin to sides of navbar to make full-width
+      <div className='container-sm my-2 bg-light' > 
+        <div style={{margin: "0px -15px 0px -15px"}} >
+        <Navbar bg="primary" variant="dark">
+          <Navbar.Brand >
+            {this.props.user.username}
+          </Navbar.Brand>
+          <Nav className="mr-auto">
+            <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
+            <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
+            <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+          </Nav>
+        </Navbar>
+        </div>
+        {display}
       </div>
     )
   }
