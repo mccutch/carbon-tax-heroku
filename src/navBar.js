@@ -37,8 +37,6 @@ export class NavBar extends React.Component{
           {dashboard}
           {newEmission}
           {newPayment}
-          {about}
-          {contact}
           {logout}
         </Nav>  
     } else {
@@ -46,14 +44,12 @@ export class NavBar extends React.Component{
         <Nav className="mr-auto">
           {login}
           {signUp}
-          {about}
-          {contact}
           {demoUser}
         </Nav>
     }
 
     return(
-      <Navbar bg="warning" variant="light" expand="lg">
+      <Navbar bg="warning" variant="light" expand="md">
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""
