@@ -75,11 +75,6 @@ export class LoginForm extends React.Component{
             <button type="submit" className="btn btn-outline-primary m-2">Login</button>
           </form>
         </Modal.Body>
-
-        <Modal.Footer>
-          <Button variant="secondary">Close</Button>
-          <Button variant="primary">Save changes</Button>
-        </Modal.Footer>
       </Modal>
     )
   }

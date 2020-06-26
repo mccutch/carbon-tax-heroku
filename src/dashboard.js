@@ -163,6 +163,8 @@ export class Dashboard extends React.Component{
           displayUnits={this.props.displayUnits}
           emissions={this.props.emissions}
           profile={this.props.profile}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
         />
     }
       

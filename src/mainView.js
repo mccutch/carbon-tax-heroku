@@ -72,11 +72,14 @@ export class MainView extends React.Component{
                   emissions={this.props.emissions}
                   refresh={this.props.refresh}
                   logout={this.props.logout}
+                  setModal={this.props.setModal}
+                  hideModal={this.props.hideModal}
                 />
     } else if(this.props.display==="home"){
       display = <HomeView 
                   loggedIn={this.props.loggedIn}
                   selectView={this.selectView}
+                  setModal={this.props.setModal}
                 />
     } else {
       display = 

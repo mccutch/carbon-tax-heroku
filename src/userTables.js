@@ -388,7 +388,15 @@ export class EmissionTable extends React.Component{
     let tableRows=[]
     for(let i in emissions){
       tableRows.push(
-        <EmissionDetail emission={emissions[i]} displayUnits={this.props.displayUnits} profile={this.props.profile} taxes={this.props.taxes} refresh={this.props.refresh}/>
+        <EmissionDetail 
+          emission={emissions[i]} 
+          displayUnits={this.props.displayUnits} 
+          profile={this.props.profile} 
+          taxes={this.props.taxes} 
+          refresh={this.props.refresh}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
+        />
       )
     }
     return tableRows

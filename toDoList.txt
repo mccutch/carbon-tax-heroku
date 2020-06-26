@@ -1,5 +1,5 @@
 
-Modals for inputs and edits
+Modals for inputs and edits (vehicles and taxes)
 
 carbon tax calculation for logged out user
 

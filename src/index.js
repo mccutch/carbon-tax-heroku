@@ -45,6 +45,7 @@ class App extends React.Component {
     this.handleNavClick = this.handleNavClick.bind(this)
     this.setModal = this.setModal.bind(this)
     this.setMainView = this.setMainView.bind(this)
+    this.setModalContent = this.setModalContent.bind(this)
   }
 
   componentDidMount(){
@@ -170,6 +171,10 @@ class App extends React.Component {
     this.setState({modal:type})
   }
 
+  setModalContent(content){
+    this.setState({modal:content})
+  }
+
   setMainView(view){
     this.setState({mainView:view})
   }
@@ -223,6 +228,8 @@ class App extends React.Component {
       modal = <LoginForm onSuccess={this.login} onHide={this.hideModal}/>
     } else if(this.state.modal==="register"){
       modal = <RegistrationForm onSuccess={this.login} onHide={this.hideModal}/>
+    } else if(this.state.modal){
+      modal = this.state.modal
     }
 
     return( 
@@ -267,6 +274,8 @@ class App extends React.Component {
             display={this.state.mainView}
             setView={this.setMainView}
             logout={this.logout}
+            setModal={this.setModalContent}
+            hideModal={this.hideModal}
           />
         </div>
       </div>

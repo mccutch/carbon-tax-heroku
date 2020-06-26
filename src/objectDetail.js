@@ -5,6 +5,7 @@ import * as units from './unitConversions';
 import { fetchObject } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList } from './reactComponents.js';
+import {Modal, Button} from 'react-bootstrap';
 
 export class TaxDetail extends React.Component{
   constructor(props){
@@ -352,11 +353,10 @@ class EmissionEdit extends React.Component{
   }
 
   handleClick(event){
-    event.preventDefault()
     let name = event.target.name
 
     if(name==="cancelEdit"){
-      this.props.hideEdit()
+      this.props.hideModal()
     } else if(name==="clone" || name==="update"){
       this.prepareData(name)
     } else if(name==="delete"){
@@ -413,7 +413,7 @@ class EmissionEdit extends React.Component{
   saveSuccess(){
     console.log("Save success")
     this.props.refresh()
-    this.props.hideEdit()
+    this.props.hideModal()
   }
 
   cloneFailure(){
@@ -441,37 +441,47 @@ class EmissionEdit extends React.Component{
   render(){
     let emission=this.props.emission
     return(
-      <form>
-        <p>{this.state.errorMessage}</p>
-        <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} />
-        <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} />
-        <br/>
-        <label>
-          Tax Type:
-          <ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="name" label="name" onChange={this.handleChange}/>
-        </label>
-        <br/>
-        <label>
-          Distance:
-          <input type="number" name="distance" defaultValue={emission.distance} onChange={this.handleChange} />
-          {units.distanceString(this.props.displayUnits)}
-        </label>
-        <br/>
-        <label>
-          CO2 Output (kg)
-          <input type="number" name="co2_output_kg" defaultValue={emission.co2_output_kg} onChange={this.handleChange} />
-        </label>
-        <br/>
-        <label>
-          Price: {this.props.profile.currency_symbol}
-          <input type="number" name="price" defaultValue={emission.price} onChange={this.handleChange} />
-        </label>
-        <br/>
-        <button name="update" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
-        <button name="clone" className="btn btn-outline-success" onClick={this.handleClick}>Save as new</button>
-        <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel edit</button>
-        <button name="delete" className="btn btn-outline-dark" onClick={this.handleClick}>Delete</button>
-      </form>
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Emission</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <form>
+            <p>{this.state.errorMessage}</p>
+            <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} />
+            <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} />
+            <br/>
+            <label>
+              Tax Type:
+              <ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="name" label="name" onChange={this.handleChange}/>
+            </label>
+            <br/>
+            <label>
+              Distance:
+              <input type="number" name="distance" defaultValue={emission.distance} onChange={this.handleChange} />
+              {units.distanceString(this.props.displayUnits)}
+            </label>
+            <br/>
+            <label>
+              CO2 Output (kg)
+              <input type="number" name="co2_output_kg" defaultValue={emission.co2_output_kg} onChange={this.handleChange} />
+            </label>
+            <br/>
+            <label>
+              Price: {this.props.profile.currency_symbol}
+              <input type="number" name="price" defaultValue={emission.price} onChange={this.handleChange} />
+            </label>
+          </form>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <button name="update" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
+          <button name="clone" className="btn btn-outline-success" onClick={this.handleClick}>Save as new</button>
+          <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel edit</button>
+          <button name="delete" className="btn btn-outline-dark" onClick={this.handleClick}>Delete</button>
+        </Modal.Footer>
+      </Modal>
     )
   }
 }
@@ -479,19 +489,22 @@ class EmissionEdit extends React.Component{
 export class EmissionDetail extends React.Component{
   constructor(props){
     super(props)
-    this.state = {
-      edit:false,
-    }
-    this.hideEdit=this.hideEdit.bind(this)
+
     this.edit=this.edit.bind(this)
   }
 
-  hideEdit(){
-    this.setState({edit:false})
-  }
 
   edit(){
-    this.setState({edit:true})
+    let modal = 
+          <EmissionEdit 
+            emission={this.props.emission} 
+            displayUnits={this.props.displayUnits} 
+            profile={this.props.profile} 
+            taxes={this.props.taxes} 
+            hideModal={this.props.hideModal} 
+            refresh={this.props.refresh}
+          />
+    this.props.setModal(modal)
   }
 
   render(){
@@ -502,21 +515,7 @@ export class EmissionDetail extends React.Component{
     let sym=this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
 
-    let display 
-    if(this.state.edit){
-      display = 
-        <tr><td colSpan={6}>
-          <EmissionEdit 
-            emission={emission} 
-            displayUnits={this.props.displayUnits} 
-            profile={this.props.profile} 
-            taxes={this.props.taxes} 
-            hideEdit={this.hideEdit} 
-            refresh={this.props.refresh}
-          />
-        </td></tr>
-    } else {
-      display = 
+    let display = 
         <tr key={emission.id}>
           <td><button className="btn btn-outline-primary" onClick={this.edit}><strong>{emission.name}</strong></button></td>
           <td>{emission.date}</td>
@@ -525,7 +524,7 @@ export class EmissionDetail extends React.Component{
           <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
           <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
         </tr>
-    }
+    
 
     return display
   }

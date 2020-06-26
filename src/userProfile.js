@@ -430,7 +430,15 @@ class ProfileDetails extends React.Component{
 
 export class HistoryLists extends React.Component{
   render(){
-    let emissions = <EmissionTable refresh={this.props.refresh} emissions={this.props.emissions} displayUnits={this.props.displayUnits} taxes={this.props.taxes} profile={this.props.profile}/>
+    let emissions = <EmissionTable 
+                      refresh={this.props.refresh} 
+                      emissions={this.props.emissions} 
+                      displayUnits={this.props.displayUnits} 
+                      taxes={this.props.taxes} 
+                      profile={this.props.profile}
+                      setModal={this.props.setModal}
+                      hideModal={this.props.hideModal}
+                    />
     let payments = <div className="container"><h5>Payment table not built yet.</h5></div>
 
     let tabData = [
