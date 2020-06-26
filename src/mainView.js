@@ -1,6 +1,7 @@
 import React from 'react';
 import {EmissionCalculator} from './emissionCalculator.js';
 import {EmissionListWrapper} from './emissionList.js';
+import {Dashboard} from './dashboard.js';
 
 export class MainView extends React.Component{
   constructor(props){
@@ -8,30 +9,19 @@ export class MainView extends React.Component{
 
     this.state = {
       newEmission:null,
-      displayCalculator:true,
     }
 
-    this.handleClick=this.handleClick.bind(this)
-    this.showCalculator=this.showCalculator.bind(this)
-    this.showEmissions=this.showEmissions.bind(this)
+    this.selectView=this.selectView.bind(this)
     this.hideDisplay=this.hideDisplay.bind(this)
     this.handleEmissionSave=this.handleEmissionSave.bind(this)
   }
 
-  showCalculator(){
-    this.setState({displayCalculator: true})
-  }
-
-  showEmissions(){
-    this.setState({displayEmissions: true})
-  }
 
   hideDisplay(){
     this.setState({
-      displayEmissions: false,
-      displayCalculator: false,
       newEmission: null,
     })
+    this.props.setView("options")
   }
 
   handleEmissionSave(json){
@@ -41,19 +31,16 @@ export class MainView extends React.Component{
     })
   }
 
-  handleClick(event){
-    if(event.target.name==="showCalculator"){
-      this.showCalculator()
-    } else if(event.target.name==="showEmissions"){
-      this.showEmissions()
-    }
+  selectView(event){
+    this.props.setView(event.target.name)
   }
 
-
   render(){
+
+
     let memberDisplay
     if(this.props.loggedIn){
-      memberDisplay = <button className="btn btn-outline-info" name="showEmissions" onClick={this.handleClick}>View my saved records</button> 
+      memberDisplay = <button className="btn btn-outline-info" name="dashboard" onClick={this.selectView}>My Dashboard</button> 
     }
 
     let newEmissionMessage
@@ -65,7 +52,7 @@ export class MainView extends React.Component{
     }
 
     let display
-    if(this.state.displayCalculator){
+    if(this.props.display==="emissionCalculator"){
       display = <EmissionCalculator 
                   loggedIn={this.props.loggedIn} 
                   displayUnits={this.props.displayUnits} 
@@ -77,24 +64,21 @@ export class MainView extends React.Component{
                   refresh={this.props.refresh}
                   onEmissionSave={this.handleEmissionSave}
                 />
-    } else if(this.state.displayEmissions && this.props.loggedIn){
-      display = <EmissionListWrapper
-                  exit={this.hideDisplay}
-                  displayUnits={this.props.displayUnits}
-                  emissions={this.props.emissions}
-                  taxes={this.props.taxes}
-                  profile={this.props.profile}
-                  refresh={this.props.refresh}
-                />
+    } else if(this.props.display==="dashboard" && this.props.loggedIn){
+      display = <Dashboard stats={this.props.stats}/>
     } else {
       display = 
-        <div className='container bg-light py-2 my-2'>
+        <div>
           {newEmissionMessage}
-          <button className="btn btn-outline-info" name="showCalculator" onClick={this.handleClick}>+ Add a carbon emission</button>
+          <button className="btn btn-outline-info" name="emissionCalculator" onClick={this.selectView}>+ Add a carbon emission</button>
           {memberDisplay}
         </div>
     }
 
-    return display
+    return(
+      <div className='container bg-light py-2 my-2'>
+        {display}
+      </div>
+    )
   }
 }

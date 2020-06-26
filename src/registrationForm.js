@@ -13,6 +13,7 @@ import * as validation from './validation.js';
 import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
 import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS } from './constants.js';
+import {Modal, Button} from 'react-bootstrap';
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -51,6 +52,7 @@ export class RegistrationForm extends React.Component{
     this.createUserSuccess=this.createUserSuccess.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
+    this.validateUserData=this.validateUserData.bind(this)
   }
 
   handleChange(event){
@@ -71,8 +73,8 @@ export class RegistrationForm extends React.Component{
     this.setState({conversion_factor:factor})
   }
 
-  validateUserData(event){
-    event.preventDefault()
+  validateUserData(){
+    //event.preventDefault()
 
     this.setState({errorMessage:""})
 
@@ -202,7 +204,7 @@ export class RegistrationForm extends React.Component{
         method:'POST',
         url:'/my-taxes/',
         data:taxData,
-        onSuccess:this.props.loginSuccess,
+        onSuccess:this.props.onSuccess,
         onFailure:this.postFailure,
       })
     }
@@ -215,85 +217,98 @@ export class RegistrationForm extends React.Component{
     }
 
     return(
-      <div>
-        <form onSubmit={this.validateUserData}>
-          {error}
-          <h4>Required Information</h4>
-          <input
-            type="text"
-            name="username"
-            onChange={this.handleChange}
-            placeholder="Username"
-          />
-          <br/>
-          <input
-            type="password"
-            name="password"
-            onChange={this.handleChange}
-            placeholder="Password"
-            maxLength={MAX_PASSWORD_LEN}
-          />
-          <br/>
-          <input
-            type="password"
-            name="password_check"
-            onChange={this.handleChange}
-            placeholder="Confirm Password"
-          />
-          <br/>
-          <input
-            type="text"
-            name="email"
-            onChange={this.handleChange}
-            placeholder="Email"
-            maxLength={MAX_EMAIL_LEN}
-          />
-          <br/>
-          <label>
-            Currency:
-            {/*<CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />*/}
-          </label>
-          <br/>
-          <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
-          <br/>
-          <label>
-            Economy units:
-            <DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />
-           </label>
-          <br/>
-          <h4>Optional Information</h4>
-          <input
-            type="text"
-            name="firstName"
-            onChange={this.handleChange}
-            placeholder="First name"
-            maxLength={MAX_NAME_LEN}
-          />
-          <input
-            type="text"
-            name="lastName"
-            onChange={this.handleChange}
-            placeholder="Last name"
-            maxLength={MAX_NAME_LEN}
-          />
-          <input
-            type="text"
-            name="location"
-            onChange={this.handleChange}
-            placeholder="Location"
-            maxLength={MAX_NAME_LEN}
-          />
-          <input
-            type="date"
-            name="date_of_birth"
-            onChange={this.handleChange}
-            placeholder="Date of Birth"
-          />
-          <br/>
-          <button type="submit" className="btn-outline-primary">Create</button>
-        </form>
-        <button name="hideRegistration" className="btn-outline-danger" onClick={this.props.onClick}>Cancel</button>
-      </div>
+      <Modal show={true} onHide={this.props.onHide}>
+        <Modal.Header closeButton>
+          <Modal.Title>Sign Up</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          
+        
+          <div>
+            <form>
+              {error}
+              <h4>Required Information</h4>
+              <input
+                type="text"
+                name="username"
+                onChange={this.handleChange}
+                placeholder="Username"
+              />
+              <br/>
+              <input
+                type="password"
+                name="password"
+                onChange={this.handleChange}
+                placeholder="Password"
+                maxLength={MAX_PASSWORD_LEN}
+              />
+              <br/>
+              <input
+                type="password"
+                name="password_check"
+                onChange={this.handleChange}
+                placeholder="Confirm Password"
+              />
+              <br/>
+              <input
+                type="text"
+                name="email"
+                onChange={this.handleChange}
+                placeholder="Email"
+                maxLength={MAX_EMAIL_LEN}
+              />
+              <br/>
+              <label>
+                Currency:
+                {/*<CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />*/}
+              </label>
+              <br/>
+              <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
+              <br/>
+              <label>
+                Economy units:
+                <DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />
+               </label>
+              <br/>
+              <h4>Optional Information</h4>
+              <input
+                type="text"
+                name="firstName"
+                onChange={this.handleChange}
+                placeholder="First name"
+                maxLength={MAX_NAME_LEN}
+              />
+              <input
+                type="text"
+                name="lastName"
+                onChange={this.handleChange}
+                placeholder="Last name"
+                maxLength={MAX_NAME_LEN}
+              />
+              <input
+                type="text"
+                name="location"
+                onChange={this.handleChange}
+                placeholder="Location"
+                maxLength={MAX_NAME_LEN}
+              />
+              <input
+                type="date"
+                name="date_of_birth"
+                onChange={this.handleChange}
+                placeholder="Date of Birth"
+              />
+              <br/>
+            </form>
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.props.onHide}>Cancel</Button>
+          <Button variant="success" onClick={this.validateUserData}>Create account</Button>
+        </Modal.Footer>
+      </Modal>
     )
   }
 }

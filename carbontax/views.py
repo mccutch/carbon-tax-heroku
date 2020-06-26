@@ -189,6 +189,7 @@ class CheckUnique(APIView):
     permission_classes = (AllowAny, )
 
     def post(self, request):
+        print(request.data)
         content = {
             'uniqueEmail': not User.objects.filter(email=request.data['email']).exists(),
             'uniqueUsername': not User.objects.filter(username=request.data['username']).exists()

@@ -42,11 +42,11 @@ export class Histogram extends React.Component{
 
           <BarChart 
             data={data} 
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 5, right: 30, left: 40, bottom: 20 }}
             layout="vertical"
           >
             <CartesianGrid stroke="#ccc" />
-            <XAxis type="number"/>
+            <XAxis type="number" />
             <YAxis type="category" dataKey={this.props.labelKey}/>
             {this.buildBars()}
             {legend}

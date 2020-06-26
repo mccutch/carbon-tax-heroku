@@ -9,6 +9,7 @@ export class NavBar extends React.Component{
 
   handleClick(event){
     console.log(event.target.name)
+    this.props.onClick(event.target.name)
   }
 
 
@@ -21,25 +22,23 @@ export class NavBar extends React.Component{
     // Authenticated users
     let dashboard = <Nav.Link name="dashboard" onClick={this.handleClick}>Dashboard</Nav.Link>
     let profile = <Nav.Link name="profile" onClick={this.handleClick}>Profile</Nav.Link>
-    let newEmission = <Nav.Link name="newEmission" onClick={this.handleClick}>Add an emission</Nav.Link>
-    let newPayment = <Nav.Link name="newPayment" onClick={this.handleClick}>Make a payment</Nav.Link>
+    let newEmission = <Nav.Link name="newEmission" onClick={this.handleClick}>New Emission</Nav.Link>
+    let newPayment = <Nav.Link name="newPayment" onClick={this.handleClick}>New Payment</Nav.Link>
     let logout = <Nav.Link name="logout" onClick={this.handleClick}>Logout</Nav.Link>
 
     // Unauthenticated users
     let login = <Nav.Link name="login" onClick={this.handleClick}>Login</Nav.Link>
-    let signUp = <Nav.Link name="signUp" onClick={this.handleClick}>Sign up</Nav.Link>
+    let signUp = <Nav.Link name="register" onClick={this.handleClick}>Sign up</Nav.Link>
 
     let navItems
     if(this.props.loggedIn){
       navItems = 
         <Nav className="mr-auto">
           {dashboard}
-          {profile}
           {newEmission}
           {newPayment}
           {about}
           {contact}
-          {demoUser}
           {logout}
         </Nav>  
     } else {
@@ -54,8 +53,8 @@ export class NavBar extends React.Component{
     }
 
     return(
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#home">
+      <Navbar bg="warning" variant="light" expand="lg">
+        <Navbar.Brand name="home" onClick={this.handleClick}>
           <img
             alt=""
             src="/static/finger512.png"

@@ -8,6 +8,8 @@ import {refreshToken}  from './myJWT.js';
 import {fetchObject} from './helperFunctions.js';
 import {MainView} from './mainView.js';
 import {NavBar} from './navBar.js';
+import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
+import {RegistrationForm} from './registrationForm.js';
 
 
 
@@ -19,14 +21,14 @@ class App extends React.Component {
     this.state = {
       loggedIn: false,
       displayUnits: units.METRIC,
-      displayCalculator: true,
-      displayEmissions: false,
       user: {},
       profile: {},
       taxes: {},
       vehicles: {},
       fuels:{},
       emissions:{},
+      modal:null,
+      mainView:"emissionCalculator",
     }
 
     this.login=this.login.bind(this)
@@ -38,6 +40,10 @@ class App extends React.Component {
     this.setFuels = this.setFuels.bind(this)
     this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
     this.setDisplayUnits = this.setDisplayUnits.bind(this)
+    this.hideModal = this.hideModal.bind(this)
+    this.handleNavClick = this.handleNavClick.bind(this)
+    this.setModal = this.setModal.bind(this)
+    this.setMainView = this.setMainView.bind(this)
   }
 
   componentDidMount(){
@@ -47,6 +53,7 @@ class App extends React.Component {
       onFailure:this.serverConnectionFailure,
       noAuth:true,
     })
+    this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
   }
 
   serverConnectionFailure(){
@@ -57,7 +64,6 @@ class App extends React.Component {
     // fueltypes returns as a paginated view
     this.setState({fuels:json.results})
   }
-
 
   fetchObject({url, objectName, onSuccess}){
     /* 
@@ -103,14 +109,17 @@ class App extends React.Component {
     });
   }
 
+
   login(){
+    this.refreshFullProfile()
     this.setState({
-      loggedIn: true,
+      loggedIn:true,
+      modal:null,
     })
   }
 
   setDisplayUnits(profile){
-    console.log(profile)
+    //console.log(profile)
     this.setState({displayUnits: profile.display_units})
   }
 
@@ -128,7 +137,7 @@ class App extends React.Component {
   }
 
   refreshFullProfile(){
-    this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
+    this.fetchObject({url:"/current-user/", objectName:"user"})
     this.fetchObject({url:"/my-profile/", objectName:"profile", onSuccess:this.setDisplayUnits})
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
@@ -145,11 +154,53 @@ class App extends React.Component {
     this.setState({displayUnits:units.toggle(this.state.displayUnits)})
   }
 
+  hideModal(){
+    this.setState({
+      modal:null,
+    })
+  }
+
+  setModal(type){
+    this.setState({modal:type})
+  }
+
+  setMainView(view){
+    this.setState({mainView:view})
+  }
+
+  handleNavClick(nav){
+    if(nav==="login"){
+      this.setModal("login")
+
+    } else if(nav==="logout"){
+      logoutBrowser({onSuccess:this.logout})
+
+    } else if(nav==="demoUser"){
+      demoLogin({onSuccess:this.login})
+
+    } else if(nav==="register"){
+      this.setModal("register")
+
+    } else if(nav==="newEmission"){
+      this.setMainView("emissionCalculator")
+
+    } else if(nav==="newPayment"){
+      this.setMainView("payment")
+
+    } else if(nav==="dashboard"){
+      this.setMainView("dashboard")
+
+    } else if(nav==="contact"){
+      this.setMainView("contact")
+
+    } else if(nav==="about"){
+      this.setMainView("about")
+    }
+  }
   
   
   render(){
     
-
     let serverFailure
     if(this.state.serverConnectionFailure){
       serverFailure = 
@@ -158,12 +209,22 @@ class App extends React.Component {
         </div>
     }
 
+    let modal
+    if(this.state.modal==="login"){
+      modal = <LoginForm onSuccess={this.login} onHide={this.hideModal}/>
+    } else if(this.state.modal==="register"){
+      modal = <RegistrationForm onSuccess={this.login} onHide={this.hideModal}/>
+    }
+
     return( 
       <div className="bg-dark">
         <NavBar 
           loggedIn={this.state.loggedIn}
+          onClick={this.handleNavClick}
         />
+        {modal}
         <div>
+        {/*}
           <LoginWrapper 
             loggedIn={this.state.loggedIn}
             logout={this.logout} 
@@ -178,16 +239,19 @@ class App extends React.Component {
             stats={this.state.stats}
             refresh={this.refreshFullProfile}
           />
+        */}
           <MainView
             loggedIn={this.state.loggedIn} 
-            displayUnits={this.state.displayUnits} 
-            showCalculator={this.showCalculator}
+            displayUnits={this.state.displayUnits}
             taxes={this.state.taxes}
             vehicles={this.state.vehicles}
             emissions={this.state.emissions}
             fuels={this.state.fuels}
             profile={this.state.profile}
+            stats={this.state.stats}
             refresh={this.refreshFullProfile}
+            display={this.state.mainView}
+            setView={this.setMainView}
           />
         </div>
         <Sandbox />

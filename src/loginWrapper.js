@@ -2,12 +2,13 @@ import React from 'react';
 import {getToken, clearToken }  from './myJWT.js';
 import {ProfileDisplay} from './userProfile.js';
 import {RegistrationForm} from './registrationForm.js';
+import {Modal, Button} from 'react-bootstrap';
 
 const DEMO_USERNAME = process.env.REACT_APP_DEMO_USERNAME
 const DEMO_PW = process.env.REACT_APP_DEMOUSER_PW
 
 
-class LoginForm extends React.Component{
+export class LoginForm extends React.Component{
   constructor(props){
     super(props)
     this.state = {
@@ -17,12 +18,14 @@ class LoginForm extends React.Component{
 
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.getJWT = this.getJWT.bind(this)
+    this.handleLoginFailure = this.handleLoginFailure.bind(this)
   }
 
   handleSubmit(e){
     e.preventDefault()
     if(this.state.username && this.state.password){
-      this.props.submitForm(this.state)
+      this.getJWT({username: this.state.username, password:this.state.password})
     }
   }
 
@@ -34,24 +37,64 @@ class LoginForm extends React.Component{
     }
   }
 
+  getJWT(data){
+    getToken({data:data, onSuccess:this.props.onSuccess, onFailure:this.handleLoginFailure})
+  }
+
+  handleLoginFailure(){
+    this.setState({loginFailed: true})
+  }
+
   render(){
+    let failureText
+    if(this.state.loginFailed){
+      failureText = <p>Login failed. <a href='/account/password_reset/'>Forgot your password?</a></p>
+    }
 
     return(
-      <form onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          onChange={this.handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          onChange={this.handleChange}
-        />
-        <button type="submit" className="btn btn-outline-primary">Login</button>
-      </form>
+      <Modal show={true} onHide={this.props.onHide}>
+        <Modal.Header closeButton>
+          <Modal.Title>Login</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          {failureText}
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              onChange={this.handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              onChange={this.handleChange}
+            />
+            <button type="submit" className="btn btn-outline-primary m-2">Login</button>
+          </form>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary">Close</Button>
+          <Button variant="primary">Save changes</Button>
+        </Modal.Footer>
+      </Modal>
     )
   }
+}
+
+export function logoutBrowser({onSuccess}){
+  clearToken({onSuccess:onSuccess})
+}
+
+export function demoLogin({onSuccess, onFailure}){
+  let data = {
+    username:DEMO_USERNAME,
+    password:DEMO_PW,
+  }
+  getToken({data:data, onSuccess:onSuccess, onFailure:onFailure})
 }
 
 
@@ -123,7 +166,6 @@ export class LoginWrapper extends React.Component{
     }
   }
 
-  
 
   render(){
     let failureText
