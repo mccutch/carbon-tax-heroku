@@ -297,8 +297,8 @@ class UserStats(APIView):
         for emission in emissions:
             if not emission.tax_type:
                 continue
-            if not emission.tax_type in taxes_used:
-                taxes_used.append(emission.tax_type)
+            if not emission.tax_type.id in taxes_used:
+                taxes_used.append(emission.tax_type.id)
         return taxes_used
 
     def get_months(self, request, emissions):
@@ -375,9 +375,9 @@ class UserStats(APIView):
             co2_month_total=0
             price_month_total=0
 
+            emissions_by_month_and_tax[monthString]['total'] = {}
             for tax_type in tax_types:
                 emissions = request.user.emissions.filter(tax_type=tax_type)
-                emissions_by_month_and_tax[monthString]['total'] = {}
                 emissions_by_month_and_tax[monthString][tax_type] = {}
 
                 co2_total = 0

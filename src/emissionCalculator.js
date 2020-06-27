@@ -28,10 +28,8 @@ export class EmissionCalculator extends React.Component{
     this.handleTabClick=this.handleTabClick.bind(this)
   }
 
-  exitCalculator(json){
-    console.log("saved!")
-    console.log(json)
-    this.props.exit(json)
+  exitCalculator(){
+    this.props.exit()
   }
 
   handleSubmitEconomy(lper100km, fuelId){

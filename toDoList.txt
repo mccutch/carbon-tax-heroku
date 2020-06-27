@@ -1,6 +1,7 @@
-Add split to emission model, display and edit
+Add (split, economy, fuel) to emission model, display and edit
 
 Modals for inputs and edits (vehicles and taxes)
+Standardise modals with generic template
 
 Create modal after new emission
 

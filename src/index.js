@@ -176,6 +176,7 @@ class App extends React.Component {
   }
 
   setMainView(view){
+    this.refreshFullProfile()
     this.setState({mainView:view})
   }
 

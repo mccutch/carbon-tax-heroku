@@ -28,7 +28,7 @@ class EconomyMetricAdmin(admin.ModelAdmin):
 
 @admin.register(EmissionInstance)
 class EmissionInstanceAdmin(admin.ModelAdmin):
-    list_display = ('name','date','tax_type','distance','co2_output_kg','price', 'split', 'user')
+    list_display = ('name','date', 'tax_type', 'economy', 'fuel', 'distance','co2_output_kg','price', 'split', 'user')
 
 @admin.register(TaxRate)
 class TaxRateAdmin(admin.ModelAdmin):

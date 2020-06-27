@@ -28,6 +28,7 @@ export class MainView extends React.Component{
 
   handleEmissionSave(json){
     this.hideDisplay()
+    this.props.refresh()
     this.setState({
       newEmission: json,
     })

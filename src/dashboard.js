@@ -18,6 +18,7 @@ export class StatsDisplay extends React.Component{
     }
 
     this.buildTables=this.buildTables.bind(this)
+    this.getTaxName=this.getTaxName.bind(this)
   }
 
   componentDidMount(){
@@ -28,6 +29,21 @@ export class StatsDisplay extends React.Component{
     if(this.props !== prevProps){
       this.buildTables()
     }
+  }
+
+  getTaxName(taxId){
+    if(taxId==="total" || taxId==="Total"){
+      return "Total"
+    }
+
+    let taxName
+    for(let i in this.props.taxes){
+      if(this.props.taxes[i].id===parseInt(taxId)){
+        taxName=this.props.taxes[i].name
+        return taxName
+      }
+    }
+    return `Tax ID:${taxId}`
   }
 
   buildTables(){
@@ -46,10 +62,10 @@ export class StatsDisplay extends React.Component{
     //let totalCost = taxData.total.price
 
     for(let key in taxData){
-      taxList.push(key)
+      taxList.push(this.getTaxName(key))
       if(key!=="total"){
-        histogramDataCo2.push({tax:key, co2_kg:taxData[key].co2_kg})
-        histogramDataPrice.push({tax:key, price:taxData[key].price})
+        histogramDataCo2.push({tax:this.getTaxName(key), co2_kg:taxData[key].co2_kg})
+        histogramDataPrice.push({tax:this.getTaxName(key), price:taxData[key].price})
       }
     }
 
@@ -57,8 +73,8 @@ export class StatsDisplay extends React.Component{
       let dataPointCo2 = {month:month}
       let dataPointPrice = {month:month}
       for(let taxKey in emissionHistoryData[month]){
-        dataPointCo2[taxKey] = emissionHistoryData[month][taxKey].co2_kg
-        dataPointPrice[taxKey] = emissionHistoryData[month][taxKey].price
+        dataPointCo2[this.getTaxName(taxKey)] = emissionHistoryData[month][taxKey].co2_kg
+        dataPointPrice[this.getTaxName(taxKey)] = emissionHistoryData[month][taxKey].price
       }
       historyDataCo2.push(dataPointCo2)
       historyDataPrice.push(dataPointPrice)
@@ -141,7 +157,7 @@ export class Dashboard extends React.Component{
   render(){
     let display
     if(this.state.display==="stats"){
-      display = <StatsDisplay stats={this.props.stats} />
+      display = <StatsDisplay stats={this.props.stats} taxes={this.props.taxes}/>
     } else if(this.state.display==="profile"){
       display = 
         <ProfileDisplay

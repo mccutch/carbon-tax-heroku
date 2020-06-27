@@ -22,27 +22,6 @@ class Payment(models.Model):
     def __str__(self):
         return f'{self.date}-{self.recipient.name}-{self.amount}'
 
-class EmissionInstance(models.Model):
-    """
-    Created when an entry is created from inputs.
-    """
-    name = models.CharField(max_length=60, null=True)
-    date = models.DateField(null=True)
-    tax_type = models.CharField(max_length=30, null=True)
-    distance = models.FloatField(null=True)
-    co2_output_kg = models.FloatField(null=True)
-    price = models.FloatField(null=True)
-    split = models.FloatField(default=1)
-    #paid = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
-    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)
-
-    class Meta:
-        ordering = ["-date", "-id"]
-
-    def __str__(self):
-        return f'{self.date}-{self.name}'
-
 class FuelType(models.Model):
     name = models.CharField(max_length=30, unique=True)
     unit = models.CharField(max_length=30)
@@ -51,6 +30,10 @@ class FuelType(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.name}'
+
+
+
+
 
 class EconomyMetric(models.Model):
     name = models.CharField(max_length=30)
@@ -97,6 +80,30 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+class EmissionInstance(models.Model):
+    """
+    Created when an entry is created from inputs.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
+    name = models.CharField(max_length=60, null=True)
+    date = models.DateField(null=True)
+    distance = models.FloatField(null=True)
+    fuel = models.ForeignKey(FuelType, on_delete = models.SET_DEFAULT, default=1)
+    economy = models.FloatField(default=10)
+    split = models.FloatField(default=1)
+    co2_output_kg = models.FloatField(null=True)
+    #tax_type = models.CharField(max_length=60, null=True)
+    tax_type = models.ForeignKey(TaxRate, on_delete=models.SET_NULL, related_name='emissions', null=True)
+    price = models.FloatField(null=True)
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)
+    #paid = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ["-date", "-id"]
+
+    def __str__(self):
+        return f'{self.date}-{self.name}'
 
 
 
