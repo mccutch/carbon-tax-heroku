@@ -1,7 +1,7 @@
 import React from 'react';
 import * as getDate from './getDate.js';
 import { OptionListInput } from './optionListInput.js';
-import { fetchObject } from './helperFunctions.js';
+import { fetchObject, getAttribute } from './helperFunctions.js';
 import { ObjectSelectionList } from './reactComponents.js';
 
 
@@ -93,40 +93,25 @@ export class CarbonCalculator extends React.Component{
   }
 
   calculatePrice(){
-    let taxes = this.props.taxes
-    for(let i in taxes){
-      if(taxes[i].id===this.state.tax){
-        console.log(taxes[i].price_per_kg)
-        return this.state.carbonKg*taxes[i].price_per_kg
-      }
-    }
+    return(this.state.carbonKg*getAttribute(this.state.tax, this.props.taxes, "price_per_kg"))
   }
 
   getTaxRate(){
-    let taxes = this.props.taxes
-    for(let i in taxes){
-      if(taxes[i].name===this.state.tax){
-        console.log(taxes[i].price_per_kg)
-        return taxes[i].price_per_kg
-      }
-    }
+    return(getAttribute(this.state.tax, this.props.taxes, "price_per_kg"))
   }
 
   incrementTaxUsage(){
-    
-    let usedTax = this.state.tax
+    let key = this.state.tax
+    let usage = getAttribute(key, this.props.taxes, "usage")
     let taxData = {
-      usage:(parseInt(usedTax.usage)+1).toString()
+      usage:(parseInt(usage)+1).toString()
     }
-
-    let key = usedTax.id
     fetchObject({
       url:`/tax/${key}/`,
       method:'PATCH',
       data:taxData,
       onSuccess:this.props.refresh,
     })
-
   }
 
   getFuelCarbon(){
@@ -140,10 +125,7 @@ export class CarbonCalculator extends React.Component{
     })
   }
 
-  
-
   saveEmission(){
-
     let date = getDate.today()
     if(this.state.date){
       date = this.state.date
@@ -154,10 +136,12 @@ export class CarbonCalculator extends React.Component{
       "date": date,
       "distance": parseFloat(this.props.data.distanceKm).toFixed(3),
       "economy": this.props.data.lPer100km.toString(),
-      "fuel": `/fuel/${this.props.data.fuelId}/`,
+      //"fuel": `/fuel/${this.props.data.fuelId}/`,
+      "fuel": `${this.props.data.fuelId}`,
       "split": parseFloat(this.state.split).toFixed(2),
       "co2_output_kg": parseFloat(this.state.carbonKg).toFixed(3),
-      "tax_type": `/tax/${this.state.tax}/`,
+      //"tax_type": `/tax/${this.state.tax}/`,
+      "tax_type": `${this.state.tax}`,
       "price": parseFloat(this.calculatePrice()).toFixed(2),
     }
 
@@ -187,9 +171,8 @@ export class CarbonCalculator extends React.Component{
 
     let failureDisplay
     if(this.state.submissionFailed){
-      failureDisplay = <h4>{this.state.submissionFailed}</h4>
+      failureDisplay = <p><strong>{this.state.submissionFailed}</strong></p>
     }
-
     
     let display
     if(this.props.loggedIn){

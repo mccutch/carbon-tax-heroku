@@ -2,8 +2,9 @@ import {refreshToken}  from './myJWT.js';
 
 //----------------------------------------------------------------------------------------------------------------------------
 /*
+getAttribute(objectList, id, attribute)
+
 convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure})
-conversionStepTwo({convertFrom, convertTo, amount, onSuccess, onFailure})
 
 createObject({data, url, onSuccess, onFailure})
 editObject({data, url, onSuccess, onFailure})
@@ -13,7 +14,25 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 */
 //----------------------------------------------------------------------------------------------------------------------------
 
+export function getAttribute(id, objectList, attribute){
+  if(!id){
+    return "--"
+  }
 
+  for(let i in objectList){
+    if(objectList[i].id===id){
+      try{
+        return objectList[i][attribute]
+      }
+      catch{
+        console.log(`Unable to find ${attribute} attribute for id ${id}.`)
+        return null
+      }
+    }
+  }
+  console.log(`Unable to find id ${id} in list.`)
+  return null
+}
 
 export function getCurrencyFactor({currency,onSuccess}){
   convertCurrency({

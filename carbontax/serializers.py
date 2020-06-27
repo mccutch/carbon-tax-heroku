@@ -53,8 +53,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'first_name', 'last_name', 'email')
 
 class EmissionSerializer(serializers.HyperlinkedModelSerializer):
-    fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
-    tax_type = serializers.HyperlinkedRelatedField(view_name="tax-detail", queryset=models.TaxRate.objects.all())
+    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
+    #tax_type = serializers.HyperlinkedRelatedField(view_name="tax-detail", queryset=models.TaxRate.objects.all())
+    fuel = serializers.PrimaryKeyRelatedField(queryset=models.FuelType.objects.all())
+    tax_type = serializers.PrimaryKeyRelatedField(queryset=models.TaxRate.objects.all())
     class Meta:
         model = models.EmissionInstance
         fields = ['name', 'date', 'distance', 'fuel', 'economy', 'co2_output_kg', 'tax_type', 'split', 'price', 'user', 'id']

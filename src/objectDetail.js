@@ -2,7 +2,7 @@ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
-import { fetchObject } from './helperFunctions.js';
+import { fetchObject, getAttribute } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList } from './reactComponents.js';
 import {Modal, Button} from 'react-bootstrap';
@@ -531,7 +531,7 @@ export class EmissionDetail extends React.Component{
         <tr key={emission.id}>
           <td><button className="btn btn-outline-primary" onClick={this.edit}><strong>{emission.name}</strong></button></td>
           <td>{emission.date}</td>
-          <td>{emission.tax_type}</td>
+          <td>{getAttribute(emission.tax_type, this.props.taxes, "name")}</td>
           <td>{parseFloat(distance).toFixed(1)}{distString}</td>
           <td>{emission.split}</td>
           <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
