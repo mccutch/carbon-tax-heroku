@@ -457,8 +457,23 @@ export class HistoryLists extends React.Component{
 
 class SettingsLists extends React.Component{
   render(){
-    let taxTable = <TaxTable refresh={this.props.refresh} taxes={this.props.taxes} profile={this.props.profile}/>
-    let vehicleTable = <VehicleTable refresh={this.props.refresh} vehicles={this.props.vehicles} displayUnits={this.props.displayUnits} fuels={this.props.fuels}/>
+    let taxTable = 
+      <TaxTable 
+        refresh={this.props.refresh} 
+        taxes={this.props.taxes} 
+        profile={this.props.profile}
+        setModal={this.props.setModal}
+        hideModal={this.props.hideModal}
+      />
+    let vehicleTable = 
+      <VehicleTable 
+        refresh={this.props.refresh} 
+        vehicles={this.props.vehicles} 
+        displayUnits={this.props.displayUnits} 
+        fuels={this.props.fuels}
+        setModal={this.props.setModal}
+        hideModal={this.props.hideModal}
+      />
 
     let tabData = [
       {
@@ -498,6 +513,8 @@ export class ProfileDisplay extends React.Component{
           stats={this.props.stats}
           refresh={this.props.refresh}
           logout={this.props.logout}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
         />
         
         <SettingsLists
@@ -507,6 +524,8 @@ export class ProfileDisplay extends React.Component{
           fuels={this.props.fuels}
           displayUnits={this.props.displayUnits}
           profile={this.props.profile}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
         />
 
       </div>

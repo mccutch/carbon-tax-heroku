@@ -135,34 +135,20 @@ export class TaxDetail extends React.Component{
   }
 }
 
-/*class VehicleEdit extends React.Component{
-
-
-  render()
-}*/
-
-
-export class VehicleDetail extends React.Component{
+class VehicleEdit extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      edit:false,
+
     }
 
-    this.useVehicle=this.useVehicle.bind(this)
     this.handleChange=this.handleChange.bind(this)
-    this.editVehicle=this.editVehicle.bind(this)
-    this.cancelEdit=this.cancelEdit.bind(this)
     this.deleteVehicle=this.deleteVehicle.bind(this)
-    this.saveChange=this.saveChange.bind(this)
     this.validateInput=this.validateInput.bind(this)
+    this.saveChange=this.saveChange.bind(this)
     this.editSuccess=this.editSuccess.bind(this)
     this.editFailure=this.editFailure.bind(this)
   }
-
-  componentDidMount(){
-  }
-
 
   handleChange(event){
     if(event.target.name==="economy"){
@@ -174,19 +160,13 @@ export class VehicleDetail extends React.Component{
     }
   }
 
-  useVehicle(){
-    this.props.submitEconomy(this.props.vehicle.economy, this.getFuelId(this.props.vehicle.fuel), this.props.vehicle.name)
-  }
-
-  editVehicle(){
-    this.setState({edit:true})
-  }
-
-  cancelEdit(){
-    this.setState({
-      edit:false,
-      name:null,
-      lPer100Km:null,
+  deleteVehicle(){
+    let key = parseInt(this.props.vehicle.id).toString()
+    fetchObject({
+      url:`/vehicle/${key}/`,
+      method:'DELETE',
+      onSuccess:this.editSuccess,
+      onFailure:this.editFailure,
     })
   }
 
@@ -228,13 +208,8 @@ export class VehicleDetail extends React.Component{
   }
 
   editSuccess(){
-    this.setState({
-      edit:false,
-      name:null,
-      lPer100Km:null,
-      error:false,
-    })
     this.props.refresh()
+    this.props.hideModal()
   }
 
   editFailure(){
@@ -243,23 +218,67 @@ export class VehicleDetail extends React.Component{
     })
   }
 
-  deleteVehicle(){
-    let key = parseInt(this.props.vehicle.id).toString()
+  render(){
+    let vehicle=this.props.vehicle
+    let existingLPer100Km=units.convert(parseFloat(vehicle.economy), this.props.displayUnits)
+    
 
-    fetchObject({
-      url:`/vehicle/${key}/`,
-      method:'DELETE',
-      onSuccess:this.editSuccess,
-      onFailure:this.editFailure,
-    })
+    let errorDisplay
+    if(this.state.error){
+      errorDisplay = <p>Unable to save changes.</p>
+    }
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Vehicle</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {errorDisplay}
+        <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} />
+        <label>
+          <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1"/>
+          {units.string(this.props.displayUnits)}
+        </label>
+        <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
+      </Modal.Body>
+
+        <Modal.Footer>
+          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
+          <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
+          <button className="btn btn-outline-danger" name="cancel" onClick={this.props.hideModal}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+}
+
+
+export class VehicleDetail extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      edit:false,
+    }
+
+    this.useVehicle=this.useVehicle.bind(this)
+    this.edit=this.edit.bind(this)  
   }
 
-  deleteSuccess(){
-    this.setState({
-      edit:false,
-      error:false,
-    })
-    this.props.refresh()
+  edit(){
+    let modal = 
+          <VehicleEdit 
+            vehicle={this.props.vehicle}
+            displayUnits={this.props.displayUnits}
+            fuels={this.props.fuels}
+            hideModal={this.props.hideModal} 
+            refresh={this.props.refresh}
+          />
+    this.props.setModal(modal)
+  }
+
+
+  useVehicle(){
+    this.props.submitEconomy(this.props.vehicle.economy, this.getFuelId(this.props.vehicle.fuel), this.props.vehicle.name)
   }
 
   render(){
@@ -270,38 +289,7 @@ export class VehicleDetail extends React.Component{
     if(this.props.submitEconomy){
       vehicleName=<td><button className="btn btn-outline-primary" onClick={this.useVehicle}>{vehicle.name}</button></td>
     } else {
-      vehicleName=<td>{vehicle.name}</td>
-    }
-
-    let errorDisplay
-    if(this.state.error){
-      errorDisplay = <p>Unable to save changes.</p>
-    }
-
-    let editDisplay
-    if(this.state.edit){
-
-      let existingLPer100Km=units.convert(parseFloat(vehicle.economy), this.props.displayUnits)
-      editDisplay = 
-        <td>
-          {errorDisplay}
-          <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} />
-          <label>
-            <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1"/>
-            {units.string(this.props.displayUnits)}
-          </label>
-          {/*<OptionListInput name="fuel" onChange={this.handleChange} list={this.state.fuelList} defaultValue={this.props.vehicle.fuel}/>*/}
-          <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
-          <br/>
-          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
-          <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
-          <button className="btn btn-outline-danger" name="cancel" onClick={this.cancelEdit}>Cancel</button>
-        </td>
-    } else {
-      editDisplay = 
-        <td>
-          <button className="btn btn-outline-warning" name="edit" onClick={this.editVehicle}>Edit</button>
-        </td>
+      vehicleName=<td><button className="btn btn-outline-primary" onClick={this.edit}>{vehicle.name}</button></td>
     }
 
     return(
@@ -309,7 +297,6 @@ export class VehicleDetail extends React.Component{
         {vehicleName}
         <td>{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
         <td>{getAttribute(vehicle.fuel, this.props.fuels, "name")}</td>
-        {editDisplay}
       </tr>
     )
   }

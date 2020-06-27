@@ -105,6 +105,8 @@ export class VehicleTable extends React.Component{
           displayUnits={this.props.displayUnits}
           fuels={this.props.fuels}
           refresh={this.props.refresh}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
         />
       )
     }

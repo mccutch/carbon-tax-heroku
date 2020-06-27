@@ -170,6 +170,8 @@ export class Dashboard extends React.Component{
           emissions={this.props.emissions}
           refresh={this.props.refresh}
           logout={this.props.logout}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
         />
     } else if(this.state.display==="history"){
       display = 
