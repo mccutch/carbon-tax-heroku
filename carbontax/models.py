@@ -32,6 +32,7 @@ class EmissionInstance(models.Model):
     distance = models.FloatField(null=True)
     co2_output_kg = models.FloatField(null=True)
     price = models.FloatField(null=True)
+    split = models.FloatField(default=1)
     #paid = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emissions', null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)

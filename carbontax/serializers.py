@@ -55,13 +55,13 @@ class UserSerializer(serializers.ModelSerializer):
 class EmissionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.EmissionInstance
-        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'id']
+        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'split', 'id']
 
 class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = models.EmissionInstance
-        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'id']
+        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'split', 'id']
 
 class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

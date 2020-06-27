@@ -416,7 +416,7 @@ export class EmissionTable extends React.Component{
     return(
       <div>
         {paginatedTableHeader}
-        <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Tax Type", "Distance", "CO2 Output", "Tax"]} />
+        <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Tax Type", "Distance", "Split", "CO2 Output", "Tax"]} />
       </div>
     )
   }

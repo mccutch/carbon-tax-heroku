@@ -337,7 +337,9 @@ class EmissionEdit extends React.Component{
     super(props)
 
     this.state = {
-      errorMessage:""
+      co2_output_kg:this.props.emission.co2_output_kg,
+      price:this.props.emission.price,
+      errorMessage:"",
     }
 
     this.handleClick=this.handleClick.bind(this)
@@ -350,6 +352,7 @@ class EmissionEdit extends React.Component{
     this.cloneFailure=this.cloneFailure.bind(this)
     this.delete=this.delete.bind(this)
     this.deleteFailure=this.deleteFailure.bind(this)
+    this.recalculate=this.recalculate.bind(this)
   }
 
   handleClick(event){
@@ -366,13 +369,19 @@ class EmissionEdit extends React.Component{
 
   handleChange(event){
     this.setState({
-      [event.target.name]:event.target.value
+      [event.target.name]:event.target.value,
+      willSave:true,
     })
+    this.recalculate(event.target.name, event.target.value)
+  }
+
+  recalculate(){
+    console.log("NEED TO RECALCULATE")
   }
 
   prepareData(method){
     this.setState({errorMessage:""})
-    let emissionAttributes = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price']
+    let emissionAttributes = ['name', 'date', 'tax_type', 'distance', 'split', 'co2_output_kg', 'price']
     let emissionData = {}
     for(let i in emissionAttributes){
       let attribute = emissionAttributes[i]
@@ -400,6 +409,9 @@ class EmissionEdit extends React.Component{
   }
 
   saveChanges(data){
+    if(!this.state.willSave){
+      this.props.hideModal()
+    }
     let key = this.props.emission.id
     fetchObject({
       url:`/emission/${key}/`,
@@ -440,6 +452,7 @@ class EmissionEdit extends React.Component{
 
   render(){
     let emission=this.props.emission
+
     return(
       <Modal show={true} onHide={this.props.hideModal}>
         <Modal.Header closeButton>
@@ -464,14 +477,13 @@ class EmissionEdit extends React.Component{
             </label>
             <br/>
             <label>
-              CO2 Output (kg)
-              <input type="number" name="co2_output_kg" defaultValue={emission.co2_output_kg} onChange={this.handleChange} />
+              Split:
+              <input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} />
             </label>
             <br/>
-            <label>
-              Price: {this.props.profile.currency_symbol}
-              <input type="number" name="price" defaultValue={emission.price} onChange={this.handleChange} />
-            </label>
+            CO2 Output (kg): {this.state.co2_output_kg}
+            <br/>
+            Price: {this.state.price}
           </form>
         </Modal.Body>
 
@@ -521,6 +533,7 @@ export class EmissionDetail extends React.Component{
           <td>{emission.date}</td>
           <td>{emission.tax_type}</td>
           <td>{parseFloat(distance).toFixed(1)}{distString}</td>
+          <td>{emission.split}</td>
           <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
           <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
         </tr>

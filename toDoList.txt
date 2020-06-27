@@ -1,7 +1,8 @@
+Add split to emission model, display and edit
 
 Modals for inputs and edits (vehicles and taxes)
 
-carbon tax calculation for logged out user
+Create modal after new emission
 
 Proportion split of fuel
 
