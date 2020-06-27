@@ -50,7 +50,7 @@ export class VehicleSaveForm extends React.Component{
     let vehicleData = {
       "name":saveAs,
       "economy":`${parseFloat(this.props.lPer100Km).toFixed(3)}`,
-      "fuel":`/fuel/${this.props.fuelId}/`
+      "fuel":`${this.props.fuelId}`
     }
 
     console.log(vehicleData)

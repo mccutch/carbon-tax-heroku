@@ -34,12 +34,12 @@ class UserVehicleList(APIView):
 
     def get(self, request, format=None):
         vehicles = request.user.vehicles.all()
-        serializer = serializers.VehicleListSerializer(vehicles, many=True, context={'request':request})
+        serializer = serializers.VehicleSerializer(vehicles, many=True, context={'request':request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
         data=request.data
-        data['owner']=f'/user/{request.user.id}/'
+        data['owner']=f'{request.user.id}'
         print(data)
         serializer = serializers.VehicleSerializer(data=data, context={'request':request})
         if serializer.is_valid():
@@ -211,7 +211,7 @@ class UserTaxList(APIView):
     
     def get(self, request, format=None):
         taxes = request.user.taxes.all()
-        serializer = serializers.TaxRateListSerializer(taxes, many=True)
+        serializer = serializers.TaxRateSerializer(taxes, context={'request':request}, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):

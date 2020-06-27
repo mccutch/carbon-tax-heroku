@@ -10,6 +10,8 @@ class DonationRecipientSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['name', 'country', 'website', 'donation_link', 'currency', 'description']
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
     class Meta:
         model = models.Payment
         fields = ['amount', 'currency', 'recipient', 'date', 'user']
@@ -17,7 +19,9 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
     #owner = serializers.HyperlinkedRelatedField(view_name="user-detail", queryset=User.objects.all())
-    fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    fuel = serializers.PrimaryKeyRelatedField(queryset=models.FuelType.objects.all())
+    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
 
     class Meta:
         model = models.Vehicle
@@ -43,6 +47,7 @@ class EconomyMetricSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['name']
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model = models.Profile
         fields = ['user', 'location', 'date_of_birth', 'currency', 'currency_symbol', 'conversion_factor', 'display_units', 'id']
@@ -61,22 +66,23 @@ class EmissionSerializer(serializers.HyperlinkedModelSerializer):
         model = models.EmissionInstance
         fields = ['name', 'date', 'distance', 'fuel', 'economy', 'co2_output_kg', 'tax_type', 'split', 'price', 'user', 'id']
 
-class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
+"""class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = models.EmissionInstance
-        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'split', 'id']
+        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'split', 'id']"""
 
 class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model=models.TaxRate
         fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault', 'usage']
 
-class TaxRateListSerializer(serializers.HyperlinkedModelSerializer):
+"""class TaxRateListSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model=models.TaxRate
-        fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault', 'usage']
+        fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault', 'usage']"""
 
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:

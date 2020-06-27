@@ -135,18 +135,21 @@ export class TaxDetail extends React.Component{
   }
 }
 
+/*class VehicleEdit extends React.Component{
+
+
+  render()
+}*/
+
 
 export class VehicleDetail extends React.Component{
   constructor(props){
     super(props)
     this.state = {
       edit:false,
-      fuelList:[],
     }
 
     this.useVehicle=this.useVehicle.bind(this)
-    this.getFuelId=this.getFuelId.bind(this)
-    this.getFuelList=this.getFuelList.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.editVehicle=this.editVehicle.bind(this)
     this.cancelEdit=this.cancelEdit.bind(this)
@@ -158,16 +161,8 @@ export class VehicleDetail extends React.Component{
   }
 
   componentDidMount(){
-    this.getFuelList()
   }
 
-  getFuelId(fuelName){
-    for(let i in this.props.fuels){
-      if(this.props.fuels[i].name===fuelName){
-        return parseInt(i) + 1
-      }
-    }
-  }
 
   handleChange(event){
     if(event.target.name==="economy"){
@@ -175,7 +170,7 @@ export class VehicleDetail extends React.Component{
     } else if(event.target.name==="name"){
       this.setState({name:event.target.value})
     } else if(event.target.name==="fuel"){
-      this.setState({fuelId:this.getFuelId(event.target.value)})
+      this.setState({fuel:parseInt(event.target.value)})
     }
   }
 
@@ -216,8 +211,8 @@ export class VehicleDetail extends React.Component{
       if(this.state.lPer100Km){
         vehicleData['economy']=parseFloat(this.state.lPer100Km).toFixed(ECONOMY_DECIMALS)
       }
-      if(this.state.fuelId){
-        vehicleData['fuel']=`/fuel/${parseInt(this.state.fuelId).toString()}/`
+      if(this.state.fuel){
+        vehicleData['fuel']=`${this.state.fuel}`
       }
 
       console.log(vehicleData)
@@ -267,18 +262,6 @@ export class VehicleDetail extends React.Component{
     this.props.refresh()
   }
 
-  getFuelList(){
-    let fuelList=[]
-    for(let i in this.props.fuels){
-      fuelList.push(this.props.fuels[i].name)
-    }
-    this.setState({
-      fuelList:fuelList,
-      fuel:fuelList[0],
-    })
-  }
-  
-
   render(){
     let vehicle=this.props.vehicle
     let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
@@ -307,7 +290,8 @@ export class VehicleDetail extends React.Component{
             <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1"/>
             {units.string(this.props.displayUnits)}
           </label>
-          <OptionListInput name="fuel" onChange={this.handleChange} list={this.state.fuelList} defaultValue={this.props.vehicle.fuel}/>
+          {/*<OptionListInput name="fuel" onChange={this.handleChange} list={this.state.fuelList} defaultValue={this.props.vehicle.fuel}/>*/}
+          <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
           <br/>
           <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
           <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
@@ -324,7 +308,7 @@ export class VehicleDetail extends React.Component{
       <tr key={vehicle.id}>
         {vehicleName}
         <td>{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
-        <td>{vehicle.fuel}</td>
+        <td>{getAttribute(vehicle.fuel, this.props.fuels, "name")}</td>
         {editDisplay}
       </tr>
     )
