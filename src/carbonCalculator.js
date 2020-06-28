@@ -76,8 +76,6 @@ export class CarbonCalculator extends React.Component{
         [event.target.name]:event.target.value
       })
     }
-
-    
   }
 
   getRelevantTaxes(){
@@ -203,8 +201,8 @@ export class CarbonCalculator extends React.Component{
         </div>
     }
 
-    let distance = (units.distanceDisplay(this.props.data.distanceKm, this.props.displayUnits)).toFixed(1)
-    let economy = (units.convert(this.props.data.lPer100km, this.props.displayUnits)).toFixed(1)
+    let distance = parseFloat(units.distanceDisplay(this.props.data.distanceKm, this.props.displayUnits)).toFixed(1)
+    let economy = parseFloat(units.convert(this.props.data.lPer100km, this.props.displayUnits)).toFixed(1)
 
     return(
       <div className="container bg-light">
