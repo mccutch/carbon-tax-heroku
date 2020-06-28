@@ -152,7 +152,7 @@ export class EmissionFilterNav extends React.Component{
     super(props)
 
     this.state = {
-      showFilters:true,
+      showFilters:false,
       searchQuery:"",
       taxFilter:"",
       startDate:"",
