@@ -7,13 +7,12 @@ import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList } from './reactComponents.js';
 import {Modal, Button} from 'react-bootstrap';
 
-export class TaxDetail extends React.Component{
+class TaxEdit extends React.Component{
   constructor(props){
     super(props)
+
     this.state = {
-      edit:false,
-      newValue:null,
-      error:false,
+      newValue:false,
     }
 
     this.editTax=this.editTax.bind(this)
@@ -48,24 +47,44 @@ export class TaxDetail extends React.Component{
   }
 
   validateInput(){
-    //No validation to apply yet.
-    if(this.state.newValue){
-      return true
-    } else {
+    if(!(this.state.price_per_kg || this.state.name)){
+      this.editSuccess()
       return false
     }
-  }
 
+    if(this.state.name===""){
+        this.setState({error:"Name cannot be blank"})
+        return false
+    } 
+
+    let allTaxes = this.props.allTaxes
+    for(let i in allTaxes){
+      if(allTaxes[i].name===this.props.tax.name){
+        continue
+      } else {
+        if(allTaxes[i].name===this.state.name){
+          this.setState({error:"Name must be unique"})
+          return false
+        }
+      }
+    }
+    
+    return true  
+  }
 
   saveChange(){
     if(this.validateInput()){
-      let key = parseInt(this.props.tax.id).toString()
+      let key = this.props.tax.id
 
-      let taxData = {
-        name: this.props.tax.name,
-        price_per_kg: parseFloat(this.state.newValue).toFixed(TAX_RATE_DECIMALS),
+      let taxData = {}
+      if(this.state.name){
+        taxData['name']=this.state.name
+      }
+      if(this.state.price_per_kg){
+        taxData['price_per_kg']=parseFloat(this.state.price_per_kg).toFixed(TAX_RATE_DECIMALS)
       }
 
+      console.log(taxData)
       fetchObject({
         url:`/tax/${key}/`,
         method:'PATCH',
@@ -73,16 +92,12 @@ export class TaxDetail extends React.Component{
         onSuccess:this.editSuccess,
         onFailure:this.editFailure,
       })
-    } 
+    }
   }
 
   editSuccess(){
-    this.setState({
-      edit:false,
-      newValue: null,
-      error:false
-    })
     this.props.refresh()
+    this.props.hideModal()
   }
 
   editFailure(){
@@ -92,44 +107,79 @@ export class TaxDetail extends React.Component{
   }
 
   handleChange(event){
-    this.setState({newValue:event.target.value})
+    this.setState({[event.target.name]:event.target.value})
   }
 
+
   render(){
-    let tax = this.props.tax
-    let editDisplay
-    if(this.state.edit){
-
-      let deleteButton
-      if(!tax.isDefault){
-        deleteButton = <button className="btn btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
-      }
-
-      let existingValue=parseFloat(this.props.tax.price_per_kg)
-      editDisplay = 
-        <td>
-          <input type="number" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01"/>
-          <br/>
-          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
-          {deleteButton}
-          <button className="btn btn-outline-danger" name="cancel" onClick={this.editTax}>Cancel</button>
-        </td>
-    } else {
-      editDisplay = 
-        <td>
-          <button className="btn btn-outline-warning" name="edit" onClick={this.editTax}>Edit</button>
-        </td>
-    }
-
+    let existingValue=parseFloat(this.props.tax.price_per_kg)
     let sym = this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
 
+    let deleteButton
+    if(!this.props.tax.isDefault){
+      deleteButton = <button className="btn btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
+    }
+
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header className="bg-primary text-light" closeButton>
+          <Modal.Title>Edit Tax</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Name:
+          <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" />
+          <br/>
+          Price per kg: {sym}
+          <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01"/>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
+          {deleteButton}
+          <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+}
+
+export class TaxDetail extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      edit:false,
+      newValue:null,
+      error:false,
+    }
+
+    this.edit=this.edit.bind(this)
+  }
+
+  edit(){
+    let modal = 
+          <TaxEdit 
+            tax={this.props.tax}
+            taxes={this.props.taxes}
+            profile={this.props.profile}
+            hideModal={this.props.hideModal} 
+            refresh={this.props.refresh}
+          />
+    this.props.setModal(modal)
+  }
+
+  
+
+  render(){
+    let tax = this.props.tax
+    let sym = this.props.profile.currency_symbol
+    let currencyFactor = this.props.profile.conversion_factor
+    let taxName = <button className="btn btn-outline-primary" onClick={this.edit}>{tax.name}</button>
+
     return(
       <tr key={tax.id}>
-        <td>{tax.name}</td>
+        <td>{taxName}</td>
         <td>{sym}{parseFloat(currencyFactor*tax.price_per_kg).toFixed(TAX_RATE_DECIMALS)}/kg CO2</td>
         <td>{tax.category}</td>
-        {editDisplay}
       </tr>
     )
   }
@@ -195,8 +245,6 @@ class VehicleEdit extends React.Component{
         vehicleData['fuel']=`${this.state.fuel}`
       }
 
-      console.log(vehicleData)
-
       fetchObject({
         url:`/vehicle/${key}/`,
         method:'PATCH',
@@ -221,8 +269,6 @@ class VehicleEdit extends React.Component{
   render(){
     let vehicle=this.props.vehicle
     let existingLPer100Km=units.convert(parseFloat(vehicle.economy), this.props.displayUnits)
-    
-
     let errorDisplay
     if(this.state.error){
       errorDisplay = <p>Unable to save changes.</p>
@@ -241,12 +287,11 @@ class VehicleEdit extends React.Component{
         </label>
         <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
       </Modal.Body>
-
-        <Modal.Footer>
-          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
-          <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
-          <button className="btn btn-outline-danger" name="cancel" onClick={this.props.hideModal}>Cancel</button>
-        </Modal.Footer>
+      <Modal.Footer>
+        <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
+        <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
+        <button className="btn btn-outline-danger" name="cancel" onClick={this.props.hideModal}>Cancel</button>
+      </Modal.Footer>
       </Modal>
     )
   }
@@ -303,13 +348,19 @@ export class VehicleDetail extends React.Component{
 }
 
 
-class EmissionEdit extends React.Component{
+export class EmissionEdit extends React.Component{
   constructor(props){
     super(props)
 
     this.state = {
+      distance:this.props.emission.distance,
+      fuel:this.props.emission.fuel,
+      economy:this.props.emission.economy,
+      split:this.props.emission.split,
       co2_output_kg:this.props.emission.co2_output_kg,
+      tax_type:this.props.emission.tax_type,
       price:this.props.emission.price,
+
       errorMessage:"",
     }
 
@@ -339,20 +390,45 @@ class EmissionEdit extends React.Component{
   }
 
   handleChange(event){
+    let name = event.target.name
+    let value = event.target.value
+
+    if(name==="tax_type" || name==="fuel"){
+      value=parseInt(value)
+    }
+    if(name==="distance"){
+      value=units.convertToKm(value, this.props.displayUnits)
+    }
+    if(name==="economy"){
+      value=units.convert(value, this.props.displayUnits)
+    }
+    if(name==="split"){
+      value = (value>0? value : 1)
+    }
     this.setState({
-      [event.target.name]:event.target.value,
+      [event.target.name]:value,
       willSave:true,
-    })
-    this.recalculate(event.target.name, event.target.value)
+    }, this.recalculate)
   }
 
   recalculate(){
-    console.log("NEED TO RECALCULATE")
+    console.log("RECALCULATE")
+    let fuelCarbonPerL = getAttribute(this.state.fuel, this.props.fuels, "co2_per_unit")
+    let taxPrice = getAttribute(this.state.tax_type, this.props.taxes, "price_per_kg")
+
+    let co2_output_kg = (this.state.distance/100)*this.state.economy*fuelCarbonPerL/(this.state.split)
+
+    this.setState({
+      fuelCarbonPerL:fuelCarbonPerL,
+      taxPrice:taxPrice,
+      co2_output_kg: (co2_output_kg).toFixed(3),
+      price: (co2_output_kg*taxPrice).toFixed(2),
+    })
   }
 
   prepareData(method){
     this.setState({errorMessage:""})
-    let emissionAttributes = ['name', 'date', 'tax_type', 'distance', 'split', 'co2_output_kg', 'price']
+    let emissionAttributes = ['name', 'date', 'distance', 'economy', 'fuel', 'split', 'co2_output_kg', 'tax_type', 'price']
     let emissionData = {}
     for(let i in emissionAttributes){
       let attribute = emissionAttributes[i]
@@ -423,6 +499,10 @@ class EmissionEdit extends React.Component{
 
   render(){
     let emission=this.props.emission
+    let displayUnits=this.props.displayUnits
+
+    let distance = (units.distanceDisplay(emission.distance, displayUnits)).toFixed(1)
+    let economy = (units.convert(emission.economy, displayUnits)).toFixed(2)
 
     return(
       <Modal show={true} onHide={this.props.hideModal}>
@@ -438,13 +518,24 @@ class EmissionEdit extends React.Component{
             <br/>
             <label>
               Tax Type:
-              <ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="name" label="name" onChange={this.handleChange}/>
+              <ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="id" label="name" onChange={this.handleChange}/>
             </label>
             <br/>
             <label>
               Distance:
-              <input type="number" name="distance" defaultValue={emission.distance} onChange={this.handleChange} />
-              {units.distanceString(this.props.displayUnits)}
+              <input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} />
+              {units.distanceString(displayUnits)}
+            </label>
+            <br/>
+            <label>
+              Fuel:
+              <ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>
+            </label>
+            <br/>
+            <label>
+              Economy:
+              <input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} />
+              {units.string(displayUnits)}
             </label>
             <br/>
             <label>
@@ -486,6 +577,7 @@ export class EmissionDetail extends React.Component{
             taxes={this.props.taxes} 
             hideModal={this.props.hideModal} 
             refresh={this.props.refresh}
+            fuels={this.props.fuels}
           />
     this.props.setModal(modal)
   }

@@ -216,7 +216,7 @@ class UserTaxList(APIView):
 
     def post(self, request, format=None):
         data=request.data
-        data['user']=f'/user/{request.user.id}/'
+        data['user']=f'{request.user.id}'
         print(data)
         serializer = serializers.TaxRateSerializer(data=data, context={'request':request})
         if serializer.is_valid():

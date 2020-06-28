@@ -1,9 +1,11 @@
 import React from 'react';
+import {Modal} from 'react-bootstrap';
 import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';
 import {CarbonCalculator} from './carbonCalculator.js';
 import * as units from './unitConversions';
 import * as taxes from './defaultTaxTypes.js';
+import {EmissionEdit} from './objectDetail.js';
 
 export class EmissionCalculator extends React.Component{
   constructor(props){
@@ -23,12 +25,61 @@ export class EmissionCalculator extends React.Component{
     this.handleEdit=this.handleEdit.bind(this)
     this.handleSubmitEconomy=this.handleSubmitEconomy.bind(this)
     this.handleSubmitDistance=this.handleSubmitDistance.bind(this)
+    this.handleEmissionSave=this.handleEmissionSave.bind(this)
     this.exitCalculator=this.exitCalculator.bind(this)
     this.makeTab=this.makeTab.bind(this)
     this.handleTabClick=this.handleTabClick.bind(this)
+    this.createClone=this.createClone.bind(this)
+    this.newEmission=this.newEmission.bind(this)
   }
 
   exitCalculator(){
+    this.props.exit()
+  }
+
+  newEmission(event){
+    this.props.hideModal()
+    this.props.selectView(event)
+  }
+
+  createClone(json){
+    console.log(json)
+
+    let modal = 
+      <EmissionEdit 
+        emission={json} 
+        displayUnits={this.props.displayUnits} 
+        profile={this.props.profile} 
+        taxes={this.props.taxes} 
+        hideModal={this.props.hideModal} 
+        refresh={this.props.refresh}
+        fuels={this.props.fuels}
+      />
+  
+    this.props.setModal(modal)
+  }
+
+  handleEmissionSave(json){
+    let sym = this.props.profile.currency_symbol
+    let price = this.props.profile.conversion_factor*json.price
+
+    console.log(json)
+    let modal = 
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header className="bg-primary text-light" closeButton>
+          <Modal.Title>Emission Saved!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{json.date} - {json.name}</p>
+          <p>{json.co2_output_kg}kg CO2, {sym}{price.toFixed(2)}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-outline-info" onClick={() => this.createClone(json)}>Edit/Clone</button>
+          <button className="btn btn-outline-info" name="emissionCalculator" onClick={this.newEmission}>New emission</button>
+          <button className="btn btn-outline-success" onClick={this.props.hideModal}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    this.props.setModal(modal)
     this.props.exit()
   }
 
@@ -149,7 +200,7 @@ export class EmissionCalculator extends React.Component{
               data={this.state} 
               displayUnits={displayUnits} 
               loggedIn={this.props.loggedIn} 
-              submitCarbon={this.props.onEmissionSave} 
+              submitCarbon={this.handleEmissionSave} 
               taxCategory={taxes.getCategoryName("road-travel")}
               taxes={this.props.taxes}
               fuels={this.props.fuels}

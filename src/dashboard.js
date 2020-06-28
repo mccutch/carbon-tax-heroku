@@ -183,6 +183,7 @@ export class Dashboard extends React.Component{
           profile={this.props.profile}
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}
+          fuels={this.props.fuels}
         />
     }
       
@@ -190,7 +191,7 @@ export class Dashboard extends React.Component{
       // Add -15px margin to sides of navbar to make full-width
       <div className='container-sm my-2 bg-light' > 
         <div style={{margin: "0px -15px 0px -15px"}} >
-        <Navbar bg="primary" variant="dark">
+        <Navbar bg="info" variant="dark">
           <Navbar.Brand >
             {this.props.user.username}
           </Navbar.Brand>

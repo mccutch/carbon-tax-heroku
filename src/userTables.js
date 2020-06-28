@@ -1,10 +1,8 @@
 import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { fetchObject } from './helperFunctions.js';
-
 import { TaxDetail, VehicleDetail, EmissionDetail } from './objectDetail.js';
 import { CreateTax, CreateVehicle } from './objectCreate.js';
-
 import * as getDate from './getDate.js';
 
 const PAGINATATION_RESULTS_PER_PAGE = 5 // change this with settings.py
@@ -58,6 +56,18 @@ export class TaxTable extends React.Component{
   constructor(props){
     super(props)
     this.buildRows=this.buildRows.bind(this)
+    this.createNew=this.createNew.bind(this)
+  }
+
+  createNew(){
+    let modal = 
+      <CreateTax 
+        buttonLabel={"+ New Tax"} 
+        refresh={this.props.refresh} 
+        existingTaxes={this.props.taxes}
+        hideModal={this.props.hideModal}
+      />
+    this.props.setModal(modal)
   }
 
   buildRows(){
@@ -65,10 +75,23 @@ export class TaxTable extends React.Component{
     let tableRows=[]
     if(taxes){
       for(let i=0; i<taxes.length; i++){
-        tableRows.push(<TaxDetail key={taxes[i].id} tax={taxes[i]} refresh={this.props.refresh} profile={this.props.profile}/>)
+        tableRows.push(
+          <TaxDetail 
+            key={taxes[i].id} 
+            tax={taxes[i]} 
+            allTaxes={this.props.taxes}
+            refresh={this.props.refresh} 
+            profile={this.props.profile}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
+          />)
       }
     }
-    tableRows.push(<tr><CreateTax buttonLabel={"+ New Tax"} refresh={this.props.refresh} existingTaxes={this.props.taxes}/></tr>)
+    tableRows.push(
+      <tr>
+        <button className="btn btn-outline-primary" onClick={this.createNew}>+ Create Tax</button>
+      </tr>
+    )
     return tableRows
   }
 
@@ -395,6 +418,7 @@ export class EmissionTable extends React.Component{
           displayUnits={this.props.displayUnits} 
           profile={this.props.profile} 
           taxes={this.props.taxes} 
+          fuels={this.props.fuels}
           refresh={this.props.refresh}
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}

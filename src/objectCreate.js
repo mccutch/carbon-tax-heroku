@@ -1,4 +1,5 @@
 import React from 'react';
+import {Modal} from 'react-bootstrap';
 import { OptionListInput } from './optionListInput.js';
 import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import { VehicleInput } from './vehicleInput.js';
@@ -19,9 +20,7 @@ export class CreateTax extends React.Component{
     }
 
     this.buildCategoryList=this.buildCategoryList.bind(this)
-    this.handleClick=this.handleClick.bind(this)
     this.handleChange=this.handleChange.bind(this)
-    this.handleSubmit=this.handleSubmit.bind(this)
     this.handlePostSuccess=this.handlePostSuccess.bind(this)
     this.handlePostFailure=this.handlePostFailure.bind(this)
     this.submitNewTax=this.submitNewTax.bind(this)
@@ -43,29 +42,10 @@ export class CreateTax extends React.Component{
     })
   }
 
-  handleClick(event){
-    if(event.target.name==="create"){
-      this.setState({createNew:true})
-    } else if(event.target.name==="cancel"){
-      this.setState({
-        createNew:false,
-        newName:"",
-        newPrice:0,
-        newCategory: this.state.categoryList[0],
-        error:false,
-      })
-    }
-  }
-
   handleChange(event){
     this.setState({
       [event.target.name]:event.target.value
     })
-  }
-
-  handleSubmit(event){
-    event.preventDefault()
-    this.submitNewTax()
   }
 
   validateNewTax(){
@@ -102,13 +82,8 @@ export class CreateTax extends React.Component{
   }
 
   handlePostSuccess(){
-    this.setState({
-      createNew:false,
-      newName: null,
-      newPrice: 0,
-      error:false,
-    })
     this.props.refresh()
+    this.props.hideModal()
   }
 
   handlePostFailure(){
@@ -116,10 +91,18 @@ export class CreateTax extends React.Component{
   }
 
   render(){
-    let display
-    if(this.state.createNew){
-      display = 
-        <div>
+    let errorDisplay
+    if(this.state.error){
+      errorDisplay=<p>{this.state.error}</p>
+    }
+
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create Tax</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {errorDisplay}
           <label>
             Name:
             <input type="text" name="newName" maxLength={MAX_NAME_LEN} onChange={this.handleChange}/>
@@ -133,25 +116,12 @@ export class CreateTax extends React.Component{
             Category:
             <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
           </label>
-          <br/>
-          <button type="button" className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
-          <button className="btn btn-outline-danger" name="cancel" onClick={this.handleClick}>Cancel</button>
-        </div>
-    } else {
-      display = <button className="btn btn-outline-primary" name="create" onClick={this.handleClick}>{this.props.buttonLabel}</button>
-    }
-
-    let errorDisplay
-    if(this.state.error){
-      errorDisplay=<p>{this.state.error}</p>
-    }
-
-    
-    return(
-      <td>
-        {errorDisplay}
-        {display}
-      </td>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
+          <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
     )
 
   }

@@ -1,7 +1,10 @@
-Add (split, economy, fuel) to emission model, display and edit
+Test unit conversions for emission edit
 
-Modals for inputs and edits (vehicles and taxes)
+Modal for route calculator and vehicle input
+
 Standardise modals with generic template
+
+Add (unpaid amount) and (+ new emission) buttons to navbar
 
 Create modal after new emission
 

@@ -1,9 +1,9 @@
 import React from 'react';
+import {Modal} from 'react-bootstrap';
 import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
 import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
-
 import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
 import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
@@ -17,16 +17,10 @@ class PasswordChange extends React.Component{
       errorMessage:"",
       strongPassword:false,
     }
-    this.cancel=this.cancel.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.submit=this.submit.bind(this)
     this.handleResponse=this.handleResponse.bind(this)
     this.updateFailure=this.updateFailure.bind(this)
-  }
-
-  cancel(event){
-    event.preventDefault()
-    this.props.cancel()
   }
 
   handleChange(event){
@@ -40,7 +34,7 @@ class PasswordChange extends React.Component{
   submit(event){
     event.preventDefault()
     if(!this.state.old_password || !this.state.new_password || !this.state.confirm_password){
-      this.setState({errorMessage:"Fill in required fields."})
+      this.setState({errorMessage:"Fill in all fields."})
       return
     }
 
@@ -84,23 +78,38 @@ class PasswordChange extends React.Component{
     let display
     if(this.state.success){
       display=
-        <div>
-          <p>Password changed successfully.</p>
-          <button name="cancelEdit" className="btn btn-outline-success" onClick={this.cancel}>Return to profile.</button>
-        </div>
+        <Modal show={true} onHide={this.props.hideModal}>
+          <Modal.Header className="bg-primary text-light" closeButton>
+            <Modal.Title>Edit Profile</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Password changed successfully.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-outline-success m-2" onClick={this.props.hideModal}>Close</button>
+          </Modal.Footer>
+        </Modal>
     } else {
       display = 
-        <form>
-          <p>{this.state.errorMessage}</p>
-          <input type="password" name="old_password" placeholder="Old password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
-          <br/>
-          <input type="password" name="new_password" placeholder="New password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
-          <br/>
-          <input type="password" name="confirm_password" placeholder="Confirm password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
-          <br/>
-          <button type="submit" className="btn btn-outline-primary" onClick={this.submit}>Submit</button>
-          <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.cancel}>Cancel</button>
-        </form>
+      <Modal show={true} onHide={this.props.hideModal} size="sm">
+        <Modal.Header className="bg-primary text-light" closeButton>
+          <Modal.Title>Edit Profile</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <p><strong>{this.state.errorMessage}</strong></p>
+            <input type="password" name="old_password" placeholder="Old password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+            <br/>
+            <input type="password" name="new_password" placeholder="New password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+            <br/>
+            <input type="password" name="confirm_password" placeholder="Confirm password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="submit" className="btn btn-primary m-2" onClick={this.submit}>Submit</button>
+          <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
     }
 
     return display
@@ -158,15 +167,15 @@ class DeleteUser extends React.Component{
   render(){
     let display
     if(!this.state.confirmDelete){
-      display = <button className="btn btn-outline-danger" name="delete" onClick={this.handleClick} >Delete account</button>
+      display = <button className="btn btn-outline-dark m-2" name="delete" onClick={this.handleClick} >Delete account</button>
     } else {
       display = 
         <div>
           <h4>Delete this account?</h4>
           <p>All stored data will be removed from the server and cannot be recovered.</p>
           <p>{this.state.errorMessage}</p>
-          <button className="btn btn-info" name="cancel" onClick={this.handleClick} >Cancel</button>
-          <button className="btn btn-danger" name="confirm" onClick={this.handleClick} >Confirm</button>
+          <button className="btn btn-info m-2" name="cancel" onClick={this.handleClick} >Cancel</button>
+          <button className="btn btn-danger m-2" name="confirm" onClick={this.handleClick} >Delete account</button>
         </div>
     }
 
@@ -182,7 +191,6 @@ class ProfileEdit extends React.Component{
       errorMessage:"",
     }
 
-    this.handleClick=this.handleClick.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.setConversionFactor=this.setConversionFactor.bind(this)
     this.saveProfileChanges=this.saveProfileChanges.bind(this)
@@ -190,20 +198,11 @@ class ProfileEdit extends React.Component{
     this.userUpdateSuccess=this.userUpdateSuccess.bind(this)
     this.profileUpdateSuccess=this.profileUpdateSuccess.bind(this)
     this.finishEdit=this.finishEdit.bind(this)
-  }
-
-  handleClick(event){
-    event.preventDefault()
-
-    if(event.target.name==="cancelEdit"){
-      this.props.cancel()
-    } else if(event.target.name==="saveChanges"){
-      this.saveProfileChanges()
-    }
+    this.validateInputs=this.validateInputs.bind(this)
+    this.uniqueResponse=this.uniqueResponse.bind(this)
   }
 
   handleChange(event){
-    
     this.setState({[event.target.name]: event.target.value})
 
     if(event.target.name==="currency"){
@@ -217,11 +216,42 @@ class ProfileEdit extends React.Component{
     this.setState({conversion_factor:factor})
   }
 
-  saveProfileChanges(){
+  validateInputs(){
     if(this.state.email && !this.state.validEmail){
       this.setState({errorMessage: validation.EMAIL_ERR})
       return
     }
+
+    if(this.state.email && this.state.email!==this.props.user.email){
+      let data = {
+        username:this.props.user.username,
+        email:this.state.email,
+      }
+      fetchObject({
+        method:'POST',
+        url:'/registration/check-unique/',
+        data:data,
+        onSuccess:this.uniqueResponse,
+        onFailure:this.updateFailure,
+        noAuth:true,
+      })
+
+    } else {
+      this.saveProfileChanges()
+    }
+  }
+
+  uniqueResponse(json){
+    console.log(json)
+    if(json.uniqueEmail===false){
+      this.setState({errorMessage:"Email is already in use."})
+    } else {
+      this.saveProfileChanges()
+    }
+  }
+
+  saveProfileChanges(){
+    
 
     this.setState({errorMessage:""})
     let profileData = {}
@@ -239,6 +269,10 @@ class ProfileEdit extends React.Component{
       if(this.state[profileAttributes[i]]){
         profileData[profileAttributes[i]]=this.state[profileAttributes[i]]
       }
+    }
+
+    if(Object.keys(profileData).length===0 && Object.keys(userData).length===0){
+      this.props.hideModal()
     }
 
     if(Object.keys(userData).length>0){
@@ -300,9 +334,11 @@ class ProfileEdit extends React.Component{
   }
 
   finishEdit(){
-    this.props.refresh()
+    /* PATCH on user and profile are separate, so check that both are complete. */ 
+    
     if(!this.state.updatingProfile && !this.state.updatingUser){
-      this.props.cancel()
+      this.props.refresh()
+      this.props.hideModal()
     }
   }
 
@@ -312,7 +348,12 @@ class ProfileEdit extends React.Component{
     let user=this.props.user
     let profile=this.props.profile
 
-    return(<div className="container bg-light">
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header className="bg-primary text-light" closeButton>
+          <Modal.Title>Edit Profile</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <form>
             <label>
               First name:
@@ -353,12 +394,16 @@ class ProfileEdit extends React.Component{
               Economy units:
               <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
             </label>
+            <br/>
+            <p><strong>{this.state.errorMessage}</strong></p>
           </form>
-          <p><strong>{this.state.errorMessage}</strong></p>
-          <button name="saveChanges" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
-          <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel</button>
+        </Modal.Body>
+        <Modal.Footer>
+          <button name="saveChanges" className="btn btn-primary m-2" onClick={this.validateInputs}>Save changes</button>
+          <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
           <DeleteUser user={user} logout={this.props.logout}/>
-        </div>
+        </Modal.Footer>
+      </Modal>
     )
   }
 }
@@ -368,59 +413,47 @@ class ProfileEdit extends React.Component{
 class ProfileDetails extends React.Component{
   constructor(props){
     super(props)
-    this.state = {
-      editProfile:false,
-      changePassword:false,
-    }
 
-    this.handleClick=this.handleClick.bind(this)
-    this.hideForms=this.hideForms.bind(this)
+    this.changePassword=this.changePassword.bind(this)
+    this.editProfile=this.editProfile.bind(this)
   }
 
-  handleClick(event){
-    if(event.target.name==="editProfile"){
-      this.setState({editProfile:true})
-    } else if(event.target.name==="changePassword"){
-      this.setState({changePassword:true})
-    } 
+  changePassword(){
+    let modal = 
+      <PasswordChange
+        hideModal={this.props.hideModal}
+      />
+    this.props.setModal(modal)
   }
 
-  hideForms(){
-    this.setState({
-      editProfile:false,
-      changePassword:false,
-    })
+  editProfile(){
+    let modal = 
+      <ProfileEdit
+        user={this.props.user} 
+        profile={this.props.profile}
+        refresh={this.props.refresh} 
+        logout={this.props.logout}
+        hideModal={this.props.hideModal}
+      />
+    this.props.setModal(modal)
   }
   
   render(){
     let user=this.props.user
     let profile=this.props.profile
 
-    let profileDisplay
-    if(this.state.changePassword){
-      profileDisplay = <PasswordChange cancel={this.hideForms}/>
-    } else if(this.state.editProfile){
-      profileDisplay = <ProfileEdit user={this.props.user} profile={this.props.profile} cancel={this.hideForms} refresh={this.props.refresh} logout={this.props.logout}/>
-        
-    } else {
-      profileDisplay=
-        <div className="row">
-          <div className="col-sm-5 bg-light mx-2 my-2">
-            <p>Name: {user.first_name} {user.last_name}</p>
-            <p>Location: {profile.location}</p>
-            <p>Date of Birth: {profile.date_of_birth}</p>
-            <p>Email: {user.email}</p>
-            <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
-            <p>Units: {units.string(profile.display_units)}</p>
-            <button name="editProfile" className="btn btn-outline-dark" onClick={this.handleClick}>Edit profile</button>
-            <button name="changePassword" className="btn btn-outline-dark" onClick={this.handleClick}>Change password</button>
-          </div>
-        </div>
-    }
-
     return(
-      <div>
-        {profileDisplay}
+      <div className="row">
+        <div className="col-sm-5 bg-light mx-2 my-2">
+          <p>Name: {user.first_name} {user.last_name}</p>
+          <p>Location: {profile.location}</p>
+          <p>Date of Birth: {profile.date_of_birth}</p>
+          <p>Email: {user.email}</p>
+          <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
+          <p>Units: {units.string(profile.display_units)}</p>
+          <button name="editProfile" className="btn btn-outline-dark m-2" onClick={this.editProfile}>Edit profile</button>
+          <button name="changePassword" className="btn btn-outline-dark m-2" onClick={this.changePassword}>Change password</button>
+        </div>
       </div>
     )
   }
@@ -438,6 +471,7 @@ export class HistoryLists extends React.Component{
                       profile={this.props.profile}
                       setModal={this.props.setModal}
                       hideModal={this.props.hideModal}
+                      fuels={this.props.fuels}
                     />
     let payments = <div className="container"><h5>Payment table not built yet.</h5></div>
 

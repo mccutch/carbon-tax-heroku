@@ -1,5 +1,6 @@
 import React from 'react';
 import * as getDate from './getDate.js';
+import * as units from './unitConversions.js';
 import { OptionListInput } from './optionListInput.js';
 import { fetchObject, getAttribute } from './helperFunctions.js';
 import { ObjectSelectionList } from './reactComponents.js';
@@ -38,7 +39,7 @@ export class CarbonCalculator extends React.Component{
       tripName:tripName,
       submissionFailed:false,
       relevantTaxes:[],
-      tax:{},
+      tax:null,
       split:1,
     }
 
@@ -54,7 +55,9 @@ export class CarbonCalculator extends React.Component{
 
   componentDidMount(){
     this.getFuelCarbon()
-    this.getRelevantTaxes()
+    if(this.props.loggedIn){
+      this.getRelevantTaxes()
+    }
   }
 
 
@@ -97,6 +100,7 @@ export class CarbonCalculator extends React.Component{
   }
 
   getTaxRate(){
+
     return(getAttribute(this.state.tax, this.props.taxes, "price_per_kg"))
   }
 
@@ -174,20 +178,14 @@ export class CarbonCalculator extends React.Component{
       failureDisplay = <p><strong>{this.state.submissionFailed}</strong></p>
     }
     
-    let display
+    let memberDisplay
     if(this.props.loggedIn){
-      display=
+      memberDisplay=
         <div>
-          <p> Fuel density: {this.state.carbonPerL}kgCO2/L </p>
-          <p> Distance: {this.props.data.distanceKm}km </p>
-          <p> Fuel economy: {this.props.data.lPer100km}L/100km </p>
-          <p> Split by: {split} </p>
           <p> Tax rate: {sym}{taxRate}/kg </p>
-          <p> Fuel density x Distance x  Fuel economy / (100 x Split) = <strong>{carbon}kg CO2</strong></p>
           <p> {carbon}kg x Tax rate = <strong>{sym}{price} carbon tax</strong></p>
           <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
           <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
-          <input defaultValue="1" type="number" name="split" onChange={this.handleChange}/>
           <ObjectSelectionList name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} label="name" value="id" />
           <br/>
           <button
@@ -199,16 +197,23 @@ export class CarbonCalculator extends React.Component{
           {failureDisplay}
         </div>
     } else {
-      display = 
+      memberDisplay = 
         <div>
-          <h1>{parseFloat(carbon).toFixed(2)} kg</h1>
           <p>Create an account to save emissions and calculate carbon tax.</p>
         </div>
     }
 
+    let distance = (units.distanceDisplay(this.props.data.distanceKm, this.props.displayUnits)).toFixed(1)
+    let economy = (units.convert(this.props.data.lPer100km, this.props.displayUnits)).toFixed(1)
+
     return(
       <div className="container bg-light">
-        {display}
+        <p> Fuel density: {this.state.carbonPerL}kg CO2/L </p>
+        <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
+        <p> Fuel economy: {economy}{units.string(this.props.displayUnits)}</p>
+        <p> Split by: <input defaultValue="1" type="number" name="split" onChange={this.handleChange}/></p>       
+        <p> Fuel density x (Distance/100) x  Fuel economy / Split = <strong>{carbon}kg CO2</strong></p>
+        {memberDisplay}
       </div>
     )
     

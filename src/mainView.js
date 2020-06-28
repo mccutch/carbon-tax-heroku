@@ -15,23 +15,10 @@ export class MainView extends React.Component{
 
     this.selectView=this.selectView.bind(this)
     this.hideDisplay=this.hideDisplay.bind(this)
-    this.handleEmissionSave=this.handleEmissionSave.bind(this)
   }
-
 
   hideDisplay(){
-    this.setState({
-      newEmission: null,
-    })
     this.props.setView("home")
-  }
-
-  handleEmissionSave(json){
-    this.hideDisplay()
-    this.props.refresh()
-    this.setState({
-      newEmission: json,
-    })
   }
 
   selectView(event){
@@ -60,6 +47,9 @@ export class MainView extends React.Component{
                   profile={this.props.profile}
                   refresh={this.props.refresh}
                   onEmissionSave={this.handleEmissionSave}
+                  setModal={this.props.setModal}
+                  hideModal={this.props.hideModal}
+                  selectView={this.selectView}
                 />
     } else if(this.props.display==="dashboard"){
       display = <Dashboard 
