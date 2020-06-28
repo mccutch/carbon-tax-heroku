@@ -306,7 +306,7 @@ export class VehicleDetail extends React.Component{
     }
 
     this.useVehicle=this.useVehicle.bind(this)
-    this.edit=this.edit.bind(this)  
+    this.edit=this.edit.bind(this)
   }
 
   edit(){
@@ -323,7 +323,7 @@ export class VehicleDetail extends React.Component{
 
 
   useVehicle(){
-    this.props.submitEconomy(this.props.vehicle.economy, this.getFuelId(this.props.vehicle.fuel), this.props.vehicle.name)
+    this.props.submitEconomy(this.props.vehicle.economy, this.props.vehicle.fuel, this.props.vehicle.name)
   }
 
   render(){
