@@ -119,3 +119,16 @@ export function displayUnitString(displayUnits){
     return "Unknown economy units.";
   }
 }
+
+export function units(displayUnits){
+  // Shorthand: string(units)
+  if (displayUnits === METRIC){
+    return "Metric";
+  } else if (displayUnits === UK){
+    return "UK";
+  } else if (displayUnits === US){
+    return "US";
+  } else {
+    return "Unknown economy units.";
+  }
+}

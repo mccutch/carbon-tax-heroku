@@ -210,7 +210,11 @@ class App extends React.Component {
 
     } else if(nav==="home"){
       this.setMainView("home")
+    
+    } else if(nav==="toggleUnits"){
+      this.toggleDisplayUnits()
     }
+
   }
   
   
@@ -242,6 +246,7 @@ class App extends React.Component {
         <NavBar 
           loggedIn={this.state.loggedIn}
           onClick={this.handleNavClick}
+          displayUnits={this.state.displayUnits}
         />
         {modal}
         <div>

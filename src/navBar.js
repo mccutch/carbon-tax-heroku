@@ -1,5 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import * as units from './unitConversions.js';
+
 export class NavBar extends React.Component{
   constructor(props){
     super(props)
@@ -29,6 +31,7 @@ export class NavBar extends React.Component{
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" onClick={this.handleClick}>Login</Nav.Link>
     let signUp = <Nav.Link key="signUp" name="register" onClick={this.handleClick}>Sign up</Nav.Link>
+    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" onClick={this.handleClick}>Change Units ({units.units(this.props.displayUnits)})</Nav.Link>
 
     let navItems
     if(this.props.loggedIn){
@@ -36,7 +39,6 @@ export class NavBar extends React.Component{
         <Nav className="mr-auto">
           {dashboard}
           {newEmission}
-          {newPayment}
           {logout}
         </Nav>  
     } else {
@@ -45,6 +47,7 @@ export class NavBar extends React.Component{
           {login}
           {signUp}
           {demoUser}
+          {toggleUnits}
         </Nav>
     }
 
