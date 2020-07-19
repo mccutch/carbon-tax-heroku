@@ -11,12 +11,12 @@ const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
 class PlaceInput extends React.Component{
 
   render(){
-    console.log(GOOGLE_API_KEY)
     return(
-      <input  type="text"
-              onChange={this.props.onChange} 
-              name={this.props.name}
-              placeholder={this.props.label}
+      <input  
+        type="text"
+        onChange={this.props.onChange} 
+        name={this.props.name}
+        placeholder={this.props.label}
       />
     );
   }
@@ -124,6 +124,7 @@ export class RouteCalculator extends React.Component{
       distance: 0,
       directionsSuffix: "units=metric&origin=melbourne&destination=arapiles&key="+GOOGLE_API_KEY,
       inputErrorMessage: "",
+      searchInProgress:false,
       routeFound:false,
       returnTrip:false,
     }
@@ -153,6 +154,7 @@ export class RouteCalculator extends React.Component{
   }
 
   receiveQuery(origin, destination, via){
+    this.setState({searchInProgress:true})
     let orig_url = encodeURIComponent(origin);
     let dest_url = encodeURIComponent(destination);
 
@@ -181,6 +183,7 @@ export class RouteCalculator extends React.Component{
       .then(
         (result) => {
             console.log(result)
+            this.setState({searchInProgress:false})
             //Check valid inputs
             switch(result.status){
               case "OK": 
@@ -273,10 +276,13 @@ export class RouteCalculator extends React.Component{
       submitDisplay=
         <div className="row">
           <button class = "btn btn-outline-warning m-2" onClick={this.setReturnTrip}>{returnDisplay}</button>
-          <button class = "btn btn-success m-2" onClick={this.submitDistance}>{distanceString}</button>
+          <button class = "btn btn-success m-2" onClick={this.submitDistance}><strong>{distanceString}</strong></button>
         </div>
-    } else {
-      submitDisplay = <p>Loading distance can take ~10s on some days. Submit button will appear here.</p>
+    }
+
+    let loadingDisplay
+    if(this.state.searchInProgress){
+      loadingDisplay = <p><strong>Loading results... This sometimes takes a while.</strong></p>
     }
 
     return(
@@ -286,6 +292,7 @@ export class RouteCalculator extends React.Component{
         </Modal.Header>
         <Modal.Body>
           <RouteInputFields submitQuery={this.receiveQuery}/>
+          {loadingDisplay}
           <RouteResultView 
             parameters={this.state.directionsSuffix}
             //submitDistance={this.props.submitDistance}

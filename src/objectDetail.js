@@ -324,6 +324,9 @@ export class VehicleDetail extends React.Component{
 
   useVehicle(){
     this.props.submitEconomy(this.props.vehicle.economy, this.props.vehicle.fuel, this.props.vehicle.name)
+    if(this.props.hideModal){
+      this.props.hideModal()
+    }
   }
 
   render(){

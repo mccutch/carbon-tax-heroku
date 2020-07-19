@@ -2,6 +2,7 @@ import React from 'react';
 import {VehicleInput} from './vehicleInput.js';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
+import {Modal} from 'react-bootstrap';
 
 
 export class EconomyInput extends React.Component{
@@ -9,14 +10,12 @@ export class EconomyInput extends React.Component{
     super(props);
 
     this.state = {
-      displayUserVehicles: false,
       lPer100Km: null,
       fuelId: null,
       name: "",
       vehicleWillSave: false,
     }
     this.showUserVehicles=this.showUserVehicles.bind(this)
-    this.hideUserVehicles=this.hideUserVehicles.bind(this)
 
     this.saveVehicle=this.saveVehicle.bind(this)
     this.cancelSaveVehicle=this.cancelSaveVehicle.bind(this)
@@ -28,15 +27,27 @@ export class EconomyInput extends React.Component{
   }
 
   showUserVehicles(){
-    this.setState({
-      displayUserVehicles:true,
-    })
-  }
+    let vehicleTable = 
+      <VehicleTable
+        displayUnits={this.props.displayUnits}
+        vehicles={this.props.vehicles}
+        fuels={this.props.fuels}
+        submitEconomy={this.receiveUserVehicle}
+        hideModal={this.props.hideModal}
+        refresh={this.props.refresh}
+      />
 
-  hideUserVehicles(){
-    this.setState({
-      displayUserVehicles:false,
-    })
+    let modal = 
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>My Vehicles</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {vehicleTable}
+        </Modal.Body>
+      </Modal>
+
+    this.props.setModal(modal)
   }
 
   saveVehicle(){
@@ -73,7 +84,6 @@ export class EconomyInput extends React.Component{
     }, this.submitEconomy)
   }
 
-
   submitEconomy(){
     this.props.submitEconomy(this.state.lPer100Km, this.state.fuelId)
   }
@@ -90,19 +100,9 @@ export class EconomyInput extends React.Component{
       />
 
     let saveDisplay
-    let userVehicles
     let myVehiclesBtn
 
     if(this.props.loggedIn){
-      
-      userVehicles = 
-      <VehicleTable
-        displayUnits={this.props.displayUnits}
-        vehicles={this.props.vehicles}
-        fuels={this.props.fuels}
-        submitEconomy={this.receiveUserVehicle}
-        refresh={this.props.refresh}
-      />
 
       myVehiclesBtn = <button className="btn btn-outline-info m-2" onClick={this.showUserVehicles}>Use a saved vehicle</button>
 
@@ -128,26 +128,12 @@ export class EconomyInput extends React.Component{
     if(this.state.lPer100Km && this.state.fuelId){
       continueDisplay = <button className="btn btn-success m-2" onClick={this.submitEconomy}>Continue to carbon calculator</button>
     }
-
-    let display
-    if(this.state.displayUserVehicles){
-      display = 
-        <div>
-          {userVehicles}
-          <button className="btn btn-outline-danger m-2" onClick={this.hideUserVehicles}>Return to input</button>
-        </div>
-    } else {
-      display = 
-        <div>
-          {vehicleInput}
-          {myVehiclesBtn}
-          {saveDisplay}
-        </div>
-    }
     
     return(
       <div className='bg-light py-2'>
-        {display}
+        {vehicleInput}
+        {myVehiclesBtn}
+        {saveDisplay}
         {continueDisplay}
       </div>
     )
