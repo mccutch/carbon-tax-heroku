@@ -1,7 +1,12 @@
 import React from 'react';
-import { createObject } from './helperFunctions.js';
+import { createObject, truncate } from './helperFunctions.js';
 
-const DEFAULT_VEHICLE_NAME = "My Vehicle"
+
+
+import {
+  DEFAULT_VEHICLE_NAME,
+  MAX_VEHICLE_NAME_LEN,
+} from './constants.js';
 
 export class VehicleSaveForm extends React.Component{
   /*
@@ -48,7 +53,7 @@ export class VehicleSaveForm extends React.Component{
     }
 
     let vehicleData = {
-      "name":saveAs,
+      "name":truncate(saveAs,MAX_VEHICLE_NAME_LEN),
       "economy":`${parseFloat(this.props.lPer100Km).toFixed(3)}`,
       "fuel":`${this.props.fuelId}`
     }

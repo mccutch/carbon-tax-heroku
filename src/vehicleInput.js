@@ -2,6 +2,7 @@ import React from 'react';
 import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
 import { ObjectSelectionList } from './reactComponents.js';
+import {Modal, Button} from 'react-bootstrap';
 
 class ListInput extends React.Component {
   constructor(props){
@@ -256,34 +257,23 @@ class VehicleResult extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      cityProportion: 0.55,
+      cityProportion:0.55,
     }
+
     this.handleSliderChange = this.handleSliderChange.bind(this);
-    this.findEconomy=this.findEconomy.bind(this)
   }
 
   componentDidMount(){
-    this.returnVehicle()
+    this.props.returnCityProportion(this.state.cityProportion)
   }
 
   handleSliderChange(event){
-    this.setState({cityProportion: event.target.value}, this.returnVehicle)
-  }
-
-  returnVehicle(){
-    let vehicle = this.props.data
-    this.props.returnVehicle(this.findEconomy(), vehicle.fuelType, vehicle.name)
-  }
-
-  findEconomy(){
-    /* return vehicle economy based on slider input */
-    let economy = (this.state.cityProportion * this.props.data.cityLper100Km) 
-                  + (1-this.state.cityProportion)*this.props.data.highwayLper100Km
-    return economy
+    this.props.returnCityProportion(event.target.value)
+    this.setState({cityProportion:event.target.value})
   }
 
   render(){
-    let estimatedEconomy = units.convert(this.findEconomy(),this.props.displayUnits);
+    let estimatedEconomy = units.convert(this.props.data.avgLper100Km, this.props.displayUnits);
     let highwayEconomy = units.convert(this.props.data.highwayLper100Km, this.props.displayUnits);
     let cityEconomy = units.convert(this.props.data.cityLper100Km, this.props.displayUnits);
     let unitText = units.displayUnitString(this.props.displayUnits);
@@ -341,11 +331,14 @@ export class VehicleForm extends React.Component {
       vehicleId: null,
       highwayLper100Km: 0,
       cityLper100Km: 0,
+      avgLper100Km: 0,
       fuelType: null,
     }
 
     this.normaliseFuelType = this.normaliseFuelType.bind(this)
     this.receiveVehicleId = this.receiveVehicleId.bind(this)
+    this.setAvgEconomy = this.setAvgEconomy.bind(this)
+    this.useVehicle = this.useVehicle.bind(this)
   }
 
   normaliseFuelType(fuelRaw){
@@ -360,6 +353,7 @@ export class VehicleForm extends React.Component {
         vehicleId: null,
         highwayLper100Km: 0,
         cityLper100Km: 0,
+        avgLper100Km: 0,
         fuelType: null,
       })
       return;
@@ -397,26 +391,42 @@ export class VehicleForm extends React.Component {
     ) 
   }
 
+  setAvgEconomy(cityProportion){
+    this.setState({avgLper100Km:(cityProportion*this.state.cityLper100Km) + (1-cityProportion)*this.state.highwayLper100Km})
+  }
+
+  useVehicle(){
+    this.props.returnVehicle(this.state.avgLper100Km, this.state.fuelType, this.state.name)
+    this.props.hideModal()
+  }
+
   render(){
     let resultDisplay
+    let useVehicleButton
     if(this.state.vehicleId){
       resultDisplay = 
         <VehicleResult  
           data = {this.state}
-          returnVehicle = {this.props.returnVehicle}
           displayUnits = {this.props.displayUnits}
+          returnCityProportion = {this.setAvgEconomy}
         />
+
+      useVehicleButton = <button className="btn btn-outline-primary" onClick={this.useVehicle}>Use vehicle</button>
     }
 
     return(
-      <div>
-        <div className="container">
-          <h2>US Database Vehicle Input</h2>  
-        </div>
-        <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
-        {resultDisplay}
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideForm}>Return to manual entry</button>
-      </div>
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>US Database Vehicle Input</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
+          {resultDisplay}
+        </Modal.Body>
+        <Modal.Footer>
+          {useVehicleButton}
+        </Modal.Footer>
+      </Modal>
     );
   }
 }
@@ -466,7 +476,7 @@ export class VehicleInput extends React.Component{
     let fuelId
     for(let i in this.props.fuels){
       if(fuelName===this.props.fuels[i].name){
-        fuelId=parseInt(i)+1
+        fuelId=this.props.fuels[i]['id']
         break
       }
     }
@@ -476,6 +486,9 @@ export class VehicleInput extends React.Component{
       fuelId:fuelId,
       name:name,
     }, this.returnEconomy)
+
+    let economyInput = document.getElementById("economy")
+    economyInput.value = parseFloat(units.convert(lPer100Km, this.props.displayUnits)).toFixed(1)
   }
 
   hideForm(){
@@ -488,12 +501,12 @@ export class VehicleInput extends React.Component{
   }
 
   showForm(){
-    this.setState({
-      vehicleLookup:true,
-      lPer100Km:null,
-      fuelId:null,
-      name:"",
-    }, this.returnEconomy)
+    let modal = <VehicleForm 
+                  returnVehicle={this.receiveVehicle}
+                  displayUnits={this.props.displayUnits}
+                  hideModal={this.props.hideModal}
+                />
+    this.props.setModal(modal)
   }
 
   returnEconomy(){
@@ -509,37 +522,22 @@ export class VehicleInput extends React.Component{
   }
 
   render(){
-
-
-    let display
-    if(!this.state.vehicleLookup){
-      display=
-        <div>
-          <label>
-            <input  
-              type="number"
-              onChange={this.handleChange} 
-              name="economy"
-              placeholder="Fuel economy"
-            />
-            {units.displayUnitString(this.props.displayUnits)}
-          </label>
-          <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" />
-          <br/>
-          <button className="btn btn-outline-info m-2" onClick={this.showForm}>Look up US vehicle</button>
-        </div>
-      
-    } else {
-      display = 
-        <VehicleForm 
-          returnVehicle={this.receiveVehicle}
-          displayUnits={this.props.displayUnits}
-          hideForm={this.hideForm}
-        />
-    }
-
     return(
-      display
+      <div>
+        <label>
+          <input  
+            id="economy"
+            type="number"
+            onChange={this.handleChange} 
+            name="economy"
+            placeholder="Fuel economy"
+          />
+          {units.displayUnitString(this.props.displayUnits)}
+        </label>
+        <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" />
+        <br/>
+        <button className="btn btn-outline-info m-2" onClick={this.showForm}>Look up US vehicle</button>
+      </div>
     )
   }
 }

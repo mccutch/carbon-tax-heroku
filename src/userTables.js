@@ -133,7 +133,17 @@ export class VehicleTable extends React.Component{
         />
       )
     }
-    tableRows.push(<tr><CreateVehicle displayUnits={this.props.displayUnits} fuels={this.props.fuels} refresh={this.props.refresh}/></tr>)
+    tableRows.push(
+                  <tr>
+                    <CreateVehicle 
+                      displayUnits={this.props.displayUnits} 
+                      fuels={this.props.fuels} 
+                      refresh={this.props.refresh}
+                      setModal={this.props.setModal}
+                      hideModal={this.props.hideModal}
+                    />
+                  </tr>
+                  )
     return tableRows
   }
 

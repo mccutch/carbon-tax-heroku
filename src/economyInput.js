@@ -85,6 +85,8 @@ export class EconomyInput extends React.Component{
         displayUnits={this.props.displayUnits} 
         fuels={this.props.fuels}
         returnEconomy={this.receiveEconomy}
+        setModal={this.props.setModal}
+        hideModal={this.props.hideModal}
       />
 
     let saveDisplay

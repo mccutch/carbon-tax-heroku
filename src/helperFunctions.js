@@ -13,6 +13,14 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+export function truncate(str, maxLen){
+  if(str.length > maxLen){
+    return str.substring(0,maxLen)
+  } else {
+    return str
+  }
+}
+
 
 export function getAttribute(id, objectList, attribute){
   if(!id){

@@ -193,6 +193,8 @@ export class CreateVehicle extends React.Component{
             displayUnits={this.props.displayUnits} 
             fuels={this.props.fuels}
             returnEconomy={this.receiveInputs}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
           />
           <VehicleSaveForm 
             cancel={this.cancelNewVehicle}

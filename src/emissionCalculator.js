@@ -158,6 +158,8 @@ export class EmissionCalculator extends React.Component{
                           vehicles={this.props.vehicles}
                           fuels={this.props.fuels}
                           refresh={this.props.refresh}
+                          setModal={this.props.setModal}
+                          hideModal={this.props.hideModal}
                         />
       }
       tabDisplay = economyInput
@@ -185,6 +187,8 @@ export class EmissionCalculator extends React.Component{
                             submitDistance={this.handleSubmitDistance}
                             displayUnits={displayUnits}
                             submitted={this.state.distanceSubmitted}
+                            setModal={this.props.setModal}
+                            hideModal={this.props.hideModal}
                           />
       }
       tabDisplay = distanceDisplay

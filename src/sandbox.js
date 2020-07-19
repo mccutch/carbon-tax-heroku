@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {fetchObject, convertCurrency} from './helperFunctions.js';
+import {fetchObject, convertCurrency, truncate} from './helperFunctions.js';
 
 import {CurrencySelection, ObjectSelectionList} from './reactComponents.js';
 
@@ -15,6 +15,7 @@ export class Sandbox extends React.Component{
     this.handleChange = this.handleChange.bind(this)
     this.convert=this.convert.bind(this)
     this.receive=this.receive.bind(this)
+    this.truncateString=this.truncateString.bind(this)
   }
 
   handleChange(event){
@@ -37,7 +38,9 @@ export class Sandbox extends React.Component{
     })
   }
   
-
+  truncateString(event){
+    console.log(truncate(event.target.value, 4))
+  }
   
 
   render(){
@@ -45,6 +48,7 @@ export class Sandbox extends React.Component{
     return(
       <div className="container bg-light">
         <h1>Sandbox</h1>
+        <input onChange={this.truncateString} type="text"/>
       </div>
     )
   }

@@ -2,8 +2,9 @@ import React from 'react';
 import * as getDate from './getDate.js';
 import * as units from './unitConversions.js';
 import { OptionListInput } from './optionListInput.js';
-import { fetchObject, getAttribute } from './helperFunctions.js';
+import { fetchObject, getAttribute, truncate } from './helperFunctions.js';
 import { ObjectSelectionList } from './reactComponents.js';
+import { MAX_EMISSION_NAME_LEN } from './constants.js';
 
 
 
@@ -13,7 +14,6 @@ export class CarbonCalculator extends React.Component{
 
     // Set default trip name for save
     let tripName
-    let maxLen = 60
     if(this.props.data.origin){
       let origin = this.props.data.origin
       let destination = this.props.data.destination
@@ -25,10 +25,6 @@ export class CarbonCalculator extends React.Component{
         tripName += " return"
       }
 
-      if(tripName.length>=maxLen){
-        console.log("Route name too long")
-        tripName = tripName.substring(0,maxLen-1)
-      } 
     } else {
       tripName="Default Trip Name"
     }
@@ -134,15 +130,13 @@ export class CarbonCalculator extends React.Component{
     }
 
     let emissionData = {
-      "name": this.state.tripName,
+      "name": truncate(this.state.tripName, MAX_EMISSION_NAME_LEN),
       "date": date,
       "distance": parseFloat(this.props.data.distanceKm).toFixed(3),
       "economy": this.props.data.lPer100km.toString(),
-      //"fuel": `/fuel/${this.props.data.fuelId}/`,
       "fuel": `${this.props.data.fuelId}`,
       "split": parseFloat(this.state.split).toFixed(2),
       "co2_output_kg": parseFloat(this.state.carbonKg).toFixed(3),
-      //"tax_type": `/tax/${this.state.tax}/`,
       "tax_type": `${this.state.tax}`,
       "price": parseFloat(this.calculatePrice()).toFixed(2),
     }

@@ -2,6 +2,7 @@ import React from 'react';
 import './index.css';
 //import {keys} from './secret_api_keys.js';
 import * as units from './unitConversions.js';
+import {Modal} from 'react-bootstrap';
 
 //const GOOGLE_API_KEY = keys.google_api_key;
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
@@ -30,7 +31,7 @@ class RouteInputFields extends React.Component{
       via: "",
     }
     this.handleChange=this.handleChange.bind(this);
-    this.handleClick=this.handleClick.bind(this);
+    this.checkRoute=this.checkRoute.bind(this);
   }
 
   handleChange(event){
@@ -46,7 +47,8 @@ class RouteInputFields extends React.Component{
     }   
   }
 
-  handleClick(){
+  checkRoute(event){
+    event.preventDefault()
     if(this.state.origin && this.state.destination){
       this.props.submitQuery(this.state.origin, this.state.destination, this.state.via)
     }
@@ -54,12 +56,12 @@ class RouteInputFields extends React.Component{
 
   render(){
     return(
-      <div>
+      <form>
         <PlaceInput label="Origin" name="origin" onChange={this.handleChange} />
         <PlaceInput label="Destination" name="destination" onChange={this.handleChange} />
         <PlaceInput label="Via" name="via" onChange={this.handleChange} />
-        <button class = "btn btn-outline-secondary" onClick={this.handleClick}>Check Route</button>
-      </div>
+        <button class="btn btn-primary m-2" onClick={this.checkRoute}>Check Route</button>
+      </form>
     );
   }
 }
@@ -74,11 +76,11 @@ class MapView extends React.Component{
         url_suffix = this.props.parameters;
       } else {
         // Default map display
-        url_suffix = "units=imperial&origin=melbourne&destination=arapiles&key="+GOOGLE_API_KEY
+        url_suffix = "units=imperial&origin=melbourne&destination=arapiles%20victoria&key="+GOOGLE_API_KEY
       }
 
     return(
-      <div className="pt-3">
+      <div className="py-3">
         <iframe title="mapDisplay" width="100%" height="100%" frameBorder="0"
                 src={base_url+url_suffix}
                 allowFullScreen
@@ -90,55 +92,21 @@ class MapView extends React.Component{
 }
 
 class RouteResultView extends React.Component{
-  constructor(props){
-    super(props);
-    this.handleClick=this.handleClick.bind(this)
-    this.setReturnTrip=this.setReturnTrip.bind(this)
-  }
-
-  handleClick(){
-    if(this.props.origin && this.props.destination && this.props.distance){
-      this.props.submitDistance(this.props.origin, this.props.destination, this.props.distance, this.props.returnTrip);
-    } else {
-      return;
-    }
-  }
-
-  setReturnTrip(){
-    if(this.props.returnTrip){
-      this.props.setReturnTrip(false)
-    } else {
-      this.props.setReturnTrip(true)
-    }
-  }
 
   render(){
 
-    let returnDisplay
-    if(this.props.returnTrip){
-      returnDisplay="One way?"
-    } else {
-      returnDisplay="Return trip?"
-    }
+    let mapView = <MapView parameters={this.props.parameters}/>
 
-    let submitDisplay
+    let display
     if(this.props.routeFound){
-      let distance = units.distanceDisplay(this.props.distance, this.props.displayUnits)
-      submitDisplay=
-        <div>
-          <h3>Distance: {parseFloat(distance).toFixed(1)}{units.distanceString(this.props.displayUnits)}</h3>
-          <button class = "btn btn-outline-warning" onClick={this.setReturnTrip}>{returnDisplay}</button>
-          <button class = "btn btn-outline-primary" onClick={this.handleClick}>Use this distance</button>
-        </div>
-    } else {
-      submitDisplay = <p>Loading distance can take ~10s on some days. Submit button will appear here.</p>
+      display = mapView
+    } else if(this.props.inputError){
+      display = <p>{this.props.inputError}</p>
     }
     
     return(
       <div className="container">
-        <MapView parameters={this.props.parameters}/>
-        {submitDisplay}
-        <button className="btn btn-outline-danger" onClick={this.props.hideCalculator}>Return to manual entry</button>
+        {display}
       </div>
     );
   }
@@ -162,15 +130,21 @@ export class RouteCalculator extends React.Component{
 
     this.receiveQuery=this.receiveQuery.bind(this)
     this.setReturnTrip=this.setReturnTrip.bind(this)
+    this.submitDistance=this.submitDistance.bind(this)
   }
 
-  setReturnTrip(bool_val){
-    if(bool_val && !this.state.returnTrip){
+  submitDistance(){
+    this.props.submitDistance(this.state.origin, this.state.destination, this.state.distance, this.state.returnTrip)
+    this.props.hideModal()
+  }
+
+  setReturnTrip(){
+    if(!this.state.returnTrip){
       this.setState({
         returnTrip:true,
         distance:this.state.distance*2,
       })
-    } else if(!bool_val && this.state.returnTrip){
+    } else if(this.state.returnTrip){
       this.setState({
         returnTrip:false,
         distance:this.state.distance/2,
@@ -284,23 +258,50 @@ export class RouteCalculator extends React.Component{
 
   render(){
 
+    let returnDisplay
+    if(this.state.returnTrip){
+      returnDisplay="One way?"
+    } else {
+      returnDisplay="Return trip?"
+    }
+
+    let distance = units.distanceDisplay(this.state.distance, this.props.displayUnits)
+    let distanceString = parseFloat(distance).toFixed(1)+units.distanceString(this.props.displayUnits)
+
+    let submitDisplay
+    if(this.state.routeFound){
+      submitDisplay=
+        <div className="row">
+          <button class = "btn btn-outline-warning m-2" onClick={this.setReturnTrip}>{returnDisplay}</button>
+          <button class = "btn btn-success m-2" onClick={this.submitDistance}>{distanceString}</button>
+        </div>
+    } else {
+      submitDisplay = <p>Loading distance can take ~10s on some days. Submit button will appear here.</p>
+    }
 
     return(
-      <div className="container bg-light" >
-        <RouteInputFields submitQuery={this.receiveQuery}/>
-        <RouteResultView 
-          parameters={this.state.directionsSuffix}
-          submitDistance={this.props.submitDistance}
-          origin={this.state.origin}
-          destination={this.state.destination}
-          distance={this.state.distance}
-          hideCalculator={this.props.hideCalculator}
-          routeFound={this.state.routeFound}
-          displayUnits={this.props.displayUnits}
-          setReturnTrip={this.setReturnTrip}
-          returnTrip={this.state.returnTrip}
-        />
-      </div>
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Route Calculator</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <RouteInputFields submitQuery={this.receiveQuery}/>
+          <RouteResultView 
+            parameters={this.state.directionsSuffix}
+            //submitDistance={this.props.submitDistance}
+            //origin={this.state.origin}
+            //destination={this.state.destination}
+            //distance={this.state.distance}
+            routeFound={this.state.routeFound}
+            inputError={this.state.inputErrorMessage}
+            //displayUnits={this.props.displayUnits}
+            //returnTrip={this.state.returnTrip}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          {submitDisplay}
+        </Modal.Footer>
+      </Modal>
     );
   }
 }

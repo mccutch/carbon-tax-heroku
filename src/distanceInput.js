@@ -8,29 +8,29 @@ export class DistanceInput extends React.Component{
     super(props)
 
     this.state = {
-      displayRouteCalculator: false,
       distance: 0,
     }
 
     this.handleClick = this.handleClick.bind(this)
-    this.hideRouteCalculator = this.hideRouteCalculator.bind(this)
+    this.showRouteCalculator = this.showRouteCalculator.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
 
   handleClick(event){
-    if(event.target.name==="displayRouteCalculator"){
-      this.setState({displayRouteCalculator:true})
-    } else if(event.target.name==="submitDistance"){
-
+    if(event.target.name==="submitDistance"){
       if(this.state.distance>0){
         this.props.submitDistance("","",units.convertToKm(this.state.distance, this.props.displayUnits), false)
       }
     }
   }
 
-
-  hideRouteCalculator(){
-    this.setState({displayRouteCalculator:false})
+  showRouteCalculator(){
+    let modal = <RouteCalculator  
+                  submitDistance={this.props.submitDistance}
+                  displayUnits={this.props.displayUnits}
+                  hideModal={this.props.hideModal}
+                />
+    this.props.setModal(modal)
   }
 
   handleChange(event){
@@ -43,31 +43,7 @@ export class DistanceInput extends React.Component{
 
 
   render(){
-
     let placeholderText = `Distance (${units.distanceString(this.props.displayUnits)})`
-
-    let display
-    if(this.state.displayRouteCalculator){
-      display = <RouteCalculator  
-                  submitDistance={this.props.submitDistance}
-                  displayUnits={this.props.displayUnits}
-                  hideCalculator={this.hideRouteCalculator}
-                />
-    } else {
-      display = <div>
-                  <input  
-                    type="number"
-                    onChange={this.handleChange} 
-                    name="distance"
-                    placeholder={placeholderText}
-                  />
-                  <button
-                    name="displayRouteCalculator"
-                    className=" btn btn-outline-info m-2"
-                    onClick={this.handleClick}
-                  >Route calculator</button>
-                </div>
-    }
 
     let submitDisplay 
     if(this.state.distance){
@@ -76,7 +52,17 @@ export class DistanceInput extends React.Component{
 
     return(
       <div className="container bg-light py-2">
-        {display}
+        <input  
+          type="number"
+          onChange={this.handleChange} 
+          name="distance"
+          placeholder={placeholderText}
+        />
+        <button
+          name="displayRouteCalculator"
+          className=" btn btn-outline-info m-2"
+          onClick={this.showRouteCalculator}
+        >Route calculator</button>
         {submitDisplay}
       </div>
     )
