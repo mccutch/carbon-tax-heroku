@@ -16,6 +16,15 @@ export class NavBar extends React.Component{
 
 
   render(){
+    let summary, sym, conversion, balance
+    if(this.props.stats && this.props.profile){
+      summary = this.props.stats.summary
+      conversion = this.props.profile.conversion_factor
+      sym = this.props.profile.currency_symbol
+      balance = parseFloat(conversion*(summary.total_tax-summary.total_paid)).toFixed(2)
+    }
+
+
     // All users
     let about = <Nav.Link key="about" name="about" onClick={this.handleClick}>About</Nav.Link>
     let contact = <Nav.Link key="contact" name="contact" onClick={this.handleClick}>Contact</Nav.Link>
@@ -27,22 +36,29 @@ export class NavBar extends React.Component{
     let newEmission = <Nav.Link key="newEmission" name="newEmission" onClick={this.handleClick}>New Emission</Nav.Link>
     let newPayment = <Nav.Link key="newPayment" name="newPayment" onClick={this.handleClick}>New Payment</Nav.Link>
     let logout = <Nav.Link key="logout" name="logout" onClick={this.handleClick}>Logout</Nav.Link>
+    let outstanding = <Nav.Link key="outstanding" name="dashboard" onClick={this.handleClick}>Balance: {sym}{balance}</Nav.Link> ///Change to payment page
 
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" onClick={this.handleClick}>Login</Nav.Link>
     let signUp = <Nav.Link key="signUp" name="register" onClick={this.handleClick}>Sign up</Nav.Link>
     let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" onClick={this.handleClick}>Change Units ({units.units(this.props.displayUnits)})</Nav.Link>
 
-    let navItems
+    let navLeft
+    let navRight
     if(this.props.loggedIn){
-      navItems = 
+      navLeft = 
         <Nav className="mr-auto">
           {dashboard}
           {newEmission}
-          {logout}
+          
         </Nav>  
+      navRight = 
+        <Nav className="mr-auto">
+          {outstanding}
+          {logout}
+        </Nav>
     } else {
-      navItems = 
+      navLeft = 
         <Nav className="mr-auto">
           {login}
           {signUp}
@@ -66,7 +82,8 @@ export class NavBar extends React.Component{
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          {navItems}
+          {navLeft}
+          {navRight}
         </Navbar.Collapse>
       </Navbar>
     )

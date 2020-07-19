@@ -247,6 +247,8 @@ class App extends React.Component {
           loggedIn={this.state.loggedIn}
           onClick={this.handleNavClick}
           displayUnits={this.state.displayUnits}
+          profile={this.state.profile}
+          stats={this.state.stats}
         />
         {modal}
         <div>
