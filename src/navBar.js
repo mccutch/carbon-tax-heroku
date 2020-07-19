@@ -16,12 +16,16 @@ export class NavBar extends React.Component{
 
 
   render(){
-    let summary, sym, conversion, balance
-    if(this.props.stats && this.props.profile){
+    let summary, sym, conversion
+    let balance = "$0.00"
+    if(this.props.loggedIn && this.props.stats && this.props.profile){
       summary = this.props.stats.summary
-      conversion = this.props.profile.conversion_factor
-      sym = this.props.profile.currency_symbol
-      balance = parseFloat(conversion*(summary.total_tax-summary.total_paid)).toFixed(2)
+      if(summary){
+        conversion = this.props.profile.conversion_factor
+        sym = this.props.profile.currency_symbol
+        balance = parseFloat(conversion*(summary.total_tax-summary.total_paid)).toFixed(2)
+        
+      }
     }
 
 
@@ -49,8 +53,7 @@ export class NavBar extends React.Component{
       navLeft = 
         <Nav className="mr-auto">
           {dashboard}
-          {newEmission}
-          
+          {newEmission} 
         </Nav>  
       navRight = 
         <Nav className="mr-auto">
