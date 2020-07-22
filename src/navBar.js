@@ -40,7 +40,7 @@ export class NavBar extends React.Component{
     let newEmission = <Nav.Link key="newEmission" name="newEmission" onClick={this.handleClick}>New Emission</Nav.Link>
     let newPayment = <Nav.Link key="newPayment" name="newPayment" onClick={this.handleClick}>New Payment</Nav.Link>
     let logout = <Nav.Link key="logout" name="logout" onClick={this.handleClick}>Logout</Nav.Link>
-    let outstanding = <Nav.Link key="outstanding" name="dashboard" onClick={this.handleClick}>Balance: {sym}{balance}</Nav.Link> ///Change to payment page
+    let outstanding = <Nav.Link key="outstanding" name="newPayment" onClick={this.handleClick}>Balance: {sym}{balance}</Nav.Link> ///Change to payment page
 
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" onClick={this.handleClick}>Login</Nav.Link>
@@ -53,7 +53,8 @@ export class NavBar extends React.Component{
       navLeft = 
         <Nav className="mr-auto">
           {dashboard}
-          {newEmission} 
+          {newEmission}
+          {newPayment} 
         </Nav>  
       navRight = 
         <Nav className="mr-auto">

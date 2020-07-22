@@ -7,14 +7,15 @@ from django.contrib.auth.password_validation import validate_password
 class DonationRecipientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.DonationRecipient
-        fields = ['name', 'country', 'website', 'donation_link', 'currency', 'description']
+        fields = ['name', 'country', 'website', 'donation_link', 'currency', 'description', 'id']
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipient = serializers.PrimaryKeyRelatedField(queryset=models.DonationRecipient.objects.all())
 
     class Meta:
         model = models.Payment
-        fields = ['amount', 'currency', 'recipient', 'date', 'user']
+        fields = ['amount', 'currency', 'recipient', 'date', 'user', 'id']
 
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,9 +49,10 @@ class EconomyMetricSerializer(serializers.HyperlinkedModelSerializer):
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipients = serializers.PrimaryKeyRelatedField(queryset=models.DonationRecipient.objects.all(), many=True)
     class Meta:
         model = models.Profile
-        fields = ['user', 'location', 'date_of_birth', 'currency', 'currency_symbol', 'conversion_factor', 'display_units', 'id']
+        fields = ['user', 'location', 'date_of_birth', 'currency', 'currency_symbol', 'conversion_factor', 'display_units', 'recipients', 'id']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,5 +114,8 @@ class ChangePasswordSerializer(serializers.Serializer):
     def validate_new_password(self, value):
         validate_password(value)
         return value
+
+
+
 
 

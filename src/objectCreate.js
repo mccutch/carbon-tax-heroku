@@ -208,3 +208,33 @@ export class CreateVehicle extends React.Component{
     return(display)
   }
 }
+
+export class CreateRecipient extends React.Component{
+
+
+  render(){
+
+    let form = 
+      <form>
+        <label>
+          Name:
+          <input type="text"/> 
+        </label>     
+      </form>
+
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create Recipient</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {form}
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
+          <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+}

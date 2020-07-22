@@ -61,6 +61,7 @@ class Profile(models.Model):
     currency_symbol = models.CharField(max_length=10, default="$")
     conversion_factor = models.FloatField(default=1)
     display_units = models.CharField(max_length=10, default="lPer100Km")
+    recipients = models.ManyToManyField(DonationRecipient, related_name="users", blank=True)
 
     def __str__(self):
         """String for representing the Model object."""

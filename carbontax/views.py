@@ -132,6 +132,7 @@ class UserProfile(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, permissions.IsOwner)
     serializer_class = serializers.ProfileSerializer
@@ -265,6 +266,16 @@ class PaymentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 #--------DONATION RECIPIENTS----------------
+
+class UserRecipients(APIView):
+    """A list of all donation recipients saved by the user."""
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, format=None):
+        recipients = request.user.profile.recipients.all()
+        serializer = serializers.DonationRecipientSerializer(recipients, context={'request':request}, many=True)
+        return Response(serializer.data)
+
 class DonationRecipients(generics.ListCreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = serializers.DonationRecipientSerializer
@@ -280,6 +291,7 @@ class DonationRecipientDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.DonationRecipientSerializer
     queryset = models.DonationRecipient.objects.all()
+
 
 """class AllUserStats(APIView){
     

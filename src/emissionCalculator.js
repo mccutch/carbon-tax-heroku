@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal} from 'react-bootstrap';
+import {Modal, Navbar} from 'react-bootstrap';
 import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';
 import {CarbonCalculator} from './carbonCalculator.js';
@@ -219,10 +219,19 @@ export class EmissionCalculator extends React.Component{
     }
     
     return(
-      <div className="container-sm bg-light my-2">
+      /*<div className="container-sm bg-light my-2">
         <div className="row mx-2">
           <h3>Carbon Tax Calculator</h3>
           <button type="button" className="btn btn-outline-danger m-2" onClick={this.exitCalculator}>Exit</button>
+        </div>
+        */
+      <div className='container-sm my-2 bg-light' > 
+        <div style={{margin: "0px -15px 0px -15px"}} >
+        <Navbar bg="info" variant="dark">
+          <Navbar.Brand >
+            Carbon Tax Calculator
+          </Navbar.Brand>
+        </Navbar>
         </div>
       
         <ul className="nav nav-tabs">

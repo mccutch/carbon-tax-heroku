@@ -188,6 +188,7 @@ export class ObjectSelectionList extends React.Component{
           name = {this.props.name}
           onChange = {this.props.onChange}
           defaultValue = {this.props.defaultValue}
+          className="m-2"
         >
           {listOptions}
         </select>

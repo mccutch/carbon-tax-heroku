@@ -4,6 +4,7 @@ import {EmissionListWrapper} from './emissionList.js';
 import {Dashboard} from './dashboard.js';
 import {ProfileDisplay} from './userProfile.js';
 import {HomeView} from './homeView.js';
+import {PaymentView} from './payment.js';
 
 export class MainView extends React.Component{
   constructor(props){
@@ -71,6 +72,16 @@ export class MainView extends React.Component{
                   loggedIn={this.props.loggedIn}
                   selectView={this.selectView}
                   setModal={this.props.setModal}
+                />
+    } else if(this.props.display==="payment"){
+      display = <PaymentView
+                  stats={this.props.stats}
+                  user={this.props.user}
+                  profile={this.props.profile}
+                  recipients={this.props.recipients}
+                  refresh={this.props.refresh}
+                  setModal={this.props.setModal}
+                  hideModal={this.props.hideModal}
                 />
     } else {
       display = 

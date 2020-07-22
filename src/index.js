@@ -18,18 +18,22 @@ class App extends React.Component {
   constructor(props){
     super(props)
 
-    this.state = {
+    this.defaultState = {
       loggedIn: false,
       displayUnits: units.METRIC,
       user: {},
       profile: {},
-      taxes: {},
-      vehicles: {},
-      fuels:{},
-      emissions:{},
+      taxes: [],
+      vehicles: [],
+      fuels:[],
+      emissions:[],
+      stats:{},
+      recipients:[],
       modal:null,
       mainView:"home",
     }
+
+    this.state = this.defaultState
 
     this.login=this.login.bind(this)
     this.logout=this.logout.bind(this)
@@ -40,7 +44,7 @@ class App extends React.Component {
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
     this.setFuels = this.setFuels.bind(this)
     this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
-    this.setDisplayUnits = this.setDisplayUnits.bind(this)
+    this.useProfileSettings = this.useProfileSettings.bind(this)
     this.hideModal = this.hideModal.bind(this)
     this.handleNavClick = this.handleNavClick.bind(this)
     this.setModal = this.setModal.bind(this)
@@ -120,10 +124,12 @@ class App extends React.Component {
     })
   }
 
-  setDisplayUnits(profile){
+  useProfileSettings(profile){
     //console.log(profile)
     this.setState({displayUnits: profile.display_units})
+    
   }
+
 
   logout(){
     logoutBrowser({onSuccess:this.logoutSuccess})
@@ -131,25 +137,17 @@ class App extends React.Component {
 
   logoutSuccess(){
     console.log("Logout successful.")
-    this.setState({
-      loggedIn:false,
-      user:{},
-      profile:{},
-      taxes:{},
-      vehicles:{},
-      emissions:{},
-      stats:{},
-      mainView:"home",
-    })
+    this.setState(this.defaultState)
   }
 
   refreshFullProfile(){
     this.fetchObject({url:"/current-user/", objectName:"user"})
-    this.fetchObject({url:"/my-profile/", objectName:"profile", onSuccess:this.setDisplayUnits})
+    this.fetchObject({url:"/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
     this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
     this.fetchObject({url:"/my-emissions/", objectName:"emissions"})
     this.fetchObject({url:"/my-stats/", objectName:"stats"})
+    this.fetchObject({url:"/my-recipients", objectName:"recipients"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,
@@ -278,6 +276,7 @@ class App extends React.Component {
             profile={this.state.profile}
             stats={this.state.stats}
             user={this.state.user}
+            recipients={this.state.recipients}
             refresh={this.refreshFullProfile}
             display={this.state.mainView}
             setView={this.setMainView}

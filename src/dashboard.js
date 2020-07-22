@@ -144,7 +144,7 @@ export class Dashboard extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      display:"stats",
+      display:"history",
     }
 
     this.changeDisplay=this.changeDisplay.bind(this)
@@ -196,8 +196,8 @@ export class Dashboard extends React.Component{
             {this.props.user.username}
           </Navbar.Brand>
           <Nav className="mr-auto">
-            <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
             <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
+            <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
             <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
           </Nav>
         </Navbar>

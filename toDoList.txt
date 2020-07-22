@@ -1,13 +1,10 @@
+Make a payment
 
-Modal for route calculator
+Air travel input
+
+Graph axis labels
 
 Standardise modals with generic template
-
-Add (unpaid amount) and (+ new emission) buttons to navbar
-
-Create modal after new emission
-
-Proportion split of fuel
 
 Object table of payments and donation recipients
 
@@ -16,17 +13,15 @@ create saved trips
 rebuild route input
  - google js api
 
-flight input
-
 backdate changes to tax pricing
  - POST a list of emissions to update, with a ratio of new to old tax rate
+ - Modal after edit
 
 report an error
+ - contact page
 
 emission list
  - avoid nan on database (crashes list rendering)
-
-django password validation
 
 tag donation recipients by type, eg #offset, #political, #cultural, #reforestation, #local
 
