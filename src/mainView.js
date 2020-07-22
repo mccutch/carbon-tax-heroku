@@ -82,6 +82,8 @@ export class MainView extends React.Component{
                   refresh={this.props.refresh}
                   setModal={this.props.setModal}
                   hideModal={this.props.hideModal}
+                  selectView={this.selectView}
+                  setView={this.props.setView}
                 />
     } else {
       display = 

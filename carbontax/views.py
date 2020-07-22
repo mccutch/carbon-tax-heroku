@@ -248,7 +248,7 @@ class UserPayments(generics.ListCreateAPIView):
 
     def post(self, request, format=None):
         data=request.data
-        data['user']=f'/user/{request.user.id}/'
+        data['user']=request.user.id
         print(data)
         serializer = serializers.PaymentSerializer(data=data, context={'request':request})
         if serializer.is_valid():
@@ -300,11 +300,8 @@ class DonationRecipientDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserStats(APIView):
     permission_classes = (IsAuthenticated, )
 
-    def all_emissions(self, request):
+    def get_tax_types(self, request):
         emissions = request.user.emissions.all()
-        return emissions
-
-    def get_tax_types(self, request, emissions):
         taxes_used = []
         for emission in emissions:
             if not emission.tax_type:
@@ -313,10 +310,12 @@ class UserStats(APIView):
                 taxes_used.append(emission.tax_type.id)
         return taxes_used
 
-    def get_months(self, request, emissions):
+    def get_months(self, request):
+        emissions = request.user.emissions.all()
+        payments = request.user.payments.all()
         months = []
         
-        if len(emissions) == 0:
+        if (len(emissions) == 0) and (len(payments) == 0):
             return months
         
         for emission in emissions:
@@ -328,6 +327,12 @@ class UserStats(APIView):
                 first_date = emission.date
             elif emission.date>last_date:
                 last_date = emission.date
+
+        for payment in payments:
+            if payment.date<first_date:
+                first_date = payment.date
+            elif payment.date>last_date:
+                last_date = payment.date
 
         i_year = first_date.year
         i_month = first_date.month
@@ -348,7 +353,7 @@ class UserStats(APIView):
     def get_emissions_by_tax(self, request):
         emissions_by_tax = {}
         emissions_by_tax["total"]={}
-        tax_types = self.get_tax_types(request, self.all_emissions(request))
+        tax_types = self.get_tax_types(request)
 
         co2_total = 0
         price_total = 0
@@ -375,8 +380,8 @@ class UserStats(APIView):
     def get_emissions_by_month_and_tax(self, request):
         emissions_by_month_and_tax  = {}
         
-        months = self.get_months(request, self.all_emissions(request))
-        tax_types = self.get_tax_types(request, self.all_emissions(request))
+        months = self.get_months(request)
+        tax_types = self.get_tax_types(request)
 
         for month in months:
             thisMonth = month['month']
@@ -413,7 +418,7 @@ class UserStats(APIView):
     def get_cumulative_payments_by_month(self, request):
         payments_by_month  = {}
         
-        months = self.get_months(request, self.all_emissions(request))
+        months = self.get_months(request)
         emissions = request.user.emissions.all()
         payments = request.user.payments.all()
         conversion_factor = request.user.profile.conversion_factor
@@ -468,10 +473,10 @@ class UserStats(APIView):
     def get(self, request):
         content = {
             'summary': self.get_summary(request),
-            'taxes': self.get_tax_types(request, self.all_emissions(request)),
+            'taxes': self.get_tax_types(request),
             'emissions_by_tax': self.get_emissions_by_tax(request),
             'emissions_by_month_and_tax': self.get_emissions_by_month_and_tax(request),
-            'months': self.get_months(request, self.all_emissions(request)),
+            'months': self.get_months(request),
             'payments_by_month': self.get_cumulative_payments_by_month(request),
         }
         return Response(content)

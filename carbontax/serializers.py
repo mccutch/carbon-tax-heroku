@@ -7,7 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 class DonationRecipientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.DonationRecipient
-        fields = ['name', 'country', 'website', 'donation_link', 'currency', 'description', 'id']
+        fields = ['name', 'country', 'website', 'donation_link', 'description', 'id']
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -15,7 +15,7 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Payment
-        fields = ['amount', 'currency', 'recipient', 'date', 'user', 'id']
+        fields = ['amount', 'recipient', 'date', 'user', 'id']
 
 
 class VehicleSerializer(serializers.HyperlinkedModelSerializer):

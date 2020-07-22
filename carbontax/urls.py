@@ -46,7 +46,7 @@ urlpatterns = [
     path('my-payments/', views.UserPayments.as_view(), name="my-payments"),
     path('payment/<int:pk>/', views.PaymentDetail.as_view(), name="payment-detail"),
 
-    path('my-recipients', views.UserRecipients.as_view(), name="my-recipients"),
+    path('my-recipients/', views.UserRecipients.as_view(), name="my-recipients"),
     path('donation-recipients/', views.DonationRecipients.as_view(), name="donation-recipients"),
     path('donation-recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="donationrecipient-detail"),
 ]

@@ -1,4 +1,6 @@
-Make a payment
+Payment detail, payment table
+
+Warning on currency change
 
 Air travel input
 

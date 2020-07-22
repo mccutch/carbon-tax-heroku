@@ -6,7 +6,6 @@ class DonationRecipient(models.Model):
     country = models.CharField(max_length=60, null=True)
     website = models.URLField(max_length=100, null=True)
     donation_link = models.URLField(max_length=100, null=True)
-    currency = models.CharField(max_length=10, null=True)
     description = models.TextField(null=True)
 
     def __str__(self):
@@ -14,7 +13,6 @@ class DonationRecipient(models.Model):
 
 class Payment(models.Model):
     amount = models.FloatField() # Store payments in the database currency
-    currency = models.CharField(max_length=10, null=True)
     recipient = models.ForeignKey(DonationRecipient, on_delete=models.SET_NULL, related_name='payments', null=True)
     date = models.DateField(null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')

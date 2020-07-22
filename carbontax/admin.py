@@ -4,11 +4,11 @@ from .models import FuelType, EmissionInstance, Profile, Vehicle, EconomyMetric,
 # Register your models here.
 @admin.register(DonationRecipient)
 class DonationRecipientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country', 'website', 'donation_link', 'currency', 'description')
+    list_display = ('name', 'country', 'website', 'donation_link', 'description')
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('amount', 'currency', 'recipient', 'date', 'user')
+    list_display = ('amount', 'recipient', 'date', 'user')
 
 @admin.register(FuelType)
 class FuelTypeAdmin(admin.ModelAdmin):

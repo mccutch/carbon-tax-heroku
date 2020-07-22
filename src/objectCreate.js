@@ -6,8 +6,7 @@ import { VehicleInput } from './vehicleInput.js';
 import { VehicleSaveForm } from './vehicleSave.js';
 import {fetchObject} from './helperFunctions.js';
 import { MAX_NAME_LEN } from './validation.js';
-import { CurrencySelection } from './reactComponents.js';
-import { DEFAULT_CURRENCY, MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_CURRENCY, MAX_LEN_RECIP_DESCRIPTION} from './constants.js';
+import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION} from './constants.js';
 
 export class CreateTax extends React.Component{
   constructor(props){
@@ -214,9 +213,7 @@ export class CreateVehicle extends React.Component{
 export class CreateRecipient extends React.Component{
   constructor(props){
     super(props)
-    this.state={
-      currency:DEFAULT_CURRENCY,
-    }
+    this.state={}
     this.handleChange=this.handleChange.bind(this)
     this.validateForm=this.validateForm.bind(this)
     this.handlePostSuccess=this.handlePostSuccess.bind(this)
@@ -237,7 +234,7 @@ export class CreateRecipient extends React.Component{
     this.setState({errorMessage:""})
 
     let fields = [
-      "name", "country", "currency", "website", "donation_link", "description"
+      "name", "country", "website", "donation_link", "description"
     ]
 
     let recipientData = {}
@@ -321,11 +318,6 @@ export class CreateRecipient extends React.Component{
         <label>
           Country:
           <input type="text" name="country" maxLength={MAX_LEN_RECIP_COUNTRY} className="form-control m-2" onChange={this.handleChange}/> 
-        </label>
-        <br/> 
-        <label>
-          Currency:
-          <CurrencySelection name="currency" onChange={this.handleChange} defaultValue={DEFAULT_CURRENCY}/> 
         </label>
         <br/>
         <label>

@@ -15,5 +15,4 @@ export const MAX_LEN_RECIP_NAME = 60
 export const MAX_LEN_RECIP_COUNTRY = 60
 export const MAX_LEN_RECIP_WEB_LINK = 100
 export const MAX_LEN_RECIP_DONATION_LINK = 100
-export const MAX_LEN_RECIP_CURRENCY = 10
 export const MAX_LEN_RECIP_DESCRIPTION = 1000 //Undefined in views.py

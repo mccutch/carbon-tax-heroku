@@ -147,7 +147,8 @@ class App extends React.Component {
     this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
     this.fetchObject({url:"/my-emissions/", objectName:"emissions"})
     this.fetchObject({url:"/my-stats/", objectName:"stats"})
-    this.fetchObject({url:"/my-recipients", objectName:"recipients"})
+    this.fetchObject({url:"/my-recipients/", objectName:"recipients"})
+    this.fetchObject({url:"/my-payments/", objectName:"payments"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,
@@ -179,6 +180,8 @@ class App extends React.Component {
   }
 
   handleNavClick(nav){
+    this.refreshFullProfile()
+
     if(nav==="login"){
       this.setModal("login")
 
