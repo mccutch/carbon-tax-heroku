@@ -4,9 +4,10 @@ import React from 'react';
 export class HomeView extends React.Component{
   
   render(){
-    let display
+    let dashboard, payment
     if(this.props.loggedIn){
-      display = <button className="btn btn-info m-2" name="dashboard" onClick={this.props.selectView}>My Dashboard</button>
+      dashboard = <button className="btn btn-info m-2" name="dashboard" onClick={this.props.selectView}>My Dashboard</button>
+      payment = <button className="btn btn-info m-2" name="payment" onClick={this.props.selectView}>+ Make a payment</button>
     }
 
     return(
@@ -17,7 +18,8 @@ export class HomeView extends React.Component{
                 <h5>Balm for the guild-ridden traveller.</h5>
               </div>
               <button className="btn btn-info m-2" name="emissionCalculator" onClick={this.props.selectView}>+ Add a carbon emission</button>
-              {display}
+              {payment}
+              {dashboard}
         </div>
       </div>
     )

@@ -53,10 +53,14 @@ export class PaymentView extends React.Component{
     event.preventDefault()
     let modal = 
       <CreateRecipient
+        profile={this.props.profile}
+        refresh={this.props.refresh}
+        setModal={this.props.setModal}
         hideModal={this.props.hideModal}
       />
     this.props.setModal(modal)
   }
+
 
   searchRecipients(event){
     event.preventDefault()
@@ -105,7 +109,7 @@ export class PaymentView extends React.Component{
         <form>
           <label>
             Amount: {sym}
-            <input type="number" name="amount" className="my-2" defaultValue={balance} onChange={this.changeAmount}/>
+            <input type="number" name="amount" className="m-2" defaultValue={balance} onChange={this.changeAmount}/>
           </label>
           <br/>
           {userRecipientSelection}
