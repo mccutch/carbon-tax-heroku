@@ -45,6 +45,7 @@ export class PaymentView extends React.Component{
     this.makePayment=this.makePayment.bind(this)
     this.handlePostSuccess=this.handlePostSuccess.bind(this)
     this.handlePostFailure=this.handlePostFailure.bind(this)
+    this.goTo=this.goTo.bind(this)
   }
 
   componentDidMount(){
@@ -126,8 +127,8 @@ export class PaymentView extends React.Component{
 
     let buttons = 
       <div>
-        <button name="payment" className="btn btn-outline-info m-2" onClick={this.props.selectView}>Make another</button>
-        <button name="dashboard" className="btn btn-outline-info m-2" onClick={this.props.selectView}>My Dashboard</button>
+        <button name="payment" className="btn btn-outline-info m-2" onClick={this.goTo}>New payment</button>
+        <button name="dashboard" className="btn btn-outline-info m-2" onClick={this.goTo}>My Dashboard</button>
       </div>
 
     let modal = 
@@ -145,6 +146,11 @@ export class PaymentView extends React.Component{
 
     this.props.setModal(modal)
     this.props.setView("home")
+  }
+
+  goTo(event){
+    this.props.setView(event.target.name)
+    this.props.hideModal()
   }
 
   handlePostFailure(){
