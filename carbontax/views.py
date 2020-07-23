@@ -64,7 +64,7 @@ class UserEmissionList(generics.ListCreateAPIView):
     serializer_class = serializers.EmissionSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filter_fields = {
-        'tax_type': ['exact'],
+        'tax_type__name': ['exact'],
         'date': ['lte', 'gte'],
     }
     search_fields = ['name']

@@ -238,7 +238,7 @@ export class EmissionFilterNav extends React.Component{
 
     let params = {}
     if(this.state.searchQuery){params['search']=this.state.searchQuery}
-    if(this.state.taxFilter){params['tax_type']=this.state.taxFilter}
+    if(this.state.taxFilter){params['tax_type__name']=this.state.taxFilter}
     if(this.state.startDate){params['date__gte']=this.state.startDate}
     if(this.state.endDate){params['date__lte']=this.state.endDate}
 
