@@ -1,7 +1,7 @@
 import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { fetchObject } from './helperFunctions.js';
-import { TaxDetail, VehicleDetail, EmissionDetail } from './objectDetail.js';
+import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './objectDetail.js';
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 import * as getDate from './getDate.js';
 
@@ -162,7 +162,6 @@ export class EmissionFilterNav extends React.Component{
     super(props)
 
     this.state = {
-      showFilters:false,
       searchQuery:"",
       taxFilter:"",
       startDate:"",
@@ -218,10 +217,8 @@ export class EmissionFilterNav extends React.Component{
     } else if(event.target.name==="clearAll"){
       this.clearFilters()
     } else if(event.target.name==="hideFilters"){
-      this.setState({showFilters:false})
       this.clearFilters()
-    } else if(event.target.name==="showFilters"){
-      this.setState({showFilters:true})
+      this.props.hide()
     }
   }
 
@@ -268,39 +265,31 @@ export class EmissionFilterNav extends React.Component{
   }
 
   render(){
-    let display
-    if(this.state.showFilters){
-      display = 
-        <form className="container bg-light py-2">
-          <label>
-            Filter by Tax Type:
-            <OptionListInput name={"taxFilter"} list={this.makeTaxList()} onChange={this.editTaxFilter} />
-          </label>
-          <br/>
-          <label>
-            Search by name:
-            <input placeholder="Search" className="mx-2" type="search" name="searchQuery" id="searchQuery" onChange={this.handleChange} />
-          </label>
-          <br/>
-          <label>
-            From:
-            <input type="date" name="startDate" onChange={this.handleChange} className="mx-2"/>
-          </label>
-          <label>
-            Until:
-            <input defaultValue={getDate.today()} type="date" name="endDate" onChange={this.handleChange} className="mx-2"/>
-          </label>
-          <br/>
-          <button type="submit" name="search" className="btn btn-outline-primary mx-2" onClick={this.handleClick}>Apply filters</button>
-          <button name="clearAll" className="btn btn-outline-danger mx-2" onClick={this.handleClick}>Clear</button>
-          <button className="btn btn-outline-warning" name="hideFilters" onClick={this.handleClick}>Hide filters</button>
-        </form>
-    } else {
-      display = <button className="btn btn-outline-warning" name="showFilters" onClick={this.handleClick}>Show filters</button>
-    }
-
     return(
-      display
+      <form className="container bg-light py-2">
+        <label>
+          Filter by Tax Type:
+          <OptionListInput name={"taxFilter"} list={this.makeTaxList()} onChange={this.editTaxFilter} />
+        </label>
+        <br/>
+        <label>
+          Search by name:
+          <input placeholder="Search" className="mx-2" type="search" name="searchQuery" id="searchQuery" onChange={this.handleChange} className="form-control m-2"/>
+        </label>
+        <br/>
+        <label>
+          From:
+          <input type="date" name="startDate" onChange={this.handleChange} className="form-control mx-2"/>
+        </label>
+        <label>
+          Until:
+          <input defaultValue={getDate.today()} type="date" name="endDate" onChange={this.handleChange} className="form-control mx-2"/>
+        </label>
+        <br/>
+        <button type="submit" name="search" className="btn btn-outline-primary mx-2" onClick={this.handleClick}>Apply filters</button>
+        <button name="clearAll" className="btn btn-outline-danger mx-2" onClick={this.handleClick}>Clear</button>
+        <button className="btn btn-outline-warning" name="hideFilters" onClick={this.handleClick}>Hide filters</button>
+      </form>
     )
   }
 }
@@ -380,6 +369,7 @@ export class PaginatedNav extends React.Component{
           <li className={this.disablableItem(this.props.tableData.previous)}><a className="page-link" name="prev" onClick={this.handleClick}>Previous</a></li>
           <li className={this.disablableItem(this.props.tableData.next)}><a className="page-link" name="next" onClick={this.handleClick}>Next</a></li>
         </ul>
+        {this.props.buttons}
       </nav>
     )
   }
@@ -396,6 +386,16 @@ export class EmissionTable extends React.Component{
     }
     this.buildRows=this.buildRows.bind(this)
     this.changeResults=this.changeResults.bind(this)
+    this.showFilters=this.showFilters.bind(this)
+    this.hideFilters=this.hideFilters.bind(this)
+  }
+
+  showFilters(){
+    this.setState({showFilters:true})
+  }
+
+  hideFilters(){
+    this.setState({showFilters:false})
   }
 
   changeResults(emissionsToDisplay, newPage=1){
@@ -440,12 +440,19 @@ export class EmissionTable extends React.Component{
 
   render(){
 
+    let filters, showFilters
+    if(this.state.showFilters){
+      filters = <EmissionFilterNav baseUrl="/my-emissions/" default={this.props.emissions} returnResults={this.changeResults} taxes={this.props.taxes} hide={this.hideFilters}/>
+    } else {
+      showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
+    }
+
     let paginatedTableHeader
     if(this.state.displayedEmissions.length !== 0){
       paginatedTableHeader = 
         <div className="container my-2 py-2 bg-dark">
-          <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changeResults} />
-          <EmissionFilterNav baseUrl="/my-emissions/" default={this.props.emissions} returnResults={this.changeResults} taxes={this.props.taxes}/>
+            <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changeResults} buttons={showFilters}/>
+            {filters}
         </div>
     }
 
@@ -453,6 +460,234 @@ export class EmissionTable extends React.Component{
       <div>
         {paginatedTableHeader}
         <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Tax Type", "Distance", "Split", "CO2 Output", "Tax"]} />
+      </div>
+    )
+  }
+}
+
+
+
+export class PaymentFilterNav extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state = {
+      searchQuery:"",
+      recipientFilter:"",
+      startDate:"",
+      endDate:"",
+    }
+
+    this.handleChange=this.handleChange.bind(this)
+    this.makeRecipientList=this.makeRecipientList.bind(this)
+    this.handleClick=this.handleClick.bind(this)
+    this.clearFilters=this.clearFilters.bind(this)
+    this.search=this.search.bind(this)
+    this.returnResults=this.returnResults.bind(this)
+    this.editRecipientFilter=this.editRecipientFilter.bind(this)
+
+    this.defaultRecipientDisplayText = "All Recipients"
+  }
+
+
+  makeRecipientList(){
+    let recipients = this.props.recipients
+    let recipientList=[this.defaultRecipientDisplayText]
+    for(let i in recipients){
+      recipientList.push(recipients[i].name)
+    }
+    return recipientList
+  }
+
+  handleChange(event){
+    let property = event.target.name
+    let value = event.target.value
+
+    this.setState({
+      [property]:value
+    }) 
+  }
+
+  editRecipientFilter(event){
+    let value = event.target.value
+
+    if(value===this.defaultRecipientDisplayText){
+      value=""
+    }
+
+    this.setState({
+      recipientFilter:value
+    })
+  }
+
+  handleClick(event){
+    event.preventDefault()
+    if(event.target.name==="search"){
+      this.search()
+    } else if(event.target.name==="clearAll"){
+      this.clearFilters()
+    } else if(event.target.name==="hideFilters"){
+      this.clearFilters()
+      this.props.hide()
+    }
+  }
+
+  clearFilters(){
+    this.props.returnResults(this.props.default)
+    this.setState({
+      searchQuery:"",
+      recipientFilter:"",
+      startDate:"",
+      endDate:"",
+    })
+    document.getElementById("searchQuery").value = ""
+    document.getElementById("recipientFilter").value = this.defaultRecipientDisplayText
+  }
+
+  search(){
+
+    let params = {}
+    if(this.state.searchQuery){params['search']=this.state.searchQuery}
+    if(this.state.recipientFilter){params['recipient__name']=this.state.recipientFilter}
+    if(this.state.startDate){params['date__gte']=this.state.startDate}
+    if(this.state.endDate){params['date__lte']=this.state.endDate}
+
+    var filterUrl = "";
+    for (var key in params) {
+      if (filterUrl !== "") {
+        filterUrl += "&";
+      }
+      filterUrl += key + "=" + encodeURIComponent(params[key]);
+    }
+
+    console.log(filterUrl)
+
+    fetchObject({
+      url:`${this.props.baseUrl}?${filterUrl}`,
+      method:'GET',
+      onSuccess: this.returnResults,
+    })
+  }
+
+  returnResults(json){
+    this.props.returnResults(json)
+  }
+
+  render(){
+    return(
+      <form className="container bg-light py-2">
+        <label>
+          Filter by Recipient:
+          <OptionListInput name={"recipientFilter"} list={this.makeRecipientList()} onChange={this.editRecipientFilter}/>
+        </label>
+        <br/>
+        <label>
+          Search by name:
+          <input placeholder="Search" className="form-control mx-2" type="search" name="searchQuery" id="searchQuery" onChange={this.handleChange}/>
+        </label>
+        <br/>
+        <label>
+          From:
+          <input type="date" name="startDate" onChange={this.handleChange} className="form-control mx-2"/>
+        </label>
+        <label>
+          Until:
+          <input defaultValue={getDate.today()} type="date" name="endDate" onChange={this.handleChange} className="form-control mx-2"/>
+        </label>
+        <br/>
+        <button type="submit" name="search" className="btn btn-outline-primary mx-2" onClick={this.handleClick}>Apply filters</button>
+        <button name="clearAll" className="btn btn-outline-danger mx-2" onClick={this.handleClick}>Clear</button>
+        <button className="btn btn-outline-warning" name="hideFilters" onClick={this.handleClick}>Hide filters</button>
+      </form>
+    )
+  }
+}
+
+
+
+export class PaymentTable extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state = {
+      displayedPayments:[],
+      page:1,
+    }
+    this.buildRows=this.buildRows.bind(this)
+    this.changeResults=this.changeResults.bind(this)
+    this.showFilters=this.showFilters.bind(this)
+    this.hideFilters=this.hideFilters.bind(this)
+  }
+
+  showFilters(){
+    this.setState({showFilters:true})
+  }
+
+  hideFilters(){
+    this.setState({showFilters:false})
+  }
+
+  changeResults(paymentsToDisplay, newPage=1){
+    this.setState({
+      displayedPayments:paymentsToDisplay,
+      page:newPage,
+    })
+  }
+
+  componentDidMount(){
+    this.setState({displayedPayments:this.props.payments})
+  }
+
+  componentDidUpdate(prevProps){
+    if(this.props.payments!==prevProps.payments){
+      this.setState({
+        displayedPayments:this.props.payments,
+        page:1
+      })
+    }
+  }
+
+  buildRows(){
+    let payments = this.state.displayedPayments.results
+    let tableRows=[]
+    for(let i in payments){
+      tableRows.push(
+        <PaymentDetail 
+          payment={payments[i]} 
+          displayUnits={this.props.displayUnits} 
+          profile={this.props.profile} 
+          recipients={this.props.recipients}
+          refresh={this.props.refresh}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
+        />
+      )
+    }
+    return tableRows
+  }
+
+  render(){
+
+    let filters, showFilters
+    if(this.state.showFilters){
+      filters = <PaymentFilterNav baseUrl="/my-payments/" default={this.props.payments} returnResults={this.changeResults} recipients={this.props.recipients} hide={this.hideFilters}/>
+    } else {
+      showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
+    }
+
+    let paginatedTableHeader
+    if(this.state.displayedPayments.length !== 0){
+      paginatedTableHeader = 
+        <div className="container my-2 py-2 bg-dark">
+          <PaginatedNav tableData={this.state.displayedPayments} page={this.state.page} returnPage={this.changeResults} buttons={showFilters}/>
+          {filters}
+        </div>
+    }
+    
+    return(
+      <div>
+        {paginatedTableHeader}
+        <ObjectTable tableRows={this.buildRows()} headers={["Date", "Recipient", "Amount", ""]} />
       </div>
     )
   }

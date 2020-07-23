@@ -281,6 +281,7 @@ class App extends React.Component {
             profile={this.state.profile}
             stats={this.state.stats}
             user={this.state.user}
+            payments={this.state.payments}
             recipients={this.state.recipients}
             refresh={this.refreshFullProfile}
             display={this.state.mainView}

@@ -181,6 +181,8 @@ export class Dashboard extends React.Component{
           displayUnits={this.props.displayUnits}
           emissions={this.props.emissions}
           profile={this.props.profile}
+          recipients={this.props.recipients}
+          payments={this.props.payments}
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}
           fuels={this.props.fuels}

@@ -237,10 +237,10 @@ class UserPayments(generics.ListCreateAPIView):
     serializer_class = serializers.PaymentSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filter_fields = {
-        'recipient': ['exact'],
+        'recipient__name': ['exact'],
         'date': ['lte', 'gte'],
     }
-    search_fields = ['recipient']
+    search_fields = ['recipient__name']
 
     def get_queryset(self):
         user = self.request.user

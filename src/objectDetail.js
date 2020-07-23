@@ -2,7 +2,7 @@ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
-import { fetchObject, getAttribute } from './helperFunctions.js';
+import { fetchObject, getAttribute, displayCurrency } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList } from './reactComponents.js';
 import {Modal, Button} from 'react-bootstrap';
@@ -606,5 +606,149 @@ export class EmissionDetail extends React.Component{
     
 
     return display
+  }
+}
+
+class PaymentEdit extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state = {
+    }
+
+    this.editPayment=this.editPayment.bind(this)
+    this.saveChange=this.saveChange.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+    this.validateInput=this.validateInput.bind(this)
+    this.deletePayment=this.deletePayment.bind(this)
+    this.editSuccess=this.editSuccess.bind(this)
+    this.editFailure=this.editFailure.bind(this)
+  }
+
+  deletePayment(){
+    let key = this.props.payment.id
+
+    fetchObject({
+      url:`/tax/${key}/`,
+      method:'DELETE',
+      onSuccess:this.editSuccess,
+      onFailure:this.editFailure,
+    })
+  }
+
+  validateInput(){
+    
+    return true  
+  }
+
+  saveChange(){
+    if(this.validateInput()){
+      let key = this.props.payment.id
+
+      let paymentData = {}
+      let paymentFields = ["amount", "recipient", "date"]
+
+      for(let i in paymentFields){
+        let field = paymentFields[i]
+        if(this.state[field]){
+          paymentData[field]=this.state[field]
+        }
+      }
+
+      console.log(paymentData)
+      fetchObject({
+        url:`/payment/${key}/`,
+        method:'PATCH',
+        data:paymentData,
+        onSuccess:this.editSuccess,
+        onFailure:this.editFailure,
+      })
+    }
+  }
+
+  editSuccess(){
+    this.props.refresh()
+    this.props.hideModal()
+  }
+
+  editFailure(){
+    this.setState({
+      error:true
+    })
+  }
+
+  handleChange(event){
+    let name=event.target.name
+    let value=event.target.value
+
+    if(name==="amount"){
+      value=parseFloat(value/this.props.profile.conversion_factor).toFixed(2)
+    }
+    this.setState({[name]:value})
+  }
+
+
+  render(){
+    let body = 
+      <div>
+        <p>Edit</p>
+      </div>
+
+    let footer = 
+      <div>
+        <button className="btn btn-outline-dark" name="delete" onClick={this.deletePayment}>Delete</button>
+      </div>
+
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header className="bg-primary text-light" closeButton>
+          <Modal.Title>Edit Payment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {body}
+        </Modal.Body>
+        <Modal.Footer>
+          {footer}
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+}
+
+export class PaymentDetail extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+    }
+
+    this.edit=this.edit.bind(this)
+  }
+
+  edit(){
+    let modal = 
+          <PaymentEdit 
+            payment={this.props.payment}
+            profile={this.props.profile}
+            hideModal={this.props.hideModal} 
+            refresh={this.props.refresh}
+            recipients={this.props.recipients}
+          />
+    this.props.setModal(modal)
+  }
+
+  
+
+  render(){
+    let payment = this.props.payment
+    let edit = <button className="btn btn-outline-primary" onClick={this.edit}>Edit</button>
+
+    return(
+      <tr key={payment.id}>
+        <td>{payment.date}</td>
+        <td>{getAttribute(payment.recipient, this.props.recipients, "name")}</td>
+        <td>{displayCurrency(payment.amount, this.props.profile)}</td>
+        <td>{edit}</td>
+      </tr>
+    )
   }
 }

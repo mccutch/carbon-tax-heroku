@@ -62,6 +62,8 @@ export class MainView extends React.Component{
                   fuels={this.props.fuels}
                   displayUnits={this.props.displayUnits}
                   emissions={this.props.emissions}
+                  payments={this.props.payments}
+                  recipients={this.props.recipients}
                   refresh={this.props.refresh}
                   logout={this.props.logout}
                   setModal={this.props.setModal}

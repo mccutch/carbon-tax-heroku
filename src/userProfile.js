@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal} from 'react-bootstrap';
-import { TaxTable, VehicleTable, EmissionTable } from './userTables.js';
+import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
 import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
@@ -473,7 +473,15 @@ export class HistoryLists extends React.Component{
                       hideModal={this.props.hideModal}
                       fuels={this.props.fuels}
                     />
-    let payments = <div className="container"><h5>Payment table not built yet.</h5></div>
+    let payments = <PaymentTable 
+                      refresh={this.props.refresh} 
+                      payments={this.props.payments} 
+                      displayUnits={this.props.displayUnits} 
+                      recipients={this.props.recipients} 
+                      profile={this.props.profile}
+                      setModal={this.props.setModal}
+                      hideModal={this.props.hideModal}
+                    />
 
     let tabData = [
       {
