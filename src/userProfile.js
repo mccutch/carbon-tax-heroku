@@ -485,11 +485,11 @@ export class HistoryLists extends React.Component{
 
     let tabData = [
       {
-        label: "Emission History",
+        label: "Emissions",
         display: emissions,
       },
       {
-        label: "Payment History",
+        label: "Payments",
         display: payments,
       }
     ]

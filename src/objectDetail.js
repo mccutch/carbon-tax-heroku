@@ -118,7 +118,7 @@ class TaxEdit extends React.Component{
 
     let deleteButton
     if(!this.props.tax.isDefault){
-      deleteButton = <button className="btn btn-outline-dark" name="delete" onClick={this.deleteTax}>Delete</button>
+      deleteButton = <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteTax}>Delete</button>
     }
 
     return(
@@ -128,15 +128,15 @@ class TaxEdit extends React.Component{
         </Modal.Header>
         <Modal.Body>
           Name:
-          <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" />
+          <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" className="form-control"/>
           <br/>
           Price per kg: {sym}
-          <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01"/>
+          <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01" className="form-control"/>
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
+          <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
           {deleteButton}
-          <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
+          <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
         </Modal.Footer>
       </Modal>
     )
@@ -173,7 +173,7 @@ export class TaxDetail extends React.Component{
     let tax = this.props.tax
     let sym = this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
-    let taxName = <button className="btn btn-outline-primary" onClick={this.edit}>{tax.name}</button>
+    let taxName = <button className="btn btn-outline-primary m-2" onClick={this.edit}>{tax.name}</button>
 
     return(
       <tr key={tax.id}>
@@ -280,17 +280,17 @@ class VehicleEdit extends React.Component{
         </Modal.Header>
         <Modal.Body>
         {errorDisplay}
-        <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} />
+        <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} className="form-control"/>
         <label>
-          <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1"/>
+          <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1" className="form-control"/>
           {units.string(this.props.displayUnits)}
         </label>
         <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
       </Modal.Body>
       <Modal.Footer>
-        <button className="btn btn-outline-primary" name="save" onClick={this.saveChange}>Save</button>
-        <button className="btn btn-outline-dark" name="delete" onClick={this.deleteVehicle}>Delete</button>
-        <button className="btn btn-outline-danger" name="cancel" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
+        <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteVehicle}>Delete</button>
+        <button className="btn btn-outline-danger m-2" name="cancel" onClick={this.props.hideModal}>Cancel</button>
       </Modal.Footer>
       </Modal>
     )
@@ -335,9 +335,9 @@ export class VehicleDetail extends React.Component{
 
     let vehicleName
     if(this.props.submitEconomy){
-      vehicleName=<td><button className="btn btn-outline-primary" onClick={this.useVehicle}>{vehicle.name}</button></td>
+      vehicleName=<td><button className="btn btn-outline-primary m-2" onClick={this.useVehicle}>{vehicle.name}</button></td>
     } else {
-      vehicleName=<td><button className="btn btn-outline-primary" onClick={this.edit}>{vehicle.name}</button></td>
+      vehicleName=<td><button className="btn btn-outline-primary m-2" onClick={this.edit}>{vehicle.name}</button></td>
     }
 
     return(
@@ -516,8 +516,8 @@ export class EmissionEdit extends React.Component{
         <Modal.Body>
           <form>
             <p>{this.state.errorMessage}</p>
-            <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} />
-            <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} />
+            <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} className="form-control"/>
+            <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} className="form-control"/>
             <br/>
             <label>
               Tax Type:
@@ -526,7 +526,7 @@ export class EmissionEdit extends React.Component{
             <br/>
             <label>
               Distance:
-              <input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} />
+              <input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>
               {units.distanceString(displayUnits)}
             </label>
             <br/>
@@ -537,13 +537,13 @@ export class EmissionEdit extends React.Component{
             <br/>
             <label>
               Economy:
-              <input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} />
+              <input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control"/>
               {units.string(displayUnits)}
             </label>
             <br/>
             <label>
               Split:
-              <input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} />
+              <input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} className="form-control"/>
             </label>
             <br/>
             CO2 Output (kg): {this.state.co2_output_kg}
@@ -553,10 +553,10 @@ export class EmissionEdit extends React.Component{
         </Modal.Body>
 
         <Modal.Footer>
-          <button name="update" className="btn btn-outline-primary" onClick={this.handleClick}>Save changes</button>
-          <button name="clone" className="btn btn-outline-success" onClick={this.handleClick}>Save as new</button>
-          <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.handleClick}>Cancel edit</button>
-          <button name="delete" className="btn btn-outline-dark" onClick={this.handleClick}>Delete</button>
+          <button name="update" className="btn btn-outline-primary m-2" onClick={this.handleClick}>Save changes</button>
+          <button name="clone" className="btn btn-outline-success m-2" onClick={this.handleClick}>Save as new</button>
+          <button name="cancelEdit" className="btn btn-outline-danger m-2" onClick={this.handleClick}>Cancel edit</button>
+          <button name="delete" className="btn btn-outline-dark m-2" onClick={this.handleClick}>Delete</button>
         </Modal.Footer>
       </Modal>
     )
@@ -595,7 +595,7 @@ export class EmissionDetail extends React.Component{
 
     let display = 
         <tr key={emission.id}>
-          <td><button className="btn btn-outline-primary" onClick={this.edit}><strong>{emission.name}</strong></button></td>
+          <td><button className="btn btn-outline-primary m-2" onClick={this.edit}><strong>{emission.name}</strong></button></td>
           <td>{emission.date}</td>
           <td>{getAttribute(emission.tax_type, this.props.taxes, "name")}</td>
           <td>{parseFloat(distance).toFixed(1)}{distString}</td>
@@ -728,10 +728,10 @@ export class PaymentEdit extends React.Component{
 
     let footer = 
       <div>
-        <button name="update" className="btn btn-outline-primary" onClick={this.saveChange}>Save changes</button>
-        <button name="clone" className="btn btn-outline-success" onClick={this.saveChange}>Save as new</button>
-        <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel edit</button>
-        <button name="delete" className="btn btn-outline-dark" onClick={this.deletePayment}>Delete</button>
+        <button name="update" className="btn btn-outline-primary m-2" onClick={this.saveChange}>Save changes</button>
+        <button name="clone" className="btn btn-outline-success m-2" onClick={this.saveChange}>Save as new</button>
+        <button name="cancelEdit" className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel edit</button>
+        <button name="delete" className="btn btn-outline-dark m-2" onClick={this.deletePayment}>Delete</button>
       </div>
 
     return(
@@ -775,7 +775,7 @@ export class PaymentDetail extends React.Component{
 
   render(){
     let payment = this.props.payment
-    let edit = <button className="btn btn-outline-primary" onClick={this.edit}>Edit</button>
+    let edit = <button className="btn btn-outline-primary m-2" onClick={this.edit}>Edit</button>
 
     return(
       <tr key={payment.id}>
