@@ -609,14 +609,13 @@ export class EmissionDetail extends React.Component{
   }
 }
 
-class PaymentEdit extends React.Component{
+export class PaymentEdit extends React.Component{
   constructor(props){
     super(props)
 
     this.state = {
     }
 
-    this.editPayment=this.editPayment.bind(this)
     this.saveChange=this.saveChange.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.validateInput=this.validateInput.bind(this)
@@ -629,7 +628,7 @@ class PaymentEdit extends React.Component{
     let key = this.props.payment.id
 
     fetchObject({
-      url:`/tax/${key}/`,
+      url:`/payment/${key}/`,
       method:'DELETE',
       onSuccess:this.editSuccess,
       onFailure:this.editFailure,
@@ -637,11 +636,13 @@ class PaymentEdit extends React.Component{
   }
 
   validateInput(){
-    
     return true  
   }
 
-  saveChange(){
+  saveChange(event){
+    let mode=event.target.name
+
+
     if(this.validateInput()){
       let key = this.props.payment.id
 
@@ -652,17 +653,31 @@ class PaymentEdit extends React.Component{
         let field = paymentFields[i]
         if(this.state[field]){
           paymentData[field]=this.state[field]
+        } else {
+          if(mode==="clone"){
+            paymentData[field]=this.props.payment[field]
+          }
         }
       }
 
       console.log(paymentData)
-      fetchObject({
-        url:`/payment/${key}/`,
-        method:'PATCH',
-        data:paymentData,
-        onSuccess:this.editSuccess,
-        onFailure:this.editFailure,
-      })
+      if(mode==="update"){
+        fetchObject({
+          url:`/payment/${key}/`,
+          method:'PATCH',
+          data:paymentData,
+          onSuccess:this.editSuccess,
+          onFailure:this.editFailure,
+        })
+      } else {
+        fetchObject({
+          url:`/my-payments/`,
+          method:'POST',
+          data:paymentData,
+          onSuccess:this.editSuccess,
+          onFailure:this.editFailure,
+        })
+      }
     }
   }
 
@@ -683,20 +698,40 @@ class PaymentEdit extends React.Component{
 
     if(name==="amount"){
       value=parseFloat(value/this.props.profile.conversion_factor).toFixed(2)
+    } else if(name==="recipient"){
+      value=parseInt(value)
     }
     this.setState({[name]:value})
   }
 
 
   render(){
+    let payment = this.props.payment
+    let profile = this.props.profile
+    let prevAmount = parseFloat(payment.amount*profile.conversion_factor).toFixed(2)
+    let sym = profile.currency_symbol
+
     let body = 
-      <div>
-        <p>Edit</p>
-      </div>
+      <form>
+        <label>
+          Amount: ({sym}{profile.currency})
+          <input type="number" name="amount" className="form-control m-2" defaultValue={prevAmount} onChange={this.handleChange}/>
+        </label>
+        <br/>
+        <label>
+          Recipient:
+           <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.recipients} value="id" label="name" defaultValue={this.props.payment.recipient}/>
+        </label>
+        <br/>
+        <input defaultValue={payment.date} type="date" name="date" className="form-control" onChange={this.handleChange}/>
+      </form>
 
     let footer = 
       <div>
-        <button className="btn btn-outline-dark" name="delete" onClick={this.deletePayment}>Delete</button>
+        <button name="update" className="btn btn-outline-primary" onClick={this.saveChange}>Save changes</button>
+        <button name="clone" className="btn btn-outline-success" onClick={this.saveChange}>Save as new</button>
+        <button name="cancelEdit" className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel edit</button>
+        <button name="delete" className="btn btn-outline-dark" onClick={this.deletePayment}>Delete</button>
       </div>
 
     return(

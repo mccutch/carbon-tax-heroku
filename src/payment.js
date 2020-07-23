@@ -4,6 +4,7 @@ import {ObjectSelectionList} from './reactComponents.js';
 import {CreateRecipient} from './objectCreate.js';
 import * as getDate from './getDate.js';
 import {fetchObject, displayCurrency} from './helperFunctions.js';
+import {PaymentEdit} from './objectDetail.js';
 
 export class SearchRecipients extends React.Component{
 
@@ -27,6 +28,67 @@ export class SearchRecipients extends React.Component{
   }
 }
 
+export class PaymentSuccess extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.goTo=this.goTo.bind(this)
+    this.edit=this.edit.bind(this)
+  }
+
+  edit(){
+    let modal = 
+      <PaymentEdit 
+        payment={this.props.payment}
+        profile={this.props.profile}
+        hideModal={this.props.hideModal} 
+        refresh={this.props.refresh}
+        recipients={this.props.recipients}
+      />
+
+    this.props.setModal(modal)
+  }
+
+  goTo(event){
+    this.props.setView(event.target.name)
+    this.props.hideModal()
+  }
+
+  render(){
+    let payment=this.props.payment
+    let prevBalance = this.props.stats.summary.balance
+
+    let body = 
+      <div>
+        <p>Donation saved to profile.</p>
+        <p>Paid: {displayCurrency(payment.amount, this.props.profile)}</p>
+        <p>Balance remaining: {displayCurrency(prevBalance-payment.amount, this.props.profile)}</p>
+      </div>
+
+    let buttons = 
+      <div>
+        <button name="payment" className="btn btn-outline-info m-2" onClick={this.goTo}>New payment</button>
+        <button name="dashboard" className="btn btn-outline-info m-2" onClick={this.goTo}>My Dashboard</button>
+        <button name="edit" className="btn btn-outline-info m-2" onClick={this.edit}>Edit/Clone</button>
+      </div>
+
+    let modal = 
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Payment Saved</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {body}
+        </Modal.Body>
+        <Modal.Footer>
+          {buttons}
+        </Modal.Footer>
+      </Modal>
+
+    return modal
+  }
+}
+
 export class PaymentView extends React.Component{
   constructor(props){
     super(props)
@@ -45,7 +107,6 @@ export class PaymentView extends React.Component{
     this.makePayment=this.makePayment.bind(this)
     this.handlePostSuccess=this.handlePostSuccess.bind(this)
     this.handlePostFailure=this.handlePostFailure.bind(this)
-    this.goTo=this.goTo.bind(this)
     this.setNewRecipient=this.setNewRecipient.bind(this)
   }
 
@@ -141,47 +202,26 @@ export class PaymentView extends React.Component{
 
   handlePostSuccess(json){
     console.log(json)
-    let prevBalance = this.props.stats.summary.balance
-
-    let body = 
-      <div>
-        <p>Donation saved to profile.</p>
-        <p>Paid: {displayCurrency(json.amount, this.props.profile)}</p>
-        <p>Balance remaining: {displayCurrency(prevBalance-json.amount, this.props.profile)}</p>
-      </div>
-
-    let buttons = 
-      <div>
-        <button name="payment" className="btn btn-outline-info m-2" onClick={this.goTo}>New payment</button>
-        <button name="dashboard" className="btn btn-outline-info m-2" onClick={this.goTo}>My Dashboard</button>
-      </div>
-
+    
     let modal = 
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Payment Saved</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {body}
-        </Modal.Body>
-        <Modal.Footer>
-          {buttons}
-        </Modal.Footer>
-      </Modal>
+      <PaymentSuccess
+        payment={json}
+        profile={this.props.profile}
+        recipients={this.props.recipients}
+        refresh={this.props.refresh}
+        stats={this.props.stats}
+        setModal={this.props.setModal}
+        hideModal={this.props.hideModal}
+        setView={this.props.setView}
+      />
 
     this.props.setModal(modal)
     this.props.setView("home")
   }
 
-  goTo(event){
-    this.props.setView(event.target.name)
-    this.props.hideModal()
-  }
-
   handlePostFailure(){
     this.setState({errorMessage:"Unable to save payment to profile."})
   }
-
 
   render(){
 
