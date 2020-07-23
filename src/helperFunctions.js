@@ -13,6 +13,10 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+export function displayCurrency(value, profile){
+  return `${profile.currency_symbol}${parseFloat(value*profile.conversion_factor).toFixed(2)}`
+}
+
 export function truncate(str, maxLen){
   if(str.length > maxLen){
     return str.substring(0,maxLen)

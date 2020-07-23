@@ -279,7 +279,9 @@ export class CreateRecipient extends React.Component{
 
   successModal(){
     this.props.refresh()
+
     let json = this.state.newRecipient
+    this.props.returnId(json.id)
     let modal = 
       <Modal show={true} onHide={this.props.hideModal}>
         <Modal.Header closeButton>

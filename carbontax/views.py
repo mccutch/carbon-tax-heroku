@@ -464,6 +464,7 @@ class UserStats(APIView):
         return {
             'total_paid':total_paid,
             'total_tax':total_tax,
+            'balance':total_tax-total_paid,
             'total_co2':total_co2,
             'total_distance':total_distance,
             'currency':request.user.profile.currency,

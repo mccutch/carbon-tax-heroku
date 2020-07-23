@@ -3,7 +3,7 @@ import {Navbar, Modal} from 'react-bootstrap';
 import {ObjectSelectionList} from './reactComponents.js';
 import {CreateRecipient} from './objectCreate.js';
 import * as getDate from './getDate.js';
-import {fetchObject} from './helperFunctions.js';
+import {fetchObject, displayCurrency} from './helperFunctions.js';
 
 export class SearchRecipients extends React.Component{
 
@@ -31,7 +31,7 @@ export class PaymentView extends React.Component{
   constructor(props){
     super(props)
 
-    let defaultAmount = this.props.stats.summary.total_tax-this.props.stats.summary.total_paid
+    let defaultAmount = this.props.stats.summary.balance
 
     this.state = {
       amount:(defaultAmount>0 ? defaultAmount : 0),
@@ -46,12 +46,33 @@ export class PaymentView extends React.Component{
     this.handlePostSuccess=this.handlePostSuccess.bind(this)
     this.handlePostFailure=this.handlePostFailure.bind(this)
     this.goTo=this.goTo.bind(this)
+    this.setNewRecipient=this.setNewRecipient.bind(this)
   }
 
   componentDidMount(){
-    if(this.props.profile.recipients.length>0){
-      this.setState({recipient:this.props.profile.recipients[0]})
+    if(this.props.recipients.length>0){
+      this.setState({recipient:this.props.recipients[0].id})
     }
+  }
+
+  componentDidUpdate(prevProps){
+    // Change value displayed by selectionList after new recipient is added
+    if(this.state.newRecipient && prevProps.recipients!==this.props.recipients){
+      console.log(`setting selectionList to ${this.state.newRecipient}`)
+      let selectionList = document.getElementById("recipient")
+      selectionList.value = this.state.newRecipient
+      this.setState({
+        newRecipient:false,
+      })
+    }
+  }
+
+  setNewRecipient(id){
+    console.log(`New recipient: ${id}`)
+    this.setState({
+      recipient:id,
+      newRecipient:id,
+    })
   }
 
   handleChange(event){
@@ -74,6 +95,7 @@ export class PaymentView extends React.Component{
         refresh={this.props.refresh}
         setModal={this.props.setModal}
         hideModal={this.props.hideModal}
+        returnId={this.setNewRecipient}
       />
     this.props.setModal(modal)
   }
@@ -100,7 +122,7 @@ export class PaymentView extends React.Component{
         paymentData[field]=this.state[field]
       } else {
         if(field==="amount"){
-          paymentData[field] = this.props.stats.summary.total_tax-this.props.stats.summary.total_paid
+          paymentData[field] = this.props.stats.summary.balance
         } else if(field==="recipient"){
           console.log("No recipient listed.")
         }
@@ -119,10 +141,13 @@ export class PaymentView extends React.Component{
 
   handlePostSuccess(json){
     console.log(json)
+    let prevBalance = this.props.stats.summary.balance
 
     let body = 
       <div>
         <p>Donation saved to profile.</p>
+        <p>Paid: {displayCurrency(json.amount, this.props.profile)}</p>
+        <p>Balance remaining: {displayCurrency(prevBalance-json.amount, this.props.profile)}</p>
       </div>
 
     let buttons = 
@@ -168,7 +193,7 @@ export class PaymentView extends React.Component{
     if(this.props.stats && this.props.profile){
       summary = this.props.stats.summary
       if(summary){
-        balance = parseFloat(conversion*(summary.total_tax-summary.total_paid)).toFixed(2)
+        balance = parseFloat(conversion*(summary.balance)).toFixed(2)
       }
     }
 

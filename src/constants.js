@@ -13,6 +13,6 @@ export const MAX_EMISSION_NAME_LEN = 60
 
 export const MAX_LEN_RECIP_NAME = 60
 export const MAX_LEN_RECIP_COUNTRY = 60
-export const MAX_LEN_RECIP_WEB_LINK = 100
-export const MAX_LEN_RECIP_DONATION_LINK = 100
+export const MAX_LEN_RECIP_WEB_LINK = 200
+export const MAX_LEN_RECIP_DONATION_LINK = 200
 export const MAX_LEN_RECIP_DESCRIPTION = 1000 //Undefined in views.py

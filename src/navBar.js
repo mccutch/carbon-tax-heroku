@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import * as units from './unitConversions.js';
+import {displayCurrency} from './helperFunctions.js';
 
 export class NavBar extends React.Component{
   constructor(props){
@@ -21,10 +22,7 @@ export class NavBar extends React.Component{
     if(this.props.loggedIn && this.props.stats && this.props.profile){
       summary = this.props.stats.summary
       if(summary){
-        conversion = this.props.profile.conversion_factor
-        sym = this.props.profile.currency_symbol
-        balance = parseFloat(conversion*(summary.total_tax-summary.total_paid)).toFixed(2)
-        
+        balance = displayCurrency(summary.balance, this.props.profile)
       }
     }
 
@@ -40,7 +38,7 @@ export class NavBar extends React.Component{
     let newEmission = <Nav.Link key="newEmission" name="newEmission" onClick={this.handleClick}>New Emission</Nav.Link>
     let newPayment = <Nav.Link key="newPayment" name="newPayment" onClick={this.handleClick}>New Payment</Nav.Link>
     let logout = <Nav.Link key="logout" name="logout" onClick={this.handleClick}>Logout</Nav.Link>
-    let outstanding = <Nav.Link key="outstanding" name="newPayment" onClick={this.handleClick}>Balance: {sym}{balance}</Nav.Link> ///Change to payment page
+    let outstanding = <Nav.Link key="outstanding" name="newPayment" onClick={this.handleClick}>Balance: {balance}</Nav.Link> ///Change to payment page
 
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" onClick={this.handleClick}>Login</Nav.Link>

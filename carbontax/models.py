@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 class DonationRecipient(models.Model):
     name = models.CharField(max_length=60)
     country = models.CharField(max_length=60, null=True)
-    website = models.URLField(max_length=100, null=True)
-    donation_link = models.URLField(max_length=100, null=True)
+    website = models.CharField(max_length=200, null=True)
+    donation_link = models.CharField(max_length=200, null=True)
     description = models.TextField(null=True)
 
     def __str__(self):
