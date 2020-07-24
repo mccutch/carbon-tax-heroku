@@ -3,6 +3,7 @@ import {VehicleInput} from './vehicleInput.js';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
 import {Modal} from 'react-bootstrap';
+import {StandardModal} from './reactComponents.js';
 
 
 export class EconomyInput extends React.Component{
@@ -33,19 +34,23 @@ export class EconomyInput extends React.Component{
         vehicles={this.props.vehicles}
         fuels={this.props.fuels}
         submitEconomy={this.receiveUserVehicle}
+        setModal={this.props.setModal}
         hideModal={this.props.hideModal}
         refresh={this.props.refresh}
       />
 
+    let title = <div>My Vehicles</div>
     let modal = 
-      <Modal show={true} onHide={this.props.hideModal}>
+      /*<Modal show={true} onHide={this.props.hideModal}>
         <Modal.Header closeButton>
           <Modal.Title>My Vehicles</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {vehicleTable}
         </Modal.Body>
-      </Modal>
+      </Modal>*/
+
+      <StandardModal hideModal={this.props.hideModal} title={title} body={vehicleTable} />
 
     this.props.setModal(modal)
   }

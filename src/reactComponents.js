@@ -1,6 +1,52 @@
 import React from 'react';
 import * as units from './unitConversions.js';
+import {Modal} from 'react-bootstrap';
 
+
+export class StandardModal extends React.Component{
+  render(){
+    let modalFooter
+    if(this.props.footer){
+      modalFooter = 
+        <Modal.Footer>
+          {this.props.footer}
+        </Modal.Footer>
+    }
+
+    let modalBody
+    if(this.props.body){
+      modalBody = 
+        <Modal.Body>
+          {this.props.body}
+        </Modal.Body>
+    }
+
+    return(
+      <Modal show={true} onHide={this.props.hideModal}>
+        <Modal.Header className="bg-info text-light" closeButton>
+          <Modal.Title>{this.props.title}</Modal.Title>
+        </Modal.Header>
+        {modalBody}
+        {modalFooter}
+      </Modal>
+    )
+  }
+}
+
+export class FormRow extends React.Component{
+  render(){
+    let labelClass = `col-${this.props.labelWidth} col-form-label`
+    let inputClass = `col-${12-this.props.labelWidth}`
+    return(
+      <div className="form-group row">
+        <label className={labelClass}>{this.props.label}</label>
+        <div className={inputClass}>
+          {this.props.input}
+        </div>
+      </div>
+    )
+  }
+}
 
 
 export class TabbedDisplay extends React.Component{

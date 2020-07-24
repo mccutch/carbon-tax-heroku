@@ -1,6 +1,8 @@
-
-
 Object edit form layout
+
+make recipient links optional in front-end
+
+Bug: Remove "add a vehicle" button from vehicleTable displaying user's vehicles
 
 Warning on currency change
 

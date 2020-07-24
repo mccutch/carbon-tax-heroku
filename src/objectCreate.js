@@ -6,6 +6,7 @@ import { VehicleInput } from './vehicleInput.js';
 import { VehicleSaveForm } from './vehicleSave.js';
 import {fetchObject} from './helperFunctions.js';
 import { MAX_NAME_LEN } from './validation.js';
+import {StandardModal} from './reactComponents.js';
 import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION} from './constants.js';
 
 export class CreateTax extends React.Component{
@@ -97,34 +98,33 @@ export class CreateTax extends React.Component{
       errorDisplay=<p>{this.state.error}</p>
     }
 
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create Tax</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {errorDisplay}
-          <label>
-            Name:
-            <input type="text" name="newName" maxLength={MAX_NAME_LEN} onChange={this.handleChange}/>
-          </label>
-          <br/>
-          <label>
-            Price per kg:
-            <input type="number" name="newPrice" onChange={this.handleChange}/>
-          </label>
-          <label>
-            Category:
-            <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
-          </label>
-        </Modal.Body>
-        <Modal.Footer>
-          <button type="button" className="btn btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
-          <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
-        </Modal.Footer>
-      </Modal>
-    )
+    let title = <div>Create Tax</div>
 
+    let body = 
+      <div>
+        {errorDisplay}
+        <label>
+          Name:
+          <input type="text" name="newName" maxLength={MAX_NAME_LEN} onChange={this.handleChange}/>
+        </label>
+        <br/>
+        <label>
+          Price per kg:
+          <input type="number" name="newPrice" onChange={this.handleChange}/>
+        </label>
+        <label>
+          Category:
+          <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
+        </label>
+      </div>
+
+    let footer = 
+      <div>
+        <button type="button" className="btn btn-outline-primary m-2" onClick={this.submitNewTax}>Submit</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+      </div>
+
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
   }
 }
 
@@ -278,25 +278,18 @@ export class CreateRecipient extends React.Component{
   }
 
   successModal(){
-    this.props.refresh()
-
     let json = this.state.newRecipient
+    this.props.refresh()
     this.props.returnId(json.id)
-    let modal = 
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>New: {json.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>{json.description}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <a href={json.website} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info">Website</a>
-          <a href={json.donation_link} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info">Donation</a>
-        </Modal.Footer>
-      </Modal>
 
-    this.props.setModal(modal)
+    let title = <div>New: {json.name}</div>
+    let body = <p>{json.description}</p>
+    let footer = 
+      <div>
+        <a href={json.website} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info">Website</a>
+        <a href={json.donation_link} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info">Donation</a>
+      </div>
+    this.props.setModal(<StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer}/>)
   }
 
   handlePostFailure(json){
@@ -310,6 +303,7 @@ export class CreateRecipient extends React.Component{
       errorMessage = <p><strong>{this.state.errorMessage}</strong></p>
     }
 
+    let title = <div>Create Recipient</div>
     let form = 
       <form>
         <label>
@@ -346,18 +340,6 @@ export class CreateRecipient extends React.Component{
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
       </div>
 
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create Recipient</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {form}
-        </Modal.Body>
-        <Modal.Footer>
-          {formButtons}
-        </Modal.Footer>
-      </Modal>
-    )
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={form} footer={formButtons} />
   }
 }

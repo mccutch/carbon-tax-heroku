@@ -4,8 +4,7 @@ import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
 import { fetchObject, getAttribute, displayCurrency } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
-import { ObjectSelectionList } from './reactComponents.js';
-import {Modal, Button} from 'react-bootstrap';
+import { ObjectSelectionList, FormRow, StandardModal } from './reactComponents.js';
 
 class TaxEdit extends React.Component{
   constructor(props){
@@ -121,24 +120,26 @@ class TaxEdit extends React.Component{
       deleteButton = <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteTax}>Delete</button>
     }
 
+    let title=<div>Edit Tax</div>
+
+    let body =
+      <div>
+        Name:
+        <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" className="form-control"/>
+        <br/>
+        Price per kg: {sym}
+        <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01" className="form-control"/>
+      </div>
+
+    let footer = 
+      <div>
+        <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
+        {deleteButton}
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+      </div>   
+
     return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header className="bg-primary text-light" closeButton>
-          <Modal.Title>Edit Tax</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Name:
-          <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" className="form-control"/>
-          <br/>
-          Price per kg: {sym}
-          <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01" className="form-control"/>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
-          {deleteButton}
-          <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
-        </Modal.Footer>
-      </Modal>
+      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
     )
   }
 }
@@ -273,12 +274,11 @@ class VehicleEdit extends React.Component{
     if(this.state.error){
       errorDisplay = <p>Unable to save changes.</p>
     }
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Vehicle</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+
+    let title = <div>Edit Vehicle</div>
+
+    let body = 
+      <div>
         {errorDisplay}
         <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} className="form-control"/>
         <label>
@@ -286,13 +286,17 @@ class VehicleEdit extends React.Component{
           {units.string(this.props.displayUnits)}
         </label>
         <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
-      </Modal.Body>
-      <Modal.Footer>
+      </div>
+
+    let footer = 
+      <div>
         <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
         <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteVehicle}>Delete</button>
         <button className="btn btn-outline-danger m-2" name="cancel" onClick={this.props.hideModal}>Cancel</button>
-      </Modal.Footer>
-      </Modal>
+      </div>
+
+    return(
+      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
     )
   }
 }
@@ -507,59 +511,57 @@ export class EmissionEdit extends React.Component{
     let distance = (units.distanceDisplay(emission.distance, displayUnits)).toFixed(1)
     let economy = (units.convert(emission.economy, displayUnits)).toFixed(2)
 
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Emission</Modal.Title>
-        </Modal.Header>
+    let title = <div>Edit Emission</div>
 
-        <Modal.Body>
-          <form>
-            <p>{this.state.errorMessage}</p>
-            <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} className="form-control"/>
-            <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} className="form-control"/>
-            <br/>
-            <label>
-              Tax Type:
-              <ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="id" label="name" onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <label>
-              Distance:
-              <input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>
-              {units.distanceString(displayUnits)}
-            </label>
-            <br/>
-            <label>
-              Fuel:
-              <ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <label>
-              Economy:
-              <input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control"/>
-              {units.string(displayUnits)}
-            </label>
-            <br/>
-            <label>
-              Split:
-              <input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} className="form-control"/>
-            </label>
-            <br/>
-            CO2 Output (kg): {this.state.co2_output_kg}
-            <br/>
-            Price: {this.state.price}
-          </form>
-        </Modal.Body>
+    let body = 
+      <form className="container">
+        <p>{this.state.errorMessage}</p>
+        <div className="form-group row">
+          <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} className="form-control"/>
+        </div>
+        <div className="form-group row">
+          <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} className="form-control"/>
+        </div>
+        <FormRow
+          label={<div>Tax Type:</div>}
+          labelWidth={4}
+          input={<ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="id" label="name" onChange={this.handleChange}/>}
+        />
+        <FormRow
+          label={<div>Distance: ({units.distanceString(displayUnits)})</div>}
+          labelWidth={4}
+          input={<input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>}
+        />
+        <FormRow
+          label={<div>Fuel:</div>}
+          labelWidth={4}
+          input={<ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>}
+        />
+        <FormRow
+          label={<div>Economy: ({units.string(displayUnits)})</div>}
+          labelWidth={4}
+          input={<input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control" step="0.1"/>}
+        />
+        <FormRow
+          label={<div>Split:</div>}
+          labelWidth={4}
+          input={<input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} className="form-control"/>}
+        />
+        <br/>
+        CO2 Output: <strong>{this.state.co2_output_kg}kg</strong>
+        <br/>
+        Price: <strong>{displayCurrency(this.state.price, this.props.profile)}</strong>
+      </form>
 
-        <Modal.Footer>
-          <button name="update" className="btn btn-outline-primary m-2" onClick={this.handleClick}>Save changes</button>
-          <button name="clone" className="btn btn-outline-success m-2" onClick={this.handleClick}>Save as new</button>
-          <button name="cancelEdit" className="btn btn-outline-danger m-2" onClick={this.handleClick}>Cancel edit</button>
-          <button name="delete" className="btn btn-outline-dark m-2" onClick={this.handleClick}>Delete</button>
-        </Modal.Footer>
-      </Modal>
-    )
+    let footer = 
+      <div>
+        <button name="update" className="btn btn-outline-primary m-2" onClick={this.handleClick}>Save changes</button>
+        <button name="clone" className="btn btn-outline-success m-2" onClick={this.handleClick}>Save as new</button>
+        <button name="cancelEdit" className="btn btn-outline-danger m-2" onClick={this.handleClick}>Cancel edit</button>
+        <button name="delete" className="btn btn-outline-dark m-2" onClick={this.handleClick}>Delete</button>
+      </div>
+
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
   }
 }
 
@@ -604,7 +606,6 @@ export class EmissionDetail extends React.Component{
           <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
         </tr>
     
-
     return display
   }
 }
@@ -735,17 +736,12 @@ export class PaymentEdit extends React.Component{
       </div>
 
     return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header className="bg-primary text-light" closeButton>
-          <Modal.Title>Edit Payment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {body}
-        </Modal.Body>
-        <Modal.Footer>
-          {footer}
-        </Modal.Footer>
-      </Modal>
+      <StandardModal
+        hideModal={this.props.hideModal}
+        title={<div>Edit Payment</div>}
+        body={body}
+        footer={footer}
+      />
     )
   }
 }
