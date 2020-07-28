@@ -6,7 +6,7 @@ import { getToken }  from './myJWT.js';
 import * as helper from './helperFunctions.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
-import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection } from './reactComponents.js';
+import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal } from './reactComponents.js';
 
 import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
@@ -213,102 +213,94 @@ export class RegistrationForm extends React.Component{
   render(){
     let error
     if(this.state.errorMessage){
-      error = <p>{this.state.errorMessage}</p>
+      error = <p className="text-danger"><strong>{this.state.errorMessage}</strong></p>
     }
 
-    return(
-      <Modal show={true} onHide={this.props.onHide}>
-        <Modal.Header closeButton>
-          <Modal.Title>Sign Up</Modal.Title>
-        </Modal.Header>
+    let title = <div>Sign Up</div>
 
-        <Modal.Body>
-          
-        
-          <div>
-            <form>
-              {error}
-              <h4>Required Information</h4>
-              <input
-                type="text"
-                name="username"
-                onChange={this.handleChange}
-                placeholder="Username"
-              />
-              <br/>
-              <input
-                type="password"
-                name="password"
-                onChange={this.handleChange}
-                placeholder="Password"
-                maxLength={MAX_PASSWORD_LEN}
-              />
-              <br/>
-              <input
-                type="password"
-                name="password_check"
-                onChange={this.handleChange}
-                placeholder="Confirm Password"
-              />
-              <br/>
-              <input
-                type="text"
-                name="email"
-                onChange={this.handleChange}
-                placeholder="Email"
-                maxLength={MAX_EMAIL_LEN}
-              />
-              <br/>
-              <label>
-                Currency:
-                {/*<CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />*/}
-              </label>
-              <br/>
-              <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
-              <br/>
-              <label>
-                Economy units:
-                <DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />
-               </label>
-              <br/>
-              <h4>Optional Information</h4>
-              <input
-                type="text"
-                name="firstName"
-                onChange={this.handleChange}
-                placeholder="First name"
-                maxLength={MAX_NAME_LEN}
-              />
-              <input
-                type="text"
-                name="lastName"
-                onChange={this.handleChange}
-                placeholder="Last name"
-                maxLength={MAX_NAME_LEN}
-              />
-              <input
-                type="text"
-                name="location"
-                onChange={this.handleChange}
-                placeholder="Location"
-                maxLength={MAX_NAME_LEN}
-              />
-              <input
-                type="date"
-                name="date_of_birth"
-                onChange={this.handleChange}
-                placeholder="Date of Birth"
-              />
-              <br/>
-            </form>
-          </div>
-        </Modal.Body>
+    let body = 
+      <form>
+        <h4>Required Information</h4>
+        <input
+          type="text"
+          name="username"
+          onChange={this.handleChange}
+          placeholder="Username"
+          className="form-control m-2"
+        />
+        <input
+          type="password"
+          name="password"
+          onChange={this.handleChange}
+          placeholder="Password"
+          maxLength={MAX_PASSWORD_LEN}
+          className="form-control m-2"
+        />
+        <input
+          type="password"
+          name="password_check"
+          onChange={this.handleChange}
+          placeholder="Confirm Password"
+          className="form-control m-2"
+        />
+        <input
+          type="text"
+          name="email"
+          onChange={this.handleChange}
+          placeholder="Email"
+          maxLength={MAX_EMAIL_LEN}
+          className="form-control m-2"
+        />
+        <label>
+          Currency:
+          <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
+        </label>
+        <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
+        <label>
+          Economy units:
+          <DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />
+         </label>
+        <h4>Optional Information</h4>
+        <input
+          type="text"
+          name="firstName"
+          onChange={this.handleChange}
+          placeholder="First name"
+          maxLength={MAX_NAME_LEN}
+          className="form-control m-2"
+        />
+        <input
+          type="text"
+          name="lastName"
+          onChange={this.handleChange}
+          placeholder="Last name"
+          maxLength={MAX_NAME_LEN}
+          className="form-control m-2"
+        />
+        <input
+          type="text"
+          name="location"
+          onChange={this.handleChange}
+          placeholder="Location"
+          maxLength={MAX_NAME_LEN}
+          className="form-control m-2"
+        />
+        <input
+          type="date"
+          name="date_of_birth"
+          onChange={this.handleChange}
+          placeholder="Date of Birth"
+          className="form-control m-2"
+        />
+        {error}
+      </form>
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={this.props.onHide}>Cancel</Button>
-          <Button variant="success" onClick={this.validateUserData}>Create account</Button>
-        </Modal.Footer>
-      </Modal>
-    )
+    let footer =  
+      <div>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-success m-2" onClick={this.validateUserData}>Create account</button>
+      </div>
+
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
   }
 }

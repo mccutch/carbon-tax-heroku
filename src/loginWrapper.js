@@ -3,6 +3,7 @@ import {getToken, clearToken }  from './myJWT.js';
 import {ProfileDisplay} from './userProfile.js';
 import {RegistrationForm} from './registrationForm.js';
 import {Modal, Button} from 'react-bootstrap';
+import {StandardModal} from './reactComponents.js';
 
 const DEMO_USERNAME = process.env.REACT_APP_DEMO_USERNAME
 const DEMO_PW = process.env.REACT_APP_DEMOUSER_PW
@@ -51,32 +52,19 @@ export class LoginForm extends React.Component{
       failureText = <p>Login failed. <a href='/account/password_reset/'>Forgot your password?</a></p>
     }
 
-    return(
-      <Modal show={true} onHide={this.props.onHide}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login</Modal.Title>
-        </Modal.Header>
+    let title = <div>Login</div>
 
-        <Modal.Body>
-          {failureText}
-          <form onSubmit={this.handleSubmit}>
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              onChange={this.handleChange}
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              onChange={this.handleChange}
-            />
-            <button type="submit" className="btn btn-outline-primary m-2">Login</button>
-          </form>
-        </Modal.Body>
-      </Modal>
-    )
+    let form = 
+      <div>
+       {failureText}
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" name="username" placeholder="Username" onChange={this.handleChange} className="form-control m-2"/>
+          <input type="password" name="password" placeholder="Password" onChange={this.handleChange} className="form-control m-2"/>
+          <button type="submit" className="btn btn-outline-primary m-2">Login</button>
+        </form>
+      </div>
+
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={form} />
   }
 }
 

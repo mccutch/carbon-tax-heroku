@@ -6,6 +6,8 @@ export const DEFAULT_CURRENCY_SYMBOL = "$"
 export const DEFAULT_DISPLAY_UNITS = units.METRIC
 export const DEFAULT_VEHICLE_NAME = "My Vehicle"
 
+export const DEFAULT_MAP_CENTER = {lat: -34.397, lng: 150.644} //Western Syndey
+
 
 //Constants defined in views.py - Both sources must be changed and migration applied.
 export const MAX_VEHICLE_NAME_LEN = 30

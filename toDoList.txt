@@ -1,4 +1,4 @@
-Object edit form layout
+formatting on login and registration forms
 
 make recipient links optional in front-end
 

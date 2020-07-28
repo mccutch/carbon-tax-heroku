@@ -12,7 +12,7 @@ import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
 import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker';
 
-
+import {GoogleDirections} from './googleDirections.js';
 
 
 class App extends React.Component {
@@ -61,6 +61,8 @@ class App extends React.Component {
       noAuth:true,
     })
     this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
+
+    this.setState({modal:<GoogleDirections hideModal={this.hideModal}/>,})
   }
 
   serverConnectionFailure(){
@@ -186,7 +188,7 @@ class App extends React.Component {
     this.refreshFullProfile()
 
     if(nav==="login"){
-      this.setModal("login")
+      this.setModal(<LoginForm onSuccess={this.login} hideModal={this.hideModal}/>)
 
     } else if(nav==="logout"){
       this.logout()
@@ -195,7 +197,7 @@ class App extends React.Component {
       demoLogin({onSuccess:this.login})
 
     } else if(nav==="register"){
-      this.setModal("register")
+      this.setModal(<RegistrationForm onSuccess={this.login} hideModal={this.hideModal}/>)
 
     } else if(nav==="newEmission"){
       this.setMainView("emissionCalculator")
@@ -233,11 +235,7 @@ class App extends React.Component {
     }
 
     let modal
-    if(this.state.modal==="login"){
-      modal = <LoginForm onSuccess={this.login} onHide={this.hideModal}/>
-    } else if(this.state.modal==="register"){
-      modal = <RegistrationForm onSuccess={this.login} onHide={this.hideModal}/>
-    } else if(this.state.modal){
+    if(this.state.modal){
       modal = this.state.modal
     }
 
