@@ -40,17 +40,7 @@ export class EconomyInput extends React.Component{
       />
 
     let title = <div>My Vehicles</div>
-    let modal = 
-      /*<Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>My Vehicles</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {vehicleTable}
-        </Modal.Body>
-      </Modal>*/
-
-      <StandardModal hideModal={this.props.hideModal} title={title} body={vehicleTable} />
+    let modal = <StandardModal hideModal={this.props.hideModal} title={title} body={vehicleTable} />
 
     this.props.setModal(modal)
   }

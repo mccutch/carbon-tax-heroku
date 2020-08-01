@@ -62,7 +62,7 @@ class App extends React.Component {
     })
     this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
 
-    this.setState({modal:<GoogleDirections hideModal={this.hideModal}/>,})
+    //this.setState({modal:<GoogleDirections hideModal={this.hideModal} displayUnits={this.state.displayUnits}/>,})
   }
 
   serverConnectionFailure(){

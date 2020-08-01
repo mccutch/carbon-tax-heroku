@@ -1,5 +1,7 @@
 formatting on login and registration forms
 
+Add default location to profile
+
 make recipient links optional in front-end
 
 Bug: Remove "add a vehicle" button from vehicleTable displaying user's vehicles

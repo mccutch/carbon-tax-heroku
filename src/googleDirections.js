@@ -1,7 +1,7 @@
 import React from 'react';
-
 import {StandardModal} from './reactComponents.js';
 import {DEFAULT_MAP_CENTER} from './constants.js';
+import * as units from './unitConversions.js';
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
 
@@ -10,7 +10,9 @@ export class GoogleDirections extends React.Component{
   constructor(props){
     super(props)
 
-    this.state = {}
+    this.state = {
+      returnTrip: false,
+    }
 
 
     this.initMap=this.initMap.bind(this)  
@@ -27,6 +29,9 @@ export class GoogleDirections extends React.Component{
     window.useInput=this.useInput
     this.setLocationBias=this.setLocationBias.bind(this)
     this.findDirections=this.findDirections.bind(this)
+    this.useRoute=this.useRoute.bind(this)
+    this.updateDistance=this.updateDistance.bind(this)
+    this.submitDistance=this.submitDistance.bind(this)
   }
 
   initMap() {
@@ -45,7 +50,7 @@ export class GoogleDirections extends React.Component{
         });
 
       let directionsService = new gMaps.DirectionsService()
-      let directionsRenderer = new gMaps.DirectionsRenderer({map:map, suppressMarkers:false,})
+      let directionsRenderer = new gMaps.DirectionsRenderer({map:map})
 
       let autoOrigin = new gMaps.places.Autocomplete(document.getElementById("origin"))
       let autoDestination = new gMaps.places.Autocomplete(document.getElementById("destination"))
@@ -123,8 +128,6 @@ export class GoogleDirections extends React.Component{
       if(this.state.via){
         waypoints.push({location:this.state.via.geometry.location.toJSON()})
       }
-
-      console.log(waypoints)
       
       this.directionsService.route(
         {
@@ -137,12 +140,31 @@ export class GoogleDirections extends React.Component{
           if (status === "OK") {
             this.directionsRenderer.setDirections(response);
             console.log(response)
+            this.useRoute(response.routes[0].legs)
           } else {
             window.alert("Directions request failed due to " + status);
           }
         }
       );
     }
+  }
+
+  useRoute(legs){
+    console.log(legs)
+    let distance = 0
+    for(let i in legs){
+      distance += legs[i].distance.value/1000
+    }
+    this.setState({distance:distance}, this.updateDistance)
+  }
+
+  updateDistance(){
+    this.setState({totalDistance:this.state.distance*(this.state.returnTrip ? 2 : 1)})
+  }
+
+  submitDistance(){
+    this.props.submitDistance(this.state.origin, this.state.destination, this.state.totalDistance, this.state.returnTrip)
+    this.props.hideModal()
   }
 
   render(){
@@ -160,10 +182,23 @@ export class GoogleDirections extends React.Component{
         <div id="map" style={{height:"500px", width:"100"}}></div>
       </div>
 
-    let footer = <div>Footer</div>
+    let footer 
+    if(this.state.totalDistance){
+      let distDisplay = units.distanceDisplay(this.state.totalDistance, this.props.displayUnits)
+      let unitDisplay = units.distanceString(this.props.displayUnits)
+      let returnButton
+      if(!this.state.returnTrip){
+        returnButton = <button className="btn btn-warning m-2" onClick={()=>this.setState({returnTrip:true}, this.updateDistance)}>Return trip?</button>
+      } else {
+        returnButton = <button className="btn btn-warning m-2" onClick={()=>this.setState({returnTrip:false}, this.updateDistance)}>One way?</button>
+      }
+      footer = 
+        <div>
+          {returnButton}
+          <button className="btn btn-success m-2" onClick={this.submitDistance}><strong>{parseFloat(distDisplay).toFixed(1)}{unitDisplay}</strong></button>
+        </div>
+    }
 
-    return (
-      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer}/>
-      )
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer}/>
   }
 }

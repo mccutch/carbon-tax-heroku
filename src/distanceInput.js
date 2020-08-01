@@ -1,5 +1,6 @@
 import React from 'react';
-import { RouteCalculator } from './routeCalculator.js'
+//import { RouteCalculator } from './routeCalculator.js'
+import {GoogleDirections} from './googleDirections.js';
 import * as units from './unitConversions.js'
 
 
@@ -25,11 +26,12 @@ export class DistanceInput extends React.Component{
   }
 
   showRouteCalculator(){
-    let modal = <RouteCalculator  
+    /*let modal = <RouteCalculator  
                   submitDistance={this.props.submitDistance}
                   displayUnits={this.props.displayUnits}
                   hideModal={this.props.hideModal}
-                />
+                />*/
+    let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits}/>
     this.props.setModal(modal)
   }
 
