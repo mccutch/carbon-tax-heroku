@@ -70,6 +70,7 @@ class ListInput extends React.Component {
           <select
             onChange = {this.props.onChange}
             name = {this.props.label}
+            className="form-control"
           >
             {this.renderOptions()}
           </select>

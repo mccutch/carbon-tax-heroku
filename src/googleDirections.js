@@ -32,6 +32,7 @@ export class GoogleDirections extends React.Component{
     this.useRoute=this.useRoute.bind(this)
     this.updateDistance=this.updateDistance.bind(this)
     this.submitDistance=this.submitDistance.bind(this)
+    this.handleErrorStatus=this.handleErrorStatus.bind(this)
   }
 
   initMap() {
@@ -142,11 +143,21 @@ export class GoogleDirections extends React.Component{
             console.log(response)
             this.useRoute(response.routes[0].legs)
           } else {
-            window.alert("Directions request failed due to " + status);
+            this.handleErrorStatus(status)
           }
         }
       );
     }
+  }
+
+  handleErrorStatus(status){
+    let errorMessage
+    if(status==="ZERO_RESULTS"){
+      errorMessage = "No routes found between these locations. Try specifying the region."
+    } else {
+      errorMessage = `Failed due to ${status}.`
+    }
+    this.setState({errorMessage:errorMessage})
   }
 
   useRoute(legs){
@@ -163,7 +174,7 @@ export class GoogleDirections extends React.Component{
   }
 
   submitDistance(){
-    this.props.submitDistance(this.state.origin, this.state.destination, this.state.totalDistance, this.state.returnTrip)
+    this.props.submitDistance(this.state.origin.name, this.state.destination.name, this.state.totalDistance, this.state.returnTrip)
     this.props.hideModal()
   }
 
@@ -171,7 +182,7 @@ export class GoogleDirections extends React.Component{
     let errorMessage
     if(this.state.errorMessage){errorMessage = <p><strong>{this.state.errorMessage}</strong></p>}
 
-    let title = <div>GoogleDirections</div>
+    let title = <div>Route Calculator</div>
 
     let body = 
       <div>
@@ -179,7 +190,7 @@ export class GoogleDirections extends React.Component{
         <input type="text" id="destination" placeholder="Destination" className="form-control"/>
         <input type="text" id="via" placeholder="Via" className="form-control"/>
         {errorMessage}
-        <div id="map" style={{height:"500px", width:"100"}}></div>
+        <div id="map" style={{height:"300px", width:"100"}}></div>
       </div>
 
     let footer 
