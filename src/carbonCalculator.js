@@ -17,8 +17,6 @@ export class CarbonCalculator extends React.Component{
     if(this.props.data.origin){
       let origin = this.props.data.origin
       let destination = this.props.data.destination
-      origin = origin.substring(0, origin.indexOf(','));
-      destination = destination.substring(0, destination.indexOf(','));
       tripName = origin +" to "+destination
 
       if(this.props.data.returnTrip){

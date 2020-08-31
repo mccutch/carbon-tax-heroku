@@ -1,3 +1,5 @@
+input for naming trip has disappeared
+
 formatting on login and registration forms
 
 Add default location to profile
