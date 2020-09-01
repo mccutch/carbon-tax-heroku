@@ -60,7 +60,7 @@ export class LoginForm extends React.Component{
         <form onSubmit={this.handleSubmit}>
           <input type="text" name="username" placeholder="Username" onChange={this.handleChange} className="form-control m-2"/>
           <input type="password" name="password" placeholder="Password" onChange={this.handleChange} className="form-control m-2"/>
-          <button type="submit" className="btn btn-outline-primary m-2">Login</button>
+          <button type="submit" className="btn btn-success m-2">Login</button>
         </form>
       </div>
 

@@ -87,11 +87,13 @@ export class TaxTable extends React.Component{
           />)
       }
     }
-    tableRows.push(
-      <tr>
-        <button className="btn btn-outline-primary" onClick={this.createNew}>+ Create Tax</button>
-      </tr>
-    )
+    if(this.props.addNew){
+      tableRows.push(
+        <tr>
+          <button className="btn btn-outline-primary" onClick={this.createNew}>+ Create Tax</button>
+        </tr>
+      )
+    }
     return tableRows
   }
 
@@ -133,17 +135,14 @@ export class VehicleTable extends React.Component{
         />
       )
     }
-    tableRows.push(
-                  <tr>
-                    <CreateVehicle 
-                      displayUnits={this.props.displayUnits} 
-                      fuels={this.props.fuels} 
-                      refresh={this.props.refresh}
-                      setModal={this.props.setModal}
-                      hideModal={this.props.hideModal}
-                    />
-                  </tr>
-                  )
+    if(this.props.addNew){
+      tableRows.push(
+        <tr>
+          <CreateVehicle displayUnits={this.props.displayUnits} fuels={this.props.fuels} refresh={this.props.refresh} setModal={this.props.setModal} hideModal={this.props.hideModal}/>
+        </tr>
+      )
+    }
+    
     return tableRows
   }
 

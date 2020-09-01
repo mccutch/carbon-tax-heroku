@@ -189,7 +189,7 @@ export class CreateVehicle extends React.Component{
       display = <td><button name="createVehicle" className="btn btn-outline-primary" onClick={this.handleClick}>+ New Vehicle</button></td>
     } else {
       display =
-        <td colspan="4">
+        <td colspan="4" >
           <VehicleInput 
             displayUnits={this.props.displayUnits} 
             fuels={this.props.fuels}

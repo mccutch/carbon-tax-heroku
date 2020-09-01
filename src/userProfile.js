@@ -506,6 +506,7 @@ class SettingsLists extends React.Component{
         profile={this.props.profile}
         setModal={this.props.setModal}
         hideModal={this.props.hideModal}
+        addNew={true}
       />
     let vehicleTable = 
       <VehicleTable 
@@ -515,6 +516,7 @@ class SettingsLists extends React.Component{
         fuels={this.props.fuels}
         setModal={this.props.setModal}
         hideModal={this.props.hideModal}
+        addNew={true}
       />
 
     let tabData = [
