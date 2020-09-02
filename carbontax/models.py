@@ -95,7 +95,6 @@ class EmissionInstance(models.Model):
     economy = models.FloatField(default=10)
     split = models.FloatField(default=1)
     co2_output_kg = models.FloatField(null=True)
-    #tax_type = models.CharField(max_length=60, null=True)
     tax_type = models.ForeignKey(TaxRate, on_delete=models.SET_NULL, related_name='emissions', null=True)
     price = models.FloatField(null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)

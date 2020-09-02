@@ -92,36 +92,7 @@ class EmissionDetail(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         return user.emissions.all()
 
-class EmissionsByTax(APIView):
-    permission_classes = (IsAuthenticated, )
-    def get(self, request, pk):
-        emissions = request.user.emissions.filter(tax_type=self.kwargs['pk'])
-        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
-        return Response(serializer.data)
 
-    def post(self, request, pk, format=None):
-        data=request.data
-        print(data['apply_to'])
-        
-        emissions = request.user.emissions.filter(tax_type=self.kwargs['pk'])
-
-        if data['apply_to']=="sincePayment":
-            last_payment_date = self.find_last_payment(request)
-            if last_payment_date:
-                print(last_payment_date)
-                emissions = emissions.filter(date__gt=last_payment_date)
-
-        
-        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
-        return Response(serializer.data)
-
-    def find_last_payment(self, request):
-        print("Find last payment")
-        payments = request.user.payments.all().order_by('-date')
-        if len(payments) > 0:
-            return payments[0].date
-        else:
-            return False
 
 
 
@@ -349,9 +320,12 @@ class UserStats(APIView):
         
         if (len(emissions) == 0) and (len(payments) == 0):
             return months
+
+        first_date = None
+        last_date = None
         
         for emission in emissions:
-            if emission == emissions[0]:
+            if first_date == None:
                 first_date = emission.date
                 last_date = emission.date
                 continue
@@ -361,6 +335,10 @@ class UserStats(APIView):
                 last_date = emission.date
 
         for payment in payments:
+            if first_date == None:
+                first_date = payment.date
+                last_date = payment.date
+                continue
             if payment.date<first_date:
                 first_date = payment.date
             elif payment.date>last_date:
@@ -540,3 +518,78 @@ class UpdatePassword(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class BackdateTaxChange(APIView):
+    """
+    Endpoint for backdating a change in tax rate to emissions that used this tax in the past.
+    GET returns a list of all emissions using the tax rate, and a list of all using the rate since last payment.
+    POST will update chosen emissions in the database.
+    """
+    permission_classes = (IsAuthenticated, )
+    def get(self, request, pk):
+        emissions = self.all_emissions(request, pk)
+        emissions_since_payment = self.all_since_payment(request, emissions)
+        
+        content = {
+            'all':serializers.EmissionSerializer(emissions, many=True, context={'request':request}).data,
+            'sincePayment':serializers.EmissionSerializer(emissions_since_payment, many=True, context={'request':request}).data,
+            'paymentDate':self.find_last_payment(request),
+        }
+        return Response(content)
+
+    def post(self, request, pk, format=None):
+        print(request.data['apply_to'])
+        
+        emissions = self.all_emissions(request, pk)
+
+        if request.data['apply_to']=="sincePayment":
+            emissions = self.all_since_payment(request, emissions)
+
+        self.apply_change(request, emissions, pk)
+        
+        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
+        return Response(serializer.data)
+
+    def all_emissions(self, request, pk):
+        return request.user.emissions.filter(tax_type=self.kwargs['pk'])
+
+    def all_since_payment(self, request, all_emissions):
+        last_payment_date = self.find_last_payment(request)
+        if last_payment_date:
+            return all_emissions.filter(date__gt=last_payment_date)
+        else:
+            return all_emissions
+
+    def find_last_payment(self, request):
+        payments = request.user.payments.all().order_by('-date')
+        if len(payments) > 0:
+            return payments[0].date
+        else:
+            return False
+
+    def apply_change(self, request, emissions, pk):
+        print("Applying tax change to emissions in database.")
+        tax_rate = request.user.taxes.get(pk=pk).price_per_kg
+        print(f'New tax rate: {tax_rate}')
+
+        for emission in emissions:
+            emission.price = round(emission.co2_output_kg*tax_rate, 2)
+            emission.save()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

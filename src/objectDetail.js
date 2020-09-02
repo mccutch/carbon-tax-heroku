@@ -18,7 +18,7 @@ class TaxBackDate extends React.Component{
 
   componentDidMount(){
     fetchObject({
-      url:`/emissions-by-tax/${this.props.tax.id}/`,
+      url:`/backdate-tax-change/${this.props.tax.id}/`,
       method:"GET", 
       onSuccess:this.listEmissions, 
       onFailure:this.handleFetchFailure,
@@ -26,14 +26,19 @@ class TaxBackDate extends React.Component{
   }
 
   listEmissions(emissionList){
-    if(emissionList.length===0){
+    console.log("list emissionList")
+    console.log(emissionList)
+    if(emissionList.all.length===0){
       sleep(500).then(()=>{
         this.props.hideModal()
       })
     } else {
       this.setState({
-        emissions:emissionList,
-        count:emissionList.length
+        allEmissions:emissionList.all,
+        countAll:emissionList.all.length,
+        sincePaymentEmissions:emissionList.sincePayment,
+        countSincePayment:emissionList.sincePayment.length,
+        paymentDate:emissionList.paymentDate,
       })
     }
   }
@@ -44,7 +49,7 @@ class TaxBackDate extends React.Component{
 
   applyChange(event){
     fetchObject({
-      url:`/emissions-by-tax/${this.props.tax.id}/`,
+      url:`/backdate-tax-change/${this.props.tax.id}/`,
       method:'POST',
       data:{apply_to: event.target.name}, 
       onSuccess:this.handleBackdateSuccess, 
@@ -55,6 +60,7 @@ class TaxBackDate extends React.Component{
   handleBackdateSuccess(response){
     console.log("Changed applied.")
     console.log(response)
+    this.props.refresh()
     this.props.hideModal()
   }
 
@@ -62,14 +68,22 @@ class TaxBackDate extends React.Component{
     let tax = this.props.tax
     let title = <div>Backdate this tax change?</div>
 
-    let body 
-    if(this.state.emissions){
-      let showDetailsButton
-      if(this.state.count>0){showDetailsButton = <button className="btn btn-outline-info m-2">Show</button>}
+    let body, applySincePaymentButton 
+    if(this.state.allEmissions){
+      let displayText, showSincePaymentButton
+      if(this.state.paymentDate){
+        displayText = <p>This tax has been used for {this.state.countAll} emissions, {this.state.countSincePayment} since your last payment on {this.state.paymentDate}.</p>
+        showSincePaymentButton = <button className="btn btn-outline-info m-2">Show since payment</button>
+        applySincePaymentButton = <button className="btn btn-outline-info m-2" name="sincePayment" onClick={this.applyChange}>All since last payment</button>
+      } else {
+        displayText = <p>This tax has been used for {this.state.countAll} emissions.</p>
+      }
+
       body = 
         <div>
-          <p>This tax has been used for {this.state.count} emissions.</p>
-          {showDetailsButton}
+          {displayText}
+          <button className="btn btn-outline-info m-2">Show all</button>
+          {showSincePaymentButton}
         </div>
     } else {
       body = <div>Loading emissions...</div>
@@ -80,7 +94,7 @@ class TaxBackDate extends React.Component{
       <div className="row">
         <button className="btn btn-outline-success m-2" name="all" onClick={this.applyChange}>Apply to all</button>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Apply to none</button>
-        <button className="btn btn-outline-info m-2" name="sincePayment" onClick={this.applyChange}>All since last payment</button>
+        {applySincePaymentButton}
       </div>
     </div>
 
@@ -103,6 +117,7 @@ class TaxEdit extends React.Component{
     this.deleteTax=this.deleteTax.bind(this)
     this.editSuccess=this.editSuccess.bind(this)
     this.editFailure=this.editFailure.bind(this)
+    this.deleteSuccess=this.deleteSuccess.bind(this)
   }
 
   deleteTax(){
@@ -111,7 +126,7 @@ class TaxEdit extends React.Component{
     fetchObject({
       url:`/tax/${key}/`,
       method:'DELETE',
-      onSuccess:this.editSuccess,
+      onSuccess:this.deleteSuccess,
       onFailure:this.editFailure,
     })
   }
@@ -176,9 +191,14 @@ class TaxEdit extends React.Component{
     }
   }
 
+  deleteSuccess(response){
+    this.props.refresh()
+    this.props.hideModal()
+  }
+
   editSuccess(json){
     this.props.refresh()
-    this.props.setModal(<TaxBackDate tax={json} hideModal={this.props.hideModal} setModal={this.props.setModal}/>)
+    this.props.setModal(<TaxBackDate tax={json} hideModal={this.props.hideModal} setModal={this.props.setModal} refresh={this.props.refresh}/>)
   }
 
   editFailure(){
