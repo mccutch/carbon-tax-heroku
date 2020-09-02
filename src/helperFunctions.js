@@ -13,6 +13,11 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+
+export function sleep(milliseconds){
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
 export function displayCurrency(value, profile){
   return `${profile.currency_symbol}${parseFloat(value*profile.conversion_factor).toFixed(2)}`
 }

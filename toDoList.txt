@@ -1,12 +1,24 @@
-input for naming trip has disappeared
+backdate changes to tax pricing
+ - return a list of all emissions and a list of all since last payment
+ - apply change as specified by POST
+
+ - POST a list of emissions to update, with a ratio of new to old tax rate
+ - Modal after edit
+
+report an error
+ - contact page
+
+Show when offline
 
 formatting on login and registration forms
+
+Format new vehicle and new tax from table views
 
 Add default location to profile
 
 make recipient links optional in front-end
 
-Bug: Remove "add a vehicle" button from vehicleTable displaying user's vehicles
+
 
 Warning on currency change
 
@@ -20,18 +32,9 @@ Object table of payments and donation recipients
 
 create saved trips
 
-rebuild route input
- - google js api
 
-backdate changes to tax pricing
- - POST a list of emissions to update, with a ratio of new to old tax rate
- - Modal after edit
 
-report an error
- - contact page
-
-emission list
- - avoid nan on database (crashes list rendering)
+Increase token refresh time to 24hrs.
 
 tag donation recipients by type, eg #offset, #political, #cultural, #reforestation, #local
 

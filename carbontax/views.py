@@ -92,6 +92,38 @@ class EmissionDetail(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         return user.emissions.all()
 
+class EmissionsByTax(APIView):
+    permission_classes = (IsAuthenticated, )
+    def get(self, request, pk):
+        emissions = request.user.emissions.filter(tax_type=self.kwargs['pk'])
+        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
+        return Response(serializer.data)
+
+    def post(self, request, pk, format=None):
+        data=request.data
+        print(data['apply_to'])
+        
+        emissions = request.user.emissions.filter(tax_type=self.kwargs['pk'])
+
+        if data['apply_to']=="sincePayment":
+            last_payment_date = self.find_last_payment(request)
+            if last_payment_date:
+                print(last_payment_date)
+                emissions = emissions.filter(date__gt=last_payment_date)
+
+        
+        serializer = serializers.EmissionSerializer(emissions, many=True, context={'request':request})
+        return Response(serializer.data)
+
+    def find_last_payment(self, request):
+        print("Find last payment")
+        payments = request.user.payments.all().order_by('-date')
+        if len(payments) > 0:
+            return payments[0].date
+        else:
+            return False
+
+
 
 # -----------HELPER MODELS-----------
 class FuelTypeList(generics.ListAPIView):

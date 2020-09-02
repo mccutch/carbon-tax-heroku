@@ -2,9 +2,91 @@ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
-import { fetchObject, getAttribute, displayCurrency } from './helperFunctions.js';
+import { fetchObject, getAttribute, displayCurrency, sleep } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList, FormRow, StandardModal } from './reactComponents.js';
+
+class TaxBackDate extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {}
+    this.listEmissions=this.listEmissions.bind(this)
+    this.handleFetchFailure=this.handleFetchFailure.bind(this)
+    this.applyChange=this.applyChange.bind(this)
+    this.handleBackdateSuccess=this.handleBackdateSuccess.bind(this)
+  }
+
+  componentDidMount(){
+    fetchObject({
+      url:`/emissions-by-tax/${this.props.tax.id}/`,
+      method:"GET", 
+      onSuccess:this.listEmissions, 
+      onFailure:this.handleFetchFailure,
+    })
+  }
+
+  listEmissions(emissionList){
+    if(emissionList.length===0){
+      sleep(500).then(()=>{
+        this.props.hideModal()
+      })
+    } else {
+      this.setState({
+        emissions:emissionList,
+        count:emissionList.length
+      })
+    }
+  }
+
+  handleFetchFailure(response){
+    console.log(response)
+  }
+
+  applyChange(event){
+    fetchObject({
+      url:`/emissions-by-tax/${this.props.tax.id}/`,
+      method:'POST',
+      data:{apply_to: event.target.name}, 
+      onSuccess:this.handleBackdateSuccess, 
+      onFailure:this.handleFetchFailure,
+    })
+  }
+
+  handleBackdateSuccess(response){
+    console.log("Changed applied.")
+    console.log(response)
+    this.props.hideModal()
+  }
+
+  render(){
+    let tax = this.props.tax
+    let title = <div>Backdate this tax change?</div>
+
+    let body 
+    if(this.state.emissions){
+      let showDetailsButton
+      if(this.state.count>0){showDetailsButton = <button className="btn btn-outline-info m-2">Show</button>}
+      body = 
+        <div>
+          <p>This tax has been used for {this.state.count} emissions.</p>
+          {showDetailsButton}
+        </div>
+    } else {
+      body = <div>Loading emissions...</div>
+    }
+
+    let footer = 
+    <div>
+      <div className="row">
+        <button className="btn btn-outline-success m-2" name="all" onClick={this.applyChange}>Apply to all</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Apply to none</button>
+        <button className="btn btn-outline-info m-2" name="sincePayment" onClick={this.applyChange}>All since last payment</button>
+      </div>
+    </div>
+
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+  }
+}
 
 class TaxEdit extends React.Component{
   constructor(props){
@@ -94,9 +176,9 @@ class TaxEdit extends React.Component{
     }
   }
 
-  editSuccess(){
+  editSuccess(json){
     this.props.refresh()
-    this.props.hideModal()
+    this.props.setModal(<TaxBackDate tax={json} hideModal={this.props.hideModal} setModal={this.props.setModal}/>)
   }
 
   editFailure(){
@@ -163,6 +245,7 @@ export class TaxDetail extends React.Component{
             taxes={this.props.taxes}
             profile={this.props.profile}
             hideModal={this.props.hideModal} 
+            setModal={this.props.setModal}
             refresh={this.props.refresh}
           />
     this.props.setModal(modal)
