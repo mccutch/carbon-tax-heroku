@@ -18,3 +18,15 @@ export const MAX_LEN_RECIP_COUNTRY = 60
 export const MAX_LEN_RECIP_WEB_LINK = 200
 export const MAX_LEN_RECIP_DONATION_LINK = 200
 export const MAX_LEN_RECIP_DESCRIPTION = 1000 //Undefined in views.py
+
+//Naming constants
+
+//Carbon input modes
+export const ROAD = "road-travel"
+export const AIR = "air-travel"
+export const OTHER = "other"
+
+//Tax categories
+export const RECREATIONAL = "rec-driving"
+export const ESSENTIAL = "ess-driving"
+export const AIR_TRAVEL = "air-travel"

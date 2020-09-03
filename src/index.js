@@ -32,6 +32,7 @@ class App extends React.Component {
       recipients:[],
       modal:null,
       mainView:"home",
+      serverConnectionFailure:false,
     }
 
     this.state = this.defaultState
@@ -61,8 +62,6 @@ class App extends React.Component {
       noAuth:true,
     })
     this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
-
-    //this.setState({modal:<GoogleDirections hideModal={this.hideModal} displayUnits={this.state.displayUnits}/>,})
   }
 
   serverConnectionFailure(){
@@ -72,6 +71,7 @@ class App extends React.Component {
   setFuels(json){
     // fueltypes returns as a paginated view
     this.setState({fuels:json.results})
+    this.setState({serverConnectionFailure:false})
   }
 
   fetchObject({url, objectName, onSuccess}){
@@ -114,6 +114,8 @@ class App extends React.Component {
             onSuccess:onSuccess
           }]
         })
+      }else if(e.message==='500'){
+        this.serverConnectionFailure()
       }
     });
   }
@@ -132,7 +134,6 @@ class App extends React.Component {
     this.setState({displayUnits: profile.display_units})
     
   }
-
 
   logout(){
     logoutBrowser({onSuccess:this.logoutSuccess})
@@ -225,15 +226,6 @@ class App extends React.Component {
   
   
   render(){
-    
-    let serverFailure
-    if(this.state.serverConnectionFailure){
-      serverFailure = 
-        <div className="bg-light">
-          <h4>Error connecting to server.</h4>
-        </div>
-    }
-
     let modal
     if(this.state.modal){
       modal = this.state.modal
@@ -251,6 +243,7 @@ class App extends React.Component {
           displayUnits={this.state.displayUnits}
           profile={this.state.profile}
           stats={this.state.stats}
+          serverError={this.state.serverConnectionFailure}
         />
         {modal}
         <div>

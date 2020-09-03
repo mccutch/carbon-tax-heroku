@@ -6,11 +6,16 @@ import {CarbonCalculator} from './carbonCalculator.js';
 import * as units from './unitConversions';
 import * as taxes from './defaultTaxTypes.js';
 import {EmissionEdit} from './objectDetail.js';
+import {ObjectSelectionList} from './reactComponents.js';
+
+//Carbon emission modes - Constants must match with defaultTaxTypes.js
+import {ROAD, AIR, OTHER} from './constants.js';
+
 
 export class EmissionCalculator extends React.Component{
   constructor(props){
     super(props);
-    this.state = {
+    this.defaultState = {
       lPer100km: 0,
       fuelId: null,
       origin: null,
@@ -21,7 +26,10 @@ export class EmissionCalculator extends React.Component{
       returnTrip: false,
       activeTab:"distance",
     }
-    
+
+    this.state=this.defaultState
+    this.state['mode']=ROAD
+
     this.handleEdit=this.handleEdit.bind(this)
     this.handleSubmitEconomy=this.handleSubmitEconomy.bind(this)
     this.handleSubmitDistance=this.handleSubmitDistance.bind(this)
@@ -31,6 +39,7 @@ export class EmissionCalculator extends React.Component{
     this.handleTabClick=this.handleTabClick.bind(this)
     this.createClone=this.createClone.bind(this)
     this.newEmission=this.newEmission.bind(this)
+    this.handleModeChange=this.handleModeChange.bind(this)
   }
 
   exitCalculator(){
@@ -126,6 +135,11 @@ export class EmissionCalculator extends React.Component{
     this.setState({activeTab:event.target.name})
   }
 
+  handleModeChange(event){
+    this.setState(this.defaultState)
+    this.setState({mode:event.target.value})
+  }
+
   render(){
     let displayUnits=this.props.displayUnits
 
@@ -189,6 +203,7 @@ export class EmissionCalculator extends React.Component{
                             submitted={this.state.distanceSubmitted}
                             setModal={this.props.setModal}
                             hideModal={this.props.hideModal}
+                            mode={this.state.mode}
                           />
       }
       tabDisplay = distanceDisplay
@@ -205,7 +220,7 @@ export class EmissionCalculator extends React.Component{
               displayUnits={displayUnits} 
               loggedIn={this.props.loggedIn} 
               submitCarbon={this.handleEmissionSave} 
-              taxCategory={taxes.getCategoryName("road-travel")}
+              taxCategory={taxes.getCategoryName(this.state.mode)}
               taxes={this.props.taxes}
               fuels={this.props.fuels}
               refresh={this.props.refresh}
@@ -217,20 +232,24 @@ export class EmissionCalculator extends React.Component{
       }
       tabDisplay = carbonResult
     }
+
+    let emissionModes = [
+      {mode:ROAD, label:"Road travel"},
+      {mode:AIR, label:"Flights"},
+      {mode:OTHER, label:"Miscellaneous"},
+    ]
+
     
     return(
-      /*<div className="container-sm bg-light my-2">
-        <div className="row mx-2">
-          <h3>Carbon Tax Calculator</h3>
-          <button type="button" className="btn btn-outline-danger m-2" onClick={this.exitCalculator}>Exit</button>
-        </div>
-        */
       <div className='container-sm my-2 bg-light' > 
         <div style={{margin: "0px -15px 0px -15px"}} >
         <Navbar bg="info" variant="dark">
           <Navbar.Brand >
+
             Carbon Tax Calculator
+            
           </Navbar.Brand>
+          <ObjectSelectionList list={emissionModes} value="mode" label="label" defaultValue={ROAD} onChange={this.handleModeChange}/>
         </Navbar>
         </div>
       

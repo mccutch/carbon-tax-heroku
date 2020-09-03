@@ -1,14 +1,11 @@
-backdate changes to tax pricing
- - return a list of all emissions and a list of all since last payment
- - apply change as specified by POST
-
- - POST a list of emissions to update, with a ratio of new to old tax rate
- - Modal after edit
+Air travel input
 
 report an error
  - contact page
 
-Show when offline
+recurring trips
+
+favourite trips
 
 formatting on login and registration forms
 
@@ -19,10 +16,9 @@ Add default location to profile
 make recipient links optional in front-end
 
 
-
 Warning on currency change
 
-Air travel input
+
 
 Graph axis labels
 

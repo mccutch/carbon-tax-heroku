@@ -69,8 +69,10 @@ export class NavBar extends React.Component{
         </Nav>
     }
 
+    let navColour = (this.props.serverError ? "secondary":"warning")
+
     return(
-      <Navbar bg="warning" variant="light" expand="md">
+      <Navbar bg={navColour} variant="light" expand="md">
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""

@@ -31,7 +31,7 @@ export class DistanceInput extends React.Component{
                   displayUnits={this.props.displayUnits}
                   hideModal={this.props.hideModal}
                 />*/
-    let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits}/>
+    let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits} mode={this.props.mode}/>
     this.props.setModal(modal)
   }
 

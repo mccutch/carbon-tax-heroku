@@ -2,6 +2,7 @@ import React from 'react';
 import {StandardModal} from './reactComponents.js';
 import {DEFAULT_MAP_CENTER} from './constants.js';
 import * as units from './unitConversions.js';
+import {ROAD, AIR, OTHER} from './constants.js'; //carbon input modes
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
 
@@ -18,12 +19,14 @@ export class GoogleDirections extends React.Component{
     this.initMap=this.initMap.bind(this)  
     window.initMap=this.initMap  
 
-    var script = document.createElement('script');
-    console.log("generating script")
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&callback=initMap`;
-    script.defer = true;
-    script.async = true;
-    document.head.appendChild(script);
+    if(!window.google){
+      console.log("Generating Google API script.")
+      var script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&callback=initMap`;
+      script.defer = true;
+      script.async = true;
+      document.head.appendChild(script);
+    }
 
     this.useInput=this.useInput.bind(this)
     window.useInput=this.useInput
@@ -33,14 +36,23 @@ export class GoogleDirections extends React.Component{
     this.updateDistance=this.updateDistance.bind(this)
     this.submitDistance=this.submitDistance.bind(this)
     this.handleErrorStatus=this.handleErrorStatus.bind(this)
+    this.chooseTravelMode=this.chooseTravelMode.bind(this)
+    this.findFlightPath=this.findFlightPath.bind(this)
+  }
+
+  componentDidMount(){
+    if(window.google){
+      this.initMap()
+    }
   }
 
   initMap() {
-    console.log("Initialise Map, Autocomplete, Directions services")
+    console.log(`Initialising Google Maps with mode=${this.props.mode}.`)
 
     if(window.google){
       var gMaps = window.google.maps
 
+      console.log("Initialising map...")
       let map = new gMaps.Map(document.getElementById("map"), {
           center: DEFAULT_MAP_CENTER,
           zoom: 8,
@@ -49,13 +61,25 @@ export class GoogleDirections extends React.Component{
           mapTypeControl: false,
           streetViewControl: false,
         });
+      this.map = map
 
-      let directionsService = new gMaps.DirectionsService()
-      let directionsRenderer = new gMaps.DirectionsRenderer({map:map})
-
+      if(this.props.mode===ROAD){
+        console.log("Initialising DirectionsService and DirectionsRenderer...")
+        let directionsService = new gMaps.DirectionsService()
+        let directionsRenderer = new gMaps.DirectionsRenderer({map:map})
+        // Make components available to other functions in the class
+        this.directionsService = directionsService
+        this.directionsRenderer = directionsRenderer
+      }
+      
+      console.log("Initialising Autocomplete inputs.")
       let autoOrigin = new gMaps.places.Autocomplete(document.getElementById("origin"))
       let autoDestination = new gMaps.places.Autocomplete(document.getElementById("destination"))
       let autoVia = new gMaps.places.Autocomplete(document.getElementById("via"))
+      // Make components available to other functions in the class
+      this.originAutocomp = autoOrigin
+      this.destinationAutocomp = autoDestination
+      this.viaAutocomp = autoVia
 
       // Set the data fields to return when the user selects a place.
       let returnFields = ['address_components', 'geometry', 'icon', 'name', 'place_id']
@@ -67,20 +91,11 @@ export class GoogleDirections extends React.Component{
       autoOrigin.addListener('place_changed', function() {window.useInput("origin")})
       autoDestination.addListener('place_changed', function() {window.useInput("destination")})
       autoVia.addListener('place_changed', function() {window.useInput("via")})
-
-      // Make components available to other functions in the class
-      this.originAutocomp = autoOrigin
-      this.destinationAutocomp = autoDestination
-      this.viaAutocomp = autoVia
-      this.directionsService = directionsService
-      this.directionsRenderer = directionsRenderer
-      this.map = map
       
       if(navigator.geolocation){
         console.log("Geolocation available")
         navigator.geolocation.getCurrentPosition(this.setLocationBias)
       }
-
     } else {
       console.log("window.google not defined")
     }
@@ -116,7 +131,39 @@ export class GoogleDirections extends React.Component{
       this.setState({errorMessage:`Unable to find ${place.name}.`})
       place = null
     }
-    this.setState({[inputType]:place}, this.findDirections)
+    this.setState({[inputType]:place}, this.chooseTravelMode)
+  }
+
+  chooseTravelMode(){
+    if(this.props.mode===AIR){
+      this.findFlightPath()
+    } else {
+      this.findDirections()
+    }
+  }
+
+  findFlightPath(){
+    let gMaps = window.google.maps
+
+    if(this.state.origin && this.state.destination){
+      console.log(`Finding flight path from ${this.state.origin.name} to ${this.state.destination.name}...`)
+      if(this.state.via){console.log(`...via ${this.state.via.name}.`)}
+      let flightPlan = []
+      flightPlan.push(this.state.origin.geometry.location.toJSON())
+      if(this.state.via){flightPlan.push(this.state.via.geometry.location.toJSON())}
+      flightPlan.push(this.state.destination.geometry.location.toJSON())
+      console.log(flightPlan)
+
+      var flightPath = new gMaps.Polyline({
+        path: flightPlan,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2 
+      });
+
+      flightPath.setMap(this.map);
+    }
   }
 
   findDirections(){
