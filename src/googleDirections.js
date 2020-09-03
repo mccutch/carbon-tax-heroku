@@ -22,7 +22,7 @@ export class GoogleDirections extends React.Component{
     if(!window.google){
       console.log("Generating Google API script.")
       var script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`;
       script.defer = true;
       script.async = true;
       document.head.appendChild(script);
@@ -70,6 +70,16 @@ export class GoogleDirections extends React.Component{
         // Make components available to other functions in the class
         this.directionsService = directionsService
         this.directionsRenderer = directionsRenderer
+      }else if(this.props.mode===AIR){
+        console.log("Initialising Polyline object...")
+        let polyLine = new gMaps.Polyline({
+          //path: flightPlan,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2 
+        });
+        this.polyLine = polyLine
       }
       
       console.log("Initialising Autocomplete inputs.")
@@ -148,21 +158,27 @@ export class GoogleDirections extends React.Component{
     if(this.state.origin && this.state.destination){
       console.log(`Finding flight path from ${this.state.origin.name} to ${this.state.destination.name}...`)
       if(this.state.via){console.log(`...via ${this.state.via.name}.`)}
-      let flightPlan = []
-      flightPlan.push(this.state.origin.geometry.location.toJSON())
-      if(this.state.via){flightPlan.push(this.state.via.geometry.location.toJSON())}
-      flightPlan.push(this.state.destination.geometry.location.toJSON())
-      console.log(flightPlan)
 
-      var flightPath = new gMaps.Polyline({
-        path: flightPlan,
-        geodesic: true,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 2 
-      });
+      //Encode lat-long coordinates
+      let flightPlanLocations = []
+      let flightPlanCoords = []
+      flightPlanLocations.push(this.state.origin.geometry.location)
+      if(this.state.via){flightPlanLocations.push(this.state.via.geometry.location)}
+      flightPlanLocations.push(this.state.destination.geometry.location)
 
-      flightPath.setMap(this.map);
+      //Render polyline on map
+      let bounds = new gMaps.LatLngBounds()
+      for(let i in flightPlanLocations){
+        bounds.extend(flightPlanLocations[i])
+        flightPlanCoords.push(flightPlanLocations[i].toJSON())
+      }
+      this.map.fitBounds(bounds)
+      this.polyLine.setPath(flightPlanCoords)
+      this.polyLine.setMap(this.map);
+
+      //Calculate flight distance
+      let distance = gMaps.geometry.spherical.computeLength(flightPlanLocations)/1000
+      this.setState({distance:distance}, this.updateDistance)
     }
   }
 
