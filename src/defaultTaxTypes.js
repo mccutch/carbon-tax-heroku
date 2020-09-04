@@ -7,12 +7,15 @@ Title - visible to user.
 Type - Visible to code
 */
 
+import {ROAD, AIR, OTHER} from './constants.js';
+import {RECREATIONAL, ESSENTIAL, AIR_TRAVEL} from './constants.js';
+
 export const TAX_RATE_DECIMALS = 3
 
 export const taxCategories = [
-  {title: "Driving", type:"road-travel"},
-  {title: "Flying", type:"air-travel"},
-  {title: "Other", type:"other"},
+  {title: "Driving", type:ROAD},
+  {title: "Flying", type:AIR},
+  {title: "Other", type:OTHER},
 ]
 
 export const taxNames = [

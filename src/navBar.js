@@ -3,6 +3,40 @@ import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
 
+export class TabbedNavBar extends React.Component{
+
+  makeTab(name, label){
+    let className
+    if(this.props.activeTab === name){
+      className="nav-link active"
+    } else {
+      className="nav-link"
+    }
+    return <strong><a name={name} className={className} onClick={this.props.onTabClick}>{label}</a></strong>
+  }
+
+  buildNavTabs(){
+    let tabs = this.props.tabs
+    let navTabs = []
+    for(let i in tabs){
+      navTabs.push(
+        <li className="nav-item">
+          {this.makeTab(tabs[i].name, tabs[i].label)}
+        </li>
+      )
+    }
+    return navTabs
+  }
+
+  render(){
+    return(
+      <ul className="nav nav-tabs">
+        {this.buildNavTabs()}
+      </ul>
+    )
+  }
+}
+
 export class NavBar extends React.Component{
   constructor(props){
     super(props)

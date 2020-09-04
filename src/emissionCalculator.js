@@ -2,13 +2,15 @@ import React from 'react';
 import {Modal, Navbar} from 'react-bootstrap';
 import {EconomyInput} from './economyInput.js';
 import {DistanceInput} from './distanceInput.js';
+import {AircraftInput, AirOptionsInput} from './aircraftInput.js';
 import {CarbonCalculator} from './carbonCalculator.js';
 import * as units from './unitConversions';
 import * as taxes from './defaultTaxTypes.js';
 import {EmissionEdit} from './objectDetail.js';
 import {ObjectSelectionList} from './reactComponents.js';
+import {TabbedNavBar} from './navBar.js';
 
-//Carbon emission modes - Constants must match with defaultTaxTypes.js
+//Carbon emission modes
 import {ROAD, AIR, OTHER} from './constants.js';
 
 
@@ -23,19 +25,22 @@ export class EmissionCalculator extends React.Component{
       distanceKm: null,
       economySubmitted: false,
       distanceSubmitted: false,
+      aircraftSubmitted: false,
+      airOptionsSubmitted: false,
       returnTrip: false,
-      activeTab:"distance",
     }
 
     this.state=this.defaultState
     this.state['mode']=ROAD
+    this.state['activeTab']="distance"
 
     this.handleEdit=this.handleEdit.bind(this)
     this.handleSubmitEconomy=this.handleSubmitEconomy.bind(this)
     this.handleSubmitDistance=this.handleSubmitDistance.bind(this)
     this.handleEmissionSave=this.handleEmissionSave.bind(this)
+    this.handleAircraftInput=this.handleAircraftInput.bind(this)
+    this.handleAirOptions=this.handleAirOptions.bind(this)
     this.exitCalculator=this.exitCalculator.bind(this)
-    this.makeTab=this.makeTab.bind(this)
     this.handleTabClick=this.handleTabClick.bind(this)
     this.createClone=this.createClone.bind(this)
     this.newEmission=this.newEmission.bind(this)
@@ -103,15 +108,39 @@ export class EmissionCalculator extends React.Component{
 
   handleSubmitDistance(origin, destination, distanceKm, wasReturnTrip){
     /* Expects to receive distance in km */
+    let nextTab
+    if(this.state.mode===ROAD){
+      nextTab="economy"
+    } else if(this.state.mode===AIR){
+      nextTab="air-options"
+    }
     this.setState({
       origin: origin,
       destination: destination,
       distanceKm: distanceKm,
       distanceSubmitted: true,
       returnTrip: wasReturnTrip,
-      activeTab:"economy",
+      activeTab:nextTab,
     })
   }
+
+  handleAircraftInput(aircraftType, returnFields){
+    this.setState({
+      aircraftType:aircraftType,
+      aircraftFields:returnFields,
+      aircraftSubmitted:true,
+      activeTab:"distance",
+    })
+  }
+
+  handleAirOptions(returnFields){
+    this.setState({
+      airOptions:returnFields,
+      airOptionsSubmitted:true,
+      activeTab:"carbon"
+    })
+  }
+
 
   handleEdit(event){
     if(event.target.name==="economy"){
@@ -121,23 +150,23 @@ export class EmissionCalculator extends React.Component{
     }
   }
 
-  makeTab(name, label){
-    let className
-    if(this.state.activeTab === name){
-      className="nav-link active"
-    } else {
-      className="nav-link"
-    }
-    return <strong><a name={name} className={className} onClick={this.handleTabClick}>{label}</a></strong>
-  }
-
   handleTabClick(event){
     this.setState({activeTab:event.target.name})
   }
 
   handleModeChange(event){
     this.setState(this.defaultState)
-    this.setState({mode:event.target.value})
+    let mode = event.target.value
+    let activeTab
+    if(mode===ROAD){
+      activeTab="distance"
+    }else if(mode===AIR){
+      activeTab="aircraft"
+    }
+    this.setState({
+      mode:mode,
+      activeTab:activeTab,
+    })
   }
 
   render(){
@@ -233,11 +262,50 @@ export class EmissionCalculator extends React.Component{
       tabDisplay = carbonResult
     }
 
+    if(this.state.activeTab==="aircraft"){
+      tabDisplay =  <AircraftInput
+                      //displayUnits={displayUnits}
+                      returnAircraft={this.handleAircraftInput}
+                      //submitted={this.state.distanceSubmitted}
+                      //setModal={this.props.setModal}
+                      //hideModal={this.props.hideModal}
+                    />
+    }
+
+    if(this.state.activeTab==="air-options"){
+      tabDisplay =  <AirOptionsInput
+                      //displayUnits={displayUnits}
+                      returnOptions={this.handleAirOptions}
+                      aircraftType={this.state.aircraftType}
+                      aircraftFields={this.state.aircraftFields}
+                      //submitted={this.state.distanceSubmitted}
+                      //setModal={this.props.setModal}
+                      //hideModal={this.props.hideModal}
+                    />
+    }
+
     let emissionModes = [
       {mode:ROAD, label:"Road travel"},
       {mode:AIR, label:"Flights"},
       {mode:OTHER, label:"Miscellaneous"},
     ]
+
+    let navTabs
+    if(this.state.mode===ROAD){
+      navTabs = [
+        {name:"distance", label:"Distance"}, 
+        {name:"economy", label:"Economy"}, 
+        {name:"carbon", label:"Carbon"}
+      ]
+    }else if(this.state.mode===AIR){
+      navTabs = [
+        {name:"aircraft", label:"Aircraft"},
+        {name:"distance", label:"Distance"}, 
+        {name:"air-options", label:"Options"}, 
+        {name:"carbon", label:"Carbon"},
+      ]
+    }
+    
 
     
     return(
@@ -245,25 +313,12 @@ export class EmissionCalculator extends React.Component{
         <div style={{margin: "0px -15px 0px -15px"}} >
         <Navbar bg="info" variant="dark">
           <Navbar.Brand >
-
             Carbon Tax Calculator
-            
           </Navbar.Brand>
           <ObjectSelectionList list={emissionModes} value="mode" label="label" defaultValue={ROAD} onChange={this.handleModeChange}/>
         </Navbar>
         </div>
-      
-        <ul className="nav nav-tabs">
-          <li className="nav-item">
-            {this.makeTab("distance", "Distance")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("economy", "Economy")}
-          </li>
-          <li className="nav-item">
-            {this.makeTab("carbon", "Carbon")}
-          </li>
-        </ul>
+        <TabbedNavBar tabs={navTabs} activeTab={this.state.activeTab} onTabClick={this.handleTabClick}/>
         {tabDisplay}
       </div>
     );
