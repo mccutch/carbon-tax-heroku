@@ -2,7 +2,7 @@ import React from 'react';
 import {StandardModal} from './reactComponents.js';
 import {DEFAULT_MAP_CENTER} from './constants.js';
 import * as units from './unitConversions.js';
-import {ROAD, AIR, OTHER} from './constants.js'; //carbon input modes
+import {ROAD, AIR, OTHER, PUBLIC} from './constants.js'; //carbon input modes
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
 

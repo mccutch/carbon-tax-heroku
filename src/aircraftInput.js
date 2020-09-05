@@ -10,7 +10,7 @@ const aircraftTypes = [
 const airlinerClasses = [
   {class:"economy", label:"Economy class"},
   {class:"business", label:"Business class"},
-  {class:"first-class", label:"First class"},
+  {class:"firstClass", label:"First class"},
 ]
 
 export class AirOptionsInput extends React.Component{
@@ -92,7 +92,7 @@ export class AircraftInput extends React.Component{
   }
 
   handleCharterFieldChange(event){
-    this.setState({[event.target.name]:event.target.value})
+    this.setState({[event.target.name]:parseFloat(event.target.value)})
   }
 
   submit(){
@@ -100,8 +100,15 @@ export class AircraftInput extends React.Component{
     if(this.state.aircraftType==="airliner"){
       returnData = {airlinerClass:this.state.airlinerClass}
     } else {
+      let totalSeats = this.state.totalSeats?this.state.totalSeats:this.state.passengers
+      if(this.state.passengers>totalSeats){
+        this.setState({
+          errorMessage:"There aren't enough seats for those passengers..."
+        })
+        return
+      }
       returnData = {
-        totalSeats:this.state.totalSeats,
+        totalSeats:totalSeats,
         passengers:this.state.passengers,
       }
     }
@@ -124,13 +131,14 @@ export class AircraftInput extends React.Component{
     }
 
     let submitButton
-    if((this.state.aircraftType==="airliner")||(this.state.totalSeats&&this.state.passengers)){
+    if((this.state.aircraftType==="airliner")||(this.state.passengers)){
       submitButton = <button className="btn btn-success" onClick={this.submit}><strong>Continue</strong></button>
     }
 
     return(
       <div className="container bg-light py-2">
         <ObjectSelectionList list={aircraftTypes} value="type" label="label" onChange={this.handleChangeType} />
+        <p>{this.state.errorMessage}</p>
         {secondField}
         {submitButton}
       </div>

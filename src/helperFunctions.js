@@ -30,24 +30,29 @@ export function truncate(str, maxLen){
   }
 }
 
-
-export function getAttribute(id, objectList, attribute){
-  if(!id){
-    return "--"
-  }
-
+export function getObject(id, objectList){
+  if(!id) return null
   for(let i in objectList){
+    if(!objectList[i].id){return null}
     if(objectList[i].id===id){
-      try{
-        return objectList[i][attribute]
-      }
-      catch{
-        console.log(`Unable to find ${attribute} attribute for id ${id}.`)
-        return null
-      }
+      return objectList[i]
     }
   }
   console.log(`Unable to find id ${id} in list.`)
+  return null
+}
+
+export function getAttribute(id, objectList, attribute){
+  let object = getObject(id, objectList)
+  if(object){
+    try{ 
+      return object[attribute]
+    }
+    catch{
+      console.log(`Unable to find ${attribute} attribute for id ${id}.`)
+      return null
+    }
+  }
   return null
 }
 

@@ -91,7 +91,7 @@ class EmissionInstance(models.Model):
     name = models.CharField(max_length=60, null=True)
     date = models.DateField(null=True)
     distance = models.FloatField(null=True)
-    fuel = models.ForeignKey(FuelType, on_delete = models.SET_DEFAULT, default=1)
+    fuel = models.ForeignKey(FuelType, on_delete = models.SET_DEFAULT, default=1, null=True)
     economy = models.FloatField(default=10)
     split = models.FloatField(default=1)
     co2_output_kg = models.FloatField(null=True)

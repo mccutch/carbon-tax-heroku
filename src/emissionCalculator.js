@@ -11,7 +11,7 @@ import {ObjectSelectionList} from './reactComponents.js';
 import {TabbedNavBar} from './navBar.js';
 
 //Carbon emission modes
-import {ROAD, AIR, OTHER} from './constants.js';
+import {ROAD, AIR, PUBLIC, OTHER} from './constants.js';
 
 
 export class EmissionCalculator extends React.Component{
@@ -37,6 +37,7 @@ export class EmissionCalculator extends React.Component{
     this.handleEdit=this.handleEdit.bind(this)
     this.handleSubmitEconomy=this.handleSubmitEconomy.bind(this)
     this.handleSubmitDistance=this.handleSubmitDistance.bind(this)
+    this.handleSubmitFlightHrs=this.handleSubmitFlightHrs.bind(this)
     this.handleEmissionSave=this.handleEmissionSave.bind(this)
     this.handleAircraftInput=this.handleAircraftInput.bind(this)
     this.handleAirOptions=this.handleAirOptions.bind(this)
@@ -121,6 +122,15 @@ export class EmissionCalculator extends React.Component{
       distanceSubmitted: true,
       returnTrip: wasReturnTrip,
       activeTab:nextTab,
+    })
+  }
+
+  handleSubmitFlightHrs(hrs){
+    this.setState({
+      flightHrs:hrs,
+      distanceSubmitted:true,
+      returnTrip:false,
+      activeTab:"air-options"
     })
   }
 
@@ -211,12 +221,16 @@ export class EmissionCalculator extends React.Component{
     if(this.state.activeTab==="distance"){
       let distanceDisplay
       if(this.state.distanceSubmitted){
+        let display
+        if(this.state.mode===AIR && this.state.aircraftType!=="airliner"){
+          display = <h3>{parseFloat(this.state.flightHrs).toFixed(2)}hrs</h3>
+        } else {
+          display = <h3>{parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}</h3>
+        }
         distanceDisplay = 
           <div className="container bg-light" >
             <div className="row">
-              <h3>
-                {parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}
-              </h3>
+                {display}
               <button
                 type="button"
                 name="distance"
@@ -228,11 +242,13 @@ export class EmissionCalculator extends React.Component{
       } else {
         distanceDisplay = <DistanceInput  
                             submitDistance={this.handleSubmitDistance}
+                            submitFlightHrs={this.handleSubmitFlightHrs}
                             displayUnits={displayUnits}
                             submitted={this.state.distanceSubmitted}
                             setModal={this.props.setModal}
                             hideModal={this.props.hideModal}
                             mode={this.state.mode}
+                            aircraftType={this.state.aircraftType}
                           />
       }
       tabDisplay = distanceDisplay
@@ -240,8 +256,16 @@ export class EmissionCalculator extends React.Component{
 
     
     if(this.state.activeTab==="carbon"){
+
+      let formsComplete = (
+        (this.state.mode===ROAD && this.state.economySubmitted && this.state.distanceSubmitted)
+        || (this.state.mode===AIR && this.state.aircraftSubmitted && this.state.distanceSubmitted && this.state.airOptionsSubmitted)
+      )?true:false
+      
+      
+
       let carbonResult 
-      if(this.state.economySubmitted && this.state.distanceSubmitted){
+      if(formsComplete){
         carbonResult = 
           <div>
             <CarbonCalculator 
@@ -254,6 +278,10 @@ export class EmissionCalculator extends React.Component{
               fuels={this.props.fuels}
               refresh={this.props.refresh}
               profile={this.props.profile}
+              mode={this.state.mode}
+              aircraftType={this.state.aircraftType}
+              aircraftFields={this.state.aircraftFields}
+              airOptions={this.state.airOptions}
             />
           </div>
       } else {
@@ -285,9 +313,10 @@ export class EmissionCalculator extends React.Component{
     }
 
     let emissionModes = [
-      {mode:ROAD, label:"Road travel"},
-      {mode:AIR, label:"Flights"},
-      {mode:OTHER, label:"Miscellaneous"},
+      {mode:ROAD, label:"Private Vehicle"},
+      {mode:AIR, label:"Air Travel"},
+      //{mode:PUBLIC, label:"Public Transport"},
+      //{mode:OTHER, label:"Miscellaneous"},
     ]
 
     let navTabs
@@ -305,8 +334,6 @@ export class EmissionCalculator extends React.Component{
         {name:"carbon", label:"Carbon"},
       ]
     }
-    
-
     
     return(
       <div className='container-sm my-2 bg-light' > 
