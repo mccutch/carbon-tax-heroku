@@ -66,7 +66,7 @@ class EmissionSerializer(serializers.HyperlinkedModelSerializer):
     tax_type = serializers.PrimaryKeyRelatedField(queryset=models.TaxRate.objects.all())
     class Meta:
         model = models.EmissionInstance
-        fields = ['name', 'date', 'distance', 'fuel', 'economy', 'co2_output_kg', 'tax_type', 'split', 'price', 'user', 'id']
+        fields = ['name', 'date', 'distance', 'fuel', 'economy', 'co2_output_kg', 'tax_type', 'split', 'price', 'user', 'format_encoding', 'id']
 
 """class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.StringRelatedField(read_only=True)

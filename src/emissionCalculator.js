@@ -347,6 +347,7 @@ export class EmissionCalculator extends React.Component{
         </div>
         <TabbedNavBar tabs={navTabs} activeTab={this.state.activeTab} onTabClick={this.handleTabClick}/>
         {tabDisplay}
+
       </div>
     );
   }

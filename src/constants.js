@@ -44,3 +44,13 @@ export const fareClassMultiplier = {
   business:2.5,
   firstClass:6,
 }
+
+export const emissionSaveFormats = [ 
+  "road",
+  "airDistance",
+  "airTime",
+]
+
+
+
+

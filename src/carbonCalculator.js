@@ -2,7 +2,7 @@ import React from 'react';
 import * as getDate from './getDate.js';
 import * as units from './unitConversions.js';
 import { OptionListInput } from './optionListInput.js';
-import { fetchObject, getAttribute, truncate, getObject } from './helperFunctions.js';
+import { fetchObject, getAttribute, truncate, getObject, displayHrs, encodeEmissionFormat } from './helperFunctions.js';
 import { ObjectSelectionList } from './reactComponents.js';
 import { MAX_EMISSION_NAME_LEN } from './constants.js';
 import { ROAD, AIR, PUBLIC, OTHER } from './constants.js';
@@ -29,6 +29,16 @@ export class CarbonCalculator extends React.Component{
       tripName="Default Trip Name"
     }
 
+    // Set emission save format 
+    let format
+    if(this.props.mode===ROAD){
+      format="road"
+    }else if(this.props.mode===AIR && this.props.aircraftType==="airliner"){
+      format="airDistance"
+    } else if(this.props.mode===AIR){
+      format="airTime"
+    }
+
     this.state = {
       carbonKg:null,
       date:null,
@@ -37,6 +47,7 @@ export class CarbonCalculator extends React.Component{
       relevantTaxes:[],
       tax:null,
       split:1,
+      format:format,
     }
 
     this.calculateCarbon=this.calculateCarbon.bind(this)
@@ -117,7 +128,7 @@ export class CarbonCalculator extends React.Component{
   }
 
   calculateCarbon(){
-    if(this.props.mode===ROAD){
+    if(this.state.format==="road"){
       let fuelId = this.props.data.fuelId
       let carbonPerL = getAttribute(fuelId, this.props.fuels, "co2_per_unit")
       let carbonKg = (carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100)/this.state.split
@@ -125,7 +136,7 @@ export class CarbonCalculator extends React.Component{
         carbonPerL:carbonPerL,
         carbonKg:carbonKg,
       })
-    }else if(this.props.mode===AIR && this.props.aircraftType==="airliner"){
+    }else if(this.state.format==="airDistance"){
       let carbonPerPaxKmAvg = (this.props.data.distanceKm<500)?AIRLINER_KGCO2_PPAX_LT500:AIRLINER_KGCO2_PPAX_GT500
       let fareClass = fareClassMultiplier[this.props.aircraftFields.airlinerClass]
       let rfMultiplier = this.props.airOptions.multiplier
@@ -134,7 +145,7 @@ export class CarbonCalculator extends React.Component{
         fareClass:fareClass,
         carbonKg:carbonPerPaxKmAvg*this.props.data.distanceKm*fareClass*rfMultiplier,
       })
-    }else if(this.props.mode===AIR){
+    }else if(this.state.format==="airTime"){
       let carbonPerHr = 888
       let flightHrs = this.props.data.flightHrs
       let numPassengers = this.props.data.aircraftFields.passengers
@@ -148,21 +159,21 @@ export class CarbonCalculator extends React.Component{
   saveEmission(){
     let date = this.state.date?this.state.date:getDate.today()
 
-    let distance = (this.props.mode===AIR && this.props.aircraftType!=="airliner") ? this.props.data.flightHrs : this.props.data.distanceKm
-
-    let economy
+    let distance, economy, fuelId
     // For air travel, record economy in kg/km or kg/hr.
-    if(this.props.mode===ROAD){
+    if(this.state.format==="road"){
       economy = this.props.data.lPer100km
-    } else if(this.props.mode===AIR && this.props.aircraftType==="airliner"){
+      distance = this.props.data.distanceKm
+      fuelId = this.props.data.fuelId
+    } else if(this.state.format==="airDistance"){
       economy = this.state.carbonKg/this.props.data.distanceKm
-      console.log(economy)
-    } else if(this.props.mode===AIR){
+      distance = this.props.data.distanceKm
+      fuelId = this.props.fuels[0].id
+    } else if(this.state.format==="airTime"){
       economy = this.state.carbonKg/this.props.data.flightHrs
-    }
-
-
-    let fuelId = (this.props.mode===ROAD) ? this.props.data.fuelId : this.props.fuels[0].id
+      distance = this.props.data.flightHrs
+      fuelId = this.props.fuels[0].id
+    } 
 
     let emissionData = {
       "name": truncate(this.state.tripName, MAX_EMISSION_NAME_LEN),
@@ -174,6 +185,7 @@ export class CarbonCalculator extends React.Component{
       "co2_output_kg": parseFloat(this.state.carbonKg).toFixed(3),
       "tax_type": `${this.state.tax}`,
       "price": parseFloat(this.calculatePrice()).toFixed(2),
+      "format_encoding": `${encodeEmissionFormat(this.state.format)}`,
     }
 
     fetchObject({
@@ -233,7 +245,7 @@ export class CarbonCalculator extends React.Component{
     let economy = parseFloat(units.convert(this.props.data.lPer100km, this.props.displayUnits)).toFixed(1)
 
     let calculation
-    if(this.props.mode===ROAD){
+    if(this.state.format==="road"){
       calculation = 
         <div>
           <p> Fuel density: {this.state.carbonPerL}kg CO2/L </p>
@@ -242,7 +254,7 @@ export class CarbonCalculator extends React.Component{
           <p> Split by: <input defaultValue="1" type="number" name="split" onChange={this.handleChange} /></p>       
           <p> Fuel density x (Distance/100) x  Fuel economy / Split = <strong>{carbon}kg CO2</strong></p>
         </div>
-    } else if(this.props.mode===AIR && this.props.aircraftType==="airliner"){
+    } else if(this.state.format==="airDistance"){
       calculation = 
         <div>
           <p> Airliner - {this.props.aircraftFields.airlinerClass} </p>
@@ -252,11 +264,11 @@ export class CarbonCalculator extends React.Component{
           <p> Radiative forcing multiplier: {this.props.airOptions.multiplier} </p>
           <p> Distance * Emissions/seat * Fare class * RF Multiplier = <strong>{carbon}kg CO2</strong></p>
         </div>
-    } else if(this.props.mode===AIR){
+    } else if(this.state.format==="airTime"){
       calculation = 
         <div>
           <p> Aircraft - {this.props.aircraftType} </p>
-          <p> Flight time: {this.props.data.flightHrs} </p>
+          <p> Flight time: {displayHrs(this.props.data.flightHrs)} </p>
           <p> Emissions per hr: Fucking heaps. </p>
           <p> Passenger loading: {this.props.aircraftFields.passengers}/{this.props.aircraftFields.totalSeats} </p>
           <p> Flight time x Emissions per hour / Passengers = <strong>{carbon}kg CO2</strong></p>

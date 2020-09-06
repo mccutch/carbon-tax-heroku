@@ -98,7 +98,7 @@ class EmissionInstance(models.Model):
     tax_type = models.ForeignKey(TaxRate, on_delete=models.SET_NULL, related_name='emissions', null=True)
     price = models.FloatField(null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)
-    #paid = models.BooleanField(default=False)
+    format_encoding = models.IntegerField(default=0)
     
     class Meta:
         ordering = ["-date", "-id"]

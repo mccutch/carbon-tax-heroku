@@ -11,6 +11,8 @@ export class DistanceInput extends React.Component{
 
     this.state = {
       distance: 0,
+      hours: 0,
+      minutes: 0,
     }
 
     this.submitDistance = this.submitDistance.bind(this)
@@ -27,11 +29,6 @@ export class DistanceInput extends React.Component{
   }
 
   showRouteCalculator(){
-    /*let modal = <RouteCalculator  
-                  submitDistance={this.props.submitDistance}
-                  displayUnits={this.props.displayUnits}
-                  hideModal={this.props.hideModal}
-                />*/
     let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits} mode={this.props.mode}/>
     this.props.setModal(modal)
   }
@@ -41,7 +38,6 @@ export class DistanceInput extends React.Component{
       this.setState({[event.target.name]:parseFloat(event.target.value)})
     }
   }
-
 
   render(){
     let placeholderText = `Distance (${units.distanceString(this.props.displayUnits)})`

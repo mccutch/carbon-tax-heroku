@@ -2,7 +2,7 @@ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
-import { fetchObject, getAttribute, displayCurrency, sleep } from './helperFunctions.js';
+import { fetchObject, getAttribute, displayCurrency, sleep, encodeEmissionFormat, displayHrs } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList, FormRow, StandardModal } from './reactComponents.js';
 
@@ -693,17 +693,25 @@ export class EmissionDetail extends React.Component{
   render(){
     let displayUnits=this.props.displayUnits
     let emission=this.props.emission
-    let distance=units.distanceDisplay(emission.distance, displayUnits)
-    let distString=units.distanceString(displayUnits)
     let sym=this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
+
+    let distance
+    let format = this.props.emission.format_encoding
+    if(format===encodeEmissionFormat("road") || format===encodeEmissionFormat("airDistance")){
+      let dist=units.distanceDisplay(emission.distance, displayUnits)
+      let distString=units.distanceString(displayUnits)
+      distance = `${parseFloat(dist).toFixed(1)}${distString}`
+    }else if(format===encodeEmissionFormat("airTime")){
+      distance = displayHrs(this.props.emission.distance)
+    }
 
     let display = 
         <tr key={emission.id}>
           <td><button className="btn btn-outline-primary m-2" onClick={this.edit}><strong>{emission.name}</strong></button></td>
           <td>{emission.date}</td>
           <td>{getAttribute(emission.tax_type, this.props.taxes, "name")}</td>
-          <td>{parseFloat(distance).toFixed(1)}{distString}</td>
+          <td>{distance}</td>
           <td>{emission.split}</td>
           <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
           <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>

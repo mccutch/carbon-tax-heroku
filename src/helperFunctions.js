@@ -1,4 +1,5 @@
 import {refreshToken}  from './myJWT.js';
+import {emissionSaveFormats} from './constants.js';
 
 //----------------------------------------------------------------------------------------------------------------------------
 /*
@@ -13,6 +14,33 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+export function decodeEmissionFormat(code){
+  try{
+    return(emissionSaveFormats[code])
+  } catch{
+    return null
+  }
+}
+
+export function encodeEmissionFormat(name){
+  for(let i in emissionSaveFormats){
+    if(emissionSaveFormats[i]===name){
+      return parseInt(i)
+    }
+  }
+  return null
+}
+
+
+export function displayHrs(decimalHrs){
+  let hours = Math.floor(decimalHrs)
+  let returnString = `${hours}h`
+  let minutes = Math.round((decimalHrs-hours)*60)
+  if(minutes!==0){
+    returnString += `${minutes}m`
+  }
+  return(returnString)
+}
 
 export function sleep(milliseconds){
   return new Promise(resolve => setTimeout(resolve, milliseconds))
