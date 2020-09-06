@@ -1,7 +1,6 @@
+Set up SendGrid
 
 Air travel options
- - Apply climate-forcing multiplier on flights
- - Apply carbon offset
  - Info links
 
 Change "other" tax category to "general", so it always appears in list

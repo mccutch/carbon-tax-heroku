@@ -39,10 +39,28 @@ export const AIR_TRAVEL = "air-travel"
 export const AIRLINER_KGCO2_PPAX_LT500 = 0.18
 export const AIRLINER_KGCO2_PPAX_GT500 = 0.11
 
+export const aircraftTypes = [
+  {type:"airliner", label:"Passenger Airliner"},
+  {type:"fixed-wing", label:"Chartered Plane"},
+  {type:"helicopter", label:"Helicopter"},
+]
+
+export const airlinerClasses = [
+  {class:"economy", label:"Economy class"},
+  {class:"business", label:"Business class"},
+  {class:"firstClass", label:"First class"},
+]
+
 export const fareClassMultiplier = {
   economy:0.9,
   business:2.5,
   firstClass:6,
+}
+
+export const rfMultiplier = {
+  // https://www.bbc.com/news/science-environment-49349566
+  lt500Km:1.27,
+  gt500Km:2.5,
 }
 
 export const emissionSaveFormats = [ 

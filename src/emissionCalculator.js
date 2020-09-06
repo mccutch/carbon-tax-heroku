@@ -306,6 +306,7 @@ export class EmissionCalculator extends React.Component{
                       returnOptions={this.handleAirOptions}
                       aircraftType={this.state.aircraftType}
                       aircraftFields={this.state.aircraftFields}
+                      distanceKm={this.state.distanceKm}
                       //submitted={this.state.distanceSubmitted}
                       //setModal={this.props.setModal}
                       //hideModal={this.props.hideModal}

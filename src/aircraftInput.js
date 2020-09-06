@@ -1,25 +1,18 @@
 import React from 'react';
 import {ObjectSelectionList} from './reactComponents.js';
+import {airlinerClasses, rfMultiplier, aircraftTypes} from './constants.js';
 
-const aircraftTypes = [
-  {type:"airliner", label:"Passenger airliner"},
-  {type:"fixed-wing", label:"Chartered fixed-wing"},
-  {type:"helicopter", label:"Helicopter"},
-]
-
-const airlinerClasses = [
-  {class:"economy", label:"Economy class"},
-  {class:"business", label:"Business class"},
-  {class:"firstClass", label:"First class"},
-]
 
 export class AirOptionsInput extends React.Component{
   constructor(props){
     super(props)
 
+    this.defaultRf = (this.props.aircraftType==="airliner") ? ((this.props.distanceKm<500) ? rfMultiplier.lt500Km : rfMultiplier.gt500Km) : 1
+    
+
     this.state = {
       offset:0,
-      multiplier:1,
+      multiplier:this.defaultRf,
     }
 
     this.handleChange=this.handleChange.bind(this)
@@ -39,8 +32,6 @@ export class AirOptionsInput extends React.Component{
   }
 
   render(){
-
-
     return(
       <div className="container bg-light py-2">
         <label>
@@ -50,7 +41,7 @@ export class AirOptionsInput extends React.Component{
         <br/>
         <label>
           Radiative forcing multiplier
-          <input name="multiplier" type="range" min="1" max="3" defaultValue="1" onChange={this.handleChange} step="0.1" className="form-control"/>
+          <input name="multiplier" type="range" min="1" max="3" defaultValue={this.defaultRf} onChange={this.handleChange} step="0.1" className="form-control"/>
           {this.state.multiplier}
         </label>
         <br/>

@@ -144,7 +144,7 @@ class TaxEdit extends React.Component{
 
   validateInput(){
     if(!(this.state.price_per_kg || this.state.name)){
-      this.editSuccess()
+      this.props.hideModal()
       return false
     }
 
@@ -176,8 +176,10 @@ class TaxEdit extends React.Component{
       if(this.state.name){
         taxData['name']=this.state.name
       }
+
+      let currencyFactor = this.props.profile.conversion_factor
       if(this.state.price_per_kg){
-        taxData['price_per_kg']=parseFloat(this.state.price_per_kg).toFixed(TAX_RATE_DECIMALS)
+        taxData['price_per_kg']=parseFloat(this.state.price_per_kg/currencyFactor).toFixed(TAX_RATE_DECIMALS)
       }
 
       console.log(taxData)
@@ -213,9 +215,11 @@ class TaxEdit extends React.Component{
 
 
   render(){
-    let existingValue=parseFloat(this.props.tax.price_per_kg)
-    let sym = this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
+    console.log(`factor:${currencyFactor}`)
+    let existingValue=parseFloat(this.props.tax.price_per_kg*currencyFactor)
+    let sym = this.props.profile.currency_symbol
+    
 
     let deleteButton
     if(!this.props.tax.isDefault){
@@ -230,7 +234,7 @@ class TaxEdit extends React.Component{
         <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" className="form-control"/>
         <br/>
         Price per kg: {sym}
-        <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(TAX_RATE_DECIMALS)} onChange={this.handleChange} step="0.01" className="form-control"/>
+        <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(3)} onChange={this.handleChange} step="0.01" className="form-control"/>
       </div>
 
     let footer = 
@@ -282,7 +286,7 @@ export class TaxDetail extends React.Component{
     return(
       <tr key={tax.id}>
         <td>{taxName}</td>
-        <td>{sym}{parseFloat(currencyFactor*tax.price_per_kg).toFixed(TAX_RATE_DECIMALS)}/kg CO2</td>
+        <td>{sym}{parseFloat(currencyFactor*tax.price_per_kg).toFixed(3)}/kg CO2</td>
         <td>{tax.category}</td>
       </tr>
     )
@@ -470,6 +474,7 @@ export class EmissionEdit extends React.Component{
       co2_output_kg:this.props.emission.co2_output_kg,
       tax_type:this.props.emission.tax_type,
       price:this.props.emission.price,
+      offset:this.props.emission.offset,
       errorMessage:"",
     }
 
@@ -518,6 +523,9 @@ export class EmissionEdit extends React.Component{
       name = "distance"
       value = value/60
     }
+    if(name==="offset"){
+      value = value/this.props.profile.conversion_factor
+    }
     this.setState({
       [name]:value,
       willSave:true,
@@ -543,13 +551,13 @@ export class EmissionEdit extends React.Component{
     this.setState({
       taxPrice:taxPrice,
       co2_output_kg: (co2_output_kg).toFixed(3),
-      price: (co2_output_kg*taxPrice).toFixed(2),
+      price: (co2_output_kg*taxPrice-this.state.offset).toFixed(2),
     })
   }
 
   prepareData(method){
     this.setState({errorMessage:""})
-    let emissionAttributes = ['name', 'date', 'distance', 'economy', 'fuel', 'split', 'co2_output_kg', 'tax_type', 'price', 'format_encoding']
+    let emissionAttributes = ['name', 'date', 'distance', 'economy', 'fuel', 'split', 'co2_output_kg', 'tax_type', 'price', 'format_encoding', 'offset']
     let emissionData = {}
     for(let i in emissionAttributes){
       let attribute = emissionAttributes[i]
@@ -648,6 +656,13 @@ export class EmissionEdit extends React.Component{
             input={<input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} className="form-control"/>}
           />
         </div>
+    } else {
+      roadTripFields = 
+          <FormRow
+            label={<div>Offset: ({this.props.profile.currency_symbol})</div>}
+            labelWidth={4}
+            input={<input type="number" name="offset" defaultValue={(emission.offset*this.props.profile.conversion_factor).toFixed(2)} onChange={this.handleChange} className="form-control"/>}
+          />
     }
 
     let distanceField
@@ -671,7 +686,7 @@ export class EmissionEdit extends React.Component{
       <form className="container">
         <p>{this.state.errorMessage}</p>
         <div className="form-group row">
-          <input type="text" name="name" maxlength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} className="form-control"/>
+          <input type="text" name="name" maxLength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} className="form-control"/>
         </div>
         <div className="form-group row">
           <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} className="form-control"/>

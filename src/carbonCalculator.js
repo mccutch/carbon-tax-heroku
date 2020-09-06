@@ -159,21 +159,28 @@ export class CarbonCalculator extends React.Component{
   saveEmission(){
     let date = this.state.date?this.state.date:getDate.today()
 
-    let distance, economy, fuelId
+    let distance, economy, fuelId, price, offset
     // For air travel, record economy in kg/km or kg/hr.
     if(this.state.format==="road"){
       economy = this.props.data.lPer100km
       distance = this.props.data.distanceKm
       fuelId = this.props.data.fuelId
-    } else if(this.state.format==="airDistance"){
-      economy = this.state.carbonKg/this.props.data.distanceKm
-      distance = this.props.data.distanceKm
+      price = this.calculatePrice()
+      offset = 0
+    } else {
       fuelId = this.props.fuels[0].id
-    } else if(this.state.format==="airTime"){
-      economy = this.state.carbonKg/this.props.data.flightHrs
-      distance = this.props.data.flightHrs
-      fuelId = this.props.fuels[0].id
-    } 
+      let currencyFactor = this.props.profile.conversion_factor
+      offset = this.props.airOptions.offset/currencyFactor
+      price = this.calculatePrice() - offset
+      
+      if(this.state.format==="airDistance"){
+        economy = this.state.carbonKg/this.props.data.distanceKm
+        distance = this.props.data.distanceKm
+      } else if(this.state.format==="airTime"){
+        economy = this.state.carbonKg/this.props.data.flightHrs
+        distance = this.props.data.flightHrs
+      } 
+    }
 
     let emissionData = {
       "name": truncate(this.state.tripName, MAX_EMISSION_NAME_LEN),
@@ -184,8 +191,9 @@ export class CarbonCalculator extends React.Component{
       "split": parseFloat(this.state.split).toFixed(2),
       "co2_output_kg": parseFloat(this.state.carbonKg).toFixed(3),
       "tax_type": `${this.state.tax}`,
-      "price": parseFloat(this.calculatePrice()).toFixed(2),
+      "price": parseFloat(price).toFixed(2),
       "format_encoding": `${encodeEmissionFormat(this.state.format)}`,
+      "offset": parseFloat(offset).toFixed(2),
     }
 
     fetchObject({
@@ -208,9 +216,22 @@ export class CarbonCalculator extends React.Component{
     let currencyFactor = this.props.profile.conversion_factor
 
     let carbon = parseFloat(this.state.carbonKg).toFixed(2)
-    let price = parseFloat(currencyFactor*(this.calculatePrice())).toFixed(2)
+    let price = parseFloat(currencyFactor*(this.calculatePrice()))
     let split = parseFloat(this.state.split)
     let taxRate = parseFloat(currencyFactor*this.getTaxRate()).toFixed(2)
+
+    let priceDisplay
+    if(this.props.mode===AIR){
+      let offset = parseFloat(this.props.airOptions.offset)
+      priceDisplay = 
+        <div>
+          <p> Carbon offset: {sym}{offset}</p>
+          <p> ({carbon}kg x {sym}{taxRate}/kg) - Offset = <strong>{sym}{(price-offset).toFixed(2)} carbon tax</strong></p>
+        </div>
+    } else {
+      priceDisplay = <p> {carbon}kg x {sym}{taxRate}/kg = <strong>{sym}{price.toFixed(2)} carbon tax</strong></p>
+    }
+    
 
     let failureDisplay
     if(this.state.submissionFailed){
@@ -222,7 +243,7 @@ export class CarbonCalculator extends React.Component{
       memberDisplay=
         <div>
           <p> Tax rate:  <ObjectSelectionList name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} label="name" value="id" /></p>
-          <p> {carbon}kg x {sym}{taxRate}/kg = <strong>{sym}{price} carbon tax</strong></p>
+          {priceDisplay}
           <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
           <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
           <br/>

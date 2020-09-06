@@ -99,6 +99,7 @@ class EmissionInstance(models.Model):
     price = models.FloatField(null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='emissions', null=True)
     format_encoding = models.IntegerField(default=0)
+    offset = models.FloatField(default=0)
     
     class Meta:
         ordering = ["-date", "-id"]
