@@ -84,9 +84,9 @@ export class NavBar extends React.Component{
     if(this.props.loggedIn){
       navLeft = 
         <Nav className="mr-auto">
-          {dashboard}
           {newEmission}
           {newPayment} 
+          {dashboard}
         </Nav>  
       navRight = 
         <Nav className="mr-auto">

@@ -470,7 +470,6 @@ export class EmissionEdit extends React.Component{
       co2_output_kg:this.props.emission.co2_output_kg,
       tax_type:this.props.emission.tax_type,
       price:this.props.emission.price,
-
       errorMessage:"",
     }
 
@@ -515,8 +514,12 @@ export class EmissionEdit extends React.Component{
     if(name==="split"){
       value = (value>0? value : 1)
     }
+    if(name==="duration"){
+      name = "distance"
+      value = value/60
+    }
     this.setState({
-      [event.target.name]:value,
+      [name]:value,
       willSave:true,
     }, this.recalculate)
   }
@@ -526,10 +529,18 @@ export class EmissionEdit extends React.Component{
     let fuelCarbonPerL = getAttribute(this.state.fuel, this.props.fuels, "co2_per_unit")
     let taxPrice = getAttribute(this.state.tax_type, this.props.taxes, "price_per_kg")
 
-    let co2_output_kg = (this.state.distance/100)*this.state.economy*fuelCarbonPerL/(this.state.split)
+    let co2_output_kg 
+    let format = this.props.emission.format_encoding
+    if(format===encodeEmissionFormat("road")){
+      co2_output_kg = (this.state.distance/100)*this.state.economy*fuelCarbonPerL/(this.state.split)
+    } else if(format===encodeEmissionFormat("airDistance")){
+      co2_output_kg = (this.state.distance)*this.state.economy
+    } else if(format===encodeEmissionFormat("airTime")){
+      co2_output_kg = (this.state.distance)*this.state.economy
+    }
+
 
     this.setState({
-      fuelCarbonPerL:fuelCarbonPerL,
       taxPrice:taxPrice,
       co2_output_kg: (co2_output_kg).toFixed(3),
       price: (co2_output_kg*taxPrice).toFixed(2),
@@ -538,7 +549,7 @@ export class EmissionEdit extends React.Component{
 
   prepareData(method){
     this.setState({errorMessage:""})
-    let emissionAttributes = ['name', 'date', 'distance', 'economy', 'fuel', 'split', 'co2_output_kg', 'tax_type', 'price']
+    let emissionAttributes = ['name', 'date', 'distance', 'economy', 'fuel', 'split', 'co2_output_kg', 'tax_type', 'price', 'format_encoding']
     let emissionData = {}
     for(let i in emissionAttributes){
       let attribute = emissionAttributes[i]
@@ -616,6 +627,46 @@ export class EmissionEdit extends React.Component{
 
     let title = <div>Edit Emission</div>
 
+    let format = emission.format_encoding 
+    let roadTripFields
+    if(format===encodeEmissionFormat("road")){
+      roadTripFields = 
+        <div>
+          <FormRow
+            label={<div>Fuel:</div>}
+            labelWidth={4}
+            input={<ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>}
+          />
+          <FormRow
+            label={<div>Economy: ({units.string(displayUnits)})</div>}
+            labelWidth={4}
+            input={<input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control" step="0.1"/>}
+          />
+          <FormRow
+            label={<div>Split:</div>}
+            labelWidth={4}
+            input={<input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} className="form-control"/>}
+          />
+        </div>
+    }
+
+    let distanceField
+    if(format===encodeEmissionFormat("airTime")){
+      distanceField = 
+        <FormRow
+          label={<div>Duration: (minutes)</div>}
+          labelWidth={4}
+          input={<input type="number" name="duration" defaultValue={distance*60} onChange={this.handleChange} className="form-control"/>}
+        />
+    } else {
+      distanceField = 
+        <FormRow
+          label={<div>Distance: ({units.distanceString(displayUnits)})</div>}
+          labelWidth={4}
+          input={<input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>}
+        />
+    }
+
     let body = 
       <form className="container">
         <p>{this.state.errorMessage}</p>
@@ -630,26 +681,8 @@ export class EmissionEdit extends React.Component{
           labelWidth={4}
           input={<ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="id" label="name" onChange={this.handleChange}/>}
         />
-        <FormRow
-          label={<div>Distance: ({units.distanceString(displayUnits)})</div>}
-          labelWidth={4}
-          input={<input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>}
-        />
-        <FormRow
-          label={<div>Fuel:</div>}
-          labelWidth={4}
-          input={<ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>}
-        />
-        <FormRow
-          label={<div>Economy: ({units.string(displayUnits)})</div>}
-          labelWidth={4}
-          input={<input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control" step="0.1"/>}
-        />
-        <FormRow
-          label={<div>Split:</div>}
-          labelWidth={4}
-          input={<input type="number" name="split" defaultValue={emission.split} onChange={this.handleChange} className="form-control"/>}
-        />
+        {distanceField}
+        {roadTripFields}
         <br/>
         CO2 Output: <strong>{this.state.co2_output_kg}kg</strong>
         <br/>
