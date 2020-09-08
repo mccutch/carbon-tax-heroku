@@ -10,12 +10,15 @@ from django.contrib.auth.models import User
 
 from rest_framework import status, generics
 from rest_framework.response import Response
+from django.http import HttpResponse #test email
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from . import permissions
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+
+from django.core.mail import send_mail
 
 
 # Serve Single Page Application
@@ -580,6 +583,10 @@ class BackdateTaxChange(APIView):
 
 
 
+def testEmail(request):
+    response = send_mail('Subject here', 'Here is the message.', 'from@example.com', ['jack.mccutchan@gmail.com'], fail_silently=False)
+    print(response)
+    return HttpResponse('<h1>Page was found</h1>')
 
 
 

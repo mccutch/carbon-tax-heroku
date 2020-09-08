@@ -51,6 +51,8 @@ urlpatterns = [
     path('my-recipients/', views.UserRecipients.as_view(), name="my-recipients"),
     path('donation-recipients/', views.DonationRecipients.as_view(), name="donation-recipients"),
     path('donation-recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="donationrecipient-detail"),
+
+    path('test-email/', views.testEmail),
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)

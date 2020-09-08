@@ -32,9 +32,8 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
-#SECRET_KEY = get_env_value('DJ_KEY')
 SECRET_KEY = env('DJ_KEY')
-#SECRET_KEY = returnkey()
+SENDGRID_API_KEY = env('SENDGRID_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = False
@@ -182,14 +181,18 @@ CORS_ORIGIN_WHITELIST = [
     'https://carbontax.herokuapp.com',
 ]
 
-# Should remove this
-"""JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'backend.utils.my_jwt_response_handler'
-}"""
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=0.2),
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
