@@ -1,8 +1,23 @@
 import React from 'react';
 
+function generateByline(){
+  let bylines = [
+    "Balm for the guild-ridden traveller.",
+    "The armchair dissident's carbon tax.",
+    "Face your consumption.",
+  ]
+  return bylines[Math.floor(Math.random()*bylines.length)]
+}
+
 
 export class HomeView extends React.Component{
-  
+  constructor(props){
+    super(props)
+    this.state = {
+      byline:generateByline(),
+    }
+  }
+
   render(){
     let dashboard, payment
     if(this.props.loggedIn){
@@ -14,8 +29,8 @@ export class HomeView extends React.Component{
       <div className="container-sm my-2 bg-transparent">
         <div className="row justify-content-center">
               <div className="container text-center text-light">
-                <h2>Armchair Dissident Carbon Tax</h2>
-                <h5>Balm for the guild-ridden traveller.</h5>
+                <h2>Carbon Accountant</h2>
+                <h5>{this.state.byline}</h5>
               </div>
               <button className="btn btn-info m-2" name="emissionCalculator" onClick={this.props.selectView}>+ Add a carbon emission</button>
               {payment}

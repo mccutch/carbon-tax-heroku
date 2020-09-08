@@ -116,7 +116,7 @@ export class NavBar extends React.Component{
             className="d-inline-block align-top"
             name="home"
           />{' '}
-          <a name="home" > Armchair Dissident</a>
+          <a name="home" > Carbon Accountant</a>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
