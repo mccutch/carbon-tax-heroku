@@ -1,3 +1,3 @@
 self.addEventListener('install', function(event) {
-  console.log("SW INSTALL V3 sw.js")
+  console.log("SW INSTALL V5 service-worker.js")
 })
