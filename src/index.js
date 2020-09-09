@@ -11,7 +11,6 @@ import {NavBar} from './navBar.js';
 import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
 import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker.js';
-
 import {GoogleDirections} from './googleDirections.js';
 
 
@@ -220,8 +219,11 @@ class App extends React.Component {
     
     } else if(nav==="toggleUnits"){
       this.toggleDisplayUnits()
-    }
+    
 
+    } else if(nav==="contact"){
+      this.setMainView("contact")
+    }
   }
   
   

@@ -5,6 +5,7 @@ import {Dashboard} from './dashboard.js';
 import {ProfileDisplay} from './userProfile.js';
 import {HomeView} from './homeView.js';
 import {PaymentView} from './payment.js';
+import {ContactPage} from './contact.js';
 
 export class MainView extends React.Component{
   constructor(props){
@@ -82,6 +83,15 @@ export class MainView extends React.Component{
                   profile={this.props.profile}
                   recipients={this.props.recipients}
                   refresh={this.props.refresh}
+                  setModal={this.props.setModal}
+                  hideModal={this.props.hideModal}
+                  selectView={this.selectView}
+                  setView={this.props.setView}
+                />
+    } else if(this.props.display==="contact"){
+      display = <ContactPage 
+                  user={this.props.user} 
+                  profile={this.props.profile}
                   setModal={this.props.setModal}
                   hideModal={this.props.hideModal}
                   selectView={this.selectView}

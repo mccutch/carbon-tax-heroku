@@ -1,4 +1,8 @@
-Set up SendGrid
+STUCK
+ - Sending emails with sendgrid
+ - Serviceworker
+
+Logout--> setDefaultstate isn't working
 
 Air travel options
  - Info links
