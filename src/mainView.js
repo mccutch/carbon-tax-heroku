@@ -90,12 +90,11 @@ export class MainView extends React.Component{
                 />
     } else if(this.props.display==="contact"){
       display = <ContactPage 
-                  user={this.props.user} 
-                  profile={this.props.profile}
+                  loggedIn={this.props.loggedIn}
+                  user={this.props.user}
                   setModal={this.props.setModal}
                   hideModal={this.props.hideModal}
-                  selectView={this.selectView}
-                  setView={this.props.setView}
+                  hideDisplay={this.hideDisplay}
                 />
     } else {
       display = 

@@ -584,9 +584,21 @@ class BackdateTaxChange(APIView):
 
 
 def testEmail(request):
-    response = send_mail('Subject here', 'Here is the message.', 'from@example.com', ['jack.mccutchan@gmail.com'], fail_silently=False)
+    response = send_mail('Subject here', 'Here is the message.', 'from@carbontax.heroku.com', ['jack.mccutchan@gmail.com'], fail_silently=False)
     print(response)
     return HttpResponse('<h1>Page was found</h1>')
+
+class ContactForm(APIView):
+    permission_classes = (AllowAny, )
+    def post(self, request):
+        print(request.data)
+        if request.data['user']!=0:
+            print(f"User: {request.data['user']}")
+        else:
+            print("User: Anonymous")
+        response = send_mail('Re: Contact Form', request.data['message'], request.data['email'], ['admin@carbonaccountant.com', request.data['email']], fail_silently=False)
+        print(f'Response: {response}')
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 

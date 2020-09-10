@@ -1,7 +1,8 @@
 import React from 'react';
-import {Modal, Navbar} from 'react-bootstrap';
+import {Navbar} from 'react-bootstrap';
 import {validateEmailRegex} from './validation.js';
 import {fetchObject} from './helperFunctions.js';
+import {StandardModal} from './reactComponents.js';
 
 class ContactForm extends React.Component{
   constructor(props){
@@ -15,13 +16,18 @@ class ContactForm extends React.Component{
   }
 
   render(){
+    let submitBtn = (this.props.submitted) ? 
+      <button className="btn btn-outline-success" disabled >Submit</button>
+      : <button className="btn btn-outline-success" onClick={this.submit}>Submit</button>
+
     return(
       <div className="form p-4">
-        <input type="text" name="returnEmail" defaultValue={this.props.defaultEmail} placeholder="Contact email address" onChange={this.props.onChange} className="form-control"/>
+        <p><strong>{this.props.errorMessage}</strong></p>
+        <input type="email" name="returnEmail" defaultValue={this.props.defaultEmail} placeholder="Contact email address" onChange={this.props.onChange} className="form-control"/>
         <br/>
-        <input type="text" name="message" placeholder="Message" onChange={this.props.onChange}  className="form-control"/>
+        <textarea name="message" placeholder="Message" rows="5" onChange={this.props.onChange}  className="form-control"/>
         <br/>
-        <button className="btn btn-outline-success" onClick={this.submit}>Submit</button>
+        {submitBtn}
       </div>
     )
   }
@@ -53,40 +59,57 @@ export class ContactPage extends React.Component{
 
   validateInputs(){
     console.log("VALIDATE INPUTS")
-    if(!(this.state.email && this.state.returnEmail)){
+    if(!(this.state.message && this.state.returnEmail)){
+      this.setState({errorMessage:"Please complete all fields."})
       return false
     }
-    if(!validateEmailRegex(this.state.email)){
+    if(!validateEmailRegex(this.state.returnEmail)){
+      this.setState({errorMessage:"Invalid email address."})
       return false
     }
-
+    this.setState({errorMessage:""})
     this.submit()
   }
 
   submit(){
+    console.log("Submit")
+    this.setState({submitted:true})
+    
     let contactData = {
       email:this.state.returnEmail,
       message:this.state.message,
-      user:(this.props.user) ? this.props.user.id : 0,
+      user:(this.props.loggedIn)?this.props.user.id:0
     }
+
+    console.log(contactData)
     fetchObject({
-      url:'/contact/',
+      url:'/contact-form/',
       method:'POST',
       data: contactData,
       onSuccess: this.handleSuccess,
       onFailure: this.handleFailure,
+      noAuth: true,
     })
   }
 
   handleFailure(response){
     console.log(response)
-    this.setState({errorMessage:"Unable to process contact form. Please try again."})
+    this.setState({errorMessage:"Unable to process contact form. Please try again.", submitted:false})
   }
 
   handleSuccess(response){
     console.log("Contact success")
-    console.log(response)
-    this.displaySuccessModal(response)
+    this.displaySuccessModal(this.state.returnEmail)
+  }
+
+  displaySuccessModal(email){
+    let title = <div>Message sent</div>
+    let body = 
+      <div>
+        <p>Thanks for getting in touch, we'll get back to you at <strong>{email}</strong> shortly.</p>
+      </div>
+    this.props.setModal(<StandardModal hideModal={this.props.hideModal} title={title} body={body} />)
+    this.props.hideDisplay()
   }
 
   render(){
@@ -104,6 +127,7 @@ export class ContactPage extends React.Component{
           errorMessage={this.state.errorMessage} 
           defaultEmail={this.state.returnEmail} 
           onSubmit={this.validateInputs}
+          submitted={this.state.submitted}
         />
       </div>
     )

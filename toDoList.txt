@@ -2,6 +2,8 @@ STUCK
  - Sending emails with sendgrid
  - Serviceworker
 
+Recaptcha on registration and contact form
+
 Logout--> setDefaultstate isn't working
 
 Air travel options

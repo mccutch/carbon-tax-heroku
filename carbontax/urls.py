@@ -53,6 +53,7 @@ urlpatterns = [
     path('donation-recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="donationrecipient-detail"),
 
     path('test-email/', views.testEmail),
+    path('contact-form/', views.ContactForm.as_view(), name="contact-form"),
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)
