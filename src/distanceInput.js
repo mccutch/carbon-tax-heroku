@@ -68,7 +68,7 @@ export class DistanceInput extends React.Component{
     }
 
     let submitDisplay 
-    if(this.state.distance || this.state.hours){
+    if(this.state.distance || this.state.hours || this.state.minutes){
       submitDisplay = <button className=" btn btn-success m-2" onClick={this.submitDistance} >Continue</button>
     }
 

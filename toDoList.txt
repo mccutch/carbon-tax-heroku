@@ -1,10 +1,10 @@
 STUCK
  - Sending emails with sendgrid
+    - Test contact form, set up admin email
  - Serviceworker
+    - Clear user data from cache on logout
 
 Recaptcha on registration and contact form
-
-Logout--> setDefaultstate isn't working
 
 Air travel options
  - Info links
@@ -34,8 +34,6 @@ Warning on currency change
 
 
 Graph axis labels
-
-Standardise modals with generic template
 
 Object table of payments and donation recipients
 

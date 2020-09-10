@@ -1,5 +1,5 @@
 import {refreshToken}  from './myJWT.js';
-import {emissionSaveFormats} from './constants.js';
+import {emissionSaveFormats, heliEmissions} from './constants.js';
 
 //----------------------------------------------------------------------------------------------------------------------------
 /*
@@ -14,6 +14,22 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+export function getHeliEconomy(seats){
+  if(seats<=4){
+    return heliEmissions.seat4
+  }else if(seats===5){
+    return heliEmissions.seat5
+  }else if(seats===6){
+    return heliEmissions.seat6
+  }else if(seats<=12){
+    return heliEmissions.seat12
+  }else if(seats<=14){
+    return heliEmissions.seat14
+  } else {
+    return heliEmissions.seat14+(seats-14)*100
+  }
+}
+
 export function decodeEmissionFormat(code){
   try{
     return(emissionSaveFormats[code])

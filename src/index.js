@@ -18,7 +18,7 @@ class App extends React.Component {
   constructor(props){
     super(props)
 
-    this.defaultState = {
+    this.state = {
       loggedIn: false,
       displayUnits: units.METRIC,
       user: {},
@@ -34,7 +34,7 @@ class App extends React.Component {
       serverConnectionFailure:false,
     }
 
-    this.state = this.defaultState
+    this.defaultState = JSON.parse(JSON.stringify(this.state))
 
     this.login=this.login.bind(this)
     this.logout=this.logout.bind(this)
@@ -140,7 +140,15 @@ class App extends React.Component {
 
   logoutSuccess(){
     console.log("Logout successful.")
-    this.setState(this.defaultState)
+    console.log(this.defaultState)
+    // Reload page to clear user data from state
+    // What to do about clearing user data from caches??
+    window.location.reload(false)
+
+    //this.setState(this.defaultState)
+    //this.setState(JSON.parse(this.defaultState))
+    //this.setState({loggedIn:false})
+    //this.state = JSON.parse(JSON.stringify(this.defaultState))
   }
 
   refreshFullProfile(){
@@ -249,22 +257,6 @@ class App extends React.Component {
         />
         {modal}
         <div>
-        {/*}
-          <LoginWrapper 
-            loggedIn={this.state.loggedIn}
-            logout={this.logout} 
-            toggleDisplayUnits={this.toggleDisplayUnits} 
-            taxes={this.state.taxes}
-            user={this.state.user}
-            profile={this.state.profile}
-            vehicles={this.state.vehicles}
-            emissions={this.state.emissions}
-            displayUnits={this.state.displayUnits}
-            fuels={this.state.fuels}
-            stats={this.state.stats}
-            refresh={this.refreshFullProfile}
-          />
-        */}
           <MainView
             loggedIn={this.state.loggedIn} 
             displayUnits={this.state.displayUnits}

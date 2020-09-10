@@ -17,8 +17,8 @@ class ContactForm extends React.Component{
 
   render(){
     let submitBtn = (this.props.submitted) ? 
-      <button className="btn btn-outline-success" disabled >Submit</button>
-      : <button className="btn btn-outline-success" onClick={this.submit}>Submit</button>
+      <button className="btn btn-success" disabled >Submit</button>
+      : <button className="btn btn-success" onClick={this.submit}>Submit</button>
 
     return(
       <div className="form p-4">
@@ -43,7 +43,7 @@ export class ContactPage extends React.Component{
       errorMessage:"",   
     }
 
-    if(this.props.user){
+    if(this.props.loggedIn){
       this.state.returnEmail=this.props.user.email
     }
 

@@ -37,12 +37,16 @@ export class AirOptionsInput extends React.Component{
         <label>
           Carbon offset($)
           <input name="offset" type="number" defaultValue={0} className="form-control" onChange={this.handleChange}/>
+          <small className="form-text text-muted">Have you already paid to offset this flight?</small>
         </label>
         <br/>
         <label>
-          Radiative forcing multiplier
+          Radiative forcing multiplier: {this.state.multiplier}
           <input name="multiplier" type="range" min="1" max="3" defaultValue={this.defaultRf} onChange={this.handleChange} step="0.1" className="form-control"/>
-          {this.state.multiplier}
+          <small className="form-text text-muted">
+            Emissions and cloud formation (contrails) at cruising altitudes make a significant contribution to the total atmospheric warming effect of 
+            air travel. <a href="https://www.carbonbrief.org/explainer-challenge-tackling-aviations-non-co2-emissions" target="_blank">Learn more.</a>
+          </small>
         </label>
         <br/>
         <button className="btn btn-success" onClick={this.submit} ><strong>Continue</strong></button>

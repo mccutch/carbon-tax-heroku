@@ -69,6 +69,16 @@ export const emissionSaveFormats = [
   "airTime",
 ]
 
+export const heliEmissions = {
+  // seat<passengers>:kg/hr
+  // jet fuel: 9.57kgCO2 per gallon https://www.eia.gov/environment/emissions/co2_vol_mass.php
+  seat4:258,    // Bell 206B: 27gal/hr = 258kg/hr, used by Coldstream Helicopters
+  seat5:364,   // Bell 206L-4: 38gal/hr = 364kg/hr
+  seat6:431,   // Bell 407: 45gal/hr = 431kg/hr, used by Alpine Helicopters Inc
+  seat12:957,  // Bell 212HP: 100gal/hr = 947kg/hr, used by Alpine Helicopters Inc
+  seat14:1388,  // Bell 214B1: 145gal/hr = 947kg/hr, used by Blackcomb Heli
+}
+
 
 
 

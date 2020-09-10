@@ -2,7 +2,7 @@ import React from 'react';
 import * as getDate from './getDate.js';
 import * as units from './unitConversions.js';
 import { OptionListInput } from './optionListInput.js';
-import { fetchObject, getAttribute, truncate, getObject, displayHrs, encodeEmissionFormat } from './helperFunctions.js';
+import { fetchObject, getAttribute, truncate, getObject, displayHrs, encodeEmissionFormat, getHeliEconomy } from './helperFunctions.js';
 import { ObjectSelectionList } from './reactComponents.js';
 import { MAX_EMISSION_NAME_LEN } from './constants.js';
 import { ROAD, AIR, PUBLIC, OTHER } from './constants.js';
@@ -146,7 +146,7 @@ export class CarbonCalculator extends React.Component{
         carbonKg:carbonPerPaxKmAvg*this.props.data.distanceKm*fareClass*rfMultiplier,
       })
     }else if(this.state.format==="airTime"){
-      let carbonPerHr = 888
+      let carbonPerHr = getHeliEconomy(this.props.data.aircraftFields.totalSeats)
       let flightHrs = this.props.data.flightHrs
       let numPassengers = this.props.data.aircraftFields.passengers
       this.setState({
@@ -280,7 +280,7 @@ export class CarbonCalculator extends React.Component{
         <div>
           <p> Airliner - {this.props.aircraftFields.airlinerClass} </p>
           <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
-          <p> Average emissions/seat: {this.state.carbonPerPaxKmAvg}kg/km </p>
+          <p> Average emissions/seat: {this.state.carbonPerPaxKmAvg}kg CO2/km </p>
           <p> Fare class multiplier: {this.state.fareClass} </p>
           <p> Radiative forcing multiplier: {this.props.airOptions.multiplier} </p>
           <p> Distance * Emissions/seat * Fare class * RF Multiplier = <strong>{carbon}kg CO2</strong></p>
@@ -290,7 +290,7 @@ export class CarbonCalculator extends React.Component{
         <div>
           <p> Aircraft - {this.props.aircraftType} </p>
           <p> Flight time: {displayHrs(this.props.data.flightHrs)} </p>
-          <p> Emissions per hr: Fucking heaps. </p>
+          <p> Emissions per hr: {parseFloat(this.state.carbonPerHr).toFixed(1)}kg CO2</p>
           <p> Passenger loading: {this.props.aircraftFields.passengers}/{this.props.aircraftFields.totalSeats} </p>
           <p> Flight time x Emissions per hour / Passengers = <strong>{carbon}kg CO2</strong></p>
         </div>
