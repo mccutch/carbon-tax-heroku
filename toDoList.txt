@@ -1,3 +1,5 @@
+Change "other" tax category to "general", so it always appears in list
+
 STUCK
  - Sending emails with sendgrid
     - Test contact form, set up admin email
@@ -9,7 +11,7 @@ Recaptcha on registration and contact form
 Air travel options
  - Info links
 
-Change "other" tax category to "general", so it always appears in list
+
 
 Remove ability to click though emission input tabs out of order?
 

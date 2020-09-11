@@ -1,6 +1,7 @@
 import React from 'react';
 import {ObjectSelectionList} from './reactComponents.js';
 import {airlinerClasses, rfMultiplier, aircraftTypes} from './constants.js';
+import {getAttribute} from './helperFunctions.js';
 
 
 export class AirOptionsInput extends React.Component{
@@ -9,7 +10,6 @@ export class AirOptionsInput extends React.Component{
 
     this.defaultRf = (this.props.aircraftType==="airliner") ? ((this.props.distanceKm<500) ? rfMultiplier.lt500Km : rfMultiplier.gt500Km) : 1
     
-
     this.state = {
       offset:0,
       multiplier:this.defaultRf,

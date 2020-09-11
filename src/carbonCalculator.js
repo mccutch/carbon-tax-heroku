@@ -6,7 +6,7 @@ import { fetchObject, getAttribute, truncate, getObject, displayHrs, encodeEmiss
 import { ObjectSelectionList } from './reactComponents.js';
 import { MAX_EMISSION_NAME_LEN } from './constants.js';
 import { ROAD, AIR, PUBLIC, OTHER } from './constants.js';
-import { AIRLINER_KGCO2_PPAX_LT500, AIRLINER_KGCO2_PPAX_GT500, fareClassMultiplier, JET_FUEL_ID } from './constants.js';
+import { AIRLINER_KGCO2_PPAX_LT500, AIRLINER_KGCO2_PPAX_GT500, fareClassMultiplier, JET_FUEL_ID, airlinerClasses, aircraftTypes } from './constants.js';
 
 
 
@@ -106,16 +106,16 @@ export class CarbonCalculator extends React.Component{
   }
 
   calculatePrice(){
-    return(this.state.carbonKg*getAttribute(this.state.tax, this.props.taxes, "price_per_kg"))
+    return(this.state.carbonKg*this.getTaxRate())
   }
 
   getTaxRate(){
-    return(getAttribute(this.state.tax, this.props.taxes, "price_per_kg"))
+    return(getAttribute({objectList:this.props.taxes, key:"id", keyValue:this.state.tax, attribute:"price_per_kg"}))
   }
 
   incrementTaxUsage(){
     let key = this.state.tax
-    let usage = getAttribute(key, this.props.taxes, "usage")
+    let usage = getAttribute({objectList:this.props.taxes, key:"id", keyValue:this.state.tax, attribute:"usage"})
     let taxData = {
       usage:(parseInt(usage)+1).toString()
     }
@@ -130,7 +130,7 @@ export class CarbonCalculator extends React.Component{
   calculateCarbon(){
     if(this.state.format==="road"){
       let fuelId = this.props.data.fuelId
-      let carbonPerL = getAttribute(fuelId, this.props.fuels, "co2_per_unit")
+      let carbonPerL = getAttribute({objectList:this.props.fuels, key:"id", keyValue:fuelId, attribute:"co2_per_unit"})
       let carbonKg = (carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100)/this.state.split
       this.setState({
         carbonPerL:carbonPerL,
@@ -278,7 +278,7 @@ export class CarbonCalculator extends React.Component{
     } else if(this.state.format==="airDistance"){
       calculation = 
         <div>
-          <p> Airliner - {this.props.aircraftFields.airlinerClass} </p>
+          <p> Passenger Airliner - {getAttribute({objectList:airlinerClasses, key:"class", keyValue:this.props.aircraftFields.airlinerClass, attribute:"label"})} </p>
           <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
           <p> Average emissions/seat: {this.state.carbonPerPaxKmAvg}kg CO2/km </p>
           <p> Fare class multiplier: {this.state.fareClass} </p>
@@ -288,7 +288,7 @@ export class CarbonCalculator extends React.Component{
     } else if(this.state.format==="airTime"){
       calculation = 
         <div>
-          <p> Aircraft - {this.props.aircraftType} </p>
+          <p> {getAttribute({objectList:aircraftTypes, key:"type", keyValue:this.props.aircraftType, attribute:"label"})}: {this.props.aircraftFields.totalSeats} passengers</p>
           <p> Flight time: {displayHrs(this.props.data.flightHrs)} </p>
           <p> Emissions per hr: {parseFloat(this.state.carbonPerHr).toFixed(1)}kg CO2</p>
           <p> Passenger loading: {this.props.aircraftFields.passengers}/{this.props.aircraftFields.totalSeats} </p>

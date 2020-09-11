@@ -74,26 +74,30 @@ export function truncate(str, maxLen){
   }
 }
 
-export function getObject(id, objectList){
-  if(!id) return null
+export function getObject({objectList, key, keyValue}){
+  if(!keyValue) return null
   for(let i in objectList){
-    if(!objectList[i].id){return null}
-    if(objectList[i].id===id){
+    if(!objectList[i][key]){return null}
+    if(objectList[i][key]===keyValue){
       return objectList[i]
     }
   }
-  console.log(`Unable to find id ${id} in list.`)
+  console.log(`Unable to find ${key}=${keyValue} in list.`)
   return null
 }
 
-export function getAttribute(id, objectList, attribute){
-  let object = getObject(id, objectList)
+export function getAttribute({objectList, key, keyValue, attribute}){
+  let object =  getObject({
+                  objectList:objectList,
+                  key:key,
+                  keyValue:keyValue
+                })
   if(object){
     try{ 
       return object[attribute]
     }
     catch{
-      console.log(`Unable to find ${attribute} attribute for id ${id}.`)
+      console.log(`Unable to find ${attribute} value for ${key}=${keyValue}.`)
       return null
     }
   }
@@ -128,7 +132,6 @@ export function convertCurrency({convertFrom, convertTo, amount, onSuccess, onFa
         onFailure(e.message)
       }
     });
-
 }
 
 export function createObject({data, url, onSuccess, onFailure}){
