@@ -67,15 +67,11 @@ export class DistanceInput extends React.Component{
         </div>
     }
 
-    let submitDisplay 
-    if(this.state.distance || this.state.hours || this.state.minutes){
-      submitDisplay = <button className=" btn btn-success m-2" onClick={this.submitDistance} >Continue</button>
-    }
-
     return(
       <div className="container bg-light py-2">
         {display}
-        {submitDisplay}
+        {this.props.mode===AIR ? <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button> : ""}
+        <button className=" btn btn-success m-2" disabled={!(this.state.distance || this.state.hours || this.state.minutes)} onClick={this.submitDistance} >Continue</button>
       </div>
     )
   }

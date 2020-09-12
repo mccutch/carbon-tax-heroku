@@ -43,7 +43,7 @@ export class CarbonCalculator extends React.Component{
       carbonKg:null,
       date:null,
       tripName:tripName,
-      submissionFailed:false,
+      errorMessage:"",
       relevantTaxes:[],
       tax:null,
       split:1,
@@ -157,6 +157,7 @@ export class CarbonCalculator extends React.Component{
   }
 
   saveEmission(){
+    this.setState({errorMessage:""})
     let date = this.state.date?this.state.date:getDate.today()
 
     let distance, economy, fuelId, price, offset
@@ -208,7 +209,7 @@ export class CarbonCalculator extends React.Component{
   }
 
   handleSubmitFailure(){
-    this.setState({submissionFailed:"Unable to save emission."})
+    this.setState({errorMessage:"Unable to save emission."})
   }
 
   render(){
@@ -232,12 +233,6 @@ export class CarbonCalculator extends React.Component{
       priceDisplay = <p> {carbon}kg x {sym}{taxRate}/kg = <strong>{sym}{price.toFixed(2)} carbon tax</strong></p>
     }
     
-
-    let failureDisplay
-    if(this.state.submissionFailed){
-      failureDisplay = <p><strong>{this.state.submissionFailed}</strong></p>
-    }
-    
     let memberDisplay
     if(this.props.loggedIn){
       memberDisplay=
@@ -247,18 +242,15 @@ export class CarbonCalculator extends React.Component{
           <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
           <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
           <br/>
-          <button
-            type="button"
-            name="cancel"
-            className="btn btn-success m-2"
-            onClick={this.saveEmission}
-          >Save to profile</button>
-          {failureDisplay}
+          <p><strong>{this.state.errorMessage}</strong></p>
+          <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
+          <button className="btn btn-success m-2" onClick={this.saveEmission} >Save to profile</button>
         </div>
     } else {
       memberDisplay = 
         <div>
           <p>Create an account to save emissions and calculate carbon tax.</p>
+          <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
         </div>
     }
 

@@ -9,10 +9,30 @@ import * as taxes from './defaultTaxTypes.js';
 import {EmissionEdit} from './objectDetail.js';
 import {ObjectSelectionList} from './reactComponents.js';
 import {TabbedNavBar} from './navBar.js';
+import {getAttribute} from './helperFunctions.js';
+import {aircraftTypes, airlinerClasses} from './constants.js';
 
 //Carbon emission modes
 import {ROAD, AIR, PUBLIC, OTHER} from './constants.js';
 
+const emissionModes = [
+      {mode:ROAD, label:"Private Vehicle"},
+      {mode:AIR, label:"Air Travel"},
+      //{mode:PUBLIC, label:"Public Transport"},
+      //{mode:OTHER, label:"Miscellaneous"},
+    ]
+
+const roadTabs = [
+        {name:"distance", label:"Distance"}, 
+        {name:"economy", label:"Economy"}, 
+        {name:"carbon", label:"Carbon"}
+      ]
+const airTabs = [
+        {name:"aircraft", label:"Aircraft"},
+        {name:"distance", label:"Distance"}, 
+        {name:"airOptions", label:"Options"}, 
+        {name:"carbon", label:"Carbon"},
+      ]
 
 export class EmissionCalculator extends React.Component{
   constructor(props){
@@ -23,6 +43,7 @@ export class EmissionCalculator extends React.Component{
       origin: null,
       destination: null,
       distanceKm: null,
+      aircraftType: null,
       economySubmitted: false,
       distanceSubmitted: false,
       aircraftSubmitted: false,
@@ -32,7 +53,8 @@ export class EmissionCalculator extends React.Component{
 
     this.state=this.defaultState
     this.state['mode']=ROAD
-    this.state['activeTab']="distance"
+    this.state['tabList']=roadTabs
+    this.state['activeTab']=roadTabs[0].name
 
     this.handleEdit=this.handleEdit.bind(this)
     this.handleSubmitEconomy=this.handleSubmitEconomy.bind(this)
@@ -46,6 +68,29 @@ export class EmissionCalculator extends React.Component{
     this.createClone=this.createClone.bind(this)
     this.newEmission=this.newEmission.bind(this)
     this.handleModeChange=this.handleModeChange.bind(this)
+    this.nextTab=this.nextTab.bind(this)
+    this.prevTab=this.prevTab.bind(this)
+    this.isFirstTab=this.isFirstTab.bind(this)
+    this.isLastTab=this.isLastTab.bind(this)
+  }
+
+  nextTab(){
+    let tabList = this.state.tabList
+    for(let i=0; i<(tabList.length-1); i++){
+      if(this.state.activeTab===tabList[i].name){
+        this.setState({activeTab:tabList[i+1].name})
+      }
+    }
+  }
+
+  prevTab(){
+    let tabList = this.state.tabList
+    for(let i=0; i<(tabList.length); i++){
+      if(this.state.activeTab===tabList[i].name){
+        if(i===0){return}
+        this.setState({activeTab:tabList[i-1].name})
+      }
+    }
   }
 
   exitCalculator(){
@@ -103,26 +148,18 @@ export class EmissionCalculator extends React.Component{
       lPer100km: lper100km,
       fuelId: fuelId,
       economySubmitted: true,
-      activeTab:"carbon",
-    });
+    },this.nextTab);
   }
 
   handleSubmitDistance(origin, destination, distanceKm, wasReturnTrip){
     /* Expects to receive distance in km */
-    let nextTab
-    if(this.state.mode===ROAD){
-      nextTab="economy"
-    } else if(this.state.mode===AIR){
-      nextTab="air-options"
-    }
     this.setState({
       origin: origin,
       destination: destination,
       distanceKm: distanceKm,
       distanceSubmitted: true,
       returnTrip: wasReturnTrip,
-      activeTab:nextTab,
-    })
+    },this.nextTab)
   }
 
   handleSubmitFlightHrs(hrs){
@@ -130,8 +167,7 @@ export class EmissionCalculator extends React.Component{
       flightHrs:hrs,
       distanceSubmitted:true,
       returnTrip:false,
-      activeTab:"air-options"
-    })
+    },this.nextTab)
   }
 
   handleAircraftInput(aircraftType, returnFields){
@@ -139,25 +175,18 @@ export class EmissionCalculator extends React.Component{
       aircraftType:aircraftType,
       aircraftFields:returnFields,
       aircraftSubmitted:true,
-      activeTab:"distance",
-    })
+    },this.nextTab)
   }
 
   handleAirOptions(returnFields){
     this.setState({
       airOptions:returnFields,
       airOptionsSubmitted:true,
-      activeTab:"carbon"
-    })
+    },this.nextTab)
   }
 
-
   handleEdit(event){
-    if(event.target.name==="economy"){
-      this.setState({economySubmitted:false})
-    } else if(event.target.name==="distance"){
-      this.setState({distanceSubmitted:false})
-    }
+    this.setState({[`${this.state.activeTab}Submitted`]:false})
   }
 
   handleTabClick(event){
@@ -167,173 +196,147 @@ export class EmissionCalculator extends React.Component{
   handleModeChange(event){
     this.setState(this.defaultState)
     let mode = event.target.value
-    let activeTab
+    let activeTab, tabList
     if(mode===ROAD){
       activeTab="distance"
+      tabList=roadTabs
     }else if(mode===AIR){
       activeTab="aircraft"
+      tabList=airTabs
     }
     this.setState({
       mode:mode,
+      tabList:tabList,
       activeTab:activeTab,
     })
   }
 
+  isFirstTab(){return this.state.tabList[0].name===this.state.activeTab}
+  isLastTab(){return this.state.tabList[this.state.tabList.length-1].name===this.state.activeTab}
+
   render(){
     let displayUnits=this.props.displayUnits
+    let navBtns = 
+      <div className="row">
+        {this.isFirstTab() ? "" : <button className="btn btn-outline-danger m-2" onClick={this.prevTab} >Back</button>}
+        {this.state.activeTab==="carbon" ? "" : <button className="btn btn-outline-primary m-2" onClick={this.handleEdit} >Edit</button>}
+        {this.isLastTab() ? "" : <button className="btn btn-success m-2" onClick={this.nextTab} >Continue</button>}
+      </div>
 
     let tabDisplay
     
     if(this.state.activeTab==="economy"){
-      let economyInput
       if(this.state.economySubmitted){
-        let fuelName=this.props.fuels[parseInt(this.state.fuelId)-1].name
+        let fuelName=getAttribute({objectList:this.props.fuels, key:"id", keyValue:this.state.fuelId, attribute:"name"})
 
-        economyInput = 
+        tabDisplay = 
           <div className="container bg-light" >
-            <div className="row">
-              <h3>
-                {parseFloat(units.convert(this.state.lPer100km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}
-              </h3>
-              <button
-                type="button"
-                name="economy"
-                className="btn btn-outline-primary m-2"
-                onClick={this.handleEdit}
-              >Edit</button>
-            </div>
+            <h3>{parseFloat(units.convert(this.state.lPer100km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}</h3>
+            {navBtns}
           </div>
       } else {
-        economyInput = <EconomyInput
-                          submitEconomy={this.handleSubmitEconomy}
-                          displayUnits={displayUnits}
-                          loggedIn={this.props.loggedIn}
-                          vehicles={this.props.vehicles}
-                          fuels={this.props.fuels}
-                          refresh={this.props.refresh}
-                          setModal={this.props.setModal}
-                          hideModal={this.props.hideModal}
-                        />
+        tabDisplay = 
+          <EconomyInput
+            submitEconomy={this.handleSubmitEconomy}
+            displayUnits={displayUnits}
+            loggedIn={this.props.loggedIn}
+            vehicles={this.props.vehicles}
+            fuels={this.props.fuels}
+            refresh={this.props.refresh}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
+            prevTab={this.prevTab}
+          />
       }
-      tabDisplay = economyInput
     }
     
     if(this.state.activeTab==="distance"){
-      let distanceDisplay
-      if(this.state.distanceSubmitted){
-        let display
-        if(this.state.mode===AIR && this.state.aircraftType!=="airliner"){
-          display = <h3>{parseFloat(this.state.flightHrs).toFixed(2)}hrs</h3>
-        } else {
-          display = <h3>{parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}</h3>
-        }
-        distanceDisplay = 
-          <div className="container bg-light" >
-            <div className="row">
-                {display}
-              <button
-                type="button"
-                name="distance"
-                className="btn btn-outline-primary m-2"
-                onClick={this.handleEdit}
-              >Edit</button>
-            </div>
-          </div>
-      } else {
-        distanceDisplay = <DistanceInput  
-                            submitDistance={this.handleSubmitDistance}
-                            submitFlightHrs={this.handleSubmitFlightHrs}
-                            displayUnits={displayUnits}
-                            submitted={this.state.distanceSubmitted}
-                            setModal={this.props.setModal}
-                            hideModal={this.props.hideModal}
-                            mode={this.state.mode}
-                            aircraftType={this.state.aircraftType}
-                          />
-      }
-      tabDisplay = distanceDisplay
+      tabDisplay = this.state.distanceSubmitted ?
+        <div className="container bg-light" >
+          {(this.state.mode===AIR && this.state.aircraftType!=="airliner") ?
+            <h3>{parseFloat(this.state.flightHrs).toFixed(2)}hrs</h3>
+            :
+            <h3>{parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}</h3>
+          }
+          {navBtns}
+        </div>
+        :
+        <DistanceInput  
+          submitDistance={this.handleSubmitDistance}
+          submitFlightHrs={this.handleSubmitFlightHrs}
+          displayUnits={displayUnits}
+          submitted={this.state.distanceSubmitted}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
+          mode={this.state.mode}
+          aircraftType={this.state.aircraftType}
+          prevTab={this.prevTab}
+        />
     }
-
     
     if(this.state.activeTab==="carbon"){
-
       let formsComplete = (
         (this.state.mode===ROAD && this.state.economySubmitted && this.state.distanceSubmitted)
         || (this.state.mode===AIR && this.state.aircraftSubmitted && this.state.distanceSubmitted && this.state.airOptionsSubmitted)
-      )?true:false
-      
-      
+      )
 
-      let carbonResult 
-      if(formsComplete){
-        carbonResult = 
-          <div>
-            <CarbonCalculator 
-              data={this.state} 
-              displayUnits={displayUnits} 
-              loggedIn={this.props.loggedIn} 
-              submitCarbon={this.handleEmissionSave} 
-              taxCategory={taxes.getCategoryName(this.state.mode)}
-              taxes={this.props.taxes}
-              fuels={this.props.fuels}
-              refresh={this.props.refresh}
-              profile={this.props.profile}
-              mode={this.state.mode}
-              aircraftType={this.state.aircraftType}
-              aircraftFields={this.state.aircraftFields}
-              airOptions={this.state.airOptions}
-            />
-          </div>
-      } else {
-        carbonResult = <p>Complete distance and fuel economy sections to calculate carbon output.</p>
-      }
-      tabDisplay = carbonResult
+      tabDisplay = formsComplete ?
+        <CarbonCalculator 
+          data={this.state} 
+          displayUnits={displayUnits} 
+          loggedIn={this.props.loggedIn} 
+          submitCarbon={this.handleEmissionSave} 
+          taxCategory={taxes.getCategoryName(this.state.mode)}
+          taxes={this.props.taxes}
+          fuels={this.props.fuels}
+          refresh={this.props.refresh}
+          profile={this.props.profile}
+          mode={this.state.mode}
+          aircraftType={this.state.aircraftType}
+          aircraftFields={this.state.aircraftFields}
+          airOptions={this.state.airOptions}
+          prevTab={this.prevTab}
+        />
+       :
+       <div className="container bg-light" >
+        <p>Complete all sections to calculate carbon output.</p>
+        {navBtns}
+       </div>
     }
 
     if(this.state.activeTab==="aircraft"){
-      tabDisplay =  <AircraftInput
-                      //displayUnits={displayUnits}
-                      returnAircraft={this.handleAircraftInput}
-                      //submitted={this.state.distanceSubmitted}
-                      //setModal={this.props.setModal}
-                      //hideModal={this.props.hideModal}
-                    />
+      tabDisplay = !this.state.aircraftSubmitted ?
+        <AircraftInput
+          returnAircraft={this.handleAircraftInput}
+          prevTab={this.prevTab}
+        />
+        :
+        <div className="container bg-light" >
+          <p>{getAttribute({objectList:aircraftTypes, key:"type", keyValue:this.state.aircraftType, attribute:"label"})}</p>
+          {this.state.aircraftType==="airliner" ?
+            <p>Fare: {getAttribute({objectList:airlinerClasses, key:"class", keyValue:this.state.aircraftFields.airlinerClass, attribute:"label"})}</p>
+            :
+            <p>{this.state.aircraftFields.passengers}/{this.state.aircraftFields.totalSeats} seats filled.</p>
+          }
+          {navBtns}
+        </div>
     }
 
-    if(this.state.activeTab==="air-options"){
-      tabDisplay =  <AirOptionsInput
-                      //displayUnits={displayUnits}
-                      returnOptions={this.handleAirOptions}
-                      aircraftType={this.state.aircraftType}
-                      aircraftFields={this.state.aircraftFields}
-                      distanceKm={this.state.distanceKm}
-                      //submitted={this.state.distanceSubmitted}
-                      //setModal={this.props.setModal}
-                      //hideModal={this.props.hideModal}
-                    />
-    }
-
-    let emissionModes = [
-      {mode:ROAD, label:"Private Vehicle"},
-      {mode:AIR, label:"Air Travel"},
-      //{mode:PUBLIC, label:"Public Transport"},
-      //{mode:OTHER, label:"Miscellaneous"},
-    ]
-
-    let navTabs
-    if(this.state.mode===ROAD){
-      navTabs = [
-        {name:"distance", label:"Distance"}, 
-        {name:"economy", label:"Economy"}, 
-        {name:"carbon", label:"Carbon"}
-      ]
-    }else if(this.state.mode===AIR){
-      navTabs = [
-        {name:"aircraft", label:"Aircraft"},
-        {name:"distance", label:"Distance"}, 
-        {name:"air-options", label:"Options"}, 
-        {name:"carbon", label:"Carbon"},
-      ]
+    if(this.state.activeTab==="airOptions"){
+      tabDisplay = !this.state.airOptionsSubmitted ?
+        <AirOptionsInput
+          returnOptions={this.handleAirOptions}
+          aircraftType={this.state.aircraftType}
+          aircraftFields={this.state.aircraftFields}
+          distanceKm={this.state.distanceKm}
+          prevTab={this.prevTab}
+        />
+        :
+        <div className="container bg-light" >
+          <p>Offset: {this.props.profile.currency_symbol}{parseFloat(this.state.airOptions.offset).toFixed(2)}</p>
+          <p>RF Multiplier: {this.state.airOptions.multiplier}</p>
+          {navBtns}
+        </div>
     }
     
     return(
@@ -346,9 +349,8 @@ export class EmissionCalculator extends React.Component{
           <ObjectSelectionList list={emissionModes} value="mode" label="label" defaultValue={ROAD} onChange={this.handleModeChange}/>
         </Navbar>
         </div>
-        <TabbedNavBar tabs={navTabs} activeTab={this.state.activeTab} onTabClick={this.handleTabClick}/>
+        <TabbedNavBar tabs={this.state.tabList} activeTab={this.state.activeTab} onTabClick={this.handleTabClick}/>
         {tabDisplay}
-
       </div>
     );
   }

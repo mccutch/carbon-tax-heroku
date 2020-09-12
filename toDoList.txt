@@ -1,4 +1,12 @@
-Change "other" tax category to "general", so it always appears in list
+Format display for aircraft submitted
+
+Chase down remaining get fuel name
+
+
+Remove ability to click though emission input tabs out of order?
+- Format display of submitted tabs
+
+// Set default state in emission calculator probably doesn't work
 
 STUCK
  - Sending emails with sendgrid
@@ -8,12 +16,8 @@ STUCK
 
 Recaptcha on registration and contact form
 
-Air travel options
- - Info links
 
-
-
-Remove ability to click though emission input tabs out of order?
+Change "other" tax category to "general", so it always appears in list
 
 report an error
  - contact page

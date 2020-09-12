@@ -119,17 +119,15 @@ export class EconomyInput extends React.Component{
       }
     }
 
-    let continueDisplay
-    if(this.state.lPer100Km && this.state.fuelId){
-      continueDisplay = <button className="btn btn-success m-2" onClick={this.submitEconomy}>Continue to carbon calculator</button>
-    }
-    
     return(
       <div className='bg-light py-2'>
         {vehicleInput}
         {myVehiclesBtn}
         {saveDisplay}
-        {continueDisplay}
+        <div>
+          <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
+          <button className="btn btn-success m-2" disabled={!(this.state.lPer100Km && this.state.fuelId)} onClick={this.submitEconomy}>Continue to carbon calculator</button>
+        </div>
       </div>
     )
   }

@@ -49,6 +49,7 @@ export class AirOptionsInput extends React.Component{
           </small>
         </label>
         <br/>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
         <button className="btn btn-success" onClick={this.submit} ><strong>Continue</strong></button>
       </div>
     )
@@ -116,18 +117,28 @@ export class AircraftInput extends React.Component{
       secondField = 
         <div>
           <ObjectSelectionList list={airlinerClasses} value="class" label="label" onChange={this.handleChangeClass} />
+          <small>Seat spacing changes the relative emissions per passenger between fare classes. <a href="http://documents1.worldbank.org/curated/en/141851468168853188/pdf/WPS6471.pdf">Learn more.</a></small>
         </div>
     } else {
       secondField = 
         <div>
-          <input name="totalSeats" type="number" placeholder="Total passenger seats" onChange={this.handleCharterFieldChange} className="form-control"/>
-          <input name="passengers" type="number" placeholder="Passengers" onChange={this.handleCharterFieldChange} className="form-control"/>
+          <label>
+            Passengers:
+            <input name="passengers" type="number" placeholder="Passengers" onChange={this.handleCharterFieldChange} className="form-control my-2"/>
+            <small>Emissions produced will be shared between passengers.</small>
+          </label>
+          <br/>
+          <label>
+            Passenger seats:
+            <input name="totalSeats" type="number" placeholder="Seats" onChange={this.handleCharterFieldChange} className="form-control my-2"/>
+            <small>Used for estimating fuel consumption based on aircraft size.</small>
+          </label>
         </div>
     }
 
     let submitButton
     if((this.state.aircraftType==="airliner")||(this.state.passengers)){
-      submitButton = <button className="btn btn-success" onClick={this.submit}><strong>Continue</strong></button>
+      submitButton = <button className="btn btn-success m-2" onClick={this.submit}><strong>Continue</strong></button>
     }
 
     return(
