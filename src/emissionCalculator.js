@@ -193,7 +193,7 @@ export class EmissionCalculator extends React.Component{
   }
 
   handleTabClick(event){
-    this.setState({activeTab:event.target.name})
+    //this.setState({activeTab:event.target.name})
   }
 
   handleModeChange(event){
