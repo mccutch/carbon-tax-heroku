@@ -196,6 +196,7 @@ export class CreateVehicle extends React.Component{
             returnEconomy={this.receiveInputs}
             setModal={this.props.setModal}
             hideModal={this.props.hideModal}
+            initialValues={{}}
           />
           <VehicleSaveForm 
             cancel={this.cancelNewVehicle}

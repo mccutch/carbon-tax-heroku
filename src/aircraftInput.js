@@ -9,10 +9,11 @@ export class AirOptionsInput extends React.Component{
     super(props)
 
     this.defaultRf = (this.props.aircraftType==="airliner") ? ((this.props.distanceKm<500) ? rfMultiplier.lt500Km : rfMultiplier.gt500Km) : 1
-    
+    let init = this.props.initialValues
+
     this.state = {
-      offset:0,
-      multiplier:this.defaultRf,
+      offset:init.offset ? init.offset : 0,
+      multiplier:init.multiplier ? init.multiplier : this.defaultRf,
     }
 
     this.handleChange=this.handleChange.bind(this)
@@ -36,13 +37,13 @@ export class AirOptionsInput extends React.Component{
       <div className="container bg-light py-2">
         <label>
           Carbon offset($)
-          <input name="offset" type="number" defaultValue={0} className="form-control" onChange={this.handleChange}/>
+          <input name="offset" type="number" className="form-control" onChange={this.handleChange} defaultValue={this.state.offset}/>
           <small className="form-text text-muted">Have you already paid to offset this flight?</small>
         </label>
         <br/>
         <label>
           Radiative forcing multiplier: {this.state.multiplier}
-          <input name="multiplier" type="range" min="1" max="3" defaultValue={this.defaultRf} onChange={this.handleChange} step="0.1" className="form-control"/>
+          <input name="multiplier" type="range" min="1" max="3" onChange={this.handleChange} step="0.1" className="form-control" defaultValue={this.state.multiplier}/>
           <small className="form-text text-muted">
             Emissions and cloud formation (contrails) at cruising altitudes make a significant contribution to the total atmospheric warming effect of 
             air travel. <a href="https://www.carbonbrief.org/explainer-challenge-tackling-aviations-non-co2-emissions" target="_blank">Learn more.</a>
@@ -60,9 +61,13 @@ export class AircraftInput extends React.Component{
   constructor(props){
     super(props)
 
+    let init = this.props.initialValues
+
     this.state={
-      aircraftType:"airliner",
-      airlinerClass:"economy",
+      aircraftType:init.aircraftType ? init.aircraftType : aircraftTypes[0].type,
+      airlinerClass:init.airlinerClass ? init.airlinerClass : airlinerClasses[0].class,
+      totalSeats:init.totalSeats ? init.totalSeats : null,
+      passengers:init.passengers ? init.passengers : null,
     }
 
     this.handleChangeType=this.handleChangeType.bind(this)
@@ -73,14 +78,6 @@ export class AircraftInput extends React.Component{
 
   handleChangeType(event){
     this.setState({aircraftType:event.target.value})
-    if(event.target.value==="airliner"){
-      this.setState({airlinerClass:"economy"})
-    } else {
-      this.setState({
-        totalSeats:null,
-        passengers:null,
-      })
-    }
   }
 
   handleChangeClass(event){
@@ -116,7 +113,7 @@ export class AircraftInput extends React.Component{
     if(this.state.aircraftType==="airliner"){
       secondField = 
         <div>
-          <ObjectSelectionList list={airlinerClasses} value="class" label="label" onChange={this.handleChangeClass} />
+          <ObjectSelectionList list={airlinerClasses} value="class" label="label" onChange={this.handleChangeClass} defaultValue={this.state.airlinerClass}/>
           <small>Seat spacing changes the relative emissions per passenger between fare classes. <a href="http://documents1.worldbank.org/curated/en/141851468168853188/pdf/WPS6471.pdf">Learn more.</a></small>
         </div>
     } else {
@@ -124,13 +121,13 @@ export class AircraftInput extends React.Component{
         <div>
           <label>
             Passengers:
-            <input name="passengers" type="number" placeholder="Passengers" onChange={this.handleCharterFieldChange} className="form-control my-2"/>
+            <input name="passengers" type="number" placeholder="Passengers" onChange={this.handleCharterFieldChange} className="form-control my-2" defaultValue={this.state.passengers}/>
             <small>Emissions produced will be shared between passengers.</small>
           </label>
           <br/>
           <label>
             Passenger seats:
-            <input name="totalSeats" type="number" placeholder="Seats" onChange={this.handleCharterFieldChange} className="form-control my-2"/>
+            <input name="totalSeats" type="number" placeholder="Seats" onChange={this.handleCharterFieldChange} className="form-control my-2" defaultValue={this.state.totalSeats}/>
             <small>Used for estimating fuel consumption based on aircraft size.</small>
           </label>
         </div>
@@ -143,7 +140,7 @@ export class AircraftInput extends React.Component{
 
     return(
       <div className="container bg-light py-2">
-        <ObjectSelectionList list={aircraftTypes} value="type" label="label" onChange={this.handleChangeType} />
+        <ObjectSelectionList list={aircraftTypes} value="type" label="label" onChange={this.handleChangeType} defaultValue={this.state.aircraftType}/>
         <p>{this.state.errorMessage}</p>
         {secondField}
         {submitButton}

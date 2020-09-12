@@ -47,11 +47,9 @@ export function encodeEmissionFormat(name){
   return null
 }
 
-
 export function displayHrs(decimalHrs){
-  let hours = Math.floor(decimalHrs)
-  let returnString = `${hours}h`
-  let minutes = Math.round((decimalHrs-hours)*60)
+  let returnString = `${Math.floor(decimalHrs)}h`
+  let minutes = Math.round((decimalHrs%1)*60)
   if(minutes!==0){
     returnString += `${minutes}m`
   }

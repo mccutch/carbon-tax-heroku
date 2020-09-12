@@ -9,7 +9,7 @@ import * as taxes from './defaultTaxTypes.js';
 import {EmissionEdit} from './objectDetail.js';
 import {ObjectSelectionList} from './reactComponents.js';
 import {TabbedNavBar} from './navBar.js';
-import {getAttribute} from './helperFunctions.js';
+import {getAttribute, displayHrs} from './helperFunctions.js';
 import {aircraftTypes, airlinerClasses} from './constants.js';
 
 //Carbon emission modes
@@ -38,12 +38,15 @@ export class EmissionCalculator extends React.Component{
   constructor(props){
     super(props);
     this.defaultState = {
-      lPer100km: 0,
+      lPer100Km: 0,
       fuelId: null,
       origin: null,
       destination: null,
-      distanceKm: null,
+      distanceKm: 0,
+      flightHrs: 0,
       aircraftType: null,
+      aircraftFields: {},
+      airOptions: {},
       economySubmitted: false,
       distanceSubmitted: false,
       aircraftSubmitted: false,
@@ -143,10 +146,10 @@ export class EmissionCalculator extends React.Component{
     this.props.exit()
   }
 
-  handleSubmitEconomy(lper100km, fuelId){
+  handleSubmitEconomy(lPer100Km, fuelId){
     this.setState({
-      lPer100km: lper100km,
-      fuelId: fuelId,
+      lPer100Km: lPer100Km,
+      fuelId: parseInt(fuelId),
       economySubmitted: true,
     },this.nextTab);
   }
@@ -198,16 +201,14 @@ export class EmissionCalculator extends React.Component{
     let mode = event.target.value
     let activeTab, tabList
     if(mode===ROAD){
-      activeTab="distance"
       tabList=roadTabs
     }else if(mode===AIR){
-      activeTab="aircraft"
       tabList=airTabs
     }
     this.setState({
       mode:mode,
       tabList:tabList,
-      activeTab:activeTab,
+      activeTab:tabList[0].name,
     })
   }
 
@@ -231,7 +232,7 @@ export class EmissionCalculator extends React.Component{
 
         tabDisplay = 
           <div className="container bg-light" >
-            <h3>{parseFloat(units.convert(this.state.lPer100km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}</h3>
+            <h3>{parseFloat(units.convert(this.state.lPer100Km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}</h3>
             {navBtns}
           </div>
       } else {
@@ -246,6 +247,7 @@ export class EmissionCalculator extends React.Component{
             setModal={this.props.setModal}
             hideModal={this.props.hideModal}
             prevTab={this.prevTab}
+            initialValues={{lPer100Km:this.state.lPer100Km, fuelId:this.state.fuelId}}
           />
       }
     }
@@ -254,9 +256,9 @@ export class EmissionCalculator extends React.Component{
       tabDisplay = this.state.distanceSubmitted ?
         <div className="container bg-light" >
           {(this.state.mode===AIR && this.state.aircraftType!=="airliner") ?
-            <h3>{parseFloat(this.state.flightHrs).toFixed(2)}hrs</h3>
+            <p>Flight time: {displayHrs(this.state.flightHrs)}</p>
             :
-            <h3>{parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}</h3>
+            <p>{parseFloat(units.distanceDisplay(this.state.distanceKm, displayUnits)).toFixed(0)} {units.distanceString(displayUnits)}</p>
           }
           {navBtns}
         </div>
@@ -269,8 +271,9 @@ export class EmissionCalculator extends React.Component{
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}
           mode={this.state.mode}
-          aircraftType={this.state.aircraftType}
           prevTab={this.prevTab}
+          inputHrs={(this.state.mode===AIR && this.state.aircraftType!=="airliner")}
+          initialValue={(this.state.mode===AIR && this.state.aircraftType!=="airliner") ? this.state.flightHrs : this .state.distanceKm}
         />
     }
     
@@ -309,6 +312,12 @@ export class EmissionCalculator extends React.Component{
         <AircraftInput
           returnAircraft={this.handleAircraftInput}
           prevTab={this.prevTab}
+          initialValues={{
+            aircraftType:this.state.aircraftType,
+            airlinerClass:this.state.aircraftFields.airlinerClass,
+            totalSeats:this.state.aircraftFields.totalSeats,
+            passengers:this.state.aircraftFields.passengers,
+          }}
         />
         :
         <div className="container bg-light" >
@@ -330,6 +339,10 @@ export class EmissionCalculator extends React.Component{
           aircraftFields={this.state.aircraftFields}
           distanceKm={this.state.distanceKm}
           prevTab={this.prevTab}
+          initialValues={{
+            offset:this.state.airOptions.offset,
+            multiplier:this.state.airOptions.multiplier,
+          }}
         />
         :
         <div className="container bg-light" >

@@ -440,9 +440,9 @@ export class VehicleInput extends React.Component{
     super(props)
 
     this.state={
+      lPer100Km: this.props.initialValues.lPer100Km!==0?this.props.initialValues.lPer100Km:null,
+      fuelId: this.props.initialValues.fuelId?this.props.initialValues.fuelId:null,
       vehicleLookup:false,
-      fuelId:null,
-      lPer100Km:null,
       name:"",
     }
     this.handleChange=this.handleChange.bind(this)
@@ -532,10 +532,11 @@ export class VehicleInput extends React.Component{
             onChange={this.handleChange} 
             name="economy"
             placeholder="Fuel economy"
+            defaultValue={this.props.initialValues.lPer100Km!==0?this.props.initialValues.lPer100Km:null}
           />
           {units.displayUnitString(this.props.displayUnits)}
         </label>
-        <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" />
+        <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" defaultValue={this.props.initialValues.fuelId?`${this.props.initialValues.fuelId}`:null}/>
         <br/>
         <button className="btn btn-outline-info m-2" onClick={this.showForm}>Look up US vehicle</button>
       </div>

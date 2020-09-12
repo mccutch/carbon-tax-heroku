@@ -11,8 +11,8 @@ export class EconomyInput extends React.Component{
     super(props);
 
     this.state = {
-      lPer100Km: null,
-      fuelId: null,
+      lPer100Km: this.props.initialValues.lPer100Km!==0?this.props.initialValues.lPer100Km:null,
+      fuelId: this.props.initialValues.fuelId?this.props.initialValues.fuelId:null,
       name: "",
       vehicleWillSave: false,
     }
@@ -92,6 +92,7 @@ export class EconomyInput extends React.Component{
         returnEconomy={this.receiveEconomy}
         setModal={this.props.setModal}
         hideModal={this.props.hideModal}
+        initialValues={this.props.initialValues}
       />
 
     let saveDisplay

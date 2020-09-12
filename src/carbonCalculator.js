@@ -131,7 +131,7 @@ export class CarbonCalculator extends React.Component{
     if(this.state.format==="road"){
       let fuelId = this.props.data.fuelId
       let carbonPerL = getAttribute({objectList:this.props.fuels, key:"id", keyValue:fuelId, attribute:"co2_per_unit"})
-      let carbonKg = (carbonPerL*this.props.data.lPer100km*this.props.data.distanceKm/100)/this.state.split
+      let carbonKg = (carbonPerL*this.props.data.lPer100Km*this.props.data.distanceKm/100)/this.state.split
       this.setState({
         carbonPerL:carbonPerL,
         carbonKg:carbonKg,
@@ -163,7 +163,7 @@ export class CarbonCalculator extends React.Component{
     let distance, economy, fuelId, price, offset
     // For air travel, record economy in kg/km or kg/hr.
     if(this.state.format==="road"){
-      economy = this.props.data.lPer100km
+      economy = this.props.data.lPer100Km
       distance = this.props.data.distanceKm
       fuelId = this.props.data.fuelId
       price = this.calculatePrice()
@@ -255,7 +255,7 @@ export class CarbonCalculator extends React.Component{
     }
 
     let distance = parseFloat(units.distanceDisplay(this.props.data.distanceKm, this.props.displayUnits)).toFixed(1)
-    let economy = parseFloat(units.convert(this.props.data.lPer100km, this.props.displayUnits)).toFixed(1)
+    let economy = parseFloat(units.convert(this.props.data.lPer100Km, this.props.displayUnits)).toFixed(1)
 
     let calculation
     if(this.state.format==="road"){

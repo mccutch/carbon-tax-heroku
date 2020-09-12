@@ -1,7 +1,6 @@
-Format display for aircraft submitted
 
-Chase down remaining get fuel name
 
+Store list of fuels in front-end instead of database?
 
 Remove ability to click though emission input tabs out of order?
 - Format display of submitted tabs

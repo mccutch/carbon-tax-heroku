@@ -10,10 +10,12 @@ export class DistanceInput extends React.Component{
     super(props)
 
     this.state = {
-      distance: 0,
-      hours: 0,
-      minutes: 0,
+      distance: !this.props.inputHrs ? this.props.initialValue : 0,
+      hours: this.props.inputHrs ? Math.floor(this.props.initialValue) : 0,
+      minutes: this.props.inputHrs ? Math.round((this.props.initialValue%1)*60) : 0,
     }
+
+    this.hasInitial = this.props.initialValue!==0 ? true:false
 
     this.submitDistance = this.submitDistance.bind(this)
     this.showRouteCalculator = this.showRouteCalculator.bind(this)
@@ -42,30 +44,31 @@ export class DistanceInput extends React.Component{
   render(){
     let placeholderText = `Distance (${units.distanceString(this.props.displayUnits)})`
 
-    let display
-    if(this.props.mode===AIR && this.props.aircraftType!=="airliner"){
-      display = 
-        <div>
-          <p>Input flight time for fuel calculation:</p>
-          <div className="row">
-            <label>
-              Hours
-              <input name="hours" type="number" onChange={this.handleChange} className="form-control"/>
-            </label>
-            <br/>
-            <label>
-              Minutes
-              <input name="minutes" type="number" onChange={this.handleChange} className="form-control" />
-            </label>
-          </div>
+    //let display
+    //if(this.props.mode===AIR && this.props.aircraftType!=="airliner"){
+    let display = this.props.inputHrs ?
+      <div>
+        <p>Input flight time for fuel calculation:</p>
+        <div className="row">
+          <label>
+            Hours
+            <input name="hours" type="number" onChange={this.handleChange} className="form-control" defaultValue={this.hasInitial? Math.floor(this.props.initialValue):null}/>
+          </label>
+          <br/>
+          <label>
+            Minutes
+            <input name="minutes" type="number" onChange={this.handleChange} className="form-control" defaultValue={this.hasInitial?Math.round((this.props.initialValue%1)*60):null}/>
+          </label>
         </div>
-    } else {
-      display = 
-        <div>
-          <input type="number" onChange={this.handleChange} name="distance" placeholder={placeholderText} className="form-control"/>
-          <button name="displayRouteCalculator" className=" btn btn-outline-info m-2" onClick={this.showRouteCalculator} >Route calculator</button>
-        </div>
-    }
+      </div>
+      :
+      <div>
+        <label>
+          {placeholderText}
+          <input type="number" onChange={this.handleChange} name="distance" placeholder={placeholderText} className="form-control" defaultValue={this.hasInitial?units.distanceDisplay(this.props.initialValue, this.props.displayUnits):null}/>
+        </label>
+        <button name="displayRouteCalculator" className=" btn btn-outline-info m-2" onClick={this.showRouteCalculator} >Route calculator</button>
+      </div>
 
     return(
       <div className="container bg-light py-2">
