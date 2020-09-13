@@ -95,7 +95,7 @@ export class CarbonCalculator extends React.Component{
     let allTaxes = this.props.taxes
     let relevantTaxes = []
     for(let i in allTaxes){
-      if(allTaxes[i].category===taxCategory){
+      if(allTaxes[i].category===taxCategory || allTaxes[i].category==="Other"){
         relevantTaxes.push(allTaxes[i])
       }
     }
