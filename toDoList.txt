@@ -1,9 +1,10 @@
+Fill screen with tables
 
+Show less columns in object detail view
+
+Add default location to profile
 
 Store list of fuels in front-end instead of database?
-
-Remove ability to click though emission input tabs out of order?
-- Format display of submitted tabs
 
 // Set default state in emission calculator probably doesn't work
 
@@ -15,21 +16,13 @@ STUCK
 
 Recaptcha on registration and contact form
 
-
-Change "other" tax category to "general", so it always appears in list
-
-report an error
- - contact page
-
 recurring trips
 
 favourite trips
 
-formatting on login and registration forms
-
 Format new vehicle and new tax from table views
 
-Add default location to profile
+
 
 make recipient links optional in front-end
 

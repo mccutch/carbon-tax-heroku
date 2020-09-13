@@ -455,7 +455,7 @@ export class VehicleDetail extends React.Component{
       <tr key={vehicle.id}>
         {vehicleName}
         <td>{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
-        <td>{getAttribute(vehicle.fuel, this.props.fuels, "name")}</td>
+        <td>{getAttribute({key:"id", keyValue:vehicle.fuel, objectList:this.props.fuels, attribute:"name"})}</td>
       </tr>
     )
   }
@@ -534,8 +534,8 @@ export class EmissionEdit extends React.Component{
 
   recalculate(){
     console.log("RECALCULATE")
-    let fuelCarbonPerL = getAttribute(this.state.fuel, this.props.fuels, "co2_per_unit")
-    let taxPrice = getAttribute(this.state.tax_type, this.props.taxes, "price_per_kg")
+    let fuelCarbonPerL = getAttribute({key:"id", keyValue:this.state.fuel, objectList:this.props.fuels, attribute:"co2_per_unit"})
+    let taxPrice = getAttribute({key:"id", keyValue:this.state.tax_type, objectList:this.props.taxes, attribute:"price_per_kg"})
 
     let co2_output_kg 
     let format = this.props.emission.format_encoding
@@ -758,10 +758,10 @@ export class EmissionDetail extends React.Component{
         <tr key={emission.id}>
           <td><button className="btn btn-outline-primary m-2" onClick={this.edit}><strong>{emission.name}</strong></button></td>
           <td>{emission.date}</td>
-          <td>{getAttribute(emission.tax_type, this.props.taxes, "name")}</td>
-          <td>{distance}</td>
+          <td>{getAttribute({key:"id", keyValue:emission.tax_type, objectList:this.props.taxes, attribute:"name"})}</td>
+          {/*<td>{distance}</td>
           <td>{emission.split}</td>
-          <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>
+          <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>*/}
           <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
         </tr>
     
@@ -935,7 +935,7 @@ export class PaymentDetail extends React.Component{
     return(
       <tr key={payment.id}>
         <td>{payment.date}</td>
-        <td>{getAttribute(payment.recipient, this.props.recipients, "name")}</td>
+        <td>{getAttribute({key:"id", keyValue:payment.recipient, objectList:this.props.recipients, attribute:"name"})}</td>
         <td>{displayCurrency(payment.amount, this.props.profile)}</td>
         <td>{edit}</td>
       </tr>

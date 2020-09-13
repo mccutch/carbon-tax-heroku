@@ -15,10 +15,12 @@ export class StatsDisplay extends React.Component{
       taxHistoryPrice:[],
       taxList:[],
       paymentHistory:[],
+      radio:"co2",
     }
 
     this.buildTables=this.buildTables.bind(this)
     this.getTaxName=this.getTaxName.bind(this)
+    this.handleDisplayChange=this.handleDisplayChange.bind(this)
   }
 
   componentDidMount(){
@@ -92,7 +94,6 @@ export class StatsDisplay extends React.Component{
       return a.price - b.price;
     })
 
-
     this.setState({
       histogramDataCo2:histogramDataCo2,
       histogramDataPrice:histogramDataPrice,
@@ -103,35 +104,64 @@ export class StatsDisplay extends React.Component{
     })
   }
 
-  render(){
+  handleDisplayChange(event){
+    this.setState({radio:event.target.value})
+  }
 
-    let co2History = <LinePlot data={this.state.taxHistoryCo2} x_key="month" dataSeries={this.state.taxList} title="CO2 Output History" />
-    let costHistory = <LinePlot data={this.state.taxHistoryPrice} x_key="month" dataSeries={this.state.taxList} title="Tax Cost History" />
-    let co2Total = <Histogram data={this.state.histogramDataCo2} labelKey="tax" barValues={['co2_kg']} title="Total CO2"/>
-    let costTotal = <Histogram data={this.state.histogramDataPrice} labelKey="tax" barValues={['price']} title="Total Costs"/>
+  render(){
     let paymentHistory = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
+
+    let radioSwitches = 
+      <div className="custom-radio">
+        <label>
+          CO2
+          <input type="radio" value="co2" checked={this.state.radio==="co2"} onChange={this.handleDisplayChange} />
+        </label>
+        <br/>
+        <label>
+          Price
+          <input type="radio" value="price" checked={this.state.radio==="price"} onChange={this.handleDisplayChange} />
+        </label>
+      </div>
+
+    let history = 
+      <div>
+        {radioSwitches}
+        <LinePlot 
+          data={this.state.radio==="co2" ? this.state.taxHistoryCo2 : this.state.taxHistoryPrice} 
+          x_key="month" 
+          dataSeries={this.state.taxList} 
+          title={`Emission History - ${this.state.radio==="co2" ? "Carbon Output" : "Cost"}`}
+          //xLabel="Date"
+          yLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
+        />
+      </div>
+
+    let totals = 
+      <div>
+        {radioSwitches}
+        <Histogram 
+          data={this.state.radio==="co2" ? this.state.histogramDataCo2 : this.state.histogramDataPrice}
+          labelKey="tax" 
+          barValues={[this.state.radio==="co2" ? 'co2_kg' : 'price']} 
+          title={`Total ${this.state.radio==="co2" ? "Carbon Output" : "Cost"}`}
+          xLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
+        />
+      </div>
     
     let tabData = [
       {
-        label: "History - CO2",
-        display: co2History,
+        label: "History",
+        display: history,
       },
       {
-        label: "History - Cost",
-        display: costHistory,
-      },
-      {
-        label: "Total CO2",
-        display: co2Total,
-      },
-      {
-        label: "Total Costs",
-        display: costTotal,
+        label: "Total",
+        display: totals,
       },
       {
         label: "Payments",
         display: paymentHistory,
-      }
+      },
     ]
     return <TabbedDisplay style="nav-tabs" tabData={tabData} />
   }
@@ -157,7 +187,7 @@ export class Dashboard extends React.Component{
   render(){
     let display
     if(this.state.display==="stats"){
-      display = <StatsDisplay stats={this.props.stats} taxes={this.props.taxes}/>
+      display = <StatsDisplay stats={this.props.stats} taxes={this.props.taxes} profile={this.props.profile}/>
     } else if(this.state.display==="profile"){
       display = 
         <ProfileDisplay
@@ -191,18 +221,19 @@ export class Dashboard extends React.Component{
       
     return(
       // Add -15px margin to sides of navbar to make full-width
+      //<div className="my-2 bg-light">
       <div className='container-sm my-2 bg-light' > 
         <div style={{margin: "0px -15px 0px -15px"}} >
-        <Navbar bg="info" variant="dark">
-          <Navbar.Brand >
-            {this.props.user.username}
-          </Navbar.Brand>
-          <Nav className="mr-auto">
-            <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
-            <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
-            <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
-          </Nav>
-        </Navbar>
+          <Navbar bg="info" variant="dark">
+            <Navbar.Brand >
+              {this.props.user.username}
+            </Navbar.Brand>
+            <Nav className="mr-auto">
+              <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
+              <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
+              <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+            </Nav>
+          </Navbar>
         </div>
         {display}
       </div>

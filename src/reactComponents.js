@@ -109,7 +109,7 @@ export class TabbedDisplay extends React.Component{
     let style = "nav "+this.props.style
 
     return(
-      <div className="container py-2">
+      <div>
         <ul className={style}>
           {this.makeTabNavBar()}
         </ul>

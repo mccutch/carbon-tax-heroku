@@ -444,14 +444,17 @@ class ProfileDetails extends React.Component{
 
     return(
       <div className="row">
-        <div className="col-sm-5 bg-light mx-2 my-2">
+        <div className="col-sm">
           <p>Name: {user.first_name} {user.last_name}</p>
           <p>Location: {profile.location}</p>
           <p>Date of Birth: {profile.date_of_birth}</p>
           <p>Email: {user.email}</p>
           <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
           <p>Units: {units.string(profile.display_units)}</p>
+        </div>
+        <div className="col-sm">
           <button name="editProfile" className="btn btn-outline-dark m-2" onClick={this.editProfile}>Edit profile</button>
+          <br/>
           <button name="changePassword" className="btn btn-outline-dark m-2" onClick={this.changePassword}>Change password</button>
         </div>
       </div>
