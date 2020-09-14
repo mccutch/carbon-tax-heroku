@@ -1,5 +1,7 @@
 Fill screen with tables
 
+Format edit payment prepend box
+
 Show less columns in object detail view
 
 Add default location to profile
@@ -14,6 +16,11 @@ STUCK
  - Serviceworker
     - Clear user data from cache on logout
 
+BEFORE LAUNCH
+ - increase token refresh to 1 week?
+ - increase access token to 24hrs?
+ - increase pagination number to 15?
+
 Recaptcha on registration and contact form
 
 recurring trips
@@ -22,6 +29,7 @@ favourite trips
 
 Format new vehicle and new tax from table views
 
+Geolocation.watchposition()
 
 
 make recipient links optional in front-end
@@ -36,10 +44,6 @@ Graph axis labels
 Object table of payments and donation recipients
 
 create saved trips
-
-
-
-Increase token refresh time to 24hrs.
 
 tag donation recipients by type, eg #offset, #political, #cultural, #reforestation, #local
 

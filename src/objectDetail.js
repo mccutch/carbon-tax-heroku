@@ -392,7 +392,7 @@ class VehicleEdit extends React.Component{
         {errorDisplay}
         <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} className="form-control my-2"/>
         <LabelledInput
-          input={<input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1" className="form-control my-2"/>}
+          input={<input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1" className="form-control"/>}
           append={units.string(this.props.displayUnits)}
         />
         <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
@@ -649,9 +649,14 @@ export class EmissionEdit extends React.Component{
             input={<ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>}
           />
           <FormRow
-            label={<div>Economy: ({units.string(displayUnits)})</div>}
+            label={<div>Economy:</div>}
             labelWidth={4}
-            input={<input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control" step="0.1"/>}
+            input = {
+              <LabelledInput
+                input={<input type="number" name="economy" defaultValue={economy} onChange={this.handleChange} className="form-control" step="0.1"/>}
+                append={units.string(displayUnits)}
+              />
+            }
           />
           <FormRow
             label={<div>Split:</div>}
@@ -662,36 +667,41 @@ export class EmissionEdit extends React.Component{
     } else {
       roadTripFields = 
           <FormRow
-            label={<div>Offset: ({this.props.profile.currency_symbol})</div>}
+            label={<div>Offset:</div>}
             labelWidth={4}
-            input={<input type="number" name="offset" defaultValue={(emission.offset*this.props.profile.conversion_factor).toFixed(2)} onChange={this.handleChange} className="form-control"/>}
+            input={<LabelledInput
+                      input={<input type="number" name="offset" defaultValue={(emission.offset*this.props.profile.conversion_factor).toFixed(2)} onChange={this.handleChange} className="form-control"/>}
+                      prepend={this.props.profile.currency_symbol}
+                  />}
           />
     }
 
-    let distanceField
-    if(format===encodeEmissionFormat("airTime")){
-      distanceField = 
+    let distanceField = format===encodeEmissionFormat("airTime") ?
         <FormRow
-          label={<div>Duration: (minutes)</div>}
+          label={<div>Duration:</div>}
           labelWidth={4}
-          input={<input type="number" name="duration" defaultValue={distance*60} onChange={this.handleChange} className="form-control"/>}
+          input={<LabelledInput
+                    input={<input type="number" name="duration" defaultValue={distance*60} onChange={this.handleChange} className="form-control"/>}
+                    append="minutes"
+                />}
         />
-    } else {
-      distanceField = 
+        :
         <FormRow
-          label={<div>Distance: ({units.distanceString(displayUnits)})</div>}
+          label={<div>Distance:</div>}
           labelWidth={4}
-          input={<input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>}
+          input={<LabelledInput
+                    input={<input type="number" name="distance" defaultValue={distance} onChange={this.handleChange} className="form-control"/>}
+                    append={units.distanceString(displayUnits)}
+                />}
         />
-    }
 
     let body = 
       <form className="container">
         <p>{this.state.errorMessage}</p>
-        <div className="form-group row">
+        <div className="form-group form-row">
           <input type="text" name="name" maxLength="60" placeholder="Trip Name" defaultValue={emission.name} onChange={this.handleChange} className="form-control"/>
         </div>
-        <div className="form-group row">
+        <div className="form-group form-row">
           <input type="date" name="date" defaultValue={emission.date} onChange={this.handleChange} className="form-control"/>
         </div>
         <FormRow
@@ -879,7 +889,7 @@ export class PaymentEdit extends React.Component{
         <label>
           Amount:
           <LabelledInput
-            input={<input type="number" name="amount" className="form-control m-2" defaultValue={prevAmount} onChange={this.handleChange}/>}
+            input={<input type="number" name="amount" className="form-control" defaultValue={prevAmount} onChange={this.handleChange}/>}
             prepend = {`${sym}${profile.currency}`}
           />
         </label>

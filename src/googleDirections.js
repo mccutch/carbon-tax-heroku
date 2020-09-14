@@ -3,6 +3,7 @@ import {StandardModal} from './reactComponents.js';
 import {DEFAULT_MAP_CENTER} from './constants.js';
 import * as units from './unitConversions.js';
 import {ROAD, AIR, OTHER, PUBLIC} from './constants.js'; //carbon input modes
+import {importGoogleLibraries} from './helperFunctions.js';
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
 
@@ -19,14 +20,16 @@ export class GoogleDirections extends React.Component{
     this.initMap=this.initMap.bind(this)  
     window.initMap=this.initMap  
 
-    if(!window.google){
+    /*if(!window.google){
       console.log("Generating Google API script.")
       var script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`;
       script.defer = true;
       script.async = true;
       document.head.appendChild(script);
-    }
+    }*/
+
+    importGoogleLibraries("initMap")
 
     this.useInput=this.useInput.bind(this)
     window.useInput=this.useInput

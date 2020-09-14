@@ -6,7 +6,7 @@ import { getToken }  from './myJWT.js';
 import * as helper from './helperFunctions.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
-import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal } from './reactComponents.js';
+import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal, FormRow } from './reactComponents.js';
 
 import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
@@ -14,6 +14,8 @@ import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
 import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS } from './constants.js';
 import {Modal, Button} from 'react-bootstrap';
+
+import { GoogleAutocomplete} from './googleAutocomplete.js';
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -53,6 +55,7 @@ export class RegistrationForm extends React.Component{
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
     this.validateUserData=this.validateUserData.bind(this)
+    this.handleLocationData=this.handleLocationData.bind(this)
   }
 
   handleChange(event){
@@ -210,6 +213,18 @@ export class RegistrationForm extends React.Component{
     }
   }
 
+  handleLocationData(place){
+    if(!place){
+      this.setState({locationData:null})
+      return
+    }
+    console.log(place)
+    this.setState({
+      location:place.formatted_address,
+      locationData:place.geometry.location.toJSON(),
+    })
+  }
+
   render(){
     let error
     if(this.state.errorMessage){
@@ -220,13 +235,13 @@ export class RegistrationForm extends React.Component{
 
     let body = 
       <form>
-        <h4>Required Information</h4>
+        <h5>Account</h5>
         <input
           type="text"
           name="username"
           onChange={this.handleChange}
           placeholder="Username"
-          className="form-control m-2"
+          className="form-control my-2"
         />
         <input
           type="password"
@@ -234,14 +249,14 @@ export class RegistrationForm extends React.Component{
           onChange={this.handleChange}
           placeholder="Password"
           maxLength={MAX_PASSWORD_LEN}
-          className="form-control m-2"
+          className="form-control my-2"
         />
         <input
           type="password"
           name="password_check"
           onChange={this.handleChange}
           placeholder="Confirm Password"
-          className="form-control m-2"
+          className="form-control my-2"
         />
         <input
           type="text"
@@ -249,25 +264,30 @@ export class RegistrationForm extends React.Component{
           onChange={this.handleChange}
           placeholder="Email"
           maxLength={MAX_EMAIL_LEN}
-          className="form-control m-2"
+          className="form-control my-2"
         />
-        <label>
-          Currency:
-          <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
-        </label>
-        <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
-        <label>
-          Economy units:
-          <DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />
-         </label>
-        <h4>Optional Information</h4>
+        <div className="form-row">
+          <div className="col-9">
+            <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
+          </div>
+          <div className="col">
+            <CurrencySymbolSelection name="currency_symbol" defaultValue={DEFAULT_CURRENCY_SYMBOL} onChange={this.handleChange} />
+          </div>
+        </div>
+        <FormRow
+          label={<div>Units:</div>}
+          labelWidth={2}
+          input={<DisplayUnitSelection name="display_units" defaultValue={DEFAULT_DISPLAY_UNITS} onChange={this.handleChange} />}
+         />
+        <br/>
+        <h5>Profile (optional)</h5>
         <input
           type="text"
           name="firstName"
           onChange={this.handleChange}
           placeholder="First name"
           maxLength={MAX_NAME_LEN}
-          className="form-control m-2"
+          className="form-control my-2"
         />
         <input
           type="text"
@@ -275,22 +295,32 @@ export class RegistrationForm extends React.Component{
           onChange={this.handleChange}
           placeholder="Last name"
           maxLength={MAX_NAME_LEN}
-          className="form-control m-2"
+          className="form-control my-2"
         />
+       {/*
         <input
           type="text"
           name="location"
           onChange={this.handleChange}
           placeholder="Location"
           maxLength={MAX_NAME_LEN}
-          className="form-control m-2"
+          className="form-control my-2"
+        />
+        */}
+        <GoogleAutocomplete
+          id="locationAutocomplete"
+          name="location"
+          placeholder="Location"
+          className={`form-control my-2 ${this.state.locationData ? "is-valid" : ""}`}
+          returnPlace={this.handleLocationData}
+          onChange={this.handleChange}
         />
         <input
           type="date"
           name="date_of_birth"
           onChange={this.handleChange}
           placeholder="Date of Birth"
-          className="form-control m-2"
+          className="form-control my-2"
         />
         {error}
       </form>

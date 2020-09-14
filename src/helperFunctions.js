@@ -1,6 +1,9 @@
 import {refreshToken}  from './myJWT.js';
 import {emissionSaveFormats, heliEmissions} from './constants.js';
 
+
+const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
+
 //----------------------------------------------------------------------------------------------------------------------------
 /*
 getAttribute(objectList, id, attribute)
@@ -14,6 +17,18 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+export function importGoogleLibraries(callback){
+  if(!window.google){
+    console.log("Generating Google API script.")
+    var script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places,geometry&callback=${callback}`;
+    script.defer = true;
+    script.async = true;
+    document.head.appendChild(script);
+  }
+}
+
+
 export function getHeliEconomy(seats){
   if(seats<=4){
     return heliEmissions.seat4

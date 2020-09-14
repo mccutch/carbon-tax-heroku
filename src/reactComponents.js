@@ -6,6 +6,7 @@ import {Modal} from 'react-bootstrap';
 export class LabelledInput extends React.Component{
   render(){
     return(
+      <div className={this.props.className}>
       <div className="input-group">
         {this.props.prepend ?
           <div className="input-group-prepend">
@@ -20,6 +21,7 @@ export class LabelledInput extends React.Component{
           </div>
           : ""
         }
+      </div>
       </div>
     )
   }
@@ -61,7 +63,7 @@ export class FormRow extends React.Component{
     let labelClass = `col-${this.props.labelWidth} col-form-label`
     let inputClass = `col-${12-this.props.labelWidth}`
     return(
-      <div className="form-group row">
+      <div className="form-group form-row">
         <label className={labelClass}>{this.props.label}</label>
         <div className={inputClass}>
           {this.props.input}
