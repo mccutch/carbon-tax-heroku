@@ -34,7 +34,7 @@ export class RegistrationForm extends React.Component{
       date_of_birth: "",
 
       password: "",
-      password_check: "__",
+      password_check: null,
       email: "",
       errorMessage:"",
       strongPassword: false,
@@ -68,7 +68,7 @@ export class RegistrationForm extends React.Component{
     } else if(event.target.name==="username"){
       this.setState({validUsername:validateUsernameRegex(event.target.value)})
     } else if(event.target.name==="currency"){
-      getCurrencyFactor({currency:event.target.name, onSuccess:this.setCurrencyFactor})
+      getCurrencyFactor({currency:event.target.value, onSuccess:this.setCurrencyFactor})
     }
   }
 
@@ -173,11 +173,9 @@ export class RegistrationForm extends React.Component{
   }
 
   createProfile(){
-    let profileData = {
-      location:""
-    }
+    let profileData = {}
 
-    let profileAttributes = ["date_of_birth", "currency", "currency_symbol", "display_units", "conversion_factor"]
+    let profileAttributes = ["location", "date_of_birth", "currency", "currency_symbol", "display_units", "conversion_factor"]
 
     for(let i in profileAttributes){
       if(this.state[profileAttributes[i]]){
@@ -226,11 +224,6 @@ export class RegistrationForm extends React.Component{
   }
 
   render(){
-    let error
-    if(this.state.errorMessage){
-      error = <p className="text-danger"><strong>{this.state.errorMessage}</strong></p>
-    }
-
     let title = <div>Sign Up</div>
 
     let body = 
@@ -241,31 +234,35 @@ export class RegistrationForm extends React.Component{
           name="username"
           onChange={this.handleChange}
           placeholder="Username"
-          className="form-control my-2"
+          className={`form-control my-2 ${this.state.validUsername ? "is-valid":""}`}
         />
+        <small className="form-text text-muted">{(this.state.username&&!this.state.validUsername) ? `${validation.USERNAME_ERR}`:""}</small>
         <input
           type="password"
           name="password"
           onChange={this.handleChange}
           placeholder="Password"
           maxLength={MAX_PASSWORD_LEN}
-          className="form-control my-2"
+          className={`form-control my-2 ${this.state.strongPassword ? "is-valid":""}`}
         />
+        <small className="form-text text-muted">{(this.state.password&&!this.state.strongPassword) ? `${validation.PASSWORD_ERR}`:""}</small>
         <input
           type="password"
           name="password_check"
           onChange={this.handleChange}
           placeholder="Confirm Password"
-          className="form-control my-2"
+          className={`form-control my-2 ${this.state.password===this.state.password_check ? "is-valid":""}`}
         />
+        <small className="form-text text-muted">{(this.state.strongPassword&&this.state.password_check&&(this.state.password_check!==this.state.password)) ? "Passwords don't match.":""}</small>
         <input
           type="text"
           name="email"
           onChange={this.handleChange}
           placeholder="Email"
           maxLength={MAX_EMAIL_LEN}
-          className="form-control my-2"
+          className={`form-control my-2 ${this.state.validEmail ? "is-valid":""}`}
         />
+        <small className="form-text text-muted">{(this.state.email&&!this.state.validEmail) ? `${validation.EMAIL_ERR}`:""}</small>
         <div className="form-row">
           <div className="col-9">
             <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
@@ -297,32 +294,22 @@ export class RegistrationForm extends React.Component{
           maxLength={MAX_NAME_LEN}
           className="form-control my-2"
         />
-       {/*
-        <input
-          type="text"
-          name="location"
-          onChange={this.handleChange}
-          placeholder="Location"
-          maxLength={MAX_NAME_LEN}
-          className="form-control my-2"
-        />
-        */}
         <GoogleAutocomplete
           id="locationAutocomplete"
           name="location"
           placeholder="Location"
+          maxLength={MAX_NAME_LEN}
           className={`form-control my-2 ${this.state.locationData ? "is-valid" : ""}`}
           returnPlace={this.handleLocationData}
           onChange={this.handleChange}
         />
-        <input
-          type="date"
-          name="date_of_birth"
-          onChange={this.handleChange}
-          placeholder="Date of Birth"
-          className="form-control my-2"
+        <small className="form-text text-muted">Location data improves your search results when calculating trip distance.</small>
+        <FormRow
+          label={<div>Date of birth:</div>}
+          labelWidth={4}
+          input={<input type="date" name="date_of_birth" onChange={this.handleChange} className="form-control my-2" />}
         />
-        {error}
+        <p><strong>{this.state.errorMessage}</strong></p>
       </form>
 
     let footer =  

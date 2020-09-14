@@ -83,6 +83,7 @@ export class GoogleAutocomplete extends React.Component{
         placeholder={this.props.placeholder} 
         className={this.props.className}
         defaultValue={this.props.defaultValue}
+        maxLength={this.props.maxLength}
         onChange={(event)=>{this.props.onChange(event); this.props.returnPlace(null)}}
       />
     )

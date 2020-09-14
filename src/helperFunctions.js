@@ -132,6 +132,7 @@ export function convertCurrency({convertFrom, convertTo, amount, onSuccess, onFa
   
   fetch(url)
   .then(res => {
+      console.log(res)
       return res.json()
     })
     .then(json => {

@@ -124,13 +124,20 @@ class UserProfile(APIView):
     permission_classes = (IsAuthenticated,)
     
     def get(self, request, format=None):
-        profile = request.user.profile
-        serializer = serializers.ProfileSerializer(profile, context={'request':request})
-        return Response(serializer.data)
+        try:
+            profile = request.user.profile
+            serializer = serializers.ProfileSerializer(profile, context={'request':request})
+            return Response(serializer.data)
+        except:
+            content = {
+                "Profile":"Not found"
+            }
+            return Response(content)
 
     def post(self, request, format=None):
         data=request.data
-        data['user']=f'/user/{request.user.id}/'
+        data['user']=request.user.id
+        data['recipients']=[]
         print(data)
         serializer = serializers.ProfileSerializer(data=data, context={'request':request})
         if serializer.is_valid():

@@ -1,7 +1,7 @@
 //export const PASSWORD_ERR_MESSAGE = "Password must be 8-30 characters, including a number and special character (?!@#$%^&)"
 export const PASSWORD_ERR = "Password must be 8-30 characters, including a capital letter and a number."
-export const USERNAME_ERR = "Invalid username format."
-export const EMAIL_ERR = "Invalid email address."
+export const USERNAME_ERR = "Invalid username. Only '.' and '_' characters are allowed."
+export const EMAIL_ERR = "Invalid email address format."
 
 export const MAX_PASSWORD_LEN = 30
 export const MAX_EMAIL_LEN = 30
@@ -19,6 +19,7 @@ export function validateEmailRegex(email){
 }
 
 export function validateUsernameRegex(username){
+  //Username can contain "." or "_" but only one at a time, and not at the ends of the string.
   const validUsername = new RegExp("^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")
   return validUsername.test(username)
 }

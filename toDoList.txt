@@ -1,10 +1,9 @@
-Fill screen with tables
+Delete user if profile creation fails
 
-Format edit payment prepend box
+Improve "History" and "Stats" tabs for new user
 
-Show less columns in object detail view
-
-Add default location to profile
+Add locationdata to profile
+- set bias for google
 
 Store list of fuels in front-end instead of database?
 
