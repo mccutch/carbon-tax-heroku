@@ -111,14 +111,18 @@ export class StatsDisplay extends React.Component{
   render(){
     let paymentHistory = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
 
+    let active = "btn btn-primary btn-sm active"
+    let inactive = "btn btn-primary btn-sm"
+
     let radioSwitches = 
-      <div className="custom-radio">
-        <label>
+      //<div className="custom-radio">
+      <div className="btn-group btn-group-toggle m-2" /*data-toggle="buttons"*/>
+        <label class={this.state.radio==="co2" ? active:inactive}>
           CO2
           <input type="radio" value="co2" checked={this.state.radio==="co2"} onChange={this.handleDisplayChange} />
         </label>
         <br/>
-        <label>
+        <label class={this.state.radio==="co2" ? inactive:active}>
           Price
           <input type="radio" value="price" checked={this.state.radio==="price"} onChange={this.handleDisplayChange} />
         </label>
@@ -126,7 +130,6 @@ export class StatsDisplay extends React.Component{
 
     let history = 
       <div>
-        {radioSwitches}
         <LinePlot 
           data={this.state.radio==="co2" ? this.state.taxHistoryCo2 : this.state.taxHistoryPrice} 
           x_key="month" 
@@ -134,12 +137,12 @@ export class StatsDisplay extends React.Component{
           title={`Emission History - ${this.state.radio==="co2" ? "Carbon Output" : "Cost"}`}
           //xLabel="Date"
           yLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
+          switches = {radioSwitches}
         />
       </div>
 
     let totals = 
       <div>
-        {radioSwitches}
         <Histogram 
           data={this.state.radio==="co2" ? this.state.histogramDataCo2 : this.state.histogramDataPrice}
           labelKey="tax" 
@@ -147,6 +150,7 @@ export class StatsDisplay extends React.Component{
           title={`Total ${this.state.radio==="co2" ? "Carbon Output" : "Cost"}`}
           xLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
         />
+        {radioSwitches}
       </div>
     
     let tabData = [

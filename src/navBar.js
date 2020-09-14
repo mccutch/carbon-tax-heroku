@@ -47,6 +47,8 @@ export class NavBar extends React.Component{
   handleClick(event){
     console.log(event.target.name)
     this.props.onClick(event.target.name)
+    //let navBar = document.getElementById("navHeader")
+    //navBar.setAttribute("expanded",false)
   }
 
 
@@ -109,7 +111,7 @@ export class NavBar extends React.Component{
     let navColour = (this.props.serverError ? "secondary":"warning")
 
     return(
-      <Navbar bg={navColour} variant="light" expand="md">
+      <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="light" expand="md">
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""
@@ -121,8 +123,8 @@ export class NavBar extends React.Component{
           />{' '}
           <a name="home" > Carbon Accountant</a>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
           {navLeft}
           {navRight}
         </Navbar.Collapse>
