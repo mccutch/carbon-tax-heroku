@@ -3,6 +3,29 @@ import * as units from './unitConversions.js';
 import {Modal} from 'react-bootstrap';
 
 
+export class LabelledInput extends React.Component{
+  render(){
+    return(
+      <div className="input-group">
+        {this.props.prepend ?
+          <div className="input-group-prepend">
+            <span className="input-group-text"> {this.props.prepend} </span>
+          </div>
+          : ""
+        }
+        {this.props.input}
+        {this.props.append ?
+          <div className="input-group-append">
+            <span className="input-group-text"> {this.props.append} </span>
+          </div>
+          : ""
+        }
+      </div>
+    )
+  }
+}
+
+
 export class StandardModal extends React.Component{
   render(){
     let modalFooter

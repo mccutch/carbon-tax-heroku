@@ -3,6 +3,7 @@ import React from 'react';
 import {GoogleDirections} from './googleDirections.js';
 import * as units from './unitConversions.js';
 import {AIR, ROAD, PUBLIC, OTHER} from './constants.js';
+import {LabelledInput} from './reactComponents.js';
 
 
 export class DistanceInput extends React.Component{
@@ -42,7 +43,6 @@ export class DistanceInput extends React.Component{
   }
 
   render(){
-    let placeholderText = `Distance (${units.distanceString(this.props.displayUnits)})`
 
     //let display
     //if(this.props.mode===AIR && this.props.aircraftType!=="airliner"){
@@ -50,23 +50,26 @@ export class DistanceInput extends React.Component{
       <div>
         <p>Input flight time for fuel calculation:</p>
         <div className="row">
-          <label>
-            Hours
-            <input name="hours" type="number" onChange={this.handleChange} className="form-control" defaultValue={this.hasInitial? Math.floor(this.props.initialValue):null}/>
-          </label>
-          <br/>
-          <label>
-            Minutes
-            <input name="minutes" type="number" onChange={this.handleChange} className="form-control" defaultValue={this.hasInitial?Math.round((this.props.initialValue%1)*60):null}/>
-          </label>
+          <div className="col">
+            <LabelledInput
+              append="hrs"
+              input={<input name="hours" type="number" onChange={this.handleChange} className="form-control" defaultValue={this.hasInitial? Math.floor(this.props.initialValue):null}/>}
+            />
+          </div>
+          <div className="col">
+            <LabelledInput
+              append="min"
+              input={<input name="minutes" type="number" onChange={this.handleChange} className="form-control" defaultValue={this.hasInitial?Math.round((this.props.initialValue%1)*60):null}/>}
+            />
+          </div>
         </div>
       </div>
       :
       <div>
-        <label>
-          {placeholderText}
-          <input type="number" onChange={this.handleChange} name="distance" placeholder={placeholderText} className="form-control" defaultValue={this.hasInitial?units.distanceDisplay(this.props.initialValue, this.props.displayUnits):null}/>
-        </label>
+        <LabelledInput
+          append={units.distanceString(this.props.displayUnits)}
+          input={<input type="number" onChange={this.handleChange} name="distance" placeholder="Distance" className="form-control" defaultValue={this.hasInitial?units.distanceDisplay(this.props.initialValue, this.props.displayUnits):null}/>}
+        />
         <button name="displayRouteCalculator" className=" btn btn-outline-info m-2" onClick={this.showRouteCalculator} >Route calculator</button>
       </div>
 

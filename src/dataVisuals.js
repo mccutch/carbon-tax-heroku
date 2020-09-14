@@ -49,7 +49,7 @@ export class Histogram extends React.Component{
 
     return(
       <div className="container">
-        <h4 className="text-center">{this.props.title}</h4>
+        <h5 className="text-center">{this.props.title}</h5>
         <ResponsiveContainer height={300}>
           <BarChart 
             data={data} 

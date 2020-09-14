@@ -1,7 +1,7 @@
 import React from 'react';
 import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
-import { ObjectSelectionList } from './reactComponents.js';
+import { ObjectSelectionList, LabelledInput } from './reactComponents.js';
 import {Modal, Button} from 'react-bootstrap';
 
 class ListInput extends React.Component {
@@ -525,18 +525,17 @@ export class VehicleInput extends React.Component{
   render(){
     return(
       <div>
-        <label>
-          <input  
-            id="economy"
-            type="number"
-            onChange={this.handleChange} 
-            name="economy"
-            placeholder="Fuel economy"
-            defaultValue={this.props.initialValues.lPer100Km!==0?this.props.initialValues.lPer100Km:null}
-          />
-          {units.displayUnitString(this.props.displayUnits)}
-        </label>
-        <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" defaultValue={this.props.initialValues.fuelId?`${this.props.initialValues.fuelId}`:null}/>
+        <div className="form-row">
+          <div className="col-sm">
+            <LabelledInput
+              input = {<input id="economy" type="number" onChange={this.handleChange} name="economy" placeholder="Fuel economy" defaultValue={this.props.initialValues.lPer100Km!==0?this.props.initialValues.lPer100Km:null} className="form-control"/>}
+              append = {units.displayUnitString(this.props.displayUnits)}
+            />
+          </div>
+          <div className="col-sm">
+            <ObjectSelectionList name="fuelId" onChange={this.handleChange} list={this.props.fuels} value="id" keyValue="id" label="name" defaultValue={this.props.initialValues.fuelId?`${this.props.initialValues.fuelId}`:null}/>
+          </div>
+        </div>
         <br/>
         <button className="btn btn-outline-info m-2" onClick={this.showForm}>Look up US vehicle</button>
       </div>
