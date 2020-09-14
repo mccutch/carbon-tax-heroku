@@ -109,7 +109,16 @@ export class StatsDisplay extends React.Component{
   }
 
   render(){
-    let paymentHistory = <LinePlot data={this.state.paymentHistory} x_key="month" dataSeries={['Paid', 'Taxed']} title="Payment History" />
+    let paymentHistory = 
+      <LinePlot 
+        data={this.state.paymentHistory} 
+        x_key="month" 
+        dataSeries={['Paid', 'Taxed']} 
+        title="Payment History"
+        preUnit={this.props.profile.currency_symbol}
+        postUnit=""
+        yLabel={`Cost (${this.props.profile.currency_symbol})`} 
+      />
 
     let active = "btn btn-primary btn-sm active"
     let inactive = "btn btn-primary btn-sm"
@@ -117,12 +126,12 @@ export class StatsDisplay extends React.Component{
     let radioSwitches = 
       //<div className="custom-radio">
       <div className="btn-group btn-group-toggle m-2" /*data-toggle="buttons"*/>
-        <label class={this.state.radio==="co2" ? active:inactive}>
+        <label class={this.state.radio==="co2" ? active : inactive}>
           CO2
           <input type="radio" value="co2" checked={this.state.radio==="co2"} onChange={this.handleDisplayChange} />
         </label>
         <br/>
-        <label class={this.state.radio==="co2" ? inactive:active}>
+        <label class={this.state.radio==="co2" ? inactive : active}>
           Price
           <input type="radio" value="price" checked={this.state.radio==="price"} onChange={this.handleDisplayChange} />
         </label>
@@ -138,6 +147,8 @@ export class StatsDisplay extends React.Component{
           //xLabel="Date"
           yLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
           switches = {radioSwitches}
+          postUnit={this.state.radio==="co2" ? "kg" : ""}
+          preUnit={this.state.radio==="co2" ? "" : this.props.profile.currency_symbol}
         />
       </div>
 

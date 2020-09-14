@@ -118,7 +118,7 @@ export class LinePlot extends React.Component{
               <Label value={this.props.yLabel} /*angle="-90"*/ position="insideTopLeft" dy={-35} dx={0}/>
             </YAxis>
             <Tooltip 
-              formatter = {(value, name, props) => {return [`${Math.round(value)}`, `${name}`] }}
+              formatter = {(value, name, props) => {return [`${this.props.preUnit}${Math.round(value)}${this.props.postUnit}`, `${name}`] }}
             />
             <Legend />
           </ComposedChart>
