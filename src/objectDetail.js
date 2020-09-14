@@ -4,7 +4,7 @@ import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
 import { fetchObject, getAttribute, displayCurrency, sleep, encodeEmissionFormat, displayHrs } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
-import { ObjectSelectionList, FormRow, StandardModal } from './reactComponents.js';
+import { ObjectSelectionList, FormRow, StandardModal, LabelledInput } from './reactComponents.js';
 
 class TaxBackDate extends React.Component{
   constructor(props){
@@ -233,8 +233,11 @@ class TaxEdit extends React.Component{
         Name:
         <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" className="form-control"/>
         <br/>
-        Price per kg: {sym}
-        <input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(3)} onChange={this.handleChange} step="0.01" className="form-control"/>
+        Price per kg: 
+        <LabelledInput
+          input={<input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(3)} onChange={this.handleChange} step="0.01" className="form-control"/>}
+          prepend={sym}
+        />
       </div>
 
     let footer = 
@@ -387,11 +390,11 @@ class VehicleEdit extends React.Component{
     let body = 
       <div>
         {errorDisplay}
-        <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} className="form-control"/>
-        <label>
-          <input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1" className="form-control"/>
-          {units.string(this.props.displayUnits)}
-        </label>
+        <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} className="form-control my-2"/>
+        <LabelledInput
+          input={<input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1" className="form-control my-2"/>}
+          append={units.string(this.props.displayUnits)}
+        />
         <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
       </div>
 
@@ -874,8 +877,11 @@ export class PaymentEdit extends React.Component{
     let body = 
       <form>
         <label>
-          Amount: ({sym}{profile.currency})
-          <input type="number" name="amount" className="form-control m-2" defaultValue={prevAmount} onChange={this.handleChange}/>
+          Amount:
+          <LabelledInput
+            input={<input type="number" name="amount" className="form-control m-2" defaultValue={prevAmount} onChange={this.handleChange}/>}
+            prepend = {`${sym}${profile.currency}`}
+          />
         </label>
         <br/>
         <label>

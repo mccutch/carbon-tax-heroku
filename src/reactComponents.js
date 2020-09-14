@@ -257,7 +257,7 @@ export class ObjectSelectionList extends React.Component{
           name = {this.props.name}
           onChange = {this.props.onChange}
           defaultValue = {this.props.defaultValue}
-          className="form-control"
+          className="form-control my-2"
         >
           {listOptions}
         </select>
