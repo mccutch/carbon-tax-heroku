@@ -57,6 +57,8 @@ class TaxRate(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     location = models.CharField(max_length=60, blank=True)
+    loc_lat = models.DecimalField(max_digits=16, decimal_places=10, blank=True, null=True)
+    loc_lng = models.DecimalField(max_digits=16, decimal_places=10, blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
     currency = models.CharField(max_length=10, default="AUD")
     currency_symbol = models.CharField(max_length=10, default="$")

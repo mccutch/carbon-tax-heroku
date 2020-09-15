@@ -52,12 +52,12 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     recipients = serializers.PrimaryKeyRelatedField(queryset=models.DonationRecipient.objects.all(), many=True)
     class Meta:
         model = models.Profile
-        fields = ['user', 'location', 'date_of_birth', 'currency', 'currency_symbol', 'conversion_factor', 'display_units', 'recipients', 'id']
+        fields = ['user', 'location', 'date_of_birth', 'currency', 'currency_symbol', 'conversion_factor', 'display_units', 'recipients', 'loc_lat', 'loc_lng', 'id']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email')
+        fields = ['username', 'first_name', 'last_name', 'email', 'id']
 
 class EmissionSerializer(serializers.HyperlinkedModelSerializer):
     #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
@@ -89,7 +89,7 @@ class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'password', 'email', 'first_name', 'last_name')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name', 'id')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):

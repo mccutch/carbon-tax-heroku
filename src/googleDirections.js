@@ -5,7 +5,7 @@ import * as units from './unitConversions.js';
 import {ROAD, AIR, OTHER, PUBLIC} from './constants.js'; //carbon input modes
 import {importGoogleLibraries} from './helperFunctions.js';
 
-const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
+//const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
 
 
 export class GoogleDirections extends React.Component{

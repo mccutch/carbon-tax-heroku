@@ -12,7 +12,7 @@ import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from
 import * as validation from './validation.js';
 import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
-import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS } from './constants.js';
+import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS, POSITION_DECIMALS } from './constants.js';
 import {Modal, Button} from 'react-bootstrap';
 
 import { GoogleAutocomplete} from './googleAutocomplete.js';
@@ -49,13 +49,14 @@ export class RegistrationForm extends React.Component{
     this.createProfile=this.createProfile.bind(this)
     this.createTaxes=this.createTaxes.bind(this)
 
-    this.postFailure=this.postFailure.bind(this)
+    this.createProfileFailure=this.createProfileFailure.bind(this)
     this.createUserFailure=this.createUserFailure.bind(this)
     this.createUserSuccess=this.createUserSuccess.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
     this.validateUserData=this.validateUserData.bind(this)
     this.handleLocationData=this.handleLocationData.bind(this)
+    this.onDelete=this.onDelete.bind(this)
   }
 
   handleChange(event){
@@ -122,7 +123,7 @@ export class RegistrationForm extends React.Component{
       url:'/registration/check-unique/',
       data:data,
       onSuccess:this.uniqueResponse,
-      onFailure:this.postFailure,
+      onFailure:this.createProfileFailure,
       noAuth:true,
     })
   }
@@ -138,15 +139,30 @@ export class RegistrationForm extends React.Component{
     }
   }
 
-  postFailure(message){
-    this.setState({errorMessage:"Error occurred while creating profile."})
+  createProfileFailure(message){
+    this.setState({errorMessage:"Error occurred while creating profile. Please try again."})
+
+    let key = this.state.userId
+
+    fetchObject({
+      url:`/user/${key}/`,
+      onSuccess:this.onDelete,
+      onFailure:this.onDelete,
+      method:'DELETE'
+    })
+  }
+
+  onDelete(){
+    console.log("User account deleted. Ready to try again.")
   }
 
   createUserFailure(message){
     this.setState({errorMessage:"Unable to create user."})
   }
 
-  createUserSuccess(){
+  createUserSuccess(json){
+    console.log(json)
+    this.setState({userId:json.id})
     console.log("Create user - Success")
     let loginData = {username: this.state.username, password: this.state.password}
     getToken({data:loginData, onSuccess:this.createProfile})
@@ -182,13 +198,17 @@ export class RegistrationForm extends React.Component{
         profileData[profileAttributes[i]]=this.state[profileAttributes[i]]
       }
     }
+    if(this.state.locationData){
+      profileData['loc_lat']=parseFloat(this.state.locationData.lat).toFixed(POSITION_DECIMALS)
+      profileData['loc_lng']=parseFloat(this.state.locationData.lng).toFixed(POSITION_DECIMALS)
+    }
 
     fetchObject({
       method:'POST',
       url:'/my-profile/',
       data:profileData,
       onSuccess:this.createTaxes,
-      onFailure:this.postFailure,
+      onFailure:this.createProfileFailure,
     })
   }
 
@@ -206,7 +226,7 @@ export class RegistrationForm extends React.Component{
         url:'/my-taxes/',
         data:taxData,
         onSuccess:this.props.onSuccess,
-        onFailure:this.postFailure,
+        onFailure:this.createProfileFailure,
       })
     }
   }
