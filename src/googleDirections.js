@@ -33,6 +33,7 @@ export class GoogleDirections extends React.Component{
 
     this.useInput=this.useInput.bind(this)
     window.useInput=this.useInput
+
     this.setLocationBias=this.setLocationBias.bind(this)
     this.findDirections=this.findDirections.bind(this)
     this.useRoute=this.useRoute.bind(this)
@@ -41,6 +42,7 @@ export class GoogleDirections extends React.Component{
     this.handleErrorStatus=this.handleErrorStatus.bind(this)
     this.chooseTravelMode=this.chooseTravelMode.bind(this)
     this.findFlightPath=this.findFlightPath.bind(this)
+    this.parseGeolocation=this.parseGeolocation.bind(this)
   }
 
   componentDidMount(){
@@ -105,26 +107,35 @@ export class GoogleDirections extends React.Component{
       autoDestination.addListener('place_changed', function() {window.useInput("destination")})
       autoVia.addListener('place_changed', function() {window.useInput("via")})
       
-      if(navigator.geolocation){
-        console.log("Geolocation available")
-        navigator.geolocation.getCurrentPosition(this.setLocationBias)
+      if(this.props.locationBias){
+        this.setLocationBias(this.props.locationBias.lat, this.props.locationBias.lng)
+      } else {
+        if(navigator.geolocation){
+          console.log("Geolocation available")
+          navigator.geolocation.getCurrentPosition(this.parseGeolocation)
+        }
       }
     } else {
       console.log("window.google not defined")
     }
   }
 
-  setLocationBias(position){
+  parseGeolocation(position){
+    this.setLocationBias(position.coords.latitude, position.coords.longitude)
+    console.log(`Position accuracy: ${position.coords.accuracy}`)
+  }
+
+  setLocationBias(lat, lng){
     // Set map center and autocomplete biasing based on user location
     var gMaps = window.google.maps
 
     let geolocation = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude
+      lat: parseFloat(lat),
+      lng: parseFloat(lng)
     }
     console.log(geolocation)
     let circle = new gMaps.Circle(
-      {center: geolocation, radius: position.coords.accuracy}
+      {center: geolocation, radius:30}
     )
     this.originAutocomp.setBounds(circle.getBounds())
     this.destinationAutocomp.setBounds(circle.getBounds())

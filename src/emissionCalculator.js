@@ -264,6 +264,7 @@ export class EmissionCalculator extends React.Component{
         </div>
         :
         <DistanceInput  
+          locationBias={this.props.loggedIn&&this.props.profile.loc_lat ? {lat:this.props.profile.loc_lat,lng:this.props.profile.loc_lng} : null}
           submitDistance={this.handleSubmitDistance}
           submitFlightHrs={this.handleSubmitFlightHrs}
           displayUnits={displayUnits}

@@ -3,12 +3,14 @@ import {Modal} from 'react-bootstrap';
 import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
-import { ObjectSelectionList, CurrencySelection } from './reactComponents.js';
+import { ObjectSelectionList, CurrencySelection} from './reactComponents.js';
 import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
 import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 import { LinePlot, Histogram } from './dataVisuals.js';
 import {TabbedDisplay} from './reactComponents.js';
+import {GoogleAutocomplete} from './googleAutocomplete.js';
+import {POSITION_DECIMALS} from './constants.js';
 
 class PasswordChange extends React.Component{
   constructor(props){
@@ -200,6 +202,7 @@ class ProfileEdit extends React.Component{
     this.finishEdit=this.finishEdit.bind(this)
     this.validateInputs=this.validateInputs.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
+    this.handleLocationData=this.handleLocationData.bind(this)
   }
 
   handleChange(event){
@@ -269,6 +272,10 @@ class ProfileEdit extends React.Component{
       if(this.state[profileAttributes[i]]){
         profileData[profileAttributes[i]]=this.state[profileAttributes[i]]
       }
+    }
+    if(this.state.locationData){
+      profileData['loc_lat']=parseFloat(this.state.locationData.lat).toFixed(POSITION_DECIMALS)
+      profileData['loc_lng']=parseFloat(this.state.locationData.lng).toFixed(POSITION_DECIMALS)
     }
 
     if(Object.keys(profileData).length===0 && Object.keys(userData).length===0){
@@ -342,6 +349,18 @@ class ProfileEdit extends React.Component{
     }
   }
 
+  handleLocationData(place){
+    if(!place){
+      this.setState({locationData:null})
+      return
+    }
+    console.log(place)
+    this.setState({
+      location:place.formatted_address,
+      locationData:place.geometry.location.toJSON(),
+    })
+  }
+
 
   render(){
 
@@ -365,10 +384,20 @@ class ProfileEdit extends React.Component{
               <input type="text" name="last_name" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
             </label>
             <br/>
-            <label>
+            {/*<label>
               Location:
               <input type="text" name="location" defaultValue={profile.location} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
-            </label>
+            </label>*/}
+            <GoogleAutocomplete
+              id="locationAutocomplete"
+              name="location"
+              placeholder="Location"
+              defaultValue={profile.location}
+              maxLength={MAX_NAME_LEN}
+              className={`form-control my-2 ${this.state.locationData ? "is-valid" : ""}`}
+              returnPlace={this.handleLocationData}
+              onChange={this.handleChange}
+            />
             <br/>
             <label>
               Date of birth:

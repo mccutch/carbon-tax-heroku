@@ -32,7 +32,7 @@ export class DistanceInput extends React.Component{
   }
 
   showRouteCalculator(){
-    let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits} mode={this.props.mode}/>
+    let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits} mode={this.props.mode} locationBias={this.props.locationBias}/>
     this.props.setModal(modal)
   }
 

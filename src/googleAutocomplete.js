@@ -14,6 +14,7 @@ export class GoogleAutocomplete extends React.Component{
     this.setLocationBias=this.setLocationBias.bind(this)
     this.useLocation=this.useLocation.bind(this)
     window.useLocation=this.useLocation
+    this.parseGeolocation=this.parseGeolocation.bind(this)
   }
 
   componentDidMount(){
@@ -41,25 +42,37 @@ export class GoogleAutocomplete extends React.Component{
       // Take action when autocomplete suggestion is chosen, or raw text input is submitted
       autoObject.addListener('place_changed', function() {window.useLocation()})
       
-      if(navigator.geolocation){
-        console.log("Geolocation available")
-        navigator.geolocation.getCurrentPosition(this.setLocationBias)
+      if(this.props.locationBias){
+        this.setLocationBias(this.props.locationBias.lat, this.props.locationBias.lng)
+      } else {
+        if(navigator.geolocation){
+          console.log("Geolocation available")
+          navigator.geolocation.getCurrentPosition(this.parseGeolocation)
+        }
       }
     } else {
       console.log("window.google not defined")
     }
   }
 
-  setLocationBias(position){
+  parseGeolocation(position){
+    this.setLocationBias(position.coords.latitude, position.coords.longitude)
+    console.log(`Position accuracy: ${position.coords.accuracy}`)
+    if(this.props.returnLocation){
+      this.props.returnLocation({lat:position.coords.latitude, lng:position.coords.longitude})
+    }
+  }
+
+  setLocationBias(lat, lng){
     var gMaps = window.google.maps
 
     let geolocation = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude
+      lat: parseFloat(lat),
+      lng: parseFloat(lng)
     }
     console.log(geolocation)
     let circle = new gMaps.Circle(
-      {center: geolocation, radius: position.coords.accuracy}
+      {center: geolocation, radius: 30}
     )
     this.autoObject.setBounds(circle.getBounds())
   }

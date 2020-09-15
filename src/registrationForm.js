@@ -56,6 +56,7 @@ export class RegistrationForm extends React.Component{
     this.uniqueResponse=this.uniqueResponse.bind(this)
     this.validateUserData=this.validateUserData.bind(this)
     this.handleLocationData=this.handleLocationData.bind(this)
+    this.handlePlaceData=this.handlePlaceData.bind(this)
     this.onDelete=this.onDelete.bind(this)
   }
 
@@ -198,10 +199,13 @@ export class RegistrationForm extends React.Component{
         profileData[profileAttributes[i]]=this.state[profileAttributes[i]]
       }
     }
-    if(this.state.locationData){
-      profileData['loc_lat']=parseFloat(this.state.locationData.lat).toFixed(POSITION_DECIMALS)
-      profileData['loc_lng']=parseFloat(this.state.locationData.lng).toFixed(POSITION_DECIMALS)
+    if(this.state.locationData || this.state.defaultLocationData){
+      let data = this.state.locationData ? this.state.locationData : this.state.defaultLocationData
+      profileData['loc_lat']=parseFloat(data.lat).toFixed(POSITION_DECIMALS)
+      profileData['loc_lng']=parseFloat(data.lng).toFixed(POSITION_DECIMALS)
     }
+
+    console.log(profileData)
 
     fetchObject({
       method:'POST',
@@ -231,7 +235,7 @@ export class RegistrationForm extends React.Component{
     }
   }
 
-  handleLocationData(place){
+  handlePlaceData(place){
     if(!place){
       this.setState({locationData:null})
       return
@@ -241,6 +245,12 @@ export class RegistrationForm extends React.Component{
       location:place.formatted_address,
       locationData:place.geometry.location.toJSON(),
     })
+  }
+
+  handleLocationData(location){
+    console.log("Collecting default location using IP address.")
+    this.setState({defaultLocationData:location})
+    
   }
 
   render(){
@@ -320,7 +330,8 @@ export class RegistrationForm extends React.Component{
           placeholder="Location"
           maxLength={MAX_NAME_LEN}
           className={`form-control my-2 ${this.state.locationData ? "is-valid" : ""}`}
-          returnPlace={this.handleLocationData}
+          returnPlace={this.handlePlaceData}
+          returnLocation={this.handleLocationData}
           onChange={this.handleChange}
         />
         <small className="form-text text-muted">Location data improves your search results when calculating trip distance.</small>
