@@ -6,11 +6,10 @@ import * as units from './unitConversions';
 import { ObjectSelectionList, CurrencySelection} from './reactComponents.js';
 import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
-import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 import { LinePlot, Histogram } from './dataVisuals.js';
 import {TabbedDisplay} from './reactComponents.js';
 import {GoogleAutocomplete} from './googleAutocomplete.js';
-import {POSITION_DECIMALS} from './constants.js';
+import {POSITION_DECIMALS, MAX_LEN_NAME} from './constants.js';
 
 class PasswordChange extends React.Component{
   constructor(props){
@@ -100,11 +99,11 @@ class PasswordChange extends React.Component{
         <Modal.Body>
           <form>
             <p><strong>{this.state.errorMessage}</strong></p>
-            <input type="password" name="old_password" placeholder="Old password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+            <input type="password" name="old_password" placeholder="Old password" maxLength={30} onChange={this.handleChange}/>
             <br/>
-            <input type="password" name="new_password" placeholder="New password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+            <input type="password" name="new_password" placeholder="New password" maxLength={30} onChange={this.handleChange}/>
             <br/>
-            <input type="password" name="confirm_password" placeholder="Confirm password" maxLength={MAX_PASSWORD_LEN} onChange={this.handleChange}/>
+            <input type="password" name="confirm_password" placeholder="Confirm password" maxLength={30} onChange={this.handleChange}/>
           </form>
         </Modal.Body>
         <Modal.Footer>
@@ -376,24 +375,20 @@ class ProfileEdit extends React.Component{
           <form>
             <label>
               First name:
-              <input type="text" name="first_name" defaultValue={user.first_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+              <input type="text" name="first_name" defaultValue={user.first_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_LEN_NAME}/>
             </label>
             <br/>
             <label>
               Last name:
-              <input type="text" name="last_name" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
+              <input type="text" name="last_name" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_LEN_NAME}/>
             </label>
             <br/>
-            {/*<label>
-              Location:
-              <input type="text" name="location" defaultValue={profile.location} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_NAME_LEN}/>
-            </label>*/}
             <GoogleAutocomplete
               id="locationAutocomplete"
               name="location"
               placeholder="Location"
               defaultValue={profile.location}
-              maxLength={MAX_NAME_LEN}
+              maxLength={MAX_LEN_NAME}
               className={`form-control my-2 ${this.state.locationData ? "is-valid" : ""}`}
               returnPlace={this.handleLocationData}
               onChange={this.handleChange}

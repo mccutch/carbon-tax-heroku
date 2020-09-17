@@ -9,9 +9,14 @@ export const DEFAULT_VEHICLE_NAME = "My Vehicle"
 export const DEFAULT_MAP_CENTER = {lat: -34.397, lng: 150.644} //Western Syndey
 
 
-//Constants defined in views.py - Both sources must be changed and migration applied.
+//Constants defined in models.py - Both sources must be changed and migration applied.
 export const MAX_VEHICLE_NAME_LEN = 30
 export const MAX_EMISSION_NAME_LEN = 60
+
+export const MAX_LEN_USERNAME = 30 //Defined in django docs?
+export const MAX_LEN_PASSWORD = 30
+export const MAX_LEN_EMAIL = 30
+export const MAX_LEN_NAME = 30
 
 export const MAX_LEN_RECIP_NAME = 60
 export const MAX_LEN_RECIP_COUNTRY = 60

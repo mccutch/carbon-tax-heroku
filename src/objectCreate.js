@@ -5,9 +5,8 @@ import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import { VehicleInput } from './vehicleInput.js';
 import { VehicleSaveForm } from './vehicleSave.js';
 import {fetchObject} from './helperFunctions.js';
-import { MAX_NAME_LEN } from './validation.js';
 import {StandardModal} from './reactComponents.js';
-import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION} from './constants.js';
+import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
 
 export class CreateTax extends React.Component{
   constructor(props){
@@ -105,7 +104,7 @@ export class CreateTax extends React.Component{
         {errorDisplay}
         <label>
           Name:
-          <input type="text" name="newName" maxLength={MAX_NAME_LEN} onChange={this.handleChange}/>
+          <input type="text" name="newName" maxLength={MAX_LEN_NAME} onChange={this.handleChange}/>
         </label>
         <br/>
         <label>

@@ -8,11 +8,10 @@ import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
 import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal, FormRow } from './reactComponents.js';
 
-import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
+import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex, PasswordInput, PasswordCheckInput, UsernameInput, EmailInput } from './validation.js';
 import * as validation from './validation.js';
-import { MAX_PASSWORD_LEN, MAX_EMAIL_LEN, MAX_NAME_LEN } from './validation.js';
 
-import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS, POSITION_DECIMALS } from './constants.js';
+import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS, POSITION_DECIMALS, MAX_LEN_NAME } from './constants.js';
 import {Modal, Button} from 'react-bootstrap';
 
 import { GoogleAutocomplete} from './googleAutocomplete.js';
@@ -40,11 +39,15 @@ export class RegistrationForm extends React.Component{
       strongPassword: false,
       validEmail:false,
       validUsername:false,
-      
+      submitted:false,
     }
 
-    this.handleChange=this.handleChange.bind(this)
 
+    this.handleChange=this.handleChange.bind(this)
+    this.handleLocationData=this.handleLocationData.bind(this)
+    this.handlePlaceData=this.handlePlaceData.bind(this)
+
+    this.validateUserData=this.validateUserData.bind(this)
     this.createUser=this.createUser.bind(this)
     this.createProfile=this.createProfile.bind(this)
     this.createTaxes=this.createTaxes.bind(this)
@@ -54,62 +57,93 @@ export class RegistrationForm extends React.Component{
     this.createUserSuccess=this.createUserSuccess.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
-    this.validateUserData=this.validateUserData.bind(this)
-    this.handleLocationData=this.handleLocationData.bind(this)
-    this.handlePlaceData=this.handlePlaceData.bind(this)
+    
     this.onDelete=this.onDelete.bind(this)
+    this.returnError=this.returnError.bind(this)
+
+    //Validation return
+    this.setStrongPassword=this.setStrongPassword.bind(this)
+    this.setPasswordsMatch=this.setPasswordsMatch.bind(this)
+    this.setValidUsername=this.setValidUsername.bind(this)
+    this.setValidEmail=this.setValidEmail.bind(this)
   }
 
   handleChange(event){
     this.setState({[event.target.name]:event.target.value})
 
-    if(event.target.name==="password"){
-      this.setState({strongPassword:checkPasswordStrength(event.target.value)})
-    } else if(event.target.name==="email"){
-      this.setState({validEmail:validateEmailRegex(event.target.value)})
-    } else if(event.target.name==="username"){
-      this.setState({validUsername:validateUsernameRegex(event.target.value)})
-    } else if(event.target.name==="currency"){
-      getCurrencyFactor({currency:event.target.value, onSuccess:this.setCurrencyFactor})
+    if(event.target.name==="currency"){
+      getCurrencyFactor({
+        currency:event.target.value, 
+        onSuccess:this.setCurrencyFactor,
+      })
     }
+  }
+
+  setStrongPassword(bool){this.setState({strongPassword:bool})}
+  setPasswordsMatch(bool){this.setState({passwordsMatch:bool})}
+  setValidUsername(bool){this.setState({validUsername:bool})}
+  setValidEmail(bool){this.setState({validEmail:bool})}
+
+  returnError(errorMessage){
+    this.setState({
+      errorMessage:errorMessage,
+      submissionPending:false,
+    })
   }
 
   setCurrencyFactor(factor){
     this.setState({conversion_factor:factor})
   }
 
+  handlePlaceData(place){
+    if(!place){
+      this.setState({locationData:null})
+      return
+    }
+    console.log(place)
+    this.setState({
+      location:place.formatted_address,
+      locationData:place.geometry.location.toJSON(),
+    })
+  }
+
+  handleLocationData(location){
+    console.log("Collecting default location using IP address.")
+    this.setState({defaultLocationData:location})
+    
+  }
+
   validateUserData(){
     //event.preventDefault()
-
-    this.setState({errorMessage:""})
+    this.setState({
+      errorMessage:"",
+      submitted:true,
+      submissionPending:true,
+    })
 
     // Insert reCAPTCHAv2?
 
     // Check required inputs
     if(!this.state.username || !this.state.password){
-      this.setState({errorMessage:"Fill in required fields."})
+      this.returnError("Fill in required fields.")
       return
     }
-
     // Validate username regex
     if(!this.state.validUsername){
-      this.setState({errorMessage:validation.USERNAME_ERR})
+      this.returnError(validation.USERNAME_ERR)
       return
     }
-
     // Validate password
-    if(this.state.password !== this.state.password_check){
-      this.setState({errorMessage:"Passwords don't match."})
-      return
-    }
-
     if(!this.state.strongPassword){
-      this.setState({errorMessage:validation.PASSWORD_ERR})
+      this.returnError(validation.PASSWORD_ERR)
       return
     }
-
+    if(this.state.password !== this.state.password_check){
+      this.returnError("Passwords don't match.")
+      return
+    }
     if(!this.state.validEmail){
-      this.setState({errorMessage:validation.EMAIL_ERR})
+      this.returnError(validation.EMAIL_ERR)
       return
     }
 
@@ -124,7 +158,7 @@ export class RegistrationForm extends React.Component{
       url:'/registration/check-unique/',
       data:data,
       onSuccess:this.uniqueResponse,
-      onFailure:this.createProfileFailure,
+      onFailure:this.createUserFailure,
       noAuth:true,
     })
   }
@@ -132,41 +166,12 @@ export class RegistrationForm extends React.Component{
   uniqueResponse(json){
     console.log(json)
     if(json.uniqueUsername===false){
-      this.setState({errorMessage:"Username is already in use."})
+      this.returnError("Username is already in use.")
     } else if(json.uniqueEmail===false){
-      this.setState({errorMessage:"Email is already in use."})
+      this.returnError("Email is already in use.")
     } else {
       this.createUser()
     }
-  }
-
-  createProfileFailure(message){
-    this.setState({errorMessage:"Error occurred while creating profile. Please try again."})
-
-    let key = this.state.userId
-
-    fetchObject({
-      url:`/user/${key}/`,
-      onSuccess:this.onDelete,
-      onFailure:this.onDelete,
-      method:'DELETE'
-    })
-  }
-
-  onDelete(){
-    console.log("User account deleted. Ready to try again.")
-  }
-
-  createUserFailure(message){
-    this.setState({errorMessage:"Unable to create user."})
-  }
-
-  createUserSuccess(json){
-    console.log(json)
-    this.setState({userId:json.id})
-    console.log("Create user - Success")
-    let loginData = {username: this.state.username, password: this.state.password}
-    getToken({data:loginData, onSuccess:this.createProfile})
   }
 
   createUser(){
@@ -187,6 +192,18 @@ export class RegistrationForm extends React.Component{
       onFailure:this.createUserFailure,
       noAuth:true,
     })
+  }
+
+  createUserFailure(message){
+    this.returnError("Unable to create user.")
+  }
+
+  createUserSuccess(json){
+    console.log(json)
+    this.setState({userId:json.id})
+    console.log("Create user - Success")
+    let loginData = {username: this.state.username, password: this.state.password}
+    getToken({data:loginData, onSuccess:this.createProfile})
   }
 
   createProfile(){
@@ -216,6 +233,22 @@ export class RegistrationForm extends React.Component{
     })
   }
 
+  createProfileFailure(message){
+    this.returnError("Error occurred while creating profile. Please try again.")
+
+    let key = this.state.userId
+    fetchObject({
+      url:`/user/${key}/`,
+      onSuccess:this.onDelete,
+      onFailure:this.onDelete,
+      method:'DELETE'
+    })
+  }
+
+  onDelete(){
+    console.log("User account deleted. Ready to try again.")
+  }
+
   createTaxes(){
     for (let i in defaultTaxes){
       let taxData = {
@@ -235,23 +268,7 @@ export class RegistrationForm extends React.Component{
     }
   }
 
-  handlePlaceData(place){
-    if(!place){
-      this.setState({locationData:null})
-      return
-    }
-    console.log(place)
-    this.setState({
-      location:place.formatted_address,
-      locationData:place.geometry.location.toJSON(),
-    })
-  }
-
-  handleLocationData(location){
-    console.log("Collecting default location using IP address.")
-    this.setState({defaultLocationData:location})
-    
-  }
+  
 
   render(){
     let title = <div>Sign Up</div>
@@ -259,40 +276,39 @@ export class RegistrationForm extends React.Component{
     let body = 
       <form>
         <h5>Account</h5>
-        <input
-          type="text"
-          name="username"
+        <UsernameInput
+          value={this.state.username}
+          isValid={this.state.validUsername}
+          submitted={this.state.submitted}
           onChange={this.handleChange}
-          placeholder="Username"
-          className={`form-control my-2 ${this.state.validUsername ? "is-valid":""}`}
+          returnValidation={this.setValidUsername}
+          className="my-2"
         />
-        <small className="form-text text-muted">{(this.state.username&&!this.state.validUsername) ? `${validation.USERNAME_ERR}`:""}</small>
-        <input
-          type="password"
-          name="password"
+        <PasswordInput
+          value={this.state.password}
+          isValid={this.state.strongPassword}
+          submitted={this.state.submitted}
           onChange={this.handleChange}
-          placeholder="Password"
-          maxLength={MAX_PASSWORD_LEN}
-          className={`form-control my-2 ${this.state.strongPassword ? "is-valid":""}`}
+          returnValidation={this.setStrongPassword}
+          className="my-2"
         />
-        <small className="form-text text-muted">{(this.state.password&&!this.state.strongPassword) ? `${validation.PASSWORD_ERR}`:""}</small>
-        <input
-          type="password"
-          name="password_check"
+        <PasswordCheckInput
+          value={this.state.password_check}
+          checkValue={this.state.password}
+          isValid={this.state.passwordsMatch}
+          submitted={this.state.submitted}
           onChange={this.handleChange}
-          placeholder="Confirm Password"
-          className={`form-control my-2 ${this.state.password===this.state.password_check ? "is-valid":""}`}
+          returnValidation={this.setPasswordsMatch}
+          className="my-2"
         />
-        <small className="form-text text-muted">{(this.state.strongPassword&&this.state.password_check&&(this.state.password_check!==this.state.password)) ? "Passwords don't match.":""}</small>
-        <input
-          type="text"
-          name="email"
+        <EmailInput
+          value={this.state.email}
+          isValid={this.state.validEmail}
+          submitted={this.state.submitted}
           onChange={this.handleChange}
-          placeholder="Email"
-          maxLength={MAX_EMAIL_LEN}
-          className={`form-control my-2 ${this.state.validEmail ? "is-valid":""}`}
+          returnValidation={this.setValidEmail}
+          className="my-2"
         />
-        <small className="form-text text-muted">{(this.state.email&&!this.state.validEmail) ? `${validation.EMAIL_ERR}`:""}</small>
         <div className="form-row">
           <div className="col-9">
             <CurrencySelection name="currency" defaultValue={DEFAULT_CURRENCY} onChange={this.handleChange} />
@@ -313,7 +329,7 @@ export class RegistrationForm extends React.Component{
           name="firstName"
           onChange={this.handleChange}
           placeholder="First name"
-          maxLength={MAX_NAME_LEN}
+          maxLength={MAX_LEN_NAME}
           className="form-control my-2"
         />
         <input
@@ -321,14 +337,14 @@ export class RegistrationForm extends React.Component{
           name="lastName"
           onChange={this.handleChange}
           placeholder="Last name"
-          maxLength={MAX_NAME_LEN}
+          maxLength={MAX_LEN_NAME}
           className="form-control my-2"
         />
         <GoogleAutocomplete
           id="locationAutocomplete"
           name="location"
           placeholder="Location"
-          maxLength={MAX_NAME_LEN}
+          maxLength={MAX_LEN_NAME}
           className={`form-control my-2 ${this.state.locationData ? "is-valid" : ""}`}
           returnPlace={this.handlePlaceData}
           returnLocation={this.handleLocationData}
@@ -346,7 +362,7 @@ export class RegistrationForm extends React.Component{
     let footer =  
       <div>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
-        <button className="btn btn-success m-2" onClick={this.validateUserData}>Create account</button>
+        <button className={`btn btn-success m-2 ${this.state.submissionPending ? "disabled":""}`} onClick={this.validateUserData}>Create account</button>
       </div>
 
     return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
