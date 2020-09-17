@@ -8,7 +8,7 @@ import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
 import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal, FormRow } from './reactComponents.js';
 
-import { PasswordInput, PasswordCheckInput, UsernameInput, EmailInput } from './validation.js';
+import { PasswordInput, PasswordCheckInput, UsernameInput, EmailInput} from './validation.js';
 import * as validation from './validation.js';
 
 import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS, POSITION_DECIMALS, MAX_LEN_NAME } from './constants.js';
@@ -56,7 +56,7 @@ export class RegistrationForm extends React.Component{
     this.createUserFailure=this.createUserFailure.bind(this)
     this.createUserSuccess=this.createUserSuccess.bind(this)
     this.setCurrencyFactor=this.setCurrencyFactor.bind(this)
-    this.uniqueResponse=this.uniqueResponse.bind(this)
+    this.handleUnique=this.handleUnique.bind(this)
     
     this.onDelete=this.onDelete.bind(this)
     this.returnError=this.returnError.bind(this)
@@ -148,27 +148,21 @@ export class RegistrationForm extends React.Component{
     }
 
     // Check uniqueness of username and password
-    let data = {
+    validation.checkUniqueUser({
       username:this.state.username,
       email:this.state.email,
-    }
-
-    fetchObject({
-      method:'POST',
-      url:'/registration/check-unique/',
-      data:data,
-      onSuccess:this.uniqueResponse,
+      onSuccess:this.handleUnique,
       onFailure:this.createUserFailure,
-      noAuth:true,
     })
   }
 
-  uniqueResponse(json){
-    console.log(json)
+  handleUnique(json){
     if(json.uniqueUsername===false){
       this.returnError("Username is already in use.")
+      this.setState({validUsername:false})
     } else if(json.uniqueEmail===false){
       this.returnError("Email is already in use.")
+      this.setState({validEmail:false})
     } else {
       this.createUser()
     }

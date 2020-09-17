@@ -3,8 +3,8 @@ import {Modal} from 'react-bootstrap';
 import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
-import { ObjectSelectionList, CurrencySelection, StandardModal} from './reactComponents.js';
-import { PasswordInput, PasswordCheckInput, validateUsernameRegex, validateEmailRegex } from './validation.js';
+import { ObjectSelectionList, CurrencySelection, StandardModal, CurrencySymbolSelection, DisplayUnitSelection, FormRow } from './reactComponents.js';
+import { PasswordInput, PasswordCheckInput, EmailInput, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
 import { LinePlot, Histogram } from './dataVisuals.js';
 import {TabbedDisplay} from './reactComponents.js';
@@ -210,6 +210,8 @@ class ProfileEdit extends React.Component{
 
     this.state = {
       errorMessage:"",
+      submissionPending:false,
+      submitted:false,
     }
 
     this.handleChange=this.handleChange.bind(this)
@@ -222,7 +224,11 @@ class ProfileEdit extends React.Component{
     this.validateInputs=this.validateInputs.bind(this)
     this.uniqueResponse=this.uniqueResponse.bind(this)
     this.handleLocationData=this.handleLocationData.bind(this)
+    this.returnError=this.returnError.bind(this)
+    this.setValidEmail=this.setValidEmail.bind(this)
   }
+
+  setValidEmail(bool){this.setState({validEmail:bool})}
 
   handleChange(event){
     this.setState({[event.target.name]: event.target.value})
@@ -234,30 +240,35 @@ class ProfileEdit extends React.Component{
     }
   }
 
+  returnError(errorMessage){
+    this.setState({
+      errorMessage:errorMessage,
+      submissionPending:false,
+    })
+  }
+
   setConversionFactor(factor){
     this.setState({conversion_factor:factor})
   }
 
   validateInputs(){
+    this.setState({
+      errorMessage:"",
+      submissionPending:true,
+      submitted:true,
+    })
     if(this.state.email && !this.state.validEmail){
-      this.setState({errorMessage: validation.EMAIL_ERR})
+      this.returnError(validation.EMAIL_ERR)
       return
     }
 
     if(this.state.email && this.state.email!==this.props.user.email){
-      let data = {
+      validation.checkUniqueUser({
         username:this.props.user.username,
         email:this.state.email,
-      }
-      fetchObject({
-        method:'POST',
-        url:'/registration/check-unique/',
-        data:data,
         onSuccess:this.uniqueResponse,
         onFailure:this.updateFailure,
-        noAuth:true,
       })
-
     } else {
       this.saveProfileChanges()
     }
@@ -266,16 +277,14 @@ class ProfileEdit extends React.Component{
   uniqueResponse(json){
     console.log(json)
     if(json.uniqueEmail===false){
-      this.setState({errorMessage:"Email is already in use."})
+      this.returnError("Email is already in use.")
+      this.setState({validEmail:false})
     } else {
       this.saveProfileChanges()
     }
   }
 
   saveProfileChanges(){
-    
-
-    this.setState({errorMessage:""})
     let profileData = {}
     let userData = {}
 
@@ -333,9 +342,7 @@ class ProfileEdit extends React.Component{
   }
 
   updateFailure(){
-    this.setState({
-      errorMessage:"Failed to update."
-    })
+    this.returnError("Failed to update.")
   }
 
   userUpdateSuccess(){
@@ -361,7 +368,6 @@ class ProfileEdit extends React.Component{
 
   finishEdit(){
     /* PATCH on user and profile are separate, so check that both are complete. */ 
-    
     if(!this.state.updatingProfile && !this.state.updatingUser){
       this.props.refresh()
       this.props.hideModal()
@@ -380,29 +386,40 @@ class ProfileEdit extends React.Component{
     })
   }
 
-
   render(){
-
     let user=this.props.user
     let profile=this.props.profile
 
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header className="bg-primary text-light" closeButton>
-          <Modal.Title>Edit Profile</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <label>
-              First name:
-              <input type="text" name="first_name" defaultValue={user.first_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_LEN_NAME}/>
-            </label>
-            <br/>
-            <label>
-              Last name:
-              <input type="text" name="last_name" defaultValue={user.last_name} placeholder="Undefined" onChange={this.handleChange} maxLength={MAX_LEN_NAME}/>
-            </label>
-            <br/>
+    let title = <div>Edit Profile</div>
+    let body = 
+      <form>
+        <div className="form-row">
+          <div className="col-4">
+            <input type="text" name="first_name" defaultValue={user.first_name} placeholder="First name" onChange={this.handleChange} maxLength={MAX_LEN_NAME} className="form-control my-2"/>
+          </div>
+          <div className="col">
+            <input type="text" name="last_name" defaultValue={user.last_name} placeholder="Last name" onChange={this.handleChange} maxLength={MAX_LEN_NAME} className="form-control my-2"/>
+          </div>
+        </div>
+        <FormRow
+          label={<div>Email:</div>}
+          labelWidth={2}
+          input={
+            <EmailInput
+              value={this.state.email}
+              defaultValue={this.props.user.email}
+              isValid={this.state.validEmail}
+              submitted={this.state.submitted}
+              onChange={this.handleChange}
+              returnValidation={this.setValidEmail}
+              className="my-2"
+            />
+          }
+        />
+        <FormRow
+          label={<div>Location:</div>}
+          labelWidth={2}
+          input={
             <GoogleAutocomplete
               id="locationAutocomplete"
               name="location"
@@ -413,42 +430,43 @@ class ProfileEdit extends React.Component{
               returnPlace={this.handleLocationData}
               onChange={this.handleChange}
             />
-            <br/>
-            <label>
-              Date of birth:
-              <input type="date" name="date_of_birth" defaultValue={profile.date_of_birth} onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <label>
-              Email:
-              <input type="text" name="email" defaultValue={user.email} onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <label>
-              Currency:
-              <CurrencySelection name="currency" defaultValue={profile.currency} onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <label>
-              Currency symbol:
-              <input type="text" size="3" maxLength="3" name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <label>
-              Economy units:
-              <ObjectSelectionList name="display_units" list={units.allUnits} defaultValue={profile.display_units} value="str" label="label" onChange={this.handleChange}/>
-            </label>
-            <br/>
-            <p><strong>{this.state.errorMessage}</strong></p>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button name="saveChanges" className="btn btn-primary m-2" onClick={this.validateInputs}>Save changes</button>
-          <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
-          <DeleteUser user={user} logout={this.props.logout}/>
-        </Modal.Footer>
-      </Modal>
-    )
+          }
+        />
+        <FormRow
+          label={<div>DoB:</div>}
+          labelWidth={2}
+          input={<input type="date" name="date_of_birth" defaultValue={profile.date_of_birth} onChange={this.handleChange} className="form-control my-2"/>}
+        />
+        <FormRow
+          label={<div>Currency:</div>}
+          labelWidth={2}
+          input={
+            <div className="form-row">
+              <div className="col-9">
+                <CurrencySelection name="currency" defaultValue={profile.currency} onChange={this.handleChange} />
+              </div>
+              <div className="col">
+                <CurrencySymbolSelection name="currency_symbol" defaultValue={profile.currency_symbol} onChange={this.handleChange} />
+              </div>
+            </div>
+          }
+        />
+        <FormRow
+          label={<div>Units:</div>}
+          labelWidth={2}
+          input={<DisplayUnitSelection name="display_units" defaultValue={profile.display_units} onChange={this.handleChange} />}
+        />
+        <DeleteUser user={user} logout={this.props.logout}/>
+        <p><strong>{this.state.errorMessage}</strong></p>
+      </form>
+
+    let footer = 
+      <div>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button name="saveChanges" className={`btn btn-success m-2 ${this.state.submissionPending ? "disabled":""}`} onClick={this.validateInputs}>Save changes</button>
+      </div>
+    
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
   }
 }
 

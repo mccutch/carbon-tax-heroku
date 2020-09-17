@@ -1,13 +1,25 @@
 import React from 'react';
 import {MAX_LEN_USERNAME, MAX_LEN_PASSWORD, MAX_LEN_EMAIL} from './constants.js';
+import {fetchObject} from './helperFunctions.js';
 
 //export const PASSWORD_ERR_MESSAGE = "Password must be 8-30 characters, including a number and special character (?!@#$%^&)"
 export const PASSWORD_ERR = "Password must be 8-30 characters, including a capital letter and a number."
 export const PASSWORD_CHECK_ERR = "Passwords don't match."
 export const USERNAME_ERR = "Invalid username. Only '.' and '_' characters are allowed."
-export const EMAIL_ERR = "Invalid email address format."
+export const EMAIL_ERR = "Invalid email address."
 
 
+export function checkUniqueUser({username, email, onSuccess, onFailure}){
+  fetchObject({
+    method:'POST',
+    url:'/registration/check-unique/',
+    data:{username:username, email:email},
+    onSuccess:onSuccess,
+    onFailure:onFailure,
+    noAuth:true,
+  })
+  return null
+}
 
 export function checkPasswordStrength(password){
   //const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#$%^&*])(?=.{8,})") 
@@ -32,6 +44,7 @@ export class EmailInput extends React.Component{
       <ValidatedInput
         type="email"
         name={this.props.name ? this.props.name : "email"}
+        defaultValue={this.props.defaultValue}
         onChange={this.props.onChange}
         returnValidation={this.props.returnValidation}
         validate={validateEmailRegex}
@@ -117,6 +130,7 @@ class ValidatedInput extends React.Component{
         <input
           type={this.props.type}
           name={this.props.name}
+          defaultValue={this.props.defaultValue}
           onChange={(e)=>{this.props.onChange(e); this.props.returnValidation(this.props.validate(e.target.value))}}
           placeholder={this.props.placeholder}
           maxLength={this.props.maxLength}

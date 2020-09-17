@@ -15,7 +15,7 @@ export const MAX_EMISSION_NAME_LEN = 60
 
 export const MAX_LEN_USERNAME = 30 //Defined in django docs?
 export const MAX_LEN_PASSWORD = 30
-export const MAX_LEN_EMAIL = 30
+export const MAX_LEN_EMAIL = 60
 export const MAX_LEN_NAME = 30
 
 export const MAX_LEN_RECIP_NAME = 60
