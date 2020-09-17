@@ -143,24 +143,3 @@ class ValidatedInput extends React.Component{
     )
   }
 }
-/*
-export class PasswordInput extends React.Component{
-  render(){
-    return(
-      <div>
-        <input
-          type="password"
-          name="password"
-          onChange={(e)=>{this.props.onChange(e); this.props.setStrongPassword(checkPasswordStrength(e.target.value))}}
-          placeholder="Password"
-          maxLength={MAX_PASSWORD_LEN}
-          className={`form-control ${this.props.className} ${this.props.strongPassword ? "is-valid":""} ${this.props.submitted&&!this.props.strongPassword ? "is-invalid":""}`}
-        />
-        <small className={`${this.props.submitted ? "invalid-feedback":"form-text text-muted"}`}>
-          {(this.props.password&&!this.props.strongPassword) ? `${PASSWORD_ERR}`:""}
-        </small>
-      </div>
-    )
-  }
-}
-*/

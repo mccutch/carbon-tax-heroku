@@ -212,6 +212,7 @@ class ProfileEdit extends React.Component{
       errorMessage:"",
       submissionPending:false,
       submitted:false,
+      validEmail:true,
     }
 
     this.handleChange=this.handleChange.bind(this)
