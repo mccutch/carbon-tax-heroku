@@ -1,0 +1,8 @@
+{% extends "./baseEmail.html" %}
+
+{% block messageBody %}
+<div style="color: #000000; font-family: arial, helvetica, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; white-space: pre-wrap; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline">
+    <p>Hey {{ first_name|default:"there" }},</p>
+    <p>Welcome to the family.</p>
+</div>
+{% endblock %}
