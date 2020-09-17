@@ -2,7 +2,6 @@ import React from 'react';
 import * as units from './unitConversions.js';
 import {Modal} from 'react-bootstrap';
 
-
 export class LabelledInput extends React.Component{
   render(){
     return(

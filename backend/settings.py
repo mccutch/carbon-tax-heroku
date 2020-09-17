@@ -34,6 +34,7 @@ env = environ.Env(
 
 SECRET_KEY = env('DJ_KEY')
 SENDGRID_API_KEY = env('SENDGRID_API_KEY')
+SENDGRID_SMTP_KEY = env('SENDGRID_SMTP_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = False
@@ -187,17 +188,26 @@ SIMPLE_JWT = {
 }
 
 
-email_backend = True
-if email_backend:
-    print("Email mode - Backend")
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else :
-    print("Email mode - SendGrid")
+email_backend = "SendGrid_SMTP"
+
+    
+if(email_backend=="SendGrid_API"):
+    print("Email mode - SendGrid API")
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
     EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
+elif(email_backend=="SendGrid_SMTP"):
+    print("Email mode - SendGrid SMTP")
+    EMAIL_HOST = 'smtp.sendgrid.net'
+    EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
+    EMAIL_HOST_PASSWORD = SENDGRID_SMTP_KEY
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+else:
+    print("Email mode - Backend")
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 

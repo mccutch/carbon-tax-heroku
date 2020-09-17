@@ -591,19 +591,51 @@ class BackdateTaxChange(APIView):
 
 
 def testEmail(request):
-    response = send_mail('Subject here', 'Here is the message.', 'from@carbontax.heroku.com', ['jack.mccutchan@gmail.com'], fail_silently=False)
+    response = sendEmail(request)
     print(response)
     return HttpResponse('<h1>Page was found</h1>')
+
+def sendEmail(request):
+    numSent = send_mail(
+        subject='Subject here', 
+        message='Test email message', 
+        #html_message=None,
+        from_email='Carbon Accountant <contact@carbonaccountant.app>', 
+        recipient_list=['jack.mccutchan@gmail.com'], 
+        fail_silently=False,
+    )
+    if(numSent==1):
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from django.template.loader import render_to_string
 
 class ContactForm(APIView):
     permission_classes = (AllowAny, )
     def post(self, request):
         print(request.data)
-        if request.data['user']!=0:
-            print(f"User: {request.data['user']}")
+        if(request.user.is_authenticated):
+            print(request.user.username)
         else:
-            print("User: Anonymous")
-        response = send_mail('Re: Contact Form', request.data['message'], request.data['email'], ['admin@carbonaccountant.com', request.data['email']], fail_silently=False)
+            print("Not authenticated")
+        
+
+        context={
+            "first_name": request.user.username if request.user.is_authenticated else "",
+            #"email":"defaultEmail@example.com",
+            #"src_banner":"http://cdn.mcauto-images-production.sendgrid.net/c84d4a731b72ca03/8c1086a9-5511-405c-afa7-237ddec5c6a3/2443x1629.JPG",
+            "src_banner":"http://cdn.mcauto-images-production.sendgrid.net/c84d4a731b72ca03/ebd139b8-cbc1-4a14-ac88-b0b966e3a56f/1366x375.jpeg",
+        }
+        response = send_mail(
+            subject='Re: Contact Form', 
+            message=request.data['message'], 
+            html_message=render_to_string('./static/emailTemplates/emailContent.html', context),
+            #html_message='<p>That’s <strong>the HTML part</strong></p>',
+            from_email='Carbon Accountant Admin <admin@carbonaccountant.app>', 
+            recipient_list=['jack.mccutchan@gmail.com'], 
+            fail_silently=False,
+        )
         print(f'Response: {response}')
         return Response(status=status.HTTP_204_NO_CONTENT)
 

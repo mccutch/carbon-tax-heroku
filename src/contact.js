@@ -51,6 +51,7 @@ export class ContactPage extends React.Component{
     this.validateInputs=this.validateInputs.bind(this)
     this.handleFailure=this.handleFailure.bind(this)
     this.handleSuccess=this.handleSuccess.bind(this)
+    this.formatMessage=this.formatMessage.bind(this)
   }
 
   handleChange(event){
@@ -71,6 +72,17 @@ export class ContactPage extends React.Component{
     this.submit()
   }
 
+  formatMessage(){
+    let text = this.state.message
+
+    return(
+      <div>
+        <h1>This is the header</h1>
+        <p>{text}</p>
+      </div>
+    )
+  }
+
   submit(){
     console.log("Submit")
     this.setState({submitted:true})
@@ -78,7 +90,7 @@ export class ContactPage extends React.Component{
     let contactData = {
       email:this.state.returnEmail,
       message:this.state.message,
-      user:(this.props.loggedIn)?this.props.user.id:0
+      htmlMessage:this.formatMessage(),
     }
 
     console.log(contactData)
@@ -88,7 +100,7 @@ export class ContactPage extends React.Component{
       data: contactData,
       onSuccess: this.handleSuccess,
       onFailure: this.handleFailure,
-      noAuth: true,
+      noAuth: (this.props.loggedIn ? false:true),
     })
   }
 

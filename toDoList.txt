@@ -1,9 +1,15 @@
-Delete user if profile creation fails
-
 Improve "History" and "Stats" tabs for new user
 
-Add locationdata to profile
-- set bias for google
+Update smtp_key in heroku
+
+Economy input looks weird
+
+Password change form looks shit
+
+Password reset page is terrible
+
+Activate email on registration
+
 
 Store list of fuels in front-end instead of database?
 
