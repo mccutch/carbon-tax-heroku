@@ -3,6 +3,7 @@ import {MAX_LEN_USERNAME, MAX_LEN_PASSWORD, MAX_LEN_EMAIL} from './constants.js'
 
 //export const PASSWORD_ERR_MESSAGE = "Password must be 8-30 characters, including a number and special character (?!@#$%^&)"
 export const PASSWORD_ERR = "Password must be 8-30 characters, including a capital letter and a number."
+export const PASSWORD_CHECK_ERR = "Passwords don't match."
 export const USERNAME_ERR = "Invalid username. Only '.' and '_' characters are allowed."
 export const EMAIL_ERR = "Invalid email address format."
 
@@ -29,12 +30,12 @@ export class EmailInput extends React.Component{
   render(){
     return(
       <ValidatedInput
-        type="text"
+        type="email"
         name={this.props.name ? this.props.name : "email"}
         onChange={this.props.onChange}
         returnValidation={this.props.returnValidation}
         validate={validateEmailRegex}
-        placeholder="Email"
+        placeholder={this.props.placeholder ? this.props.placeholder : "Email"}
         maxLength={MAX_LEN_EMAIL}
         className={this.props.className}
         isValid={this.props.isValid}
@@ -55,7 +56,7 @@ export class UsernameInput extends React.Component{
         onChange={this.props.onChange}
         returnValidation={this.props.returnValidation}
         validate={validateUsernameRegex}
-        placeholder="Username"
+        placeholder={this.props.placeholder ? this.props.placeholder : "Username"}
         maxLength={MAX_LEN_USERNAME}
         className={this.props.className}
         isValid={this.props.isValid}
@@ -76,13 +77,13 @@ export class PasswordCheckInput extends React.Component{
         onChange={this.props.onChange}
         returnValidation={this.props.returnValidation}
         validate={(input)=>{return this.props.checkValue===input}}
-        placeholder="Confirm Password"
+        placeholder={this.props.placeholder ? this.props.placeholder : "Confirm Password"}
         maxLength={MAX_LEN_PASSWORD}
         className={this.props.className}
         isValid={this.props.isValid}
         submitted={this.props.submitted}
         value={this.props.value}
-        errorMessage="Passwords don't match."
+        errorMessage={PASSWORD_CHECK_ERR}
       />
     )
   }
@@ -97,7 +98,7 @@ export class PasswordInput extends React.Component{
         onChange={this.props.onChange}
         returnValidation={this.props.returnValidation}
         validate={checkPasswordStrength}
-        placeholder="Password"
+        placeholder={this.props.placeholder ? this.props.placeholder : "Password"}
         maxLength={MAX_LEN_PASSWORD}
         className={this.props.className}
         isValid={this.props.isValid}

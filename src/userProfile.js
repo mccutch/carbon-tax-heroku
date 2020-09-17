@@ -3,8 +3,8 @@ import {Modal} from 'react-bootstrap';
 import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
 import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
-import { ObjectSelectionList, CurrencySelection} from './reactComponents.js';
-import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex } from './validation.js';
+import { ObjectSelectionList, CurrencySelection, StandardModal} from './reactComponents.js';
+import { PasswordInput, PasswordCheckInput, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
 import { LinePlot, Histogram } from './dataVisuals.js';
 import {TabbedDisplay} from './reactComponents.js';
@@ -17,39 +17,58 @@ class PasswordChange extends React.Component{
     this.state = {
       errorMessage:"",
       strongPassword:false,
+      passwordsMatch:false,
+      new_password:"",
+      password_check:"",
+      submitted:false,
     }
     this.handleChange=this.handleChange.bind(this)
     this.submit=this.submit.bind(this)
     this.handleResponse=this.handleResponse.bind(this)
     this.updateFailure=this.updateFailure.bind(this)
+    this.returnError=this.returnError.bind(this)
+
+    this.setStrongPassword=this.setStrongPassword.bind(this)
+    this.setPasswordsMatch=this.setPasswordsMatch.bind(this)
+  }
+
+  setStrongPassword(bool){this.setState({strongPassword:bool})}
+  setPasswordsMatch(bool){this.setState({passwordsMatch:bool})}
+
+  returnError(errorMessage){
+    this.setState({
+      errorMessage:errorMessage,
+      submissionPending:false,
+    })
   }
 
   handleChange(event){
     this.setState({[event.target.name]:event.target.value})
-
-    if(event.target.name==="new_password"){
-      this.setState({strongPassword:checkPasswordStrength(event.target.value)})
-    }
   }
 
   submit(event){
     event.preventDefault()
-    if(!this.state.old_password || !this.state.new_password || !this.state.confirm_password){
-      this.setState({errorMessage:"Fill in all fields."})
+    this.setState({
+      submissionPending:true,
+      submitted:true,
+      errorMessage:"",
+    })
+    
+    if(!this.state.old_password || !this.state.new_password || !this.state.password_check){
+      this.returnError("Fill in all fields.")
       return
     }
 
     // Validate password
-    if(this.state.new_password !== this.state.confirm_password){
-      this.setState({errorMessage:"Passwords don't match."})
-      return
-    }
-
     if(!this.state.strongPassword){
-      this.setState({errorMessage:validation.PASSWORD_ERR})
+      this.returnError(validation.PASSWORD_ERR)
       return
     }
-
+    if(!this.state.passwordsMatch){
+      this.returnError(validation.PASSWORD_CHECK_ERR)
+      return
+    }
+    
     let passwordData = {
       old_password:this.state.old_password,
       new_password:this.state.new_password,
@@ -65,55 +84,56 @@ class PasswordChange extends React.Component{
   }
 
   handleResponse(json){
-    this.setState({success:true})
+    let title=<div>Password changed</div>
+    let body=<p>Password changed successfully.</p>
+    let footer=<button className="btn btn-outline-success m-2" onClick={this.props.hideModal}>Close</button>
+    this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
   }
 
   updateFailure(json){
-    this.setState({
-      errorMessage:"Unable to change password."
-    })
+    this.returnError("Unable to change password.")
   }
 
   render(){
+    let title=<div>Change Password</div>
 
-    let display
-    if(this.state.success){
-      display=
-        <Modal show={true} onHide={this.props.hideModal}>
-          <Modal.Header className="bg-primary text-light" closeButton>
-            <Modal.Title>Edit Profile</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Password changed successfully.</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-outline-success m-2" onClick={this.props.hideModal}>Close</button>
-          </Modal.Footer>
-        </Modal>
-    } else {
-      display = 
-      <Modal show={true} onHide={this.props.hideModal} size="sm">
-        <Modal.Header className="bg-primary text-light" closeButton>
-          <Modal.Title>Edit Profile</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <p><strong>{this.state.errorMessage}</strong></p>
-            <input type="password" name="old_password" placeholder="Old password" maxLength={30} onChange={this.handleChange}/>
-            <br/>
-            <input type="password" name="new_password" placeholder="New password" maxLength={30} onChange={this.handleChange}/>
-            <br/>
-            <input type="password" name="confirm_password" placeholder="Confirm password" maxLength={30} onChange={this.handleChange}/>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button type="submit" className="btn btn-primary m-2" onClick={this.submit}>Submit</button>
-          <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
-        </Modal.Footer>
-      </Modal>
-    }
+    let body =
+      <form>
+        <p><strong>{this.state.errorMessage}</strong></p>
+        <input 
+          type="password" 
+          name="old_password" 
+          placeholder="Old password"
+          onChange={this.handleChange}
+          className="form-control my-2"
+        />
+        <PasswordInput
+          value={this.state.new_password}
+          name="new_password"
+          isValid={this.state.strongPassword}
+          submitted={this.state.submitted}
+          onChange={this.handleChange}
+          returnValidation={this.setStrongPassword}
+          className="my-2"
+        />
+        <PasswordCheckInput
+          value={this.state.password_check}
+          checkValue={this.state.new_password}
+          isValid={this.state.passwordsMatch}
+          submitted={this.state.submitted}
+          onChange={this.handleChange}
+          returnValidation={this.setPasswordsMatch}
+          className="my-2"
+        />
+      </form>
 
-    return display
+    let footer = 
+      <div>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button type="submit" className={`btn btn-success m-2 ${this.state.submissionPending ? "disabled":""}`} onClick={this.submit}>Submit</button>
+      </div>
+
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>
   }
 }
 
@@ -446,6 +466,7 @@ class ProfileDetails extends React.Component{
     let modal = 
       <PasswordChange
         hideModal={this.props.hideModal}
+        setModal={this.props.setModal}
       />
     this.props.setModal(modal)
   }

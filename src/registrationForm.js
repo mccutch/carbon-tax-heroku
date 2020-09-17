@@ -8,7 +8,7 @@ import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
 import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal, FormRow } from './reactComponents.js';
 
-import { checkPasswordStrength, validateUsernameRegex, validateEmailRegex, PasswordInput, PasswordCheckInput, UsernameInput, EmailInput } from './validation.js';
+import { PasswordInput, PasswordCheckInput, UsernameInput, EmailInput } from './validation.js';
 import * as validation from './validation.js';
 
 import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS, POSITION_DECIMALS, MAX_LEN_NAME } from './constants.js';
@@ -79,6 +79,10 @@ export class RegistrationForm extends React.Component{
     }
   }
 
+  setCurrencyFactor(factor){
+    this.setState({conversion_factor:factor})
+  }
+
   setStrongPassword(bool){this.setState({strongPassword:bool})}
   setPasswordsMatch(bool){this.setState({passwordsMatch:bool})}
   setValidUsername(bool){this.setState({validUsername:bool})}
@@ -89,10 +93,6 @@ export class RegistrationForm extends React.Component{
       errorMessage:errorMessage,
       submissionPending:false,
     })
-  }
-
-  setCurrencyFactor(factor){
-    this.setState({conversion_factor:factor})
   }
 
   handlePlaceData(place){
@@ -138,8 +138,8 @@ export class RegistrationForm extends React.Component{
       this.returnError(validation.PASSWORD_ERR)
       return
     }
-    if(this.state.password !== this.state.password_check){
-      this.returnError("Passwords don't match.")
+    if(!this.state.passwordsMatch){
+      this.returnError(validation.PASSWORD_CHECK_ERR)
       return
     }
     if(!this.state.validEmail){
@@ -267,8 +267,6 @@ export class RegistrationForm extends React.Component{
       })
     }
   }
-
-  
 
   render(){
     let title = <div>Sign Up</div>
