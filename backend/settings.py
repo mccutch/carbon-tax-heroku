@@ -188,7 +188,7 @@ SIMPLE_JWT = {
 }
 
 
-email_backend = "SendGrid_SMTP"
+email_backend = "SendGrid_SMTP" if DEBUG else "Backend"
 
     
 if(email_backend=="SendGrid_API"):
