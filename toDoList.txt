@@ -4,6 +4,8 @@ error try to display playments when none exist
 
 Improve layout of calculations in carbon tax
 
+Sort currency list alphabetically
+
 Update smtp_key in heroku
 
 Economy input looks weird

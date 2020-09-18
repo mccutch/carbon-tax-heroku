@@ -284,13 +284,13 @@ export class TaxDetail extends React.Component{
     let tax = this.props.tax
     let sym = this.props.profile.currency_symbol
     let currencyFactor = this.props.profile.conversion_factor
-    let taxName = <button className="btn btn-outline-primary m-2" onClick={this.edit}>{tax.name}</button>
+    let taxName = <button className="btn btn-outline-primary btn-block m-2" onClick={this.edit}>{tax.name}</button>
 
     return(
-      <tr key={tax.id}>
-        <td>{taxName}</td>
-        <td>{sym}{parseFloat(currencyFactor*tax.price_per_kg).toFixed(3)}/kg CO2</td>
-        <td>{tax.category}</td>
+      <tr key={tax.id} >
+        <td className="align-middle">{taxName}</td>
+        <td className="align-middle">{sym}{parseFloat(currencyFactor*tax.price_per_kg).toFixed(3)}/kg CO2</td>
+        <td className="align-middle">{tax.category}</td>
       </tr>
     )
   }
@@ -449,16 +449,16 @@ export class VehicleDetail extends React.Component{
 
     let vehicleName
     if(this.props.submitEconomy){
-      vehicleName=<td><button className="btn btn-outline-primary m-2" onClick={this.useVehicle}>{vehicle.name}</button></td>
+      vehicleName=<td className="align-middle"><button className="btn btn-outline-primary m-2 btn-block" onClick={this.useVehicle}>{vehicle.name}</button></td>
     } else {
-      vehicleName=<td><button className="btn btn-outline-primary m-2" onClick={this.edit}>{vehicle.name}</button></td>
+      vehicleName=<td className="align-middle"><button className="btn btn-outline-primary m-2 btn-block" onClick={this.edit}>{vehicle.name}</button></td>
     }
 
     return(
       <tr key={vehicle.id}>
         {vehicleName}
-        <td>{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
-        <td>{getAttribute({key:"id", keyValue:vehicle.fuel, objectList:this.props.fuels, attribute:"name"})}</td>
+        <td className="align-middle">{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
+        <td className="align-middle">{getAttribute({key:"id", keyValue:vehicle.fuel, objectList:this.props.fuels, attribute:"name"})}</td>
       </tr>
     )
   }
@@ -769,13 +769,13 @@ export class EmissionDetail extends React.Component{
 
     let display = 
         <tr key={emission.id}>
-          <td><button className="btn btn-outline-primary m-2" onClick={this.edit}><strong>{emission.name}</strong></button></td>
-          <td>{emission.date}</td>
-          <td>{getAttribute({key:"id", keyValue:emission.tax_type, objectList:this.props.taxes, attribute:"name"})}</td>
+          <td className="align-middle"><button className="btn btn-outline-primary m-2 btn-block" onClick={this.edit}>{emission.name}</button></td>
+          <td className="align-middle">{emission.date}</td>
+          <td className="align-middle">{getAttribute({key:"id", keyValue:emission.tax_type, objectList:this.props.taxes, attribute:"name"})}</td>
           {/*<td>{distance}</td>
           <td>{emission.split}</td>
           <td>{parseFloat(emission.co2_output_kg).toFixed(1)}kg</td>*/}
-          <td>{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
+          <td className="align-middle">{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
         </tr>
     
     return display
@@ -877,7 +877,6 @@ export class PaymentEdit extends React.Component{
     this.setState({[name]:value})
   }
 
-
   render(){
     let payment = this.props.payment
     let profile = this.props.profile
@@ -946,14 +945,12 @@ export class PaymentDetail extends React.Component{
 
   render(){
     let payment = this.props.payment
-    let edit = <button className="btn btn-outline-primary m-2" onClick={this.edit}>Edit</button>
-
     return(
       <tr key={payment.id}>
-        <td>{payment.date}</td>
-        <td>{getAttribute({key:"id", keyValue:payment.recipient, objectList:this.props.recipients, attribute:"name"})}</td>
-        <td>{displayCurrency(payment.amount, this.props.profile)}</td>
-        <td>{edit}</td>
+        <td className="align-middle">{payment.date}</td>
+        <td className="align-middle">{getAttribute({key:"id", keyValue:payment.recipient, objectList:this.props.recipients, attribute:"name"})}</td>
+        <td className="align-middle">{displayCurrency(payment.amount, this.props.profile)}</td>
+        <td className="align-middle"><button className="btn btn-outline-primary m-2" onClick={this.edit}>Edit</button></td>
       </tr>
     )
   }

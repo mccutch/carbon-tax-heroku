@@ -17,7 +17,7 @@ export class OptionListInput extends React.Component{
                 onChange = {this.props.onChange}
                 name = {this.props.name}
                 defaultValue = {this.props.defaultValue}
-                className = "form-control m-2"
+                className = "form-control my-2"
               >
                 {listOptions}
               </select>

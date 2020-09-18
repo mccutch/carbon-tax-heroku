@@ -31,7 +31,7 @@ class ObjectTable extends React.Component{
     let headers = this.props.headers
     let headerCols = []
     for(let i in headers){
-      headerCols.push(<th>{headers[i]}</th>)
+      headerCols.push(<th className="text-center">{headers[i]}</th>)
     }
     return <tr>{headerCols}</tr>
   }
@@ -43,7 +43,7 @@ class ObjectTable extends React.Component{
           <thead className="thead-dark">
             {this.buildHeader()}
           </thead>
-          <tbody>
+          <tbody className="text-center">
             {this.props.tableRows}
           </tbody>
         </table>
@@ -66,6 +66,7 @@ export class TaxTable extends React.Component{
         refresh={this.props.refresh} 
         existingTaxes={this.props.taxes}
         hideModal={this.props.hideModal}
+        profile={this.props.profile}
       />
     this.props.setModal(modal)
   }

@@ -17,6 +17,15 @@ fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+export function sortByKey({list, key, ascending=true}){
+  return list.sort(function(a, b)
+  {
+    let x = a[key]; var y = b[key];
+    let dir = ascending ? 1 : -1
+    return ((x < y) ? -dir : ((x > y) ? dir : 0));
+  });
+}
+
 export function importGoogleLibraries(callback){
   if(!window.google){
     console.log("Generating Google API script.")

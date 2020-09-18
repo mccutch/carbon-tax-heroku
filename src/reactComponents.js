@@ -1,6 +1,7 @@
 import React from 'react';
 import * as units from './unitConversions.js';
 import {Modal} from 'react-bootstrap';
+import {sortByKey} from './helperFunctions.js';
 
 export class LabelledInput extends React.Component{
   render(){
@@ -63,11 +64,11 @@ export class FormRow extends React.Component{
     let inputClass = `col-${12-this.props.labelWidth}`
     return(
       <div className="form-group form-row">
-        <label className={labelClass}>{this.props.label}</label>
+        <div className={labelClass}>{this.props.label}</div>
         <div className={inputClass}>
           {this.props.input}
         </div>
-        <small className="form-text text-muted mx-2">{this.props.helpText}</small>
+        {this.props.helpText ? <small className="form-text text-muted mx-2">{this.props.helpText}</small> : ""}
       </div>
     )
   }
@@ -153,15 +154,8 @@ export class DisplayUnitSelection extends React.Component{
 }
 
 export class CurrencySymbolSelection extends React.Component{
-
   render(){
-    let list = [
-      {symbol: "$"},
-      {symbol: "€"},
-      {symbol: "¥"},
-      {symbol: "£"},
-    ]
-
+    let list = [ {symbol: "$"}, {symbol: "€"}, {symbol: "¥"}, {symbol: "£"},]
     return(
       <ObjectSelectionList name={this.props.name} list={list} value="symbol" label="symbol" onChange={this.props.onChange} defaultValue={this.props.defaultValue}/>
     )
@@ -204,36 +198,28 @@ export class CurrencySelection extends React.Component{
 
   receiveCurrencies(json){
     let symbols = json.results
-    //console.log(symbols)
     let currencyList = []
     for(let key in symbols){
-      //console.log(key)
       currencyList.push(
         {
           name:`${symbols[key]['currencyName']} (${key})`,
-          //name:key,
           symbol:key
         }
       )
     }
-    //console.log(currencyList)
+    currencyList=sortByKey({list:currencyList, key:"name"})
     this.setState({
       currencies:currencyList
     })
   }
 
   render(){
-    //console.log("Render currency list")
     let currencies = this.state.currencies
-
-    let display
-    if(currencies.length>0){
-      display = <ObjectSelectionList name={this.props.name} onChange={this.props.onChange} list={currencies} value="symbol" label="name" defaultValue={this.props.defaultValue}/>
-    } else {
-      display = <select></select>
-    }
-
-    return display
+    return ((currencies.length>0) ?
+      <ObjectSelectionList name={this.props.name} onChange={this.props.onChange} list={currencies} value="symbol" label="name" defaultValue={this.props.defaultValue}/>
+      :
+      <select></select>
+    )
   }
 }
 

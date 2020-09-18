@@ -5,7 +5,7 @@ import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import { VehicleInput } from './vehicleInput.js';
 import { VehicleSaveForm } from './vehicleSave.js';
 import {fetchObject} from './helperFunctions.js';
-import {StandardModal} from './reactComponents.js';
+import {StandardModal, LabelledInput, FormRow} from './reactComponents.js';
 import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
 
 export class CreateTax extends React.Component{
@@ -26,10 +26,18 @@ export class CreateTax extends React.Component{
     this.handlePostFailure=this.handlePostFailure.bind(this)
     this.submitNewTax=this.submitNewTax.bind(this)
     this.validateNewTax=this.validateNewTax.bind(this)
+    this.returnError=this.returnError.bind(this)
   }
 
   componentDidMount(){
     this.buildCategoryList()
+  }
+
+  returnError(message){
+    this.setState({
+      errorMessage:message,
+      submissionPending:false,
+    })
   }
 
   buildCategoryList(){
@@ -50,22 +58,26 @@ export class CreateTax extends React.Component{
   }
 
   validateNewTax(){
+    this.setState({submissionPending:true})
+
+    //Check fields are filled
+    if(!this.state.newName || !this.state.newPrice || !this.state.newCategory){
+      this.returnError("All fields are required.")
+      return false
+    }
+
     //Check name isn't used
     let existingTaxes=this.props.existingTaxes
     for(let i in existingTaxes){
       if(this.state.newName===existingTaxes[i].name && this.state.newCategory===existingTaxes[i].category){
-        this.setState({error:"A tax of this name already exists."})
+        this.returnError("A tax of this name already exists.")
         return false
       }
     }
-    return true
+    this.submitNewTax()
   }
 
   submitNewTax(){
-
-    if(!this.validateNewTax()){
-      return
-    }
 
     let taxData = {
       name: this.state.newName,
@@ -88,39 +100,26 @@ export class CreateTax extends React.Component{
   }
 
   handlePostFailure(){
-    this.setState({error: "Unable to create new tax"})
+    this.returnError("Unable to create new tax")
   }
 
   render(){
-    let errorDisplay
-    if(this.state.error){
-      errorDisplay=<p>{this.state.error}</p>
-    }
-
     let title = <div>Create Tax</div>
-
     let body = 
-      <div>
-        {errorDisplay}
-        <label>
-          Name:
-          <input type="text" name="newName" maxLength={MAX_LEN_NAME} onChange={this.handleChange}/>
-        </label>
-        <br/>
-        <label>
-          Price per kg:
-          <input type="number" name="newPrice" onChange={this.handleChange}/>
-        </label>
-        <label>
-          Category:
-          <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
-        </label>
-      </div>
+      <form>
+        <input type="text" name="newName" maxLength={MAX_LEN_NAME} onChange={this.handleChange} className="form-control my-2" placeholder="Name"/>
+        <LabelledInput
+          input={<input type="number" name="newPrice" onChange={this.handleChange} className="form-control" placeholder="Price"/>}
+          append={`${this.props.profile.currency_symbol}/kg CO2`}
+        />
+        <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
+        <p>{this.state.errorMessage}</p>
+      </form>
 
     let footer = 
       <div>
-        <button type="button" className="btn btn-outline-primary m-2" onClick={this.submitNewTax}>Submit</button>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button type="button" className={`btn btn-success m-2 ${this.state.submissionPending?"disabled":""}`} onClick={this.validateNewTax}><strong>Save</strong></button>  
       </div>
 
     return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
@@ -286,8 +285,8 @@ export class CreateRecipient extends React.Component{
     let body = <p>{json.description}</p>
     let footer = 
       <div>
-        <a href={json.website} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info">Website</a>
-        <a href={json.donation_link} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info">Donation</a>
+        <a href={json.website} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info m-2">Website</a>
+        <a href={json.donation_link} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info m-2">Donation</a>
       </div>
     this.props.setModal(<StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer}/>)
   }
@@ -306,38 +305,38 @@ export class CreateRecipient extends React.Component{
     let title = <div>Create Recipient</div>
     let form = 
       <form>
-        <label>
-          Name:
-          <input type="text" name="name" maxLength={MAX_LEN_RECIP_NAME} className="form-control m-2" onChange={this.handleChange}/> 
-        </label>
-        <br/> 
-        <label>
-          Country:
-          <input type="text" name="country" maxLength={MAX_LEN_RECIP_COUNTRY} className="form-control m-2" onChange={this.handleChange}/> 
-        </label>
-        <br/>
-        <label>
-          Website:
-          <input type="text" name="website" maxLength={MAX_LEN_RECIP_WEB_LINK} className="form-control m-2" onChange={this.handleChange}/> 
-        </label> 
-        <br/>  
-        <label>
-          Donation Link:
-          <input type="text" name="donation_link" maxLength={MAX_LEN_RECIP_DONATION_LINK} className="form-control m-2" onChange={this.handleChange}/> 
-        </label>
-        <br/>
+        <FormRow
+            label={<div>Name:</div>}
+            labelWidth={3}
+            input={<input type="text" name="name" placeholder="Organisation name" maxLength={MAX_LEN_RECIP_NAME} className="form-control my-2" onChange={this.handleChange}/>}
+        />
+        <FormRow
+          label={<div>Country:</div>}
+          labelWidth={3}
+          input={<input type="text" name="country" placeholder="Country" maxLength={MAX_LEN_RECIP_COUNTRY} className="form-control my-2" onChange={this.handleChange}/>}
+        />
+        <FormRow
+          label={<div>Website:</div>}
+          labelWidth={3}
+          input={<input type="text" name="website" placeholder="Website url" maxLength={MAX_LEN_RECIP_WEB_LINK} className="form-control my-2" onChange={this.handleChange}/>} 
+        /> 
+        <FormRow
+          label={<div>Donation:</div>}
+          labelWidth={3}
+          input={<input type="text" name="donation_link" placeholder="Donation page url" maxLength={MAX_LEN_RECIP_DONATION_LINK} className="form-control my-2" onChange={this.handleChange}/>}
+        />
         <label>
           Description:
         </label>
         <br/>
-        <textarea type="area" name="description" maxLength={MAX_LEN_RECIP_DESCRIPTION} className="form-control m-2" onChange={this.handleChange} rows="6"/> 
+        <textarea type="area" name="description" maxLength={MAX_LEN_RECIP_DESCRIPTION} className="form-control my-2" onChange={this.handleChange} rows="6"/> 
         {errorMessage}
       </form>
 
     let formButtons = 
       <div>
-        <button type="button" className="btn btn-outline-primary m-2" onClick={this.validateForm}>Submit</button>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button type="button" className="btn btn-success m-2" onClick={this.validateForm}><strong>Submit</strong></button>
       </div>
 
     return <StandardModal hideModal={this.props.hideModal} title={title} body={form} footer={formButtons} />

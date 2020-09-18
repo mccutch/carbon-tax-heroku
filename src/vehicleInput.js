@@ -1,7 +1,7 @@
 import React from 'react';
 import * as units from './unitConversions.js';
 import {findFuel} from './fuelTypes.js';
-import { ObjectSelectionList, LabelledInput } from './reactComponents.js';
+import { ObjectSelectionList, LabelledInput, StandardModal } from './reactComponents.js';
 import {Modal, Button} from 'react-bootstrap';
 
 class ListInput extends React.Component {
@@ -32,7 +32,7 @@ class ListInput extends React.Component {
             }
         },
         (error) => {
-            console.log("Error");
+            console.log(error);
         }
       ) 
     } else {
@@ -55,26 +55,17 @@ class ListInput extends React.Component {
       let list = this.state.list;
       let listOptions = [];
       for(let i=0; i<list.length; i++){
-        listOptions.push(<option 
-                            value={list[i]}
-                            key = {list[i]}
-                          >
-                          {list[i]}</option>)
+        listOptions.push(<option value={list[i]} key = {list[i]} >{list[i]}</option>)
       }
       return listOptions;
   }
 
   render(){
-
     return(
-          <select
-            onChange = {this.props.onChange}
-            name = {this.props.label}
-            className="form-control"
-          >
-            {this.renderOptions()}
-          </select>
-    );
+      <select onChange = {this.props.onChange} name = {this.props.label} className="form-control my-2" >
+        {this.renderOptions()}
+      </select>
+    )
   }
 }
 
@@ -181,21 +172,10 @@ class VehicleInputFields extends React.Component {
 
 
   render(){
-
-    let makeSuffix = ""
-    let modelSuffix = ""
-    let optionsSuffix = ""
-
-    if (this.state.year){ 
-      makeSuffix = "make?year="+this.state.year
-    }
-    if (this.state.make){
-      modelSuffix = "model?year="+this.state.year+"&make="+this.state.make
-    }
-    if (this.state.model){
-      optionsSuffix = "options?year="+this.state.year+"&make="+this.state.make+"&model="+this.state.model
-    }
-
+    let makeSuffix = (this.state.year) ? `make?year=${this.state.year}` : ""
+    let modelSuffix = (this.state.make) ? `model?year=${this.state.year}&make=${this.state.make}` : ""
+    let optionsSuffix = (this.state.model) ? `options?year=${this.state.year}&make=${this.state.make}&model=${this.state.model}` : ""
+    
     return(
       <div className="container">
         <ListInput  
@@ -235,25 +215,6 @@ class VehicleInputFields extends React.Component {
   }
 }
 
-class SliderInput extends React.Component {
-  render(){
-    return(
-        <label>
-          Highway
-          <input 
-          name="cityProportion"
-          type="range" 
-          min="0" max="1" 
-          value={this.props.initial} 
-          onChange={this.props.onChange}
-          step={this.props.increment}
-          />
-          City
-        </label>
-      );
-  } 
-}
-
 class VehicleResult extends React.Component {
   constructor(props){
     super(props);
@@ -280,48 +241,40 @@ class VehicleResult extends React.Component {
     let unitText = units.displayUnitString(this.props.displayUnits);
 
     return(
-        <table className="table table-light">
-          <thead className="thead-dark">
-                <tr><th colSpan="2">{this.props.data.name}</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Highway Economy:</td>
-              <td>{parseFloat(highwayEconomy).toFixed(1)} {unitText}</td>
-            </tr>
-            <tr>
-              <td>City Economy:</td>
-              <td>{parseFloat(cityEconomy).toFixed(1)} {unitText}</td>
-            </tr>
-            <tr>
-              <td>
-                <SliderInput
-                  label="Proportion of city driving"
-                  name ="cityProportion"
-                  start="All city driving"
-                  end="All highway driving"
-                  increment={0.01}
-                  initial={this.state.cityProportion}
-                  onChange={this.handleSliderChange}
-                />
-              </td>
-              <td>{(this.state.cityProportion*100).toFixed(0)} %</td>
-            </tr>
-            <tr className="bg-info">
-              <td>Estimated Economy: </td>
-              <td>{parseFloat(estimatedEconomy).toFixed(1)} {unitText}</td>
-            </tr>
-            <tr className="bg-info">
-              <td>Fuel Type:</td>
-              <td>{this.props.data.fuelType}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div>
+        <h5 className="text-center">{this.props.data.name}</h5>
+        <div className="font-weight-light">
+          <div className="row">
+            <div className="col-6 text-right">Highway:</div>
+            <div className="col">{parseFloat(highwayEconomy).toFixed(1)} {unitText}</div>
+          </div>
+          <div className="row">
+            <div className="col-6 text-right">City:</div>
+            <div className="col">{parseFloat(cityEconomy).toFixed(1)} {unitText}</div>
+          </div>
+          <br/>
+          <div className="row">
+            <div className="col-6 text-right">
+              <div className="col"><input name="cityProportion" className="form-control" type="range" min="0" max="1" value={this.state.cityProportion} onChange={this.handleSliderChange} step={0.01}/></div>
+            </div>
+            <div className="col">{(this.state.cityProportion*100).toFixed(0)}% city</div>
+          </div>
+        </div>
+        <br/>
+        <div>
+          <div className="row">
+            <div className="col-6 text-right">Avg. economy: </div>
+            <div className="col">{parseFloat(estimatedEconomy).toFixed(1)} {unitText}</div>
+          </div>
+          <div className="row">
+            <div className="col-6 text-right">Fuel:</div>
+            <div className="col">{this.props.data.fuelType}</div>
+          </div>
+        </div>
+      </div>
     );
   }
 }
-
-
 
 export class VehicleForm extends React.Component {
   constructor(props){
@@ -359,10 +312,7 @@ export class VehicleForm extends React.Component {
       })
       return;
     }
-
-    //console.log("Searching for economy by ID..." +num);
     
-
     let url="https://www.fueleconomy.gov/ws/rest/vehicle/"
     let suffix = num
 
@@ -402,38 +352,21 @@ export class VehicleForm extends React.Component {
   }
 
   render(){
-    let resultDisplay
-    let useVehicleButton
-    if(this.state.vehicleId){
-      resultDisplay = 
-        <VehicleResult  
-          data = {this.state}
-          displayUnits = {this.props.displayUnits}
-          returnCityProportion = {this.setAvgEconomy}
-        />
-
-      useVehicleButton = <button className="btn btn-outline-primary" onClick={this.useVehicle}>Use vehicle</button>
-    }
-
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>US Database Vehicle Input</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
-          {resultDisplay}
-        </Modal.Body>
-        <Modal.Footer>
-          {useVehicleButton}
-        </Modal.Footer>
-      </Modal>
-    );
+    let title = <div>US Vehicle Search</div>
+    let body = 
+      <div>
+        <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
+        <br/>
+        {this.state.vehicleId ? <VehicleResult data = {this.state} displayUnits = {this.props.displayUnits} returnCityProportion = {this.setAvgEconomy} /> : ""}
+      </div> 
+    let footer = 
+      <div>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        {this.state.vehicleId ? <button className="btn btn-success m-2" onClick={this.useVehicle}><strong>Use vehicle</strong></button> : ""}
+      </div>
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
   }
 }
-
-
-
 
 export class VehicleInput extends React.Component{
   constructor(props){
@@ -450,7 +383,6 @@ export class VehicleInput extends React.Component{
     this.showForm=this.showForm.bind(this)
     this.returnEconomy=this.returnEconomy.bind(this)
     this.setFuel=this.setFuel.bind(this)
-    //this.getFuelId=this.getFuelId.bind(this)
     this.receiveVehicle=this.receiveVehicle.bind(this)
   }
 

@@ -296,6 +296,7 @@ export class CarbonCalculator extends React.Component{
   
     return(
       <div className="container bg-light">
+        <br/>
         {this.state.format==="road" ? 
           <FormRow
             label={<div>Split by:</div>}

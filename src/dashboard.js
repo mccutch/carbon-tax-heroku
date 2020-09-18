@@ -205,7 +205,7 @@ export class Dashboard extends React.Component{
       return( 
         <div className="row">
           <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
-          <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
+          <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Trends</Nav.Link>
           <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
         </div>
       )

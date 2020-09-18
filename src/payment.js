@@ -1,6 +1,6 @@
 import React from 'react';
 import {Navbar, Modal} from 'react-bootstrap';
-import {ObjectSelectionList} from './reactComponents.js';
+import {ObjectSelectionList, FormRow, LabelledInput} from './reactComponents.js';
 import {CreateRecipient} from './objectCreate.js';
 import * as getDate from './getDate.js';
 import {fetchObject, displayCurrency} from './helperFunctions.js';
@@ -93,7 +93,7 @@ export class PaymentView extends React.Component{
   constructor(props){
     super(props)
 
-    let defaultAmount = this.props.stats.summary.balance
+    let defaultAmount = this.props.stats ? this.props.stats.summary.balance : 0
 
     this.state = {
       amount:(defaultAmount>0 ? defaultAmount : 0),
@@ -237,19 +237,6 @@ export class PaymentView extends React.Component{
       }
     }
 
-    let userRecipientSelection
-    if(this.props.recipients.length > 0){
-      userRecipientSelection = 
-        <label>
-          Recipient:
-           <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.recipients} value="id" label="name"/>
-        </label>
-    }
-
-    let errorMessage
-    if(this.state.errorMessage){
-      errorMessage = <p><strong>{this.state.errorMessage}</strong></p>
-    }
 
     return(
       <div className='container-sm my-2 bg-light' > 
@@ -260,21 +247,29 @@ export class PaymentView extends React.Component{
           </Navbar.Brand>
         </Navbar>
         </div>
+        <br/>
         <p><strong>Outstanding balance: {sym}{balance}</strong></p>
         <form>
-          <label>
-            Amount: ({sym}{currency})
-            <input type="number" name="amount" className="form-control m-2" defaultValue={(this.state.amount*conversion).toFixed(2)} onChange={this.handleChange}/>
-          </label>
-          <br/>
-          {userRecipientSelection}
-          <button className="btn btn-outline-info m-2" onClick={this.addRecipient} >+ New</button>
-          <button className="btn btn-outline-info m-2" onClick={this.searchRecipients}>Search</button>
-          <br/>
-          <input defaultValue={getDate.today()} type="date" name="date" className="form-control" onChange={this.handleChange}/>
-          <br/>
-          {errorMessage}
-          <button className="btn btn-success m-2" onClick={this.makePayment}>Record payment</button>
+          <LabelledInput
+            input={<input type="number" name="amount" className="form-control" defaultValue={(this.state.amount*conversion).toFixed(2)} onChange={this.handleChange}/>}
+            prepend={`${sym}${currency}`}
+            className="my-2"
+          />
+          {(this.props.recipients.length > 0) ? 
+            <div className="form-row">
+              <div className="col-8">
+                <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.recipients} value="id" label="name"/>
+              </div>
+              <div className="col">
+                <button className="btn btn-outline-info btn-block my-2" onClick={this.addRecipient} >+ New</button>
+              </div>
+            </div>
+            : <button className="btn btn-outline-info btn-block my-2" onClick={this.addRecipient} >+ Create new recipient</button>
+          }
+          {/*<button className="btn btn-outline-info m-2" onClick={this.searchRecipients}>Search</button>*/}
+          <input defaultValue={getDate.today()} type="date" name="date" className="form-control my-2" onChange={this.handleChange}/>
+          <p><strong>{this.state.errorMessage}</strong></p>
+          <button className="btn btn-success m-2" onClick={this.makePayment}>Save payment</button>
         </form> 
       </div>
     )
