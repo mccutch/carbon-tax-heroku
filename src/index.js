@@ -242,7 +242,7 @@ class App extends React.Component {
     }
 
     return( 
-      <div className="bg-dark" style={{ backgroundImage: `url("/static/pointPerp.jpg")`, 
+      <div className="bg-dark" style={{ backgroundImage: `url("/static/pointPerpNarrow.jpg")`, 
                                         /*backgroundRepeat:'no-repeat',*/
                                         backgroundSize:'cover',
                                         height: "200vh",

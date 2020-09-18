@@ -219,31 +219,38 @@ export class CreateRecipient extends React.Component{
     this.handlePostFailure=this.handlePostFailure.bind(this)
     this.addToUser=this.addToUser.bind(this)
     this.successModal=this.successModal.bind(this)
+    this.returnError=this.returnError.bind(this)
   }
 
   handleChange(event){
     let name=event.target.name
     let value=event.target.value
-
     this.setState({[name]:value})
+  }
+
+  returnError(message){
+    this.setState({
+      submissionPending:false,
+      errorMessage:message
+    })
   }
 
   validateForm(e){
     e.preventDefault()
-    this.setState({errorMessage:""})
+    this.setState({
+      errorMessage:"",
+      submissionPending:true,
+    })
 
-    let fields = [
-      "name", "country", "website", "donation_link", "description"
-    ]
-
+    if(!this.state.name){
+      this.returnError("Name field is required.")
+      return
+    }
+    let fields = ["name", "country", "website", "donation_link", "description"]
+    
     let recipientData = {}
     for (let i in fields){
-      let field = fields[i]
-      if(!this.state[field]){
-        this.setState({errorMessage:"Please fill in all fields."})
-        return
-      }
-      recipientData[field]=this.state[field]
+      recipientData[fields[i]]=this.state[fields[i]]
     }
 
     fetchObject({
@@ -293,7 +300,7 @@ export class CreateRecipient extends React.Component{
 
   handlePostFailure(json){
     console.log(json)
-    this.setState({errorMessage:"Unable to save new recipient."})
+    this.returnError("Unable to save new recipient.")
   }
 
   render(){
@@ -308,7 +315,7 @@ export class CreateRecipient extends React.Component{
         <FormRow
             label={<div>Name:</div>}
             labelWidth={3}
-            input={<input type="text" name="name" placeholder="Organisation name" maxLength={MAX_LEN_RECIP_NAME} className="form-control my-2" onChange={this.handleChange}/>}
+            input={<input type="text" name="name" placeholder="Required" maxLength={MAX_LEN_RECIP_NAME} className="form-control my-2" onChange={this.handleChange}/>}
         />
         <FormRow
           label={<div>Country:</div>}

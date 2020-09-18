@@ -16,7 +16,7 @@ import {aircraftTypes, airlinerClasses} from './constants.js';
 import {ROAD, AIR, PUBLIC, OTHER} from './constants.js';
 
 const emissionModes = [
-      {mode:ROAD, label:"Private Vehicle"},
+      {mode:ROAD, label:"Road"},
       {mode:AIR, label:"Air Travel"},
       //{mode:PUBLIC, label:"Public Transport"},
       //{mode:OTHER, label:"Miscellaneous"},

@@ -356,7 +356,7 @@ export class PaginatedNav extends React.Component{
     }
      
     return(
-      <nav aria-label="Table navigation" className="row">
+      <nav aria-label="Table navigation" className="row p-2">
         <p className="text-light p-2 m-2">Showing result{plural} {displayedResultsString} of {this.props.tableData.count}</p>
         <ul className="pagination m-2">
           <li className={this.disablableItem(this.props.tableData.previous)}><a className="page-link" name="prev" onClick={this.handleClick}>Previous</a></li>

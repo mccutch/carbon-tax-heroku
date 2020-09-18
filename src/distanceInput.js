@@ -70,14 +70,14 @@ export class DistanceInput extends React.Component{
           append={units.distanceString(this.props.displayUnits)}
           input={<input type="number" onChange={this.handleChange} name="distance" placeholder="Distance" className="form-control" defaultValue={this.hasInitial?units.distanceDisplay(this.props.initialValue, this.props.displayUnits):null}/>}
         />
-        <button name="displayRouteCalculator" className=" btn btn-outline-info m-2" onClick={this.showRouteCalculator} >Route calculator</button>
+        <button name="displayRouteCalculator" className=" btn btn-outline-info my-2" onClick={this.showRouteCalculator} >Route calculator</button>
       </div>
 
     return(
       <div className="container bg-light py-2">
         {display}
-        {this.props.mode===AIR ? <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button> : ""}
-        <button className=" btn btn-success m-2" disabled={!(this.state.distance || this.state.hours || this.state.minutes)} onClick={this.submitDistance} >Continue</button>
+        {this.props.mode===AIR ? <button className="btn btn-outline-danger my-2" onClick={this.props.prevTab}>Back</button> : ""}
+        <button className=" btn btn-success my-2" disabled={!(this.state.distance || this.state.hours || this.state.minutes)} onClick={this.submitDistance} >Continue</button>
       </div>
     )
   }
