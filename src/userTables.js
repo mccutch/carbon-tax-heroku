@@ -342,7 +342,7 @@ export class PaginatedNav extends React.Component{
 
   render(){
     let resultsPerPage = PAGINATATION_RESULTS_PER_PAGE
-    let firstResult = 1 + (this.props.page-1)*(resultsPerPage)
+    let firstResult = (this.props.tableData.count===0) ? 0 : (1+(this.props.page-1)*(resultsPerPage))
     let lastResult = firstResult+this.props.tableData.results.length-1
 
     let displayedResultsString
@@ -366,7 +366,6 @@ export class PaginatedNav extends React.Component{
     )
   }
 }
-
 
 export class EmissionTable extends React.Component{
   constructor(props){

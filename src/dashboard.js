@@ -189,14 +189,27 @@ export class Dashboard extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      display:"history",
+      display:(this.props.emissions.count==0 && this.props.payments.count==0) ? "profile":"history",
     }
 
     this.changeDisplay=this.changeDisplay.bind(this)
+    this.buildTabs=this.buildTabs.bind(this)
   }
 
-  changeDisplay(event){
-    this.setState({display:event.target.name})
+  changeDisplay(event){this.setState({display:event.target.name})}
+
+  buildTabs(){
+    if(this.props.emissions.count==0 && this.props.payments.count==0){
+      return <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+    } else{
+      return( 
+        <div className="row">
+          <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
+          <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
+          <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+        </div>
+      )
+    }
   }
 
   render(){
@@ -244,9 +257,7 @@ export class Dashboard extends React.Component{
               {this.props.user.username}
             </Navbar.Brand>
             <Nav className="mr-auto">
-              <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
-              <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Stats</Nav.Link>
-              <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+              {this.buildTabs()}
             </Nav>
           </Navbar>
         </div>

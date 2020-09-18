@@ -1,5 +1,9 @@
 Improve "History" and "Stats" tabs for new user
 
+error try to display playments when none exist
+
+Improve layout of calculations in carbon tax
+
 Update smtp_key in heroku
 
 Economy input looks weird

@@ -67,6 +67,7 @@ export class FormRow extends React.Component{
         <div className={inputClass}>
           {this.props.input}
         </div>
+        <small className="form-text text-muted mx-2">{this.props.helpText}</small>
       </div>
     )
   }

@@ -3,7 +3,7 @@ import * as getDate from './getDate.js';
 import * as units from './unitConversions.js';
 import { OptionListInput } from './optionListInput.js';
 import { fetchObject, getAttribute, truncate, getObject, displayHrs, encodeEmissionFormat, getHeliEconomy } from './helperFunctions.js';
-import { ObjectSelectionList } from './reactComponents.js';
+import { ObjectSelectionList, FormRow, StandardModal } from './reactComponents.js';
 import { MAX_EMISSION_NAME_LEN } from './constants.js';
 import { ROAD, AIR, PUBLIC, OTHER } from './constants.js';
 import { AIRLINER_KGCO2_PPAX_LT500, AIRLINER_KGCO2_PPAX_GT500, fareClassMultiplier, JET_FUEL_ID, airlinerClasses, aircraftTypes } from './constants.js';
@@ -13,6 +13,21 @@ import { AIRLINER_KGCO2_PPAX_LT500, AIRLINER_KGCO2_PPAX_GT500, fareClassMultipli
 export class CarbonCalculator extends React.Component{
   constructor(props){
     super(props)
+
+
+
+    // Set emission save format 
+    let format, defaultTripName
+    if(this.props.mode===ROAD){
+      format="road"
+      defaultTripName="Road Trip"
+    }else if(this.props.mode===AIR && this.props.aircraftType==="airliner"){
+      format="airDistance"
+      defaultTripName="Air Travel"
+    } else if(this.props.mode===AIR){
+      format="airTime"
+      defaultTripName=`${getAttribute({objectList:aircraftTypes, key:"type", keyValue:this.props.aircraftType, attribute:"label"})} Travel`
+    }
 
     // Set default trip name for save
     let tripName
@@ -26,18 +41,10 @@ export class CarbonCalculator extends React.Component{
       }
 
     } else {
-      tripName="Default Trip Name"
+      tripName=defaultTripName
     }
 
-    // Set emission save format 
-    let format
-    if(this.props.mode===ROAD){
-      format="road"
-    }else if(this.props.mode===AIR && this.props.aircraftType==="airliner"){
-      format="airDistance"
-    } else if(this.props.mode===AIR){
-      format="airTime"
-    }
+    
 
     this.state = {
       carbonKg:null,
@@ -58,6 +65,8 @@ export class CarbonCalculator extends React.Component{
     this.calculatePrice=this.calculatePrice.bind(this)
     this.incrementTaxUsage=this.incrementTaxUsage.bind(this)
     this.getTaxRate=this.getTaxRate.bind(this)
+    this.showCarbonCalculation=this.showCarbonCalculation.bind(this)
+    this.showTaxCalculation=this.showTaxCalculation.bind(this)
   }
 
   componentDidMount(){
@@ -212,63 +221,26 @@ export class CarbonCalculator extends React.Component{
     this.setState({errorMessage:"Unable to save emission."})
   }
 
-  render(){
-    let sym = this.props.profile.currency_symbol
-    let currencyFactor = this.props.profile.conversion_factor
+  showCarbonCalculation(){
+    let title = <div>Carbon Calculation</div>
 
     let carbon = parseFloat(this.state.carbonKg).toFixed(2)
-    let price = parseFloat(currencyFactor*(this.calculatePrice()))
-    let split = parseFloat(this.state.split)
-    let taxRate = parseFloat(currencyFactor*this.getTaxRate()).toFixed(2)
-
-    let priceDisplay
-    if(this.props.mode===AIR){
-      let offset = parseFloat(this.props.airOptions.offset)
-      priceDisplay = 
-        <div>
-          <p> Carbon offset: {sym}{offset}</p>
-          <p> ({carbon}kg x {sym}{taxRate}/kg) - Offset = <strong>{sym}{(price-offset).toFixed(2)} carbon tax</strong></p>
-        </div>
-    } else {
-      priceDisplay = <p> {carbon}kg x {sym}{taxRate}/kg = <strong>{sym}{price.toFixed(2)} carbon tax</strong></p>
-    }
-    
-    let memberDisplay
-    if(this.props.loggedIn){
-      memberDisplay=
-        <div>
-          <p> Tax rate:  <ObjectSelectionList name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} label="name" value="id" /></p>
-          {priceDisplay}
-          <input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange}/>
-          <input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange}/>
-          <br/>
-          <p><strong>{this.state.errorMessage}</strong></p>
-          <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
-          <button className="btn btn-success m-2" onClick={this.saveEmission} >Save to profile</button>
-        </div>
-    } else {
-      memberDisplay = 
-        <div>
-          <p>Create an account to save emissions and calculate carbon tax.</p>
-          <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
-        </div>
-    }
-
+    //let split = parseFloat(this.state.split)
     let distance = parseFloat(units.distanceDisplay(this.props.data.distanceKm, this.props.displayUnits)).toFixed(1)
     let economy = parseFloat(units.convert(this.props.data.lPer100Km, this.props.displayUnits)).toFixed(1)
 
-    let calculation
+    let body
     if(this.state.format==="road"){
-      calculation = 
+      body = 
         <div>
           <p> Fuel density: {this.state.carbonPerL}kg CO2/L </p>
           <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
           <p> Fuel economy: {economy}{units.string(this.props.displayUnits)}</p>
-          <p> Split by: <input defaultValue="1" type="number" name="split" onChange={this.handleChange} /></p>       
+          <p> Split by: {this.state.split}</p>  
           <p> Fuel density x (Distance/100) x  Fuel economy / Split = <strong>{carbon}kg CO2</strong></p>
         </div>
     } else if(this.state.format==="airDistance"){
-      calculation = 
+      body = 
         <div>
           <p> Passenger Airliner - {getAttribute({objectList:airlinerClasses, key:"class", keyValue:this.props.aircraftFields.airlinerClass, attribute:"label"})} </p>
           <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
@@ -278,7 +250,7 @@ export class CarbonCalculator extends React.Component{
           <p> Distance * Emissions/seat * Fare class * RF Multiplier = <strong>{carbon}kg CO2</strong></p>
         </div>
     } else if(this.state.format==="airTime"){
-      calculation = 
+      body = 
         <div>
           <p> {getAttribute({objectList:aircraftTypes, key:"type", keyValue:this.props.aircraftType, attribute:"label"})}: {this.props.aircraftFields.totalSeats} passengers</p>
           <p> Flight time: {displayHrs(this.props.data.flightHrs)} </p>
@@ -288,10 +260,88 @@ export class CarbonCalculator extends React.Component{
         </div>
     }
 
+    this.props.setModal(<StandardModal title={title} body={body} hideModal={this.props.hideModal}/>)
+  }
+
+  showTaxCalculation(){
+    let sym = this.props.profile.currency_symbol
+    let currencyFactor = this.props.profile.conversion_factor
+
+    let carbon = parseFloat(this.state.carbonKg).toFixed(2)
+    let price = parseFloat(currencyFactor*(this.calculatePrice()))
+    //let split = parseFloat(this.state.split)
+    let taxRate = parseFloat(currencyFactor*this.getTaxRate()).toFixed(2)
+    
+    let title = <div>Tax Calculation</div>
+
+    let body
+    if(this.props.mode===AIR){
+      let offset = parseFloat(this.props.airOptions.offset)
+      body = 
+        <div>
+          <p> Carbon offset: {sym}{offset}</p>
+          <p> ({carbon}kg x {sym}{taxRate}/kg) - Offset = <strong>{sym}{(price-offset).toFixed(2)} carbon tax</strong></p>
+        </div>
+    } else {
+      body = <p> {carbon}kg x {sym}{taxRate}/kg = <strong>{sym}{price.toFixed(2)} carbon tax</strong></p>
+    }
+    this.props.setModal(<StandardModal title={title} body={body} hideModal={this.props.hideModal}/>)
+  }
+
+  render(){
+    let sym = this.props.profile.currency_symbol
+    let currencyFactor = this.props.profile.conversion_factor
+    let carbon = parseFloat(this.state.carbonKg).toFixed(2)
+    let price = parseFloat(currencyFactor*(this.calculatePrice()))
+  
     return(
       <div className="container bg-light">
-        {calculation}
-        {memberDisplay}
+        {this.state.format==="road" ? 
+          <FormRow
+            label={<div>Split by:</div>}
+            labelWidth={3}
+            input={<input defaultValue="1" type="number" name="split" onChange={this.handleChange} className="form-control"/>}
+            helpText="Share emissions equally between all passengers."
+          /> 
+          : ""
+        }
+        <FormRow
+          label={<div><strong>Carbon emissions:</strong></div>}
+          labelWidth={6}
+          input={<button className="btn btn-info btn-block" onClick={this.showCarbonCalculation}><strong>{carbon}kg CO2</strong></button>}
+        />
+        {this.props.loggedIn ?
+          <div>
+            <FormRow
+              label={<div>Tax rate:</div>}
+              labelWidth={3}
+              input={<ObjectSelectionList name="tax" onChange={this.handleChange} list={this.state.relevantTaxes} label="name" value="id" />}
+            />
+            <FormRow
+              label={<div><strong>Carbon tax:</strong></div>}
+              labelWidth={6}
+              input={<button className="btn btn-info btn-block" onClick={this.showTaxCalculation}><strong>{sym}{price.toFixed(2)}</strong></button>}
+            />
+            <FormRow
+              label={<div>Date:</div>}
+              labelWidth={3}
+              input={<input defaultValue={getDate.today()} type="date" name="date" onChange={this.handleChange} className="form-control"/>}
+            />
+            <FormRow
+              label={<div>Save as:</div>}
+              labelWidth={3}
+              input={<input defaultValue={this.state.tripName} type="text" name="tripName" onChange={this.handleChange} className="form-control"/>}
+            />
+            <p><strong>{this.state.errorMessage}</strong></p>
+            <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
+            <button className="btn btn-success m-2" onClick={this.saveEmission} >Save to profile</button>
+          </div>
+          :
+          <div>
+            <p>Create an account to save emissions and calculate carbon tax.</p>
+            <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
+          </div>
+        }
       </div>
     )
     

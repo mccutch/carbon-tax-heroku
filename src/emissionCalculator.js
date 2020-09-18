@@ -7,7 +7,7 @@ import {CarbonCalculator} from './carbonCalculator.js';
 import * as units from './unitConversions';
 import * as taxes from './defaultTaxTypes.js';
 import {EmissionEdit} from './objectDetail.js';
-import {ObjectSelectionList} from './reactComponents.js';
+import {ObjectSelectionList, StandardModal} from './reactComponents.js';
 import {TabbedNavBar} from './navBar.js';
 import {getAttribute, displayHrs} from './helperFunctions.js';
 import {aircraftTypes, airlinerClasses} from './constants.js';
@@ -125,24 +125,21 @@ export class EmissionCalculator extends React.Component{
   handleEmissionSave(json){
     let sym = this.props.profile.currency_symbol
     let price = this.props.profile.conversion_factor*json.price
-
     console.log(json)
-    let modal = 
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header className="bg-primary text-light" closeButton>
-          <Modal.Title>Emission Saved!</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>{json.date} - {json.name}</p>
-          <p>{json.co2_output_kg}kg CO2, {sym}{price.toFixed(2)}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-outline-info" onClick={() => this.createClone(json)}>Edit/Clone</button>
-          <button className="btn btn-outline-info" name="emissionCalculator" onClick={this.newEmission}>New emission</button>
-          <button className="btn btn-outline-success" onClick={this.props.hideModal}>Close</button>
-        </Modal.Footer>
-      </Modal>
-    this.props.setModal(modal)
+
+    let title=<div>Emission Saved!</div>
+    let body = 
+      <div>
+        <p>{json.date} - {json.name}</p>
+        <p>{json.co2_output_kg}kg CO2, {sym}{price.toFixed(2)}</p>
+      </div>
+    let footer = 
+      <div>
+        <button className="btn btn-outline-info" onClick={() => this.createClone(json)}>Edit/Clone</button>
+        <button className="btn btn-outline-info" name="emissionCalculator" onClick={this.newEmission}>New emission</button>
+        <button className="btn btn-outline-success" onClick={this.props.hideModal}>Close</button>
+      </div>
+    this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
     this.props.exit()
   }
 
@@ -300,6 +297,8 @@ export class EmissionCalculator extends React.Component{
           aircraftFields={this.state.aircraftFields}
           airOptions={this.state.airOptions}
           prevTab={this.prevTab}
+          setModal={this.props.setModal}
+          hideModal={this.props.hideModal}
         />
        :
        <div className="container bg-light" >
