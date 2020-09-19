@@ -5,6 +5,7 @@ function generateByline(){
     "Balm for the guild-ridden traveller.",
     "The armchair dissident's carbon tax.",
     "Face your consumption.",
+    "Liberty through taxation.",
   ]
   return bylines[Math.floor(Math.random()*bylines.length)]
 }
