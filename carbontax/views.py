@@ -619,8 +619,6 @@ class ContactForm(APIView):
             print(request.user.username)
         else:
             print("Not authenticated")
-        
-
         context={
             "first_name": request.user.username if request.user.is_authenticated else "",
             #"email":"defaultEmail@example.com",
@@ -638,6 +636,15 @@ class ContactForm(APIView):
         )
         print(f'Response: {response}')
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+"""import json
+import requests
+
+url = 'https://api.github.com/some/endpoint'
+payload = {'some': 'data'}
+
+r = requests.post(url, data=json.dumps(payload))"""
 
 
 

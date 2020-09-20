@@ -86,7 +86,7 @@ export class CreateTax extends React.Component{
     }
 
     fetchObject({
-      url:'/my-taxes/',
+      url:'/user/my-taxes/',
       method:'POST',
       data:taxData,
       onSuccess:this.handlePostSuccess,
@@ -110,7 +110,7 @@ export class CreateTax extends React.Component{
         <input type="text" name="newName" maxLength={MAX_LEN_NAME} onChange={this.handleChange} className="form-control my-2" placeholder="Name"/>
         <LabelledInput
           input={<input type="number" name="newPrice" onChange={this.handleChange} className="form-control" placeholder="Price"/>}
-          append={`${this.props.profile.currency_symbol}/kg CO2`}
+          append={`succes${this.props.profile.currency_symbol}/kg CO2`}
         />
         <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
         <p>{this.state.errorMessage}</p>

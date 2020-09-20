@@ -1,21 +1,13 @@
-Improve "History" and "Stats" tabs for new user
 
-error try to display playments when none exist
+use map bias from profile
 
-Improve layout of calculations in carbon tax
-
-Sort currency list alphabetically
+error try to display payments when none exist
 
 Update smtp_key in heroku
 
-Economy input looks weird
-
-Password change form looks shit
-
 Password reset page is terrible
 
-Activate email on registration
-
+Activate email on registration??
 
 Store list of fuels in front-end instead of database?
 
@@ -47,10 +39,6 @@ make recipient links optional in front-end
 
 
 Warning on currency change
-
-
-
-Graph axis labels
 
 Object table of payments and donation recipients
 

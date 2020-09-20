@@ -242,8 +242,17 @@ export function editObject({data, url, onSuccess, onFailure}){
   });
 }
 
-export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
+function deleteFromCache(cacheName, resource){
+  caches.open(cacheName).then(function(cache) {
+    cache.delete(resource).then(function(response) {
+      console.log(`${resource} deleted from ${cacheName}:${response}`)
+      return;
+    });
+  })
+}
 
+
+export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
   // SET HEADERS - No authorisation required for some APIs
   let headers 
   if(noAuth){
@@ -283,8 +292,10 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     if(res.ok){
       if(res.status===204){
         //console.log("204 no data")
-        onSuccess(res)
-        return;
+        deleteFromCache('user-dynamic','url').then(function (){
+          onSuccess(res);
+          return
+        })
       }
       return res.json();
     } else {
@@ -315,3 +326,5 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     }
   });
 }
+
+

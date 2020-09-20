@@ -49,9 +49,14 @@ export function getToken({data, onSuccess, onFailure}){
 export function clearToken({onSuccess, }){
   localStorage.setItem('access', '')
   localStorage.setItem('refresh', '')
-  if(onSuccess){
-    onSuccess()
-  }
+  caches.delete('dynamic-user').then(function(found){
+    console.log(`Cache deleted, found :${found}`)
+    if(onSuccess){
+      onSuccess()
+    }
+  })
+
+  
 }
 
 export function refreshToken({onSuccess, success_args, onFailure, failure_args}){
@@ -82,6 +87,7 @@ export function refreshToken({onSuccess, success_args, onFailure, failure_args})
     body: JSON.stringify(data)
   })
     .then(res => {
+      console.log(res)
       if(res.ok){
         return res.json()
       } else {
@@ -90,9 +96,10 @@ export function refreshToken({onSuccess, success_args, onFailure, failure_args})
       
     })
     .then(json => {
+      console.log(json)
       //console.log(json.access)
       localStorage.setItem('access', json.access)
-      //console.log(json)
+      
       if(onSuccess){
         if(success_args){
           //console.log("Success args provided.")
@@ -111,6 +118,7 @@ export function refreshToken({onSuccess, success_args, onFailure, failure_args})
       if(error.message==="500"){
         return
       }
+      //clearToken({onSuccess:onFailure})
       if(onFailure){
         if(failure_args){
           console.log("Failure args provided.")

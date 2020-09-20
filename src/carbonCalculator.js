@@ -207,7 +207,7 @@ export class CarbonCalculator extends React.Component{
     }
 
     fetchObject({
-      url:'/my-emissions/',
+      url:'/user/my-emissions/',
       method:'POST',
       data:emissionData,
       onSuccess:this.props.submitCarbon,

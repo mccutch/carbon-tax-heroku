@@ -60,7 +60,7 @@ class App extends React.Component {
       onFailure:this.serverConnectionFailure,
       noAuth:true,
     })
-    this.fetchObject({url:"/current-user/", objectName:"user", onSuccess:this.login})
+    this.fetchObject({url:"/user/current-user/", objectName:"user", onSuccess:this.login})
   }
 
   serverConnectionFailure(){
@@ -152,14 +152,14 @@ class App extends React.Component {
   }
 
   refreshFullProfile(){
-    this.fetchObject({url:"/current-user/", objectName:"user"})
-    this.fetchObject({url:"/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
-    this.fetchObject({url:"/my-taxes/", objectName:"taxes"})
-    this.fetchObject({url:"/my-vehicles/", objectName:"vehicles"})
-    this.fetchObject({url:"/my-emissions/", objectName:"emissions"})
-    this.fetchObject({url:"/my-stats/", objectName:"stats"})
-    this.fetchObject({url:"/my-recipients/", objectName:"recipients"})
-    this.fetchObject({url:"/my-payments/", objectName:"payments"})
+    this.fetchObject({url:"/user/current-user/", objectName:"user"})
+    this.fetchObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
+    this.fetchObject({url:"/user/my-taxes/", objectName:"taxes"})
+    this.fetchObject({url:"/user/my-vehicles/", objectName:"vehicles"})
+    this.fetchObject({url:"/user/my-emissions/", objectName:"emissions"})
+    this.fetchObject({url:"/user/my-stats/", objectName:"stats"})
+    this.fetchObject({url:"/user/my-recipients/", objectName:"recipients"})
+    this.fetchObject({url:"/user/my-payments/", objectName:"payments"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,

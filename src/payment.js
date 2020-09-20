@@ -192,7 +192,7 @@ export class PaymentView extends React.Component{
     console.log(paymentData)
 
     fetchObject({
-      url:'/my-payments/',
+      url:'/user/my-payments/',
       method:'POST',
       data:paymentData,
       onSuccess:this.handlePostSuccess,

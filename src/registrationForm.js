@@ -220,7 +220,7 @@ export class RegistrationForm extends React.Component{
 
     fetchObject({
       method:'POST',
-      url:'/my-profile/',
+      url:'/user/my-profile/',
       data:profileData,
       onSuccess:this.createTaxes,
       onFailure:this.createProfileFailure,
@@ -254,7 +254,7 @@ export class RegistrationForm extends React.Component{
 
       fetchObject({
         method:'POST',
-        url:'/my-taxes/',
+        url:'/user/my-taxes/',
         data:taxData,
         onSuccess:this.props.onSuccess,
         onFailure:this.createProfileFailure,

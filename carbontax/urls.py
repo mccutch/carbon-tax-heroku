@@ -18,24 +18,24 @@ urlpatterns = [
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('api-auth/', include('rest_framework.urls')),
 
-    path('current-user/', views.CurrentUser.as_view(), name="current-user"),
+    path('user/current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('user/<int:pk>/', views.UserDetail.as_view(), name="user-detail"),
     path('account/register/', views.UserCreate.as_view(), name="create-user"),
     path('account/update-password/', views.UpdatePassword.as_view(), name="update-password"),
     path('account/', include('django.contrib.auth.urls')), # django default password reset views
 
     #path('profiles/', views.ProfileList.as_view(), name="profiles"),
-    path('my-profile/', views.UserProfile.as_view(), name="my-profile"),
+    path('user/my-profile/', views.UserProfile.as_view(), name="my-profile"),
     path('profile/<int:pk>/', views.ProfileDetail.as_view(), name="profile-detail"),
     path('registration/check-username/', views.ValidateUsername.as_view(), name="check-username"),
     path('registration/check-email/', views.ValidateEmail.as_view(), name="check-email"),
     path('registration/check-unique/', views.CheckUnique.as_view(), name="check-unique"),
 
-    path('my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
+    path('user/my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
     #path('vehicles/', views.VehicleList.as_view(), name="vehicles"),
     path('vehicle/<int:pk>/', views.VehicleDetail.as_view(), name="vehicle-detail"),
 
-    path('my-emissions/', views.UserEmissionList.as_view(), name="my-emissions"),
+    path('user/my-emissions/', views.UserEmissionList.as_view(), name="my-emissions"),
     path('emission/<int:pk>/', views.EmissionDetail.as_view(), name="emission-detail"),
 
     path('backdate-tax-change/<int:pk>/', views.BackdateTaxChange.as_view(), name="backdate-tax-change"),
@@ -44,15 +44,15 @@ urlpatterns = [
     path('fuel/<int:pk>/', views.FuelDetail.as_view(), name="fuel-detail"),
     #path('economymetrics/', views.EconomyMetricList.as_view(), name="economymetrics"),
 
-    path('my-taxes/', views.UserTaxList.as_view(), name="my-taxes"),
+    path('user/my-taxes/', views.UserTaxList.as_view(), name="my-taxes"),
     path('tax/<int:pk>/', views.TaxDetail.as_view(), name="tax-detail"),
 
-    path('my-stats/', views.UserStats.as_view(), name="my-stats"),
+    path('user/my-stats/', views.UserStats.as_view(), name="my-stats"),
 
-    path('my-payments/', views.UserPayments.as_view(), name="my-payments"),
+    path('user/my-payments/', views.UserPayments.as_view(), name="my-payments"),
     path('payment/<int:pk>/', views.PaymentDetail.as_view(), name="payment-detail"),
 
-    path('my-recipients/', views.UserRecipients.as_view(), name="my-recipients"),
+    path('user/my-recipients/', views.UserRecipients.as_view(), name="my-recipients"),
     path('donation-recipients/', views.DonationRecipients.as_view(), name="donation-recipients"),
     path('donation-recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="donationrecipient-detail"),
 

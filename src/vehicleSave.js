@@ -62,7 +62,7 @@ export class VehicleSaveForm extends React.Component{
 
     createObject({
       data:vehicleData,
-      url:"/my-vehicles/",
+      url:"/user/my-vehicles/",
       onSuccess:this.onSaveSuccess,
     })
   }
