@@ -5,11 +5,15 @@ from . import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.contrib.auth import views as auth_views
+from django.views.generic.base import TemplateView #Serve sw.js
 
 
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('sw.js', TemplateView.as_view(template_name="sw.js", content_type='application/javascript'), name='sw.js'),
+
+
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('api-auth/', include('rest_framework.urls')),

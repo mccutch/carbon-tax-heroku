@@ -5,7 +5,7 @@ import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './object
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 import * as getDate from './getDate.js';
 
-const PAGINATATION_RESULTS_PER_PAGE = 5 // change this with settings.py
+const PAGINATATION_RESULTS_PER_PAGE = 10 // change this with settings.py
 
 /*
 Table and accessory components for listing, using and editing objects belonging to a user.
