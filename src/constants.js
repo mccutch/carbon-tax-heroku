@@ -1,5 +1,7 @@
 import * as units from './unitConversions.js';
 
+export const USER_CACHE = "dynamic-user"
+
 //Default setttings
 export const DEFAULT_CURRENCY = "AUD"
 export const DEFAULT_CURRENCY_SYMBOL = "$"

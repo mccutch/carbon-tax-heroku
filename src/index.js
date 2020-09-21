@@ -12,6 +12,7 @@ import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
 import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker.js';
 import {GoogleDirections} from './googleDirections.js';
+import {USER_CACHE} from './constants.js';
 
 
 class App extends React.Component {
@@ -51,6 +52,7 @@ class App extends React.Component {
     this.setModal = this.setModal.bind(this)
     this.setMainView = this.setMainView.bind(this)
     this.setModalContent = this.setModalContent.bind(this)
+    this.useState = this.useState.bind(this)
   }
 
   componentDidMount(){
@@ -73,12 +75,13 @@ class App extends React.Component {
     this.setState({serverConnectionFailure:false})
   }
 
+  /*
   fetchObject({url, objectName, onSuccess}){
     /* 
     Function stores the returned data from GET request into this.state.
     Designed to be used to retrieve objects belonging to the user from the database.
     If JWT access has expired, a new token is requested, then the function called again.
-    */
+    
 
     fetch(url, {
       method: 'GET',
@@ -118,6 +121,84 @@ class App extends React.Component {
       }
     });
   }
+  */
+
+  async fetchObject({url, objectName, onSuccess}){
+    console.log("FETCHOBJECT")
+    // fetch cache first
+
+    // start fetch from server
+    let serverResponse = fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer "+localStorage.getItem('access')
+      }
+    })
+    .then(res => {
+      console.log(res)
+      if(res.ok){
+        return res.json();
+      } else {
+        throw new Error(res.status)
+      }
+    })
+    .then(json => {
+      console.log(json)
+      console.log(`Set state(${objectName}): network`)
+      if(onSuccess){
+        this.setState({[objectName]:json}, onSuccess)
+      } else {
+        this.setState({[objectName]:json})
+      }
+      
+    })
+    .catch(e => {
+      console.log(e.message)
+      if(e.message==='401'){
+        refreshToken({
+          onSuccess:this.fetchObject, 
+          success_args:[{
+            url:url, 
+            objectName:objectName, 
+            onSuccess:onSuccess
+          }]
+        })
+      }else if(e.message==='500'){
+        this.serverConnectionFailure()
+      }
+    });
+
+    // if cache contains url
+      // retrieve and setState
+    
+    caches.open(USER_CACHE).then(function (cache){
+      return cache.match(url)
+    }).then(function (cachedResponse){
+        if(cachedResponse){
+          console.log("CACHED content found")
+          console.log(cachedResponse.json)
+          this.useState(cachedResponse)
+        }else{
+          console.log(`No cache response for ${objectName}.`)
+        }
+        
+    }).catch(function (err){
+      console.log(`Cache retrieve error: `)
+    })
+    
+
+    // setState with returned object from server
+    //this.useState({objectName:objectName, json:serverResponse, onSuccess:onSuccess})
+  }
+
+  useState({objectName, json, onSuccess}){
+    if(onSuccess){
+      this.setState({[objectName]:json}, onSuccess)
+    }else{
+      this.setState({[objectName]:json})
+    }
+  }
 
 
   login(){
@@ -130,7 +211,7 @@ class App extends React.Component {
 
   useProfileSettings(profile){
     //console.log(profile)
-    this.setState({displayUnits: profile.display_units})
+    //this.setState({displayUnits: profile.display_units})
     
   }
 
@@ -154,12 +235,12 @@ class App extends React.Component {
   refreshFullProfile(){
     this.fetchObject({url:"/user/current-user/", objectName:"user"})
     this.fetchObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
-    this.fetchObject({url:"/user/my-taxes/", objectName:"taxes"})
-    this.fetchObject({url:"/user/my-vehicles/", objectName:"vehicles"})
-    this.fetchObject({url:"/user/my-emissions/", objectName:"emissions"})
-    this.fetchObject({url:"/user/my-stats/", objectName:"stats"})
-    this.fetchObject({url:"/user/my-recipients/", objectName:"recipients"})
-    this.fetchObject({url:"/user/my-payments/", objectName:"payments"})
+    //this.fetchObject({url:"/user/my-taxes/", objectName:"taxes"})
+    //this.fetchObject({url:"/user/my-vehicles/", objectName:"vehicles"})
+    //this.fetchObject({url:"/user/my-emissions/", objectName:"emissions"})
+    //this.fetchObject({url:"/user/my-stats/", objectName:"stats"})
+    //this.fetchObject({url:"/user/my-recipients/", objectName:"recipients"})
+    //this.fetchObject({url:"/user/my-payments/", objectName:"payments"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,

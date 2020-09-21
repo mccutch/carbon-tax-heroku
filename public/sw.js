@@ -1,6 +1,6 @@
 
 self.addEventListener('install', function(event) {
-  console.log("Install sw.js v-11")
+  console.log("SW: Install sw.js v-12")
   // cache a cat SVG
   event.waitUntil(
    caches.open('cache1').then(function(cache) {
@@ -11,7 +11,7 @@ self.addEventListener('install', function(event) {
        //'/static/manifest.json',
      ]);
    })
- );
+  );
 })
 /*
 self.addEventListener('fetch', function(event) {
@@ -41,26 +41,34 @@ self.addEventListener('fetch', (event) => {
 
     console.log(`Fetch(local) ${request.method}: ${requestURL.pathname}`)
     if (request.method == 'GET') {
-      console.log(`${request.method} request.`)
+      console.log(`SW: ${request.method} request.`)
       event.respondWith(async function() {
         // Dynamic user cache is cleared on logout in myJWT.js
         let cacheName = requestURL.pathname.startsWith('/user') ? 'dynamic-user' : 'dynamic-pageLoad'
+
         const cache = await caches.open(cacheName);
-        const cachedResponse = await cache.match(event.request);
-        if (cachedResponse) return cachedResponse;
-        return fetch(event.request).then((response) =>{
+
+        let networkResponse = await fetch(event.request).then((response) =>{
           if (response.status === 200) {
-            console.log(`Saved to cache: ${requestURL.pathname}`)
+            console.log(`SW: Saved to ${cacheName}: ${requestURL.pathname}`)
             cache.put(event.request, response.clone())
             return response
           } else {
-            console.log(`NOT SAVED to cache: ${requestURL.pathname}`)
+            console.log(`SW: NOT SAVED to cache: ${requestURL.pathname}`)
             return response
           }
         })
+        
+        if(cacheName === 'dynamic-pageLoad'){
+
+          const cachedResponse = await cache.match(event.request);
+          if (cachedResponse) return cachedResponse;
+        }
+        
+        return networkResponse
       }());
     } else {
-      console.log(`${request.method} request.`)
+      console.log(`SW: ${request.method} request.`)
       event.respondWith(
         fetch(request)
       );
@@ -70,7 +78,7 @@ self.addEventListener('fetch', (event) => {
 
   } else {
   // Take no action for cross-site fetch requests.
-    console.log(`Fetch(cross-site) ${request.method}: ${requestURL}`);
+    console.log(`SW: Fetch(cross-site) ${request.method}: ${requestURL}`);
     event.respondWith(async function() {
       return fetch(event.request);
     }());
