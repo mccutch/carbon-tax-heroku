@@ -171,9 +171,16 @@ class App extends React.Component {
 
     // if cache contains url
       // retrieve and setState
-    
-    caches.open(USER_CACHE).then(function (cache){
-      return cache.match(url)
+    /*
+    const cachedResponse = await caches.match(url);
+    if (cachedResponse){
+      console.log("CACHED content found")
+      console.log(cachedResponse.json)
+      this.useState(cachedResponse)
+    }
+    */
+    window.caches.match(USER_CACHE).then(function(cache) {
+      cache.match(url)
     }).then(function (cachedResponse){
         if(cachedResponse){
           console.log("CACHED content found")
