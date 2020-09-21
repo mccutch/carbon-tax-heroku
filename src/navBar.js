@@ -115,7 +115,7 @@ export class NavBar extends React.Component{
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""
-            src="/static/Finger192.png"
+            src="/static/finger192.png"
             width="30"
             height="30"
             className="d-inline-block align-top"
