@@ -3,16 +3,17 @@ self.addEventListener('install', function(event) {
   console.log("SW: Install sw.js v-12")
   // cache a cat SVG
   event.waitUntil(
-   caches.open('cache1').then(function(cache) {
-     return cache.addAll([
+    caches.open('cache1').then(function(cache) {
+      return cache.addAll([
        '/index.html',
        '/static/pointPerpNarrow.jpg',
        //'/sw.js',
        //'/static/manifest.json',
-     ]);
-   })
-  );
-})
+      ]);
+    })
+  )
+});
+
 /*
 self.addEventListener('fetch', function(event) {
 
