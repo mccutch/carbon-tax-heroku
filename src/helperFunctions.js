@@ -10,8 +10,6 @@ getAttribute(objectList, id, attribute)
 
 convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure})
 
-createObject({data, url, onSuccess, onFailure})
-editObject({data, url, onSuccess, onFailure})
 fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 
@@ -157,91 +155,6 @@ export function convertCurrency({convertFrom, convertTo, amount, onSuccess, onFa
     });
 }
 
-export function createObject({data, url, onSuccess, onFailure}){
- 
-    console.log('Create new object:')
-    console.log(data)
-    
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      },
-      body: JSON.stringify(data)
-    })
-    .then(res => {
-        if(res.ok){
-          return res.json();
-        } else {
-          throw new Error(res.status)
-        }
-      })
-      .then(json => {
-        console.log(json)
-        if(onSuccess){
-          onSuccess()
-        }
-      })
-      .catch(e => {
-        console.log(e.message)
-        if(e.message==='401'){
-          refreshToken({
-            onSuccess:createObject, 
-            success_args:[{
-              data:data, 
-              url:url, 
-              onSuccess:onSuccess,
-              onFailure:onFailure,
-            }]
-          })
-        } else if(onFailure){
-          onFailure(e.message)
-        }
-      });
-}
-
-export function editObject({data, url, onSuccess, onFailure}){
-
-  fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: "Bearer "+localStorage.getItem('access')
-    },
-    body: JSON.stringify(data)
-  })
-  .then(res => {
-    if(res.ok){
-      return res.json();
-    } else {
-      throw new Error(res.status)
-    }
-  })
-  .then(json => {
-    console.log(json)
-    if(onSuccess){
-      onSuccess()
-    }
-  })
-  .catch(error => {
-    console.log(error.message)
-    if(error.message==='401'){
-      refreshToken({
-        onSuccess:editObject,
-        success_args:[{
-          data:data,
-          url:url,
-          onSuccess:onSuccess,
-          onFailure:onFailure,
-        }]
-      })
-    } else if(onFailure){
-      onFailure(error.message)
-    }
-  });
-}
-
 function deleteFromCache(cacheName, resource){
   caches.open(cacheName).then(function(cache) {
     cache.delete(resource).then(function(response) {
@@ -249,6 +162,10 @@ function deleteFromCache(cacheName, resource){
       return;
     });
   })
+}
+
+function fetchFromCache({url, onSuccess}){
+
 }
 
 
@@ -269,6 +186,12 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
   if(!method){
     let method='GET'
   }
+  if(method==='GET'){
+    fetchFromCache({
+      url:url,
+      onSuccess:onSuccess,
+    })
+  }
 
   // SET BODY - No body required for GET
   let fetchData
@@ -285,46 +208,40 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     }
   }
 
-
+  console.log("FETCH")
   fetch(url, fetchData)
   .then(res => {
-    //console.log(res)
+    console.log(res)
     if(res.ok){
       if(res.status===204){
-        //console.log("204 no data")
-        deleteFromCache('user-dynamic','url').then(function (){
-          onSuccess(res);
-          return
-        })
+        console.log("204 no data")  
+        onSuccess(res)
+        return res.json();
       }
-      return res.json();
+      //deleteFromCache('user-dynamic','url').then(function (){
+      return res.json()
     } else {
       throw new Error(res.status)
     }
-  })
-  .then(json => {
-    //console.log(json)
-    if(onSuccess){
-      onSuccess(json)
-    }
-  })
-  .catch(error => {
+  }).then(json => {
+    if(onSuccess){onSuccess(json)}
+  }).catch(error => {
     console.log(error.message)
     if(error.message==='401'){
       refreshToken({
-        onSuccess:fetchObject,
-        success_args:[{
-          method:method,
-          data:data,
-          url:url,
-          onSuccess:onSuccess,
-          onFailure:onFailure,
-        }]
+        onSuccess:()=>{
+          fetchObject({
+            method:method,
+            data:data,
+            url:url,
+            onSuccess:onSuccess,
+            onFailure:onFailure,
+          })
+        },
+        onFailure:onFailure,
       })
     } else if(onFailure){
-      onFailure(error)
+      onFailure(error.message)
     }
   });
 }
-
-

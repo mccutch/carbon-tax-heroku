@@ -42,7 +42,7 @@ class App extends React.Component {
     this.logoutSuccess=this.logoutSuccess.bind(this)
     this.toggleDisplayUnits=this.toggleDisplayUnits.bind(this)
     
-    this.fetchObject = this.fetchObject.bind(this)
+    this.fetchUserObject = this.fetchUserObject.bind(this)
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
     this.setFuels = this.setFuels.bind(this)
     this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
@@ -62,7 +62,7 @@ class App extends React.Component {
       onFailure:this.serverConnectionFailure,
       noAuth:true,
     })
-    this.fetchObject({url:"/user/current-user/", objectName:"user", onSuccess:this.login})
+    this.fetchUserObject({url:"/user/current-user/", objectName:"user", onSuccess:this.login})
   }
 
   serverConnectionFailure(){
@@ -75,128 +75,25 @@ class App extends React.Component {
     this.setState({serverConnectionFailure:false})
   }
 
-  /*
-  fetchObject({url, objectName, onSuccess}){
-    /* 
-    Function stores the returned data from GET request into this.state.
-    Designed to be used to retrieve objects belonging to the user from the database.
-    If JWT access has expired, a new token is requested, then the function called again.
-    
-
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      }
-    })
-    .then(res => {
-      if(res.ok){
-        return res.json();
-      } else {
-        throw new Error(res.status)
-      }
-    })
-    .then(json => {
-      this.setState({[objectName]:json})
-      if(onSuccess){
-        //console.log("onSuccess provided to fetchObject.")
-        onSuccess(json)
-      }
-      //console.log(json)
-    })
-    .catch(e => {
-      console.log(e.message)
-      if(e.message==='401'){
-        refreshToken({
-          onSuccess:this.fetchObject, 
-          success_args:[{
-            url:url, 
-            objectName:objectName, 
-            onSuccess:onSuccess
-          }]
-        })
-      }else if(e.message==='500'){
-        this.serverConnectionFailure()
-      }
-    });
-  }
-  */
-
-  async fetchObject({url, objectName, onSuccess}){
-    console.log("FETCHOBJECT")
-    // fetch cache first
-
-    // start fetch from server
-    let serverResponse = fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer "+localStorage.getItem('access')
-      }
-    })
-    .then(res => {
-      console.log(res)
-      if(res.ok){
-        return res.json();
-      } else {
-        throw new Error(res.status)
-      }
-    })
-    .then(json => {
-      console.log(json)
-      console.log(`Set state(${objectName}): network`)
-      if(onSuccess){
-        this.setState({[objectName]:json}, onSuccess)
-      } else {
-        this.setState({[objectName]:json})
-      }
-      
-    })
-    .catch(e => {
-      console.log(e.message)
-      if(e.message==='401'){
-        refreshToken({
-          onSuccess:this.fetchObject, 
-          success_args:[{
-            url:url, 
-            objectName:objectName, 
-            onSuccess:onSuccess
-          }]
-        })
-      }else if(e.message==='500'){
-        this.serverConnectionFailure()
-      }
-    });
-
-    // if cache contains url
-      // retrieve and setState
-    /*
-    const cachedResponse = await caches.match(url);
-    if (cachedResponse){
-      console.log("CACHED content found")
-      console.log(cachedResponse.json)
-      this.useState(cachedResponse)
-    }
-    */
-    window.caches.match(USER_CACHE).then(function(cache) {
-      cache.match(url)
-    }).then(function (cachedResponse){
-        if(cachedResponse){
-          console.log("CACHED content found")
-          console.log(cachedResponse.json)
-          this.useState(cachedResponse)
-        }else{
-          console.log(`No cache response for ${objectName}.`)
+  fetchUserObject({url, objectName, onSuccess}){
+    console.log("fetchUserObject")
+    fetchObject({
+      method:'GET',
+      url:url,
+      onSuccess:(json)=>{
+        if(onSuccess){
+          this.setState({[objectName]:json}, onSuccess)
+        } else{
+          this.setState({[objectName]:json})
         }
-        
-    }).catch(function (err){
-      console.log(`Cache retrieve error: `)
+      },
+      onFailure:(error)=>{
+        console.log(`Couldn't fetch ${objectName}:${error}`)
+        if(error==='500'){
+          this.serverConnectionFailure()
+        }
+      }
     })
-    
-
-    // setState with returned object from server
-    //this.useState({objectName:objectName, json:serverResponse, onSuccess:onSuccess})
   }
 
   useState({objectName, json, onSuccess}){
@@ -216,10 +113,10 @@ class App extends React.Component {
     })
   }
 
-  useProfileSettings(profile){
+  useProfileSettings(){
     //console.log(profile)
-    //this.setState({displayUnits: profile.display_units})
-    
+    this.setState({displayUnits: this.state.profile.display_units})
+    //console.log(`Not loading display units from profile: ${profile}`)
   }
 
   logout(){
@@ -240,14 +137,14 @@ class App extends React.Component {
   }
 
   refreshFullProfile(){
-    this.fetchObject({url:"/user/current-user/", objectName:"user"})
-    this.fetchObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
-    //this.fetchObject({url:"/user/my-taxes/", objectName:"taxes"})
-    //this.fetchObject({url:"/user/my-vehicles/", objectName:"vehicles"})
-    //this.fetchObject({url:"/user/my-emissions/", objectName:"emissions"})
-    //this.fetchObject({url:"/user/my-stats/", objectName:"stats"})
-    //this.fetchObject({url:"/user/my-recipients/", objectName:"recipients"})
-    //this.fetchObject({url:"/user/my-payments/", objectName:"payments"})
+    this.fetchUserObject({url:"/user/current-user/", objectName:"user"})
+    this.fetchUserObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
+    //this.fetchUserObject({url:"/user/my-taxes/", objectName:"taxes"})
+    //this.fetchUserObject({url:"/user/my-vehicles/", objectName:"vehicles"})
+    //this.fetchUserObject({url:"/user/my-emissions/", objectName:"emissions"})
+    //this.fetchUserObject({url:"/user/my-stats/", objectName:"stats"})
+    //this.fetchUserObject({url:"/user/my-recipients/", objectName:"recipients"})
+    //this.fetchUserObject({url:"/user/my-payments/", objectName:"payments"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,
@@ -274,7 +171,7 @@ class App extends React.Component {
   }
 
   setMainView(view){
-    this.refreshFullProfile()
+    //this.refreshFullProfile()
     this.setState({
       mainView:view,
     })

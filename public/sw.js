@@ -3,7 +3,7 @@ self.addEventListener('install', function(event) {
   console.log("SW: Install sw.js v-12")
   // cache a cat SVG
   event.waitUntil(
-    caches.open('cache1').then(function(cache) {
+    caches.open('dynamic-pageLoad').then(function(cache) {
       return cache.addAll([
        '/index.html',
        '/static/pointPerpNarrow.jpg',
@@ -69,7 +69,7 @@ self.addEventListener('fetch', (event) => {
         return networkResponse
       }());
     } else {
-      console.log(`SW: ${request.method} request.`)
+      console.log(`SW NO-CACHE: ${request.method} request.`)
       event.respondWith(
         fetch(request)
       );

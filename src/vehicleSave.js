@@ -1,5 +1,5 @@
 import React from 'react';
-import { createObject, truncate } from './helperFunctions.js';
+import { fetchObject, truncate } from './helperFunctions.js';
 
 
 
@@ -60,7 +60,8 @@ export class VehicleSaveForm extends React.Component{
 
     console.log(vehicleData)
 
-    createObject({
+    fetchObject({
+      method:'POST',
       data:vehicleData,
       url:"/user/my-vehicles/",
       onSuccess:this.onSaveSuccess,

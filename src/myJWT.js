@@ -3,8 +3,9 @@ Implementation using simplejwt on Django server
 */
 
 import {USER_CACHE} from './constants.js';
+import {fetchObject} from './helperFunctions.js';
 
-export function getToken({data, onSuccess, onFailure}){
+/*export function getToken({data, onSuccess, onFailure}){
   /*
   Get access and refresh jwt tokens from the backend server. 
   Store these in localStorage.
@@ -13,7 +14,7 @@ export function getToken({data, onSuccess, onFailure}){
     username: "username",
     password: "password",
   }
-  */    
+     
 
   fetch('/api/token/', {
     method: 'POST',
@@ -46,6 +47,24 @@ export function getToken({data, onSuccess, onFailure}){
         onFailure()
       }
     });
+}*/
+
+export function getToken({data, onSuccess, onFailure}){
+  fetchObject({
+    url:'/api/token/',
+    method:'POST',
+    data:data,
+    onSuccess:(json)=>{
+      localStorage.setItem('access', json.access)
+      localStorage.setItem('refresh', json.refresh)
+      if(onSuccess){onSuccess()}
+    },
+    onFailure:(error)=>{
+      console.log(error)
+      clearToken({})
+      if(onFailure){onFailure()}
+    },
+  })
 }
 
 export function clearToken({onSuccess, }){
@@ -62,6 +81,33 @@ export function clearToken({onSuccess, }){
 }
 
 export function refreshToken({onSuccess, success_args, onFailure, failure_args}){
+  console.log("Refreshing token...")
+  let data = {}
+  try {
+    data = {refresh:localStorage.getItem('refresh')}
+  } catch {
+    console.log("No refresh token in localStorage")
+    if(onFailure){onFailure()}
+    return
+  }
+
+  fetchObject({
+    url:'/api/token/refresh/',
+    method:'POST',
+    data:data,
+    onSuccess:(json)=>{
+      console.log(json)
+      localStorage.setItem('access', json.access)
+      if(onSuccess){onSuccess(json)}
+    },
+    onFailure:(error)=>{
+      console.log(`Refresh token error: ${error}`)
+      if(onFailure){onFailure(error)}
+    }
+  })
+}
+/*
+export function refreshToken({onSuccess, success_args, onFailure, failure_args}){
   /*
   Attempt to refresh the access token, then execute onSuccess (retry request) with success_args.
   If refresh fails, execute onFailure (go to login screen).
@@ -69,7 +115,7 @@ export function refreshToken({onSuccess, success_args, onFailure, failure_args})
 
   Example:
   refreshToken({onSuccess:this.fetchObject, success_args:[url,objectName]})
-  */
+  
   console.log("Refreshing token...")
   let data = {}
   try {
@@ -134,4 +180,4 @@ export function refreshToken({onSuccess, success_args, onFailure, failure_args})
     });
 
 }
-
+*/
