@@ -110,8 +110,8 @@ try:
             'PORT': '5432',
         }
     }
-    DEBUG = True
-    print("IMPORTING LOCAL SETTINGS, DEBUG=TRUE")
+    DEBUG = False
+    print("IMPORTING LOCAL SETTINGS, DEBUG=FALSE")
 except Exception as e:
     print(e)
     DEBUG = False

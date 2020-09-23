@@ -7,8 +7,8 @@ self.addEventListener('install', function(event) {
       return cache.addAll([
        '/index.html',
        '/static/pointPerpNarrow.jpg',
-       //'/sw.js',
-       //'/static/manifest.json',
+       '/sw.js',
+       '/static/manifest.json',
       ]);
     })
   )

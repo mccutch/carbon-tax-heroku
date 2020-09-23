@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateView #Serve sw.js
 urlpatterns = [
     path('', views.index, name='index'),
     path('sw.js', TemplateView.as_view(template_name="sw.js", content_type='application/javascript'), name='sw.js'),
-    #path('index.html', TemplateView.as_view(template_name="index.html", content_type='application/javascript'), name='index.html'),
+    path('index.html', TemplateView.as_view(template_name="index.html", content_type='application/javascript'), name='index.html'),
     #path('static/pointPerpNarrow.jpg', TemplateView.as_view(template_name='static/pointPerpNarrow.jpg', content_type='application/javascript'), name='pointPerp'),
 
 
