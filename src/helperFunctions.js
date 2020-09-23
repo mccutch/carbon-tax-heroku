@@ -165,7 +165,7 @@ function deleteFromCache(cacheName, resource){
 }
 
 function fetchFromCache({url, onSuccess}){
-
+  console.log(`This might be in a cache: ${url}`)
 }
 
 
@@ -212,6 +212,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
   fetch(url, fetchData)
   .then(res => {
     console.log(res)
+    console.log(res.status)
     if(res.ok){
       if(res.status===204){
         console.log("204 no data")  

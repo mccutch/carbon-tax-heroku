@@ -38,6 +38,70 @@ self.addEventListener('fetch', (event) => {
   
 
   // Routing for local URLs
+  if (requestURL.origin==location.origin && request.method=='GET') {
+
+    console.log(`SW: ${request.method}: ${requestURL.pathname}`)
+
+    event.respondWith(async function() {
+      // Dynamic user cache is cleared on logout in myJWT.js
+      let mode = requestURL.pathname.startsWith('/user') ? 'user' : 'pageLoad'
+      let cacheName =  mode==='user' ? 'dynamic-user' : 'dynamic-pageLoad'
+
+      const cache = await caches.open(cacheName);
+
+      networkResponse = fetch(event.request).then((response) =>{
+        if(response.ok){
+          if (response.status === 200) { 
+            cache.put(event.request, response.clone()).then(()=>{
+              console.log(`SW: Saved to ${cacheName}: ${requestURL.pathname}`)
+            })
+          } else {
+            console.log(`SW: NOT SAVED to cache: ${requestURL.pathname}`)
+          }
+        }else{
+          console.log(response)
+        }
+        
+        return response
+      }).catch((error)=>{
+        console.log(`SW: Error - ${error}`)
+        //console.log(`${response} (${requestURL.pathname})`)
+        //console.log(response.status)
+        //console.log(response.status.message)
+        //return response
+      })
+      
+      if(mode==='pageLoad'){
+        console.log(`SW: Returned cached result for ${requestURL.pathname}`)
+        const cachedResponse = await cache.match(event.request);
+        if (cachedResponse) return cachedResponse;
+      }
+      //console.log(`SW: Returned network result for ${requestURL.pathname}`)
+      //console.log(networkResponse)
+      return networkResponse
+    }());
+   
+  } else {
+  // Take no action for POST and cross-site fetch requests .
+    console.log(`SW: POST or cross-site - ${request.method}: ${requestURL}`);
+    event.respondWith(fetch(event.request))
+  }
+});
+
+
+
+
+
+
+/*
+// Cache first, then fall back to network. Doesn't update the cache on network success
+self.addEventListener('fetch', (event) => {
+    // Parse the URL:
+  let request = event.request
+  const requestURL = new URL(event.request.url);
+  
+
+  // Routing for local URLs
   if (requestURL.origin == location.origin) {
 
     console.log(`Fetch(local) ${request.method}: ${requestURL.pathname}`)
@@ -87,11 +151,6 @@ self.addEventListener('fetch', (event) => {
 });
 
 
-
-
-
-
-/*
 self.addEventListener('fetch', (event) => {
   //console.log(event.request.method)
   event.respondWith(async function() {
