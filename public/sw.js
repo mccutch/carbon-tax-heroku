@@ -2,7 +2,7 @@ const version = 13
 
 self.addEventListener('install', function(event) {
   console.log(`SW: Install sw.js v-${version}`)
-  self.skipWaiting();
+  //self.skipWaiting();
   // cache a cat SVG
   event.waitUntil(
     caches.open('dynamic-pageLoad').then(function(cache) {
@@ -17,7 +17,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', event => {
-  console.log(`sw.js v-${version} now ready to handle fetches!`);
+  console.log(`sw.js v-${version} is active!!`);
 });
 
 /*

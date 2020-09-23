@@ -139,12 +139,12 @@ class App extends React.Component {
   refreshFullProfile(){
     this.fetchUserObject({url:"/user/current-user/", objectName:"user"})
     this.fetchUserObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
-    //this.fetchUserObject({url:"/user/my-taxes/", objectName:"taxes"})
-    //this.fetchUserObject({url:"/user/my-vehicles/", objectName:"vehicles"})
-    //this.fetchUserObject({url:"/user/my-emissions/", objectName:"emissions"})
-    //this.fetchUserObject({url:"/user/my-stats/", objectName:"stats"})
-    //this.fetchUserObject({url:"/user/my-recipients/", objectName:"recipients"})
-    //this.fetchUserObject({url:"/user/my-payments/", objectName:"payments"})
+    this.fetchUserObject({url:"/user/my-taxes/", objectName:"taxes"})
+    this.fetchUserObject({url:"/user/my-vehicles/", objectName:"vehicles"})
+    this.fetchUserObject({url:"/user/my-emissions/", objectName:"emissions"})
+    this.fetchUserObject({url:"/user/my-stats/", objectName:"stats"})
+    this.fetchUserObject({url:"/user/my-recipients/", objectName:"recipients"})
+    this.fetchUserObject({url:"/user/my-payments/", objectName:"payments"})
     fetchObject({
       url:"/fueltypes/", 
       onSuccess:this.setFuels,
