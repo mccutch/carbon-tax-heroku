@@ -1,4 +1,4 @@
-const version = 14
+const version = 16
 
 self.addEventListener('install', function(event) {
   console.log(`SW: Install sw.js v-${version}`)
@@ -70,7 +70,8 @@ self.addEventListener('fetch', (event) => {
         
         return response
       }).catch((error)=>{
-        console.log(`SW: Error - ${error}`)
+        console.log(`SW: Error - ${error} (${requestURL.pathname})`)
+        return new Response("Something fucked up.", {"status" : 500, "headers" : {"Content-Type" : "text/plain"}});
         //console.log(`${response} (${requestURL.pathname})`)
         //console.log(response.status)
         //console.log(response.status.message)

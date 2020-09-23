@@ -66,6 +66,7 @@ class App extends React.Component {
   }
 
   serverConnectionFailure(){
+    console.log("Server connection failure")
     this.setState({serverConnectionFailure:true})
   }
 
