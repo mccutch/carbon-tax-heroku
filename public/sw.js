@@ -1,8 +1,8 @@
-const version = 13
+const version = 14
 
 self.addEventListener('install', function(event) {
   console.log(`SW: Install sw.js v-${version}`)
-  //self.skipWaiting();
+  self.skipWaiting();
   // cache a cat SVG
   event.waitUntil(
     caches.open('dynamic-pageLoad').then(function(cache) {
