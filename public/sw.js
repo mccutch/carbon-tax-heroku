@@ -1,4 +1,4 @@
-const version = 16
+const version = 17
 
 self.addEventListener('install', function(event) {
   console.log(`SW: Install sw.js v-${version}`)
@@ -44,7 +44,7 @@ self.addEventListener('fetch', (event) => {
   
 
   // Routing for local URLs
-  if (requestURL.origin==location.origin && request.method=='GET') {
+  if (requestURL.origin==location.origin && request.method=='GET' && !requestURL.pathname.startsWith('/ping')) {
 
     console.log(`SW: ${request.method}: ${requestURL.pathname}`)
 
@@ -90,7 +90,7 @@ self.addEventListener('fetch', (event) => {
    
   } else {
   // Take no action for POST and cross-site fetch requests .
-    console.log(`SW: POST or cross-site - ${request.method}: ${requestURL}`);
+    console.log(`SW: POST, cross-site or network test - ${request.method}: ${requestURL}`);
     event.respondWith(fetch(event.request))
   }
 });

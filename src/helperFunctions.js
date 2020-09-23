@@ -168,6 +168,16 @@ function fetchFromCache({url, onSuccess}){
   console.log(`This might be in a cache: ${url}`)
 }
 
+export function testServer({onSuccess, onFailure}){
+  fetchObject({
+    method:'GET',
+    url:'/ping/',
+    onSuccess:onSuccess,
+    onFailure:onFailure,
+    noAuth:true,
+  })
+}
+
 
 export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
   // SET HEADERS - No authorisation required for some APIs
@@ -217,7 +227,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
       if(res.status===204){
         console.log("204 no data")  
         onSuccess(res)
-        return res.json();
+        return;
       }
       //deleteFromCache('user-dynamic','url').then(function (){
       return res.json()

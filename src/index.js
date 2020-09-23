@@ -5,7 +5,7 @@ import {LoginWrapper} from './loginWrapper.js';
 import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
-import {fetchObject} from './helperFunctions.js';
+import {fetchObject, testServer} from './helperFunctions.js';
 import {MainView} from './mainView.js';
 import {NavBar} from './navBar.js';
 import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
@@ -53,6 +53,7 @@ class App extends React.Component {
     this.setMainView = this.setMainView.bind(this)
     this.setModalContent = this.setModalContent.bind(this)
     this.useState = this.useState.bind(this)
+    this.testServer = this.testServer.bind(this)
   }
 
   componentDidMount(){
@@ -65,15 +66,31 @@ class App extends React.Component {
     this.fetchUserObject({url:"/user/current-user/", objectName:"user", onSuccess:this.login})
   }
 
+  componentDidUpdate(prevProps){
+    if(this.state.serverConnectionFailure) this.testServer();
+  }
+
   serverConnectionFailure(){
     console.log("Server connection failure")
     this.setState({serverConnectionFailure:true})
   }
 
+  testServer(){
+    console.log("Testing server connection")
+    testServer({
+      onSuccess:()=>{
+        this.setState({serverConnectionFailure:false}, this.refreshFullProfile)
+      },
+      onFailure:()=>{
+        console.log("Server connection test failed.")
+      }
+    })
+  }
+
   setFuels(json){
     // fueltypes returns as a paginated view
     this.setState({fuels:json.results})
-    this.setState({serverConnectionFailure:false})
+    //this.setState({serverConnectionFailure:false})
   }
 
   fetchUserObject({url, objectName, onSuccess}){
@@ -138,6 +155,7 @@ class App extends React.Component {
   }
 
   refreshFullProfile(){
+    if(this.state.serverConnectionFailure) this.testServer();
     this.fetchUserObject({url:"/user/current-user/", objectName:"user"})
     this.fetchUserObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
     this.fetchUserObject({url:"/user/my-taxes/", objectName:"taxes"})

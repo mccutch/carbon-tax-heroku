@@ -638,6 +638,11 @@ class ContactForm(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class Ping(APIView):
+    permission_classes = (AllowAny, )
+    def get(self, request):
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 """import json
 import requests
 
