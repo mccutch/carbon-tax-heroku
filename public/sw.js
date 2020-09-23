@@ -7,6 +7,7 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open('dynamic-pageLoad').then(function(cache) {
       return cache.addAll([
+        '/',
        '/index.html',
        '/static/pointPerpNarrow.jpg',
        '/sw.js',
@@ -71,7 +72,7 @@ self.addEventListener('fetch', (event) => {
         return response
       }).catch((error)=>{
         console.log(`SW: Error - ${error} (${requestURL.pathname})`)
-        return new Response("Something fucked up.", {"status" : 500, "headers" : {"Content-Type" : "text/plain"}});
+        return new Response("Sorry, something went wrong.", {"status" : 500, "headers" : {"Content-Type" : "text/plain"}});
         //console.log(`${response} (${requestURL.pathname})`)
         //console.log(response.status)
         //console.log(response.status.message)

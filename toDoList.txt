@@ -1,5 +1,6 @@
 
-use map bias from profile
+SW
+- What files need to be cached on after the sw is installed??
 
 error try to display payments when none exist
 
