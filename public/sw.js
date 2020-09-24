@@ -39,6 +39,9 @@ self.addEventListener('install', function(event) {
         '/static/pointPerpNarrow.jpg',
         '/static/finger192.png',
         '/fueltypes/',
+        '/static/finger128.ico',
+        '/static/finger512.png',
+        '/static/favicon.ico',
       ])
       console.log(assetsToCache)
       for(let i in assetsToCache){
