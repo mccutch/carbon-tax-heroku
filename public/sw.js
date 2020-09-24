@@ -1,8 +1,6 @@
 const version = 21
 
 function retrieveCacheList(){
-  console.log("Retrive cache list!!")
-  console.log("Retrieve cache list!!")
   let response = fetch('/asset-manifest.json').then(res =>{
     if(res.ok){
       return res.json()
@@ -12,16 +10,16 @@ function retrieveCacheList(){
     let list=[]
     for(let key in json.files){
       let str = new String(json.files[key])
-      console.log(str)
       if(str.endsWith('.map')) continue;
       if(str.startsWith('/precache-manifest')) continue;
       if(str.endsWith('service-worker.js')) continue;
       list.push(str)
     }
-    //console.log(list)
     return list
+  }).catch(error=>{
+    console.log(error)
+    return null
   })
-  console.log(response)
   return response
 }
 
@@ -30,10 +28,8 @@ self.addEventListener('install', function(event) {
   console.log(`SW: Install sw.js v-${version}`)
   self.skipWaiting();
 
-  // cache a cat SVG
   event.waitUntil(
     caches.open('dynamic-pageLoad').then(async function(cache) {
-
       let assetsToCache = await retrieveCacheList()
       console.log(assetsToCache)
       assetsToCache=assetsToCache.concat([
