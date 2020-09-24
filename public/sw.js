@@ -14,6 +14,8 @@ function retrieveCacheList(){
       let str = new String(json.files[key])
       console.log(str)
       if(str.endsWith('.map')) continue;
+      if(str.startsWith('/precache-manifest')) continue;
+      if(str.endsWith('service-worker.js')) continue;
       list.push(str)
     }
     //console.log(list)
