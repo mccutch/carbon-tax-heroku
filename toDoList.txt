@@ -2,6 +2,8 @@
 SW
 - What files need to be cached on after the sw is installed??
 
+How the fuck do I test?
+
 error try to display payments when none exist
 
 Update smtp_key in heroku

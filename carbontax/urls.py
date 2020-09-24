@@ -14,6 +14,7 @@ urlpatterns = [
     path('sw.js', TemplateView.as_view(template_name="sw.js", content_type='application/javascript'), name='sw.js'),
     path('index.html', TemplateView.as_view(template_name="index.html", content_type='application/javascript'), name='index.html'),
     path('ping/', views.Ping.as_view(), name='ping'),
+    path('asset-manifest.json', TemplateView.as_view(template_name="asset-manifest.json", content_type='application/javascript'), name='asset-manifest'),
     #path('static/pointPerpNarrow.jpg', TemplateView.as_view(template_name='static/pointPerpNarrow.jpg', content_type='application/javascript'), name='pointPerp'),
 
 

@@ -1,21 +1,52 @@
-const version = 17
+const version = 20
+
+function retrieveCacheList(){
+  console.log("Retrive cache list!!")
+  console.log("Retrieve cache list!!")
+  let response = fetch('/asset-manifest.json').then(res =>{
+    if(res.ok){
+      return res.json()
+    }
+  }).then(json =>{
+    console.log(json)
+    let list=[]
+    for(let key in json.files){
+      
+      console.log(json.files[key])
+      list.push(json.files[key])
+    }
+    //console.log(list)
+    return list
+  })
+  console.log(response)
+  return response
+}
+
 
 self.addEventListener('install', function(event) {
   console.log(`SW: Install sw.js v-${version}`)
   self.skipWaiting();
+
   // cache a cat SVG
   event.waitUntil(
-    caches.open('dynamic-pageLoad').then(function(cache) {
-      return cache.addAll([
+    caches.open('dynamic-pageLoad').then(async function(cache) {
+
+      let assetsToCache = await retrieveCacheList()
+      console.log(assetsToCache)
+      assetsToCache=assetsToCache.concat([
         '/',
-       '/index.html',
-       '/static/pointPerpNarrow.jpg',
-       '/sw.js',
-       '/static/manifest.json',
-      ]);
+        '/sw.js',
+        '/static/manifest.json',
+        '/static/pointPerpNarrow.jpg',
+        '/static/finger192.png',
+        '/fueltypes/',
+      ])
+      console.log(assetsToCache)
+      return cache.addAll(assetsToCache);
     })
   )
 });
+
 
 self.addEventListener('activate', event => {
   console.log(`sw.js v-${version} is active!!`);
