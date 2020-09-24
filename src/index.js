@@ -147,11 +147,6 @@ class App extends React.Component {
     // Reload page to clear user data from state
     // What to do about clearing user data from caches??
     window.location.reload(false)
-
-    //this.setState(this.defaultState)
-    //this.setState(JSON.parse(this.defaultState))
-    //this.setState({loggedIn:false})
-    //this.state = JSON.parse(JSON.stringify(this.defaultState))
   }
 
   refreshFullProfile(){
@@ -261,7 +256,7 @@ class App extends React.Component {
         />
         {modal}
         <div>
-         <MainView
+          <MainView
             loggedIn={this.state.loggedIn} 
             displayUnits={this.state.displayUnits}
             taxes={this.state.taxes}

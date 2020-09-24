@@ -164,8 +164,20 @@ function deleteFromCache(cacheName, resource){
   })
 }
 
-function fetchFromCache({url, onSuccess}){
-  console.log(`This might be in a cache: ${url}`)
+export function fetchFromCache({url="/user/current-user/", onSuccess}){
+  console.log(`Checking caches for ${url}`)
+  let response = caches.match(url, {ignoreVary:true}).then(res=>{
+    if(res.ok){
+      return res.json()
+    }
+  }).then(json=>{
+    console.log(`FOUND IN CACHE: ${url}`)
+    //console.log(json)
+    onSuccess(json)
+  }).catch(error=>{
+    console.log(`Not found in cache: ${url}`)
+    return null
+  })
 }
 
 export function testServer({onSuccess, onFailure}){
@@ -196,7 +208,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
   if(!method){
     let method='GET'
   }
-  if(method==='GET'){
+  if(method==='GET' && url!=='/ping/'){
     fetchFromCache({
       url:url,
       onSuccess:onSuccess,

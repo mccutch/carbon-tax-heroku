@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {fetchObject, convertCurrency, truncate} from './helperFunctions.js';
+import {fetchObject, convertCurrency, truncate, fetchFromCache } from './helperFunctions.js';
 
 import {CurrencySelection, ObjectSelectionList} from './reactComponents.js';
 
@@ -19,7 +19,7 @@ export class Sandbox extends React.Component{
   }
 
   handleChange(event){
-    console.log(event.target.value)
+    //console.log(event.target.value)
     this.setState({[event.target.name]:event.target.value})
   }
 
@@ -48,7 +48,15 @@ export class Sandbox extends React.Component{
     return(
       <div className="container bg-light">
         <h1>Sandbox</h1>
-        <input onChange={this.truncateString} type="text"/>
+        <input name="url" onChange={this.handleChange} placeholder="url" type="text" className="form-control"/>
+        <input name="cache" onChange={this.handleChange} placeholder="cache name" type="text" className="form-control"/>
+        <button 
+          className="btn btn-outline-primary" 
+          onClick={()=>fetchFromCache({
+            url:this.state.url,
+            onSuccess:json=>{this.setState({cacheReturn:json})}
+          })}
+        >Fetch from cache</button>
       </div>
     )
   }
