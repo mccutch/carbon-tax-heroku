@@ -11,9 +11,10 @@ function retrieveCacheList(){
     console.log(json)
     let list=[]
     for(let key in json.files){
-      
-      console.log(json.files[key])
-      list.push(json.files[key])
+      let str = new String(json.files[key])
+      console.log(str)
+      if(str.endsWith('.map')) continue;
+      list.push(str)
     }
     //console.log(list)
     return list
