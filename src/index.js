@@ -261,25 +261,7 @@ class App extends React.Component {
         />
         {modal}
         <div>
-          <button className="btn btn-danger" onClick={()=>{
-            console.log("Retrieve cache list!!")
-            let response = fetch('/asset-manifest.json').then(res =>{
-              if(res.ok){
-                return res.json()
-              }
-            }).then(json =>{
-              console.log(json)
-              let list=[]
-              for(let key in json.files){
-                
-                console.log(json.files[key])
-                list.push(json.files[key])
-              }
-              console.log(list)
-            })
-
-          }}>Button</button>
-          <MainView
+         <MainView
             loggedIn={this.state.loggedIn} 
             displayUnits={this.state.displayUnits}
             taxes={this.state.taxes}

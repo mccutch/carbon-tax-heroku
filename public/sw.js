@@ -1,4 +1,4 @@
-const version = 20
+const version = 21
 
 function retrieveCacheList(){
   console.log("Retrive cache list!!")
@@ -43,7 +43,12 @@ self.addEventListener('install', function(event) {
         '/fueltypes/',
       ])
       console.log(assetsToCache)
-      return cache.addAll(assetsToCache);
+      for(let i in assetsToCache){
+        cache.add(assetsToCache[i])
+      }
+      return
+
+      //return cache.addAll(assetsToCache);
     })
   )
 });
