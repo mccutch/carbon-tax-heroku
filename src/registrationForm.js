@@ -4,7 +4,7 @@ import { defaultTaxes } from './defaultTaxTypes.js';
 import { getToken }  from './myJWT.js';
 
 import * as helper from './helperFunctions.js';
-import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
+import { apiFetch, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions.js';
 import { CurrencySelection, CurrencySymbolSelection, DisplayUnitSelection, StandardModal, FormRow } from './reactComponents.js';
 
@@ -15,6 +15,7 @@ import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_DISPLAY_UNITS, POSIT
 import {Modal, Button} from 'react-bootstrap';
 
 import { GoogleAutocomplete} from './googleAutocomplete.js';
+import * as api from './urls.js';
 
 export class RegistrationForm extends React.Component{
   constructor(props){
@@ -178,9 +179,9 @@ export class RegistrationForm extends React.Component{
     }
     console.log(userData)
 
-    fetchObject({
+    apiFetch({
       method:'POST',
-      url:'/account/register/',
+      url:api.REGISTER,
       data:userData,
       onSuccess:this.createUserSuccess,
       onFailure:this.createUserFailure,
@@ -218,9 +219,9 @@ export class RegistrationForm extends React.Component{
 
     console.log(profileData)
 
-    fetchObject({
+    apiFetch({
       method:'POST',
-      url:'/user/my-profile/',
+      url:api.MY_PROFILE,
       data:profileData,
       onSuccess:this.createTaxes,
       onFailure:this.createProfileFailure,
@@ -231,8 +232,8 @@ export class RegistrationForm extends React.Component{
     this.returnError("Error occurred while creating profile. Please try again.")
 
     let key = this.state.userId
-    fetchObject({
-      url:`/user/${key}/`,
+    apiFetch({
+      url:`${api.USER}/${key}/`,
       onSuccess:this.onDelete,
       onFailure:this.onDelete,
       method:'DELETE'
@@ -252,9 +253,9 @@ export class RegistrationForm extends React.Component{
         isDefault: "True",
       }
 
-      fetchObject({
+      apiFetch({
         method:'POST',
-        url:'/user/my-taxes/',
+        url:api.MY_TAXES,
         data:taxData,
         onSuccess:this.props.onSuccess,
         onFailure:this.createProfileFailure,

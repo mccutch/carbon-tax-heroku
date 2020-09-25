@@ -1,10 +1,11 @@
 //Implementation using simplejwt on Django server
 import {USER_CACHE} from './constants.js';
-import {fetchObject} from './helperFunctions.js';
+import {apiFetch} from './helperFunctions.js';
+import * as api from './urls.js';
 
 export function getToken({data, onSuccess, onFailure}){
-  fetchObject({
-    url:'/api/token/',
+  apiFetch({
+    url:api.GET_TOKEN,
     method:'POST',
     data:data,
     onSuccess:(json)=>{
@@ -42,8 +43,8 @@ export function refreshToken({onSuccess, onFailure}){
     return
   }
 
-  fetchObject({
-    url:'/api/token/refresh/',
+  apiFetch({
+    url:api.REFRESH_TOKEN,
     method:'POST',
     data:data,
     onSuccess:(json)=>{

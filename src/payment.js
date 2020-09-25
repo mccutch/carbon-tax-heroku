@@ -3,8 +3,9 @@ import {Navbar, Modal} from 'react-bootstrap';
 import {ObjectSelectionList, FormRow, LabelledInput} from './reactComponents.js';
 import {CreateRecipient} from './objectCreate.js';
 import * as getDate from './getDate.js';
-import {fetchObject, displayCurrency} from './helperFunctions.js';
+import {apiFetch, displayCurrency} from './helperFunctions.js';
 import {PaymentEdit} from './objectDetail.js';
+import * as api from './urls.js';
 
 export class SearchRecipients extends React.Component{
 
@@ -191,8 +192,8 @@ export class PaymentView extends React.Component{
     }
     console.log(paymentData)
 
-    fetchObject({
-      url:'/user/my-payments/',
+    apiFetch({
+      url:api.MY_PAYMENTS,
       method:'POST',
       data:paymentData,
       onSuccess:this.handlePostSuccess,

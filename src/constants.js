@@ -29,6 +29,11 @@ export const POSITION_DECIMALS = 10
 
 export const JET_FUEL_ID = 3
 
+/*export const fuelTypes = [
+  {name:"petrol", label:"Petrol", co2_per_L:2.31},
+  {name:"diesel", label:"Diesel", co2_per_L:2.5},
+]*/
+
 //Naming constants
 
 //Carbon input modes

@@ -4,9 +4,10 @@ import { OptionListInput } from './optionListInput.js';
 import { taxCategories, TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import { VehicleInput } from './vehicleInput.js';
 import { VehicleSaveForm } from './vehicleSave.js';
-import {fetchObject} from './helperFunctions.js';
+import {apiFetch} from './helperFunctions.js';
 import {StandardModal, LabelledInput, FormRow} from './reactComponents.js';
 import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
+import * as api from './urls.js';
 
 export class CreateTax extends React.Component{
   constructor(props){
@@ -85,8 +86,8 @@ export class CreateTax extends React.Component{
       category: this.state.newCategory,
     }
 
-    fetchObject({
-      url:'/user/my-taxes/',
+    apiFetch({
+      url:api.MY_TAXES,
       method:'POST',
       data:taxData,
       onSuccess:this.handlePostSuccess,
@@ -253,8 +254,8 @@ export class CreateRecipient extends React.Component{
       recipientData[fields[i]]=this.state[fields[i]]
     }
 
-    fetchObject({
-      url:'/donation-recipients/',
+    apiFetch({
+      url:api.RECIPIENTS,
       method:'POST',
       data:recipientData,
       onSuccess:this.handlePostSuccess,
@@ -274,8 +275,8 @@ export class CreateRecipient extends React.Component{
 
     let data = {"recipients":newRecipientList}
     //console.log(data)
-    fetchObject({
-      url:`/profile/${this.props.profile.id}/`,
+    apiFetch({
+      url:`${api.PROFILE}/${this.props.profile.id}/`,
       method:'PATCH',
       data:data,
       onSuccess:this.successModal,

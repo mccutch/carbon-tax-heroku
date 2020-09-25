@@ -2,11 +2,12 @@ import React from 'react';
 import * as getDate from './getDate.js';
 import * as units from './unitConversions.js';
 import { OptionListInput } from './optionListInput.js';
-import { fetchObject, getAttribute, truncate, getObject, displayHrs, encodeEmissionFormat, getHeliEconomy } from './helperFunctions.js';
+import { apiFetch, getAttribute, truncate, getObject, displayHrs, encodeEmissionFormat, getHeliEconomy } from './helperFunctions.js';
 import { ObjectSelectionList, FormRow, StandardModal } from './reactComponents.js';
 import { MAX_EMISSION_NAME_LEN } from './constants.js';
 import { ROAD, AIR, PUBLIC, OTHER } from './constants.js';
 import { AIRLINER_KGCO2_PPAX_LT500, AIRLINER_KGCO2_PPAX_GT500, fareClassMultiplier, JET_FUEL_ID, airlinerClasses, aircraftTypes } from './constants.js';
+import * as api from './urls.js';
 
 
 
@@ -128,8 +129,8 @@ export class CarbonCalculator extends React.Component{
     let taxData = {
       usage:(parseInt(usage)+1).toString()
     }
-    fetchObject({
-      url:`/tax/${key}/`,
+    apiFetch({
+      url:`${api.TAX}/${key}/`,
       method:'PATCH',
       data:taxData,
       onSuccess:this.props.refresh,
@@ -206,8 +207,8 @@ export class CarbonCalculator extends React.Component{
       "offset": parseFloat(offset).toFixed(2),
     }
 
-    fetchObject({
-      url:'/user/my-emissions/',
+    apiFetch({
+      url:api.MY_EMISSIONS,
       method:'POST',
       data:emissionData,
       onSuccess:this.props.submitCarbon,

@@ -1,6 +1,7 @@
 import React from 'react';
 import {MAX_LEN_USERNAME, MAX_LEN_PASSWORD, MAX_LEN_EMAIL} from './constants.js';
-import {fetchObject} from './helperFunctions.js';
+import {apiFetch} from './helperFunctions.js';
+import * as api from './urls.js';
 
 //export const PASSWORD_ERR_MESSAGE = "Password must be 8-30 characters, including a number and special character (?!@#$%^&)"
 export const PASSWORD_ERR = "Password must be 8-30 characters, including a capital letter and a number."
@@ -10,9 +11,9 @@ export const EMAIL_ERR = "Invalid email address."
 
 
 export function checkUniqueUser({username, email, onSuccess, onFailure}){
-  fetchObject({
+  apiFetch({
     method:'POST',
-    url:'/registration/check-unique/',
+    url:api.CHECK_UNIQUE,
     data:{username:username, email:email},
     onSuccess:onSuccess,
     onFailure:onFailure,

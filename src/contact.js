@@ -1,8 +1,9 @@
 import React from 'react';
 import {Navbar} from 'react-bootstrap';
 import {validateEmailRegex} from './validation.js';
-import {fetchObject} from './helperFunctions.js';
+import {apiFetch} from './helperFunctions.js';
 import {StandardModal} from './reactComponents.js';
+import * as api from './urls.js';
 
 class ContactForm extends React.Component{
   constructor(props){
@@ -94,8 +95,8 @@ export class ContactPage extends React.Component{
     }
 
     console.log(contactData)
-    fetchObject({
-      url:'/contact-form/',
+    apiFetch({
+      url:api.CONTACT_FORM,
       method:'POST',
       data: contactData,
       onSuccess: this.handleSuccess,

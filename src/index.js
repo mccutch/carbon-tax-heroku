@@ -5,7 +5,7 @@ import {LoginWrapper} from './loginWrapper.js';
 import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
-import {fetchObject, testServer} from './helperFunctions.js';
+import {apiFetch, testServer} from './helperFunctions.js';
 import {MainView} from './mainView.js';
 import {NavBar} from './navBar.js';
 import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
@@ -13,6 +13,7 @@ import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker.js';
 import {GoogleDirections} from './googleDirections.js';
 import {USER_CACHE} from './constants.js';
+import * as api from './urls.js';
 
 
 class App extends React.Component {
@@ -57,13 +58,13 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    fetchObject({
-      url:"/fueltypes/", 
+    apiFetch({
+      url:api.FUEL_TYPES, 
       onSuccess:this.setFuels,
       onFailure:this.serverConnectionFailure,
       noAuth:true,
     })
-    this.fetchUserObject({url:"/user/current-user/", objectName:"user", onSuccess:this.login})
+    this.fetchUserObject({url:api.GET_USER, objectName:"user", onSuccess:this.login})
   }
 
   componentDidUpdate(prevProps){
@@ -95,7 +96,7 @@ class App extends React.Component {
 
   fetchUserObject({url, objectName, onSuccess}){
     console.log("fetchUserObject")
-    fetchObject({
+    apiFetch({
       method:'GET',
       url:url,
       onSuccess:(json)=>{
@@ -151,16 +152,16 @@ class App extends React.Component {
 
   refreshFullProfile(){
     if(this.state.serverConnectionFailure) this.testServer();
-    this.fetchUserObject({url:"/user/current-user/", objectName:"user"})
-    this.fetchUserObject({url:"/user/my-profile/", objectName:"profile", onSuccess:this.useProfileSettings})
-    this.fetchUserObject({url:"/user/my-taxes/", objectName:"taxes"})
-    this.fetchUserObject({url:"/user/my-vehicles/", objectName:"vehicles"})
-    this.fetchUserObject({url:"/user/my-emissions/", objectName:"emissions"})
-    this.fetchUserObject({url:"/user/my-stats/", objectName:"stats"})
-    this.fetchUserObject({url:"/user/my-recipients/", objectName:"recipients"})
-    this.fetchUserObject({url:"/user/my-payments/", objectName:"payments"})
-    fetchObject({
-      url:"/fueltypes/", 
+    this.fetchUserObject({url:api.GET_USER, objectName:"user"})
+    this.fetchUserObject({url:api.MY_PROFILE, objectName:"profile", onSuccess:this.useProfileSettings})
+    this.fetchUserObject({url:api.MY_TAXES, objectName:"taxes"})
+    this.fetchUserObject({url:api.MY_VEHICLES, objectName:"vehicles"})
+    this.fetchUserObject({url:api.MY_EMISSIONS, objectName:"emissions"})
+    this.fetchUserObject({url:api.MY_STATS, objectName:"stats"})
+    this.fetchUserObject({url:api.MY_RECIPIENTS, objectName:"recipients"})
+    this.fetchUserObject({url:api.MY_PAYMENTS, objectName:"payments"})
+    apiFetch({
+      url:api.FUEL_TYPES, 
       onSuccess:this.setFuels,
       noAuth:true,
     })

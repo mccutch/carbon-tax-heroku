@@ -585,7 +585,7 @@ class BackdateTaxChange(APIView):
         print(f'New tax rate: {tax_rate}')
 
         for emission in emissions:
-            emission.price = round(emission.co2_output_kg*tax_rate, 2)
+            emission.price = round(emission.co2_output_kg*tax_rate-emission.offset, 2)
             emission.save()
 
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { fetchObject, truncate } from './helperFunctions.js';
+import { apiFetch, truncate } from './helperFunctions.js';
+import * as api from './urls.js';
 
 
 
@@ -16,8 +17,6 @@ export class VehicleSaveForm extends React.Component{
   */
   constructor(props){
     super(props)
-
-
 
     this.state = {
       vehicleName:""
@@ -60,10 +59,10 @@ export class VehicleSaveForm extends React.Component{
 
     console.log(vehicleData)
 
-    fetchObject({
+    apiFetch({
       method:'POST',
       data:vehicleData,
-      url:"/user/my-vehicles/",
+      url:api.MY_VEHICLES,
       onSuccess:this.onSaveSuccess,
     })
   }

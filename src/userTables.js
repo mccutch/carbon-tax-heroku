@@ -1,9 +1,10 @@
 import React from 'react';
 import { OptionListInput } from './optionListInput.js';
-import { fetchObject } from './helperFunctions.js';
+import { apiFetch } from './helperFunctions.js';
 import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './objectDetail.js';
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 import * as getDate from './getDate.js';
+import * as api from './urls.js';
 
 const PAGINATATION_RESULTS_PER_PAGE = 10 // change this with settings.py
 
@@ -246,7 +247,7 @@ export class EmissionFilterNav extends React.Component{
 
     console.log(filterUrl)
 
-    fetchObject({
+    apiFetch({
       url:`${this.props.baseUrl}?${filterUrl}`,
       method:'GET',
       onSuccess: this.returnResults,
@@ -318,7 +319,7 @@ export class PaginatedNav extends React.Component{
   }
 
   getNextPage(url){
-    fetchObject({
+    apiFetch({
       url:url,
       method:'GET',
       onSuccess:this.returnPage,
@@ -434,7 +435,7 @@ export class EmissionTable extends React.Component{
 
     let filters, showFilters
     if(this.state.showFilters){
-      filters = <EmissionFilterNav baseUrl="/my-emissions/" default={this.props.emissions} returnResults={this.changeResults} taxes={this.props.taxes} hide={this.hideFilters}/>
+      filters = <EmissionFilterNav baseUrl={api.MY_EMISSIONS} default={this.props.emissions} returnResults={this.changeResults} taxes={this.props.taxes} hide={this.hideFilters}/>
     } else {
       showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
     }
@@ -554,7 +555,7 @@ export class PaymentFilterNav extends React.Component{
 
     console.log(filterUrl)
 
-    fetchObject({
+    apiFetch({
       url:`${this.props.baseUrl}?${filterUrl}`,
       method:'GET',
       onSuccess: this.returnResults,
@@ -662,7 +663,7 @@ export class PaymentTable extends React.Component{
 
     let filters, showFilters
     if(this.state.showFilters){
-      filters = <PaymentFilterNav baseUrl="/my-payments/" default={this.props.payments} returnResults={this.changeResults} recipients={this.props.recipients} hide={this.hideFilters}/>
+      filters = <PaymentFilterNav baseUrl={api.MY_PAYMENTS} default={this.props.payments} returnResults={this.changeResults} recipients={this.props.recipients} hide={this.hideFilters}/>
     } else {
       showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
     }

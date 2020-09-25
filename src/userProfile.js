@@ -1,7 +1,7 @@
 import React from 'react';
 import {Modal} from 'react-bootstrap';
 import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
-import { fetchObject, getCurrencyFactor } from './helperFunctions.js';
+import { apiFetch, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
 import { ObjectSelectionList, CurrencySelection, StandardModal, CurrencySymbolSelection, DisplayUnitSelection, FormRow } from './reactComponents.js';
 import { PasswordInput, PasswordCheckInput, EmailInput, validateUsernameRegex, validateEmailRegex } from './validation.js';
@@ -10,6 +10,7 @@ import { LinePlot, Histogram } from './dataVisuals.js';
 import {TabbedDisplay} from './reactComponents.js';
 import {GoogleAutocomplete} from './googleAutocomplete.js';
 import {POSITION_DECIMALS, MAX_LEN_NAME} from './constants.js';
+import * as api from './urls.js';
 
 class PasswordChange extends React.Component{
   constructor(props){
@@ -74,8 +75,8 @@ class PasswordChange extends React.Component{
       new_password:this.state.new_password,
     }
 
-    fetchObject({
-      url:"/account/update-password/",
+    apiFetch({
+      url:api.UPDATE_PASSWORD,
       method:"PUT",
       data:passwordData,
       onSuccess:this.handleResponse,
@@ -163,8 +164,8 @@ class DeleteUser extends React.Component{
   deleteUserAccount(){
     let key = this.props.user.id
 
-    fetchObject({
-      url:`/user/${key}/`,
+    apiFetch({
+      url:`${api.USER}/${key}/`,
       onSuccess:this.deleteSuccess,
       onFailure:this.deleteFailure,
       method:'DELETE'
@@ -317,8 +318,8 @@ class ProfileEdit extends React.Component{
       console.log(userData)
       let key = this.props.user.id
 
-      fetchObject({
-        url:`/user/${key}/`,
+      apiFetch({
+        url:`${api.USER}/${key}/`,
         method:'PATCH',
         data:userData,
         onSuccess:this.userUpdateSuccess,
@@ -332,8 +333,8 @@ class ProfileEdit extends React.Component{
       console.log(profileData)
       let key = this.props.profile.id
 
-      fetchObject({
-        url:`/profile/${key}/`,
+      apiFetch({
+        url:`${api.PROFILE}/${key}/`,
         method:'PATCH',
         data:profileData,
         onSuccess:this.profileUpdateSuccess,

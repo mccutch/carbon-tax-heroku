@@ -1,5 +1,6 @@
 import {refreshToken}  from './myJWT.js';
 import {emissionSaveFormats, heliEmissions} from './constants.js';
+import * as api from './urls.js';
 
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
@@ -10,7 +11,6 @@ getAttribute(objectList, id, attribute)
 
 convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure})
 
-fetchObject({method, data, url, onSuccess, onFailure, noAuth})
 
 
 */
@@ -181,9 +181,9 @@ export function fetchFromCache({url="/user/current-user/", onSuccess}){
 }
 
 export function testServer({onSuccess, onFailure}){
-  fetchObject({
+  apiFetch({
     method:'GET',
-    url:'/ping/',
+    url:api.PING,
     onSuccess:onSuccess,
     onFailure:onFailure,
     noAuth:true,
@@ -191,7 +191,7 @@ export function testServer({onSuccess, onFailure}){
 }
 
 
-export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
+export function apiFetch({method, data, url, onSuccess, onFailure, noAuth}){
   // SET HEADERS - No authorisation required for some APIs
   let headers 
   if(noAuth){
@@ -208,7 +208,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
   if(!method){
     let method='GET'
   }
-  if(method==='GET' && url!=='/ping/'){
+  if(method==='GET' && url.startsWith('/user')){
     fetchFromCache({
       url:url,
       onSuccess:onSuccess,
@@ -253,7 +253,7 @@ export function fetchObject({method, data, url, onSuccess, onFailure, noAuth}){
     if(error.message==='401'){
       refreshToken({
         onSuccess:()=>{
-          fetchObject({
+          apiFetch({
             method:method,
             data:data,
             url:url,

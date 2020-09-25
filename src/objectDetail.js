@@ -2,9 +2,10 @@ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
-import { fetchObject, getAttribute, displayCurrency, sleep, encodeEmissionFormat, displayHrs } from './helperFunctions.js';
+import { apiFetch, getAttribute, displayCurrency, sleep, encodeEmissionFormat, displayHrs } from './helperFunctions.js';
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList, FormRow, StandardModal, LabelledInput } from './reactComponents.js';
+import * as api from './urls.js';
 
 class TaxBackDate extends React.Component{
   constructor(props){
@@ -17,8 +18,8 @@ class TaxBackDate extends React.Component{
   }
 
   componentDidMount(){
-    fetchObject({
-      url:`/backdate-tax-change/${this.props.tax.id}/`,
+    apiFetch({
+      url:`${api.BACKDATE_TAX_CHANGE}/${this.props.tax.id}/`,
       method:"GET", 
       onSuccess:this.listEmissions, 
       onFailure:this.handleFetchFailure,
@@ -48,8 +49,8 @@ class TaxBackDate extends React.Component{
   }
 
   applyChange(event){
-    fetchObject({
-      url:`/backdate-tax-change/${this.props.tax.id}/`,
+    apiFetch({
+      url:`${api.BACKDATE_TAX_CHANGE}/${this.props.tax.id}/`,
       method:'POST',
       data:{apply_to: event.target.name}, 
       onSuccess:this.handleBackdateSuccess, 
@@ -123,8 +124,8 @@ class TaxEdit extends React.Component{
   deleteTax(){
     let key = parseInt(this.props.tax.id).toString()
 
-    fetchObject({
-      url:`/tax/${key}/`,
+    apiFetch({
+      url:`${api.TAX}/${key}/`,
       method:'DELETE',
       onSuccess:this.deleteSuccess,
       onFailure:this.editFailure,
@@ -183,8 +184,8 @@ class TaxEdit extends React.Component{
       }
 
       console.log(taxData)
-      fetchObject({
-        url:`/tax/${key}/`,
+      apiFetch({
+        url:`${api.TAX}/${key}/`,
         method:'PATCH',
         data:taxData,
         onSuccess:this.editSuccess,
@@ -323,8 +324,8 @@ class VehicleEdit extends React.Component{
 
   deleteVehicle(){
     let key = parseInt(this.props.vehicle.id).toString()
-    fetchObject({
-      url:`/vehicle/${key}/`,
+    apiFetch({
+      url:`${api.VEHICLE}/${key}/`,
       method:'DELETE',
       onSuccess:this.editSuccess,
       onFailure:this.editFailure,
@@ -356,8 +357,8 @@ class VehicleEdit extends React.Component{
         vehicleData['fuel']=`${this.state.fuel}`
       }
 
-      fetchObject({
-        url:`/vehicle/${key}/`,
+      apiFetch({
+        url:`${api.VEHICLE}/${key}/`,
         method:'PATCH',
         data:vehicleData,
         onSuccess:this.editSuccess,
@@ -578,8 +579,8 @@ export class EmissionEdit extends React.Component{
   }
 
   saveNew(data){
-    fetchObject({
-      url:`/my-emissions/`,
+    apiFetch({
+      url:api.MY_EMISSIONS,
       method:'POST',
       data:data,
       onSuccess:this.saveSuccess,
@@ -592,8 +593,8 @@ export class EmissionEdit extends React.Component{
       this.props.hideModal()
     }
     let key = this.props.emission.id
-    fetchObject({
-      url:`/emission/${key}/`,
+    apiFetch({
+      url:`${api.EMISSION}/${key}/`,
       method:'PATCH',
       data:data,
       onSuccess:this.saveSuccess,
@@ -617,8 +618,8 @@ export class EmissionEdit extends React.Component{
 
   delete(){
     let key = this.props.emission.id
-    fetchObject({
-      url:`/emission/${key}/`,
+    apiFetch({
+      url:`${api.EMISSION}/${key}/`,
       method:'DELETE',
       onSuccess:this.saveSuccess,
       onFailure:this.deleteFailure,
@@ -800,8 +801,8 @@ export class PaymentEdit extends React.Component{
   deletePayment(){
     let key = this.props.payment.id
 
-    fetchObject({
-      url:`/payment/${key}/`,
+    apiFetch({
+      url:`${api.PAYMENT}/${key}/`,
       method:'DELETE',
       onSuccess:this.editSuccess,
       onFailure:this.editFailure,
@@ -835,16 +836,16 @@ export class PaymentEdit extends React.Component{
 
       console.log(paymentData)
       if(mode==="update"){
-        fetchObject({
-          url:`/payment/${key}/`,
+        apiFetch({
+          url:`${api.PAYMENT}/${key}/`,
           method:'PATCH',
           data:paymentData,
           onSuccess:this.editSuccess,
           onFailure:this.editFailure,
         })
       } else {
-        fetchObject({
-          url:`/my-payments/`,
+        apiFetch({
+          url:api.MY_PAYMENTS,
           method:'POST',
           data:paymentData,
           onSuccess:this.editSuccess,
