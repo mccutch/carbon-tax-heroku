@@ -74,7 +74,7 @@ self.addEventListener('fetch', (event) => {
       requestURL.pathname.startsWith('/function') ||        // api no-cache functions
       requestURL.pathname.startsWith('/account') ||         // api account functions
       requestURL.pathname.startsWith('/registration') ||    // api registration
-      !requestURL.pathname.startsWith('/user') ||
+      //!requestURL.pathname.startsWith('/user') ||
       requestURL.pathname.startsWith('/api')                // api db operations
     ){
     console.log(`SW: Take no action - ${request.method}: ${requestURL}`);
