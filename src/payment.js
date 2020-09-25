@@ -1,6 +1,6 @@
 import React from 'react';
 import {Navbar, Modal} from 'react-bootstrap';
-import {ObjectSelectionList, FormRow, LabelledInput} from './reactComponents.js';
+import {ObjectSelectionList, FormRow, LabelledInput, StandardModal} from './reactComponents.js';
 import {CreateRecipient} from './objectCreate.js';
 import * as getDate from './getDate.js';
 import {apiFetch, displayCurrency} from './helperFunctions.js';
@@ -11,21 +11,19 @@ export class SearchRecipients extends React.Component{
 
 
   render(){
+    let title = <div>Find Donation Recipients</div>
+    let body = 
+      <div>
+        <p>Search for donation avenues shared by other users. Coming soon.</p>
+      </div>
 
-    return(
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Find Donation Recipients</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Search for donation avenues from other users. Not implemented yet.</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <button type="button" className="btn btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
-          <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
-        </Modal.Footer>
-      </Modal>
-    )
+    let footer = 
+      <div>
+        <button type="button" className="btn btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
+        <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
+      </div>
+
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
   }
 }
 
@@ -59,34 +57,21 @@ export class PaymentSuccess extends React.Component{
     let payment=this.props.payment
     let prevBalance = this.props.stats.summary.balance
 
-    let body = 
+    let title = <div>Payment saved</div>
+    let body =
       <div>
         <p>Donation saved to profile.</p>
         <p>Paid: {displayCurrency(payment.amount, this.props.profile)}</p>
         <p>Balance remaining: {displayCurrency(prevBalance-payment.amount, this.props.profile)}</p>
       </div>
-
-    let buttons = 
+    let footer = 
       <div>
         <button name="payment" className="btn btn-outline-info m-2" onClick={this.goTo}>New payment</button>
         <button name="dashboard" className="btn btn-outline-info m-2" onClick={this.goTo}>My Dashboard</button>
         <button name="edit" className="btn btn-outline-info m-2" onClick={this.edit}>Edit/Clone</button>
       </div>
 
-    let modal = 
-      <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Payment Saved</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {body}
-        </Modal.Body>
-        <Modal.Footer>
-          {buttons}
-        </Modal.Footer>
-      </Modal>
-
-    return modal
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
   }
 }
 

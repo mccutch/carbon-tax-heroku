@@ -54,6 +54,7 @@ export function refreshToken({onSuccess, onFailure}){
     },
     onFailure:(error)=>{
       console.log(`Refresh token error: ${error}`)
+      clearToken({})
       if(onFailure){onFailure(error)}
     }
   })
