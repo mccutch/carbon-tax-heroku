@@ -164,7 +164,7 @@ function deleteFromCache(cacheName, resource){
   })
 }
 
-export function fetchFromCache({url="/user/current-user/", onSuccess}){
+export function fetchFromCache({url, onSuccess}){
   console.log(`Checking caches for ${url}`)
   let response = caches.match(url, {ignoreVary:true}).then(res=>{
     if(res.ok){
@@ -250,7 +250,7 @@ export function apiFetch({method, data, url, onSuccess, onFailure, noAuth}){
     if(onSuccess){onSuccess(json)}
   }).catch(error => {
     console.log(error.message)
-    if(error.message==='401'){
+    if(error.message==='401' && url!=api.REFRESH_TOKEN){
       refreshToken({
         onSuccess:()=>{
           apiFetch({
