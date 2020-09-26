@@ -11,7 +11,8 @@ from django.views.generic.base import TemplateView #Serve sw.js
 
 urlpatterns = [
     # STATIC ASSETS
-    path('', views.index, name='index'),
+    #path('', views.index, name='index'),
+    path('', TemplateView.as_view(template_name="index.html"), name='index'),   
     path('sw.js', TemplateView.as_view(template_name="sw.js", content_type='application/javascript'), name='sw.js'),
     path('index.html', TemplateView.as_view(template_name="index.html", content_type='application/javascript'), name='index.html'),   
     path('asset-manifest.json', TemplateView.as_view(template_name="asset-manifest.json", content_type='application/javascript'), name='asset-manifest'),
@@ -25,7 +26,7 @@ urlpatterns = [
     # JWT FUNCTIONS
     path('token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    #path('api-auth/', include('rest_framework.urls')),
+    path('api-auth/', include('rest_framework.urls')), # Login function on browsable APIs
 
     # CACHE-FIRST USER ASSETS
     path('user/current-user/', views.CurrentUser.as_view(), name="current-user"),

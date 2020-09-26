@@ -231,6 +231,7 @@ export function apiFetch({method, data, url, onSuccess, onFailure, noAuth}){
   }
 
   console.log("FETCH")
+  console.log(fetchData)
   fetch(url, fetchData)
   .then(res => {
     console.log(res)
@@ -259,6 +260,7 @@ export function apiFetch({method, data, url, onSuccess, onFailure, noAuth}){
             url:url,
             onSuccess:onSuccess,
             onFailure:onFailure,
+            noAuth:noAuth,
           })
         },
         onFailure:onFailure,

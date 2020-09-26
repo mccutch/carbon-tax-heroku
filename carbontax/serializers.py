@@ -4,48 +4,13 @@ from django.contrib.auth.models import User
 from django.core.validators import EmailValidator
 from django.contrib.auth.password_validation import validate_password
 
-class DonationRecipientSerializer(serializers.HyperlinkedModelSerializer):
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.DonationRecipient
-        fields = ['name', 'country', 'website', 'donation_link', 'description', 'id']
-
-class PaymentSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    recipient = serializers.PrimaryKeyRelatedField(queryset=models.DonationRecipient.objects.all())
-
-    class Meta:
-        model = models.Payment
-        fields = ['amount', 'recipient', 'date', 'user', 'id']
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'id']
 
 
-class VehicleSerializer(serializers.HyperlinkedModelSerializer):
-    #owner = serializers.HyperlinkedRelatedField(view_name="user-detail", queryset=User.objects.all())
-    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    fuel = serializers.PrimaryKeyRelatedField(queryset=models.FuelType.objects.all())
-    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
-
-    class Meta:
-        model = models.Vehicle
-        fields = ['name', 'fuel', 'economy', 'owner', 'id']
-
-class VehicleListSerializer(serializers.HyperlinkedModelSerializer):
-    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", read_only=True)
-    owner = serializers.StringRelatedField(read_only=True)
-    fuel = serializers.StringRelatedField(read_only=True)
-
-    class Meta:
-        model = models.Vehicle
-        fields = ['name', 'fuel', 'economy', 'owner', 'id']
-
-class FuelTypeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.FuelType
-        fields = ['name', 'unit', 'co2_per_unit', 'id']
-
-class EconomyMetricSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.EconomyMetric
-        fields = ['name']
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -54,25 +19,26 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         model = models.Profile
         fields = ['user', 'location', 'date_of_birth', 'currency', 'currency_symbol', 'conversion_factor', 'display_units', 'recipients', 'loc_lat', 'loc_lng', 'id']
 
-class UserSerializer(serializers.ModelSerializer):
+
+
+class VehicleSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    fuel = serializers.PrimaryKeyRelatedField(queryset=models.FuelType.objects.all())
     class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'id']
+        model = models.Vehicle
+        fields = ['name', 'fuel', 'economy', 'owner', 'id']
+
+
 
 class EmissionSerializer(serializers.HyperlinkedModelSerializer):
-    #fuel = serializers.HyperlinkedRelatedField(view_name="fuel-detail", queryset=models.FuelType.objects.all())
-    #tax_type = serializers.HyperlinkedRelatedField(view_name="tax-detail", queryset=models.TaxRate.objects.all())
     fuel = serializers.PrimaryKeyRelatedField(queryset=models.FuelType.objects.all())
     tax_type = serializers.PrimaryKeyRelatedField(queryset=models.TaxRate.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model = models.EmissionInstance
         fields = ['name', 'date', 'distance', 'fuel', 'economy', 'co2_output_kg', 'tax_type', 'split', 'price', 'user', 'format_encoding', 'offset', 'id']
 
-"""class EmissionListSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
-    class Meta:
-        model = models.EmissionInstance
-        fields = ['name', 'date', 'tax_type', 'distance', 'co2_output_kg', 'price', 'user', 'split', 'id']"""
+
 
 class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -80,11 +46,30 @@ class TaxRateSerializer(serializers.HyperlinkedModelSerializer):
         model=models.TaxRate
         fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault', 'usage']
 
-"""class TaxRateListSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
+
+
+class PaymentSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipient = serializers.PrimaryKeyRelatedField(queryset=models.DonationRecipient.objects.all())
     class Meta:
-        model=models.TaxRate
-        fields = ['name', 'price_per_kg', 'category', 'user', 'id', 'isDefault', 'usage']"""
+        model = models.Payment
+        fields = ['amount', 'recipient', 'date', 'user', 'id']
+
+
+
+class DonationRecipientSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.DonationRecipient
+        fields = ['name', 'country', 'website', 'donation_link', 'description', 'id']
+
+
+
+class FuelTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.FuelType
+        fields = ['name', 'unit', 'co2_per_unit', 'id']
+
+
 
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -105,12 +90,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    """
-    Serializer for password change endpoint.
-    """
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
-
     def validate_new_password(self, value):
         validate_password(value)
         return value

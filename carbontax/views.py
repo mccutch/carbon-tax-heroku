@@ -2,7 +2,7 @@
 
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
-from django.db.models import Sum
+#from django.db.models import Sum
 
 from . import models
 from . import serializers
@@ -27,10 +27,6 @@ index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 
 # -----------VEHICLES-----------
-"""class VehicleList(generics.ListAPIView):
-    permission_classes = (IsAdminUser, )
-    queryset = models.Vehicle.objects.all()
-    serializer_class = serializers.VehicleSerializer"""
 
 class UserVehicleList(APIView):
     permission_classes = (IsAuthenticated,)
@@ -79,7 +75,7 @@ class UserEmissionList(generics.ListCreateAPIView):
 
     def post(self, request, format=None):
         data=request.data
-        data['user']=f'/user/{request.user.id}/'
+        data['user']=request.user.id
         print(data)
         serializer = serializers.EmissionSerializer(data=data, context={'request':request})
         if serializer.is_valid():
@@ -108,17 +104,9 @@ class FuelDetail(generics.RetrieveAPIView):
     queryset = models.FuelType.objects.all()
     serializer_class = serializers.FuelTypeSerializer
 
-"""class EconomyMetricList(generics.ListAPIView):
-    queryset = models.EconomyMetric.objects.all()
-    serializer_class = serializers.EconomyMetricSerializer"""
-
 
 
 # -----------USER/PROFILE-----------
-"""class ProfileList(generics.ListAPIView):
-    permission_classes = (IsAdminUser, )
-    serializer_class = serializers.ProfileSerializer
-    queryset = models.Profile.objects.all()"""
 
 class UserProfile(APIView):
     permission_classes = (IsAuthenticated,)
@@ -305,10 +293,6 @@ class DonationRecipientDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.DonationRecipientSerializer
     queryset = models.DonationRecipient.objects.all()
 
-
-"""class AllUserStats(APIView){
-    
-}"""
 
 class UserStats(APIView):
     permission_classes = (IsAuthenticated, )
@@ -639,17 +623,12 @@ class ContactForm(APIView):
 
 
 class Ping(APIView):
+    """API endpoint to check status of server with minimal data transfer. Returns 204 no content."""
     permission_classes = (AllowAny, )
     def get(self, request):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-"""import json
-import requests
 
-url = 'https://api.github.com/some/endpoint'
-payload = {'some': 'data'}
-
-r = requests.post(url, data=json.dumps(payload))"""
 
 
 
