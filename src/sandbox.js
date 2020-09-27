@@ -3,7 +3,7 @@ import React from 'react';
 import {fetchObject, convertCurrency, truncate, fetchFromCache } from './helperFunctions.js';
 
 import {CurrencySelection, ObjectSelectionList} from './reactComponents.js';
-import {ObjectDisplayView} from './objectDisplayViews.js';
+import {EmissionDisplayView} from './objectDisplayViews.js';
 
 import * as units from './unitConversions.js';
 
@@ -50,7 +50,7 @@ export class Sandbox extends React.Component{
       <div className="container bg-dark text-light">
         <h1>Sandbox</h1>
         <div className="container bg-light text-dark py-2">
-          <ObjectDisplayView />
+          <EmissionDisplayView />
         </div>
       </div>
     )

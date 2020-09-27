@@ -116,9 +116,9 @@ export class NavBar extends React.Component{
           <img
             alt=""
             src="/static/finger192.png"
-            width="30"
-            height="30"
-            className="d-inline-block align-top"
+            width="50"
+            //height="50"
+            //className="d-inline-block align-top"
             name="home"
           />{' '}
           <a name="home" > Carbon Accountant</a>
