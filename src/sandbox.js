@@ -3,6 +3,7 @@ import React from 'react';
 import {fetchObject, convertCurrency, truncate, fetchFromCache } from './helperFunctions.js';
 
 import {CurrencySelection, ObjectSelectionList} from './reactComponents.js';
+import {ObjectDisplayView} from './objectDisplayViews.js';
 
 import * as units from './unitConversions.js';
 
@@ -46,17 +47,11 @@ export class Sandbox extends React.Component{
   render(){
 
     return(
-      <div className="container bg-light">
+      <div className="container bg-dark text-light">
         <h1>Sandbox</h1>
-        <input name="url" onChange={this.handleChange} placeholder="url" type="text" className="form-control"/>
-        <input name="cache" onChange={this.handleChange} placeholder="cache name" type="text" className="form-control"/>
-        <button 
-          className="btn btn-outline-primary" 
-          onClick={()=>fetchFromCache({
-            url:this.state.url,
-            onSuccess:json=>{this.setState({cacheReturn:json})}
-          })}
-        >Fetch from cache</button>
+        <div className="container bg-light text-dark py-2">
+          <ObjectDisplayView />
+        </div>
       </div>
     )
   }
