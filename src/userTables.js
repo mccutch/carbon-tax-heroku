@@ -9,26 +9,8 @@ import * as api from './urls.js';
 
 const PAGINATATION_RESULTS_PER_PAGE = 10 // change this with settings.py
 
-/*
-Table and accessory components for listing, using and editing objects belonging to a user.
-
-
-TaxTable
-  ObjectTable
-    TaxDetail
-      CreateTax
-
-VehicleTable
-  ObjectTable
-    VehicleDetail
-      Create Vehicle
-
-
-
-*/
 
 class ObjectTable extends React.Component{
-
   buildHeader(){
     let headers = this.props.headers
     let headerCols = []
@@ -354,19 +336,10 @@ export class PaginatedNav extends React.Component{
   }
 
   returnPage(json){
-    this.props.returnPage(json, this.state.newPageNumber)
-    
+    this.props.returnPage(json, this.state.newPageNumber)  
     this.setState({
       newPageNumber:null,
     })
-  }
-
-  disablableItem(link){
-    if(link){
-      return "page-item"
-    } else {
-      return "page-item disabled"
-    }
   }
 
   render(){
@@ -375,22 +348,34 @@ export class PaginatedNav extends React.Component{
     let lastResult = firstResult+this.props.tableData.results.length-1
 
     let displayedResultsString
-    let plural
     if(this.props.tableData.results.length>1){
       displayedResultsString = `${firstResult.toString()}-${(lastResult).toString()}`
-      plural = "s"
     } else {
       displayedResultsString = `${firstResult.toString()}`
     }
      
     return(
-      <nav aria-label="Table navigation" className="row p-2">
-        <p className="text-light p-2 m-2">Showing result{plural} {displayedResultsString} of {this.props.tableData.count}</p>
-        <ul className="pagination m-2">
-          <li className={this.disablableItem(this.props.tableData.previous)}><a className="page-link" name="prev" onClick={this.handleClick}>Previous</a></li>
-          <li className={this.disablableItem(this.props.tableData.next)}><a className="page-link" name="next" onClick={this.handleClick}>Next</a></li>
-        </ul>
-        {this.props.buttons}
+      <nav aria-label="Table navigation" className="row">
+        <div className="col col-auto">
+          <div className="row" style={{height:"1.5rem"}}>
+            <div className="col text-center">
+              <p className="text-light">{displayedResultsString} of {this.props.tableData.count}</p>
+            </div>
+          </div>
+          <div className="row  justify-content-center">
+            <div className="col">
+              <ul className="pagination mx-2 justify-content-center">
+                <li className={`page-item ${(this.props.tableData.previous)?"":'disabled'}`}><button className="page-link" name="prev" onClick={this.handleClick}>Prev</button></li>
+                <li className={`page-item ${(this.props.tableData.next)?"":'disabled'}`}><button className="page-link" name="next" onClick={this.handleClick}>Next</button></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="col">
+          <div className="row" style={{margin: "1rem 0rem 0rem 0rem"}}>
+            {this.props.buttons}
+          </div>
+        </div>
       </nav>
     )
   }

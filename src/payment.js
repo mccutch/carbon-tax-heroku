@@ -4,7 +4,7 @@ import {ObjectSelectionList, FormRow, LabelledInput, StandardModal} from './reac
 import {CreateRecipient} from './objectCreate.js';
 import * as getDate from './getDate.js';
 import {apiFetch, displayCurrency} from './helperFunctions.js';
-import {PaymentEdit} from './objectDetail.js';
+import {PaymentEdit} from './objectEdit.js';
 import * as api from './urls.js';
 
 export class SearchRecipients extends React.Component{

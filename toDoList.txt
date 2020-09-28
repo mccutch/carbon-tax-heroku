@@ -2,6 +2,11 @@
 SW
 - What files need to be cached on after the sw is installed??
 
+backdate tax change
+- Show all
+- Show all since last payment
+
+
 Move fueltypes to constants.js to simplify cacheing
 
 How the fuck do I test?
@@ -34,8 +39,6 @@ Recaptcha on registration and contact form
 recurring trips
 
 favourite trips
-
-Format new vehicle and new tax from table views
 
 Geolocation.watchposition()
 

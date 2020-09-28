@@ -6,7 +6,7 @@ import {AircraftInput, AirOptionsInput} from './aircraftInput.js';
 import {CarbonCalculator} from './carbonCalculator.js';
 import * as units from './unitConversions';
 import * as taxes from './defaultTaxTypes.js';
-import {EmissionEdit} from './objectDetail.js';
+import {EmissionEdit} from './objectEdit.js';
 import {ObjectSelectionList, StandardModal} from './reactComponents.js';
 import {TabbedNavBar} from './navBar.js';
 import {getAttribute, displayHrs} from './helperFunctions.js';

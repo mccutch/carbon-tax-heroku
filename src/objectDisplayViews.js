@@ -3,7 +3,7 @@ import {Badge} from 'react-bootstrap';
 import * as urls from './urls.js';
 import * as units from './unitConversions.js';
 import {decodeEmissionFormat, getAttribute, displayCurrency} from './helperFunctions.js';
-import {EmissionEdit, TaxEdit, VehicleEdit, PaymentEdit} from './objectDetail.js';
+import {EmissionEdit, TaxEdit, VehicleEdit, PaymentEdit} from './objectEdit.js';
 
 
 
@@ -171,8 +171,8 @@ export class ProfileDisplayView extends React.Component{
       <ObjectDisplayView
         primaryText={`${user.username}`}
         secondaryText={`${user.first_name} ${user.last_name}`}
-        primaryRight={`Tax paid: ${displayCurrency(taxTotal, profile)}`}
-        secondaryRight={`CO2 emissions: ${parseFloat(co2Total).toFixed(0)}kg`}
+        primaryRight={`Paid: ${displayCurrency(taxTotal, profile)}`}
+        secondaryRight={`CO2: ${parseFloat(co2Total).toFixed(0)}kg`}
         iconSrc={urls.BEAR_ICON}
         onClick={this.props.onClick}
       />
