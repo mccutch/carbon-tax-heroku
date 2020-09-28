@@ -29,7 +29,7 @@ export class HomeView extends React.Component{
     return(
       <div className="container-sm my-2">
         <div className="row justify-content-center">
-              <div className="container text-center text-light">
+              <div className="container text-center text-dark">
                 <h2>Carbon Accountant</h2>
                 <h5>{this.state.byline}</h5>
               </div>

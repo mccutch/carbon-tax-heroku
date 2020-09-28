@@ -42,6 +42,8 @@ export const RECIPIENTS = '/recipients/'
 
 // STATIC ASSETS
 export const NAVBAR_ICON = '/static/finger192.png'
+export const POINT_PERP_NARROW = "/static/pointPerpNarrow.jpg"
+export const MARANON_SUNRISE = "/static/maranonSunrise.jpg"
 
 // ICONS
 const ICON_LOC = '/static/svg/'

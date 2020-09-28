@@ -112,7 +112,7 @@ export class NavBar extends React.Component{
     let navColour = (this.props.serverError ? "secondary":"warning")
 
     return(
-      <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="light" expand="lg">
+      <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="light" sticky="top" expand="lg">
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""

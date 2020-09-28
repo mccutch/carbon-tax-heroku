@@ -244,10 +244,11 @@ class App extends React.Component {
     }
 
     return( 
-      <div className="bg-dark" style={{ backgroundImage: `url("/static/pointPerpNarrow.jpg")`, 
+      <div className="bg-dark" style={{ backgroundImage: `url(${api.MARANON_SUNRISE})`, 
                                         /*backgroundRepeat:'no-repeat',*/
                                         backgroundSize:'cover',
-                                        height: "200vh",
+                                        backgroundPosition:'center',
+                                        minHeight: "100vh",
                                       }}>
         <NavBar 
           loggedIn={this.state.loggedIn}
@@ -278,6 +279,10 @@ class App extends React.Component {
             setModal={this.setModalContent}
             hideModal={this.hideModal}
           />
+        </div>
+        <div className="row">
+          <div className="col" style={{height:"10rem"}}>
+          </div>
         </div>
       </div>
     )
