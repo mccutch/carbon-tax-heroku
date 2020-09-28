@@ -245,7 +245,6 @@ class App extends React.Component {
 
     return( 
       <div className="bg-dark" style={{ backgroundImage: `url(${api.MARANON_SUNRISE})`, 
-                                        /*backgroundRepeat:'no-repeat',*/
                                         backgroundSize:'cover',
                                         backgroundPosition:'center',
                                         minHeight: "100vh",
@@ -280,8 +279,8 @@ class App extends React.Component {
             hideModal={this.hideModal}
           />
         </div>
-        <div className="row">
-          <div className="col" style={{height:"10rem"}}>
+        <div>
+          <div className="col" style={{height:"3rem"}}>
           </div>
         </div>
       </div>

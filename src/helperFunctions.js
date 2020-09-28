@@ -165,6 +165,9 @@ function deleteFromCache(cacheName, resource){
 }
 
 export function fetchFromCache({url, onSuccess}){
+  if(!window.caches){
+    return
+  }
   console.log(`Checking caches for ${url}`)
   let response = caches.match(url, {ignoreVary:true}).then(res=>{
     if(res.ok){
