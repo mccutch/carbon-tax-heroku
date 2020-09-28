@@ -297,7 +297,7 @@ export class TaxDetail extends React.Component{
   }
 }
 
-class VehicleEdit extends React.Component{
+export class VehicleEdit extends React.Component{
   constructor(props){
     super(props)
     this.state = {

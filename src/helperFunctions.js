@@ -82,8 +82,8 @@ export function sleep(milliseconds){
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
-export function displayCurrency(value, profile){
-  return `${profile.currency_symbol}${parseFloat(value*profile.conversion_factor).toFixed(2)}`
+export function displayCurrency(value, profile, decimals=2){
+  return `${profile.currency_symbol}${parseFloat(value*profile.conversion_factor).toFixed(decimals)}`
 }
 
 export function truncate(str, maxLen){

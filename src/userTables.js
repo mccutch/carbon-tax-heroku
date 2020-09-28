@@ -2,7 +2,7 @@
 import { OptionListInput } from './optionListInput.js';
 import { apiFetch } from './helperFunctions.js';
 import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './objectDetail.js';
-import { EmissionDisplayView, TaxDisplayView} from './objectDisplayViews.js'
+import { EmissionDisplayView, TaxDisplayView, VehicleDisplayView, PaymentDisplayView} from './objectDisplayViews.js'
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 import * as getDate from './getDate.js';
 import * as api from './urls.js';
@@ -132,16 +132,29 @@ export class VehicleTable extends React.Component{
     let vehicles=this.props.vehicles
     for(let i=0; i<vehicles.length; i++){
       tableRows.push(
-        <VehicleDetail 
-          key={vehicles[i].id} 
-          vehicle={vehicles[i]} 
-          submitEconomy={this.props.submitEconomy} 
-          displayUnits={this.props.displayUnits}
-          fuels={this.props.fuels}
-          refresh={this.props.refresh}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
-        />
+        this.props.detailView ?
+          <VehicleDetail 
+            key={vehicles[i].id} 
+            vehicle={vehicles[i]} 
+            submitEconomy={this.props.submitEconomy} 
+            displayUnits={this.props.displayUnits}
+            fuels={this.props.fuels}
+            refresh={this.props.refresh}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
+          />
+          :
+          <tr key={vehicles[i].id}>
+            <VehicleDisplayView
+              vehicle={vehicles[i]} 
+              onClick={this.props.submitEconomy} 
+              displayUnits={this.props.displayUnits}
+              fuels={this.props.fuels}
+              refresh={this.props.refresh}
+              setModal={this.props.setModal}
+              hideModal={this.props.hideModal}
+            />
+          </tr>
       )
     }
     if(this.props.addNew){
@@ -157,7 +170,7 @@ export class VehicleTable extends React.Component{
 
   render(){
     return(
-      <ObjectTable tableRows={this.buildRows()} headers={["Name", "Economy", "Fuel", ""]} />
+      <ObjectTable tableRows={this.buildRows()} headers={this.props.detailView?["Name", "Economy", "Fuel", ""]:[" "]} />
     )
   }
 }
@@ -442,17 +455,17 @@ export class EmissionTable extends React.Component{
             hideModal={this.props.hideModal}
           />
           : 
-          <tr>
-          <EmissionDisplayView
-            emission={emissions[i]} 
-            displayUnits={this.props.displayUnits} 
-            profile={this.props.profile} 
-            taxes={this.props.taxes} 
-            fuels={this.props.fuels}
-            refresh={this.props.refresh}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
-          />
+          <tr key={emissions[i].id}>
+            <EmissionDisplayView
+              emission={emissions[i]} 
+              displayUnits={this.props.displayUnits} 
+              profile={this.props.profile} 
+              taxes={this.props.taxes} 
+              fuels={this.props.fuels}
+              refresh={this.props.refresh}
+              setModal={this.props.setModal}
+              hideModal={this.props.hideModal}
+            />
           </tr>
           
       )
@@ -671,15 +684,28 @@ export class PaymentTable extends React.Component{
     let tableRows=[]
     for(let i in payments){
       tableRows.push(
-        <PaymentDetail 
-          payment={payments[i]} 
-          displayUnits={this.props.displayUnits} 
-          profile={this.props.profile} 
-          recipients={this.props.recipients}
-          refresh={this.props.refresh}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
-        />
+        this.props.detailView ?
+          <PaymentDetail 
+            payment={payments[i]} 
+            displayUnits={this.props.displayUnits} 
+            profile={this.props.profile} 
+            recipients={this.props.recipients}
+            refresh={this.props.refresh}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
+          />
+          :
+          <tr key={payments[i].id}>
+            <PaymentDisplayView
+              payment={payments[i]} 
+              displayUnits={this.props.displayUnits} 
+              profile={this.props.profile} 
+              recipients={this.props.recipients}
+              refresh={this.props.refresh}
+              setModal={this.props.setModal}
+              hideModal={this.props.hideModal}
+            />
+          </tr>
       )
     }
     return tableRows
@@ -706,7 +732,7 @@ export class PaymentTable extends React.Component{
     return(
       <div>
         {paginatedTableHeader}
-        <ObjectTable tableRows={this.buildRows()} headers={["Date", "Recipient", "Amount", ""]} />
+        <ObjectTable tableRows={this.buildRows()} headers={this.props.detailView?["Date", "Recipient", "Amount", ""]:[" "]} />
       </div>
     )
   }

@@ -1,8 +1,10 @@
 import React from 'react';
 import {Badge} from 'react-bootstrap';
 import * as urls from './urls.js';
+import * as units from './unitConversions.js';
 import {decodeEmissionFormat, getAttribute, displayCurrency} from './helperFunctions.js';
-import {EmissionEdit, TaxEdit} from './objectDetail.js';
+import {EmissionEdit, TaxEdit, VehicleEdit, PaymentEdit} from './objectDetail.js';
+
 
 
 class ObjectDisplayView extends React.Component{
@@ -79,14 +81,13 @@ export class EmissionDisplayView extends React.Component{
 
 export class TaxDisplayView extends React.Component{
   render(){
-
     let tax=this.props.tax
     let sym = this.props.profile.currency_symbol
     return (
       <ObjectDisplayView
         primaryText={tax.name}
         secondaryText={`${tax.category}`}
-        primaryRight={`${displayCurrency(tax.price_per_kg, this.props.profile)}`}
+        primaryRight={`${displayCurrency(tax.price_per_kg, this.props.profile, 3)}`}
         secondaryRight={`per kg CO2`}
         iconSrc={tax.category==="Driving" ? urls.CAR_ICON : (tax.category==="Flying" ? urls.AIRLINER_ICON : urls.CO2_ICON)}
         onClick={this.props.onClick ? this.props.onClick :
@@ -105,3 +106,78 @@ export class TaxDisplayView extends React.Component{
     )
   }
 }
+
+export class VehicleDisplayView extends React.Component{
+  render(){
+    let vehicle=this.props.vehicle
+    let fuelName=getAttribute({objectList:this.props.fuels, key:"id", keyValue:vehicle.fuel, attribute:"name"})
+    return (
+      <ObjectDisplayView
+        primaryText={vehicle.name}
+        secondaryText={`${fuelName}`}
+        primaryRight={`${parseFloat(units.convert(vehicle.economy, this.props.displayUnits)).toFixed(1)}`}
+        secondaryRight={`${units.string(this.props.displayUnits)}`}
+        iconSrc={fuelName==="Petrol" ? urls.CAR_ICON : (fuelName==="Diesel" ? urls.PICKUP_ICON : urls.CO2_ICON)}
+        onClick={this.props.onClick ? this.props.onClick :
+          ()=>{this.props.setModal(
+            <VehicleEdit
+              vehicle={this.props.vehicle}
+              displayUnits={this.props.displayUnits}
+              fuels={this.props.fuels}
+              hideModal={this.props.hideModal} 
+              refresh={this.props.refresh}
+            />
+          )}
+        }
+      />
+    )
+  }
+}
+
+export class PaymentDisplayView extends React.Component{
+  render(){
+    let payment=this.props.payment
+    return (
+      <ObjectDisplayView
+        primaryText={`${getAttribute({objectList:this.props.recipients, key:"id", keyValue:payment.recipient, attribute:"name"})}`}
+        secondaryText={`${payment.date}`}
+        primaryRight={`${displayCurrency(payment.amount, this.props.profile)}`}
+        secondaryRight={` `}
+        iconSrc={urls.GREEN_TEA_ICON}
+        onClick={this.props.onClick ? this.props.onClick :
+          ()=>{this.props.setModal(
+            <PaymentEdit
+              payment={this.props.payment}
+              profile={this.props.profile}
+              hideModal={this.props.hideModal} 
+              refresh={this.props.refresh}
+              recipients={this.props.recipients}
+            />
+          )}
+        }
+      />
+    )
+  }
+}
+
+
+export class ProfileDisplayView extends React.Component{
+  render(){
+    let profile=this.props.profile
+    let user=this.props.user
+    let taxTotal = this.props.stats ? this.props.stats.summary.total_paid : 0
+    let co2Total = this.props.stats ? this.props.stats.summary.total_co2 : 0
+    return (
+      <ObjectDisplayView
+        primaryText={`${user.username}`}
+        secondaryText={`${user.first_name} ${user.last_name}`}
+        primaryRight={`Tax paid: ${displayCurrency(taxTotal, profile)}`}
+        secondaryRight={`CO2 emissions: ${parseFloat(co2Total).toFixed(0)}kg`}
+        iconSrc={urls.BEAR_ICON}
+        onClick={this.props.onClick}
+      />
+    )
+  }
+}
+
+

@@ -3,14 +3,14 @@ import {Modal} from 'react-bootstrap';
 import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
 import { apiFetch, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
-import { ObjectSelectionList, CurrencySelection, StandardModal, CurrencySymbolSelection, DisplayUnitSelection, FormRow } from './reactComponents.js';
+import { TabbedDisplay, ObjectSelectionList, CurrencySelection, StandardModal, CurrencySymbolSelection, DisplayUnitSelection, FormRow } from './reactComponents.js';
 import { PasswordInput, PasswordCheckInput, EmailInput, validateUsernameRegex, validateEmailRegex } from './validation.js';
 import * as validation from './validation.js';
 import { LinePlot, Histogram } from './dataVisuals.js';
-import {TabbedDisplay} from './reactComponents.js';
 import {GoogleAutocomplete} from './googleAutocomplete.js';
 import {POSITION_DECIMALS, MAX_LEN_NAME} from './constants.js';
 import * as api from './urls.js';
+import {ProfileDisplayView} from './objectDisplayViews.js';
 
 class PasswordChange extends React.Component{
   constructor(props){
@@ -507,23 +507,23 @@ class ProfileDetails extends React.Component{
     let user=this.props.user
     let profile=this.props.profile
 
-    return(
-      <div className="row">
-        <div className="col-sm">
-          <p>Name: {user.first_name} {user.last_name}</p>
-          <p>Location: {profile.location}</p>
-          <p>Date of Birth: {profile.date_of_birth}</p>
-          <p>Email: {user.email}</p>
-          <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
-          <p>Units: {units.string(profile.display_units)}</p>
-        </div>
-        <div className="col-sm">
-          <button name="editProfile" className="btn btn-outline-dark m-2" onClick={this.editProfile}>Edit profile</button>
-          <br/>
-          <button name="changePassword" className="btn btn-outline-dark m-2" onClick={this.changePassword}>Change password</button>
-        </div>
+    let title = <div>Profile</div>
+    let body =
+      <div>
+        <p>Name: {user.first_name} {user.last_name}</p>
+        <p>Location: {profile.location}</p>
+        <p>Date of Birth: {profile.date_of_birth}</p>
+        <p>Email: {user.email}</p>
+        <p>Currency: {profile.currency} ({profile.currency_symbol})</p>
+        <p>Units: {units.string(profile.display_units)}</p>
       </div>
-    )
+    let footer = 
+      <div>
+        <button name="editProfile" className="btn btn-outline-info m-2" onClick={this.editProfile}>Edit profile</button>
+        <button name="changePassword" className="btn btn-outline-danger m-2" onClick={this.changePassword}>Change password</button>
+      </div>
+
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>
   }
 }
 
@@ -619,15 +619,25 @@ export class ProfileDisplay extends React.Component{
     return(
 
       <div>
-        <ProfileDetails 
-          user={this.props.user} 
-          profile={this.props.profile} 
+        <ProfileDisplayView
+          user={this.props.user}
+          profile={this.props.profile}
           stats={this.props.stats}
-          refresh={this.props.refresh}
-          logout={this.props.logout}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
+          onClick={()=>{
+            this.props.setModal(
+              <ProfileDetails 
+                user={this.props.user} 
+                profile={this.props.profile} 
+                stats={this.props.stats}
+                refresh={this.props.refresh}
+                logout={this.props.logout}
+                setModal={this.props.setModal}
+                hideModal={this.props.hideModal}
+              />
+            )
+          }}
         />
+        
         
         <SettingsLists
           refresh={this.props.refresh}
