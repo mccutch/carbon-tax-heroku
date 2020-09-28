@@ -1,7 +1,8 @@
-import React from 'react';
+ import React from 'react';
 import { OptionListInput } from './optionListInput.js';
 import { apiFetch } from './helperFunctions.js';
 import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './objectDetail.js';
+import { EmissionDisplayView, TaxDisplayView} from './objectDisplayViews.js'
 import { CreateTax, CreateVehicle } from './objectCreate.js';
 import * as getDate from './getDate.js';
 import * as api from './urls.js';
@@ -78,15 +79,28 @@ export class TaxTable extends React.Component{
     if(taxes){
       for(let i=0; i<taxes.length; i++){
         tableRows.push(
-          <TaxDetail 
-            key={taxes[i].id} 
-            tax={taxes[i]} 
-            allTaxes={this.props.taxes}
-            refresh={this.props.refresh} 
-            profile={this.props.profile}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
-          />)
+          this.props.detailView ?
+            <TaxDetail 
+              key={taxes[i].id} 
+              tax={taxes[i]} 
+              allTaxes={this.props.taxes}
+              refresh={this.props.refresh} 
+              profile={this.props.profile}
+              setModal={this.props.setModal}
+              hideModal={this.props.hideModal}
+            />
+            :
+            <tr key={taxes[i].id} >
+              <TaxDisplayView
+                tax={taxes[i]} 
+                taxes={this.props.taxes}
+                refresh={this.props.refresh} 
+                profile={this.props.profile}
+                setModal={this.props.setModal}
+                hideModal={this.props.hideModal}
+              />
+            </tr>
+        )
       }
     }
     if(this.props.addNew){
@@ -101,7 +115,7 @@ export class TaxTable extends React.Component{
 
   render(){
     return(
-      <ObjectTable tableRows={this.buildRows()} headers={["Name", "Price", "Category", ""]}/>
+      <ObjectTable tableRows={this.buildRows()} headers={this.props.detailView?["Name", "Price", "Category", ""]:[" "]} />
     )
   }
 }
@@ -416,16 +430,31 @@ export class EmissionTable extends React.Component{
     let tableRows=[]
     for(let i in emissions){
       tableRows.push(
-        <EmissionDetail 
-          emission={emissions[i]} 
-          displayUnits={this.props.displayUnits} 
-          profile={this.props.profile} 
-          taxes={this.props.taxes} 
-          fuels={this.props.fuels}
-          refresh={this.props.refresh}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
-        />
+        this.props.detailView ?
+          <EmissionDetail 
+            emission={emissions[i]} 
+            displayUnits={this.props.displayUnits} 
+            profile={this.props.profile} 
+            taxes={this.props.taxes} 
+            fuels={this.props.fuels}
+            refresh={this.props.refresh}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
+          />
+          : 
+          <tr>
+          <EmissionDisplayView
+            emission={emissions[i]} 
+            displayUnits={this.props.displayUnits} 
+            profile={this.props.profile} 
+            taxes={this.props.taxes} 
+            fuels={this.props.fuels}
+            refresh={this.props.refresh}
+            setModal={this.props.setModal}
+            hideModal={this.props.hideModal}
+          />
+          </tr>
+          
       )
     }
     return tableRows
@@ -440,19 +469,16 @@ export class EmissionTable extends React.Component{
       showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
     }
 
-    let paginatedTableHeader
-    if(this.state.displayedEmissions.length !== 0){
-      paginatedTableHeader = 
-        <div className="container p-2 bg-dark">
-            <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changeResults} buttons={showFilters}/>
-            {filters}
-        </div>
-    }
-
     return(
       <div>
-        {paginatedTableHeader}
-        <ObjectTable tableRows={this.buildRows()} headers={["Trip Name", "Date", "Tax Type", /*"Distance", "Split", "CO2 Output",*/ "Tax"]} />
+        {(this.state.displayedEmissions.length!==0) ?
+          <div className="container p-2 bg-dark">
+            <PaginatedNav tableData={this.state.displayedEmissions} page={this.state.page} returnPage={this.changeResults} buttons={showFilters}/>
+            {filters}
+          </div>
+          :""
+        }
+        <ObjectTable tableRows={this.buildRows()} headers={this.props.detailView?["Trip Name", "Date", "Tax Type", /*"Distance", "Split", "CO2 Output",*/ "Tax"]:[" "]} />
       </div>
     )
   }

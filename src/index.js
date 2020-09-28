@@ -259,7 +259,6 @@ class App extends React.Component {
         />
         {modal}
         <div>
-          <Sandbox/>
           <MainView
             loggedIn={this.state.loggedIn} 
             displayUnits={this.state.displayUnits}

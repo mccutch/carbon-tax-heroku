@@ -2,6 +2,7 @@ import React from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
+import * as urls from './urls.js';
 
 export class TabbedNavBar extends React.Component{
 
@@ -115,8 +116,8 @@ export class NavBar extends React.Component{
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""
-            src="/static/finger192.png"
-            width="50"
+            src={urls.NAVBAR_ICON}
+            width="40"
             //height="50"
             //className="d-inline-block align-top"
             name="home"

@@ -1,5 +1,8 @@
 import React from 'react';
 import {Badge} from 'react-bootstrap';
+import * as urls from './urls.js';
+import {decodeEmissionFormat, getAttribute, displayCurrency} from './helperFunctions.js';
+import {EmissionEdit, TaxEdit} from './objectDetail.js';
 
 
 class ObjectDisplayView extends React.Component{
@@ -8,15 +11,15 @@ class ObjectDisplayView extends React.Component{
     let icon = 
       <div className="col-2" style={{height:"2.5rem"}}>
         <img
-          alt={this.props.iconAltText}
-          src={this.props.iconSrc}
+          alt={""}
+          src={this.props.iconSrc ? this.props.iconSrc : urls.CO2_ICON}
           height="110%"
           style={{margin: "0px 0px 0px -0.5rem"}}
         />
       </div>
 
     return(
-      <button className="btn btn-outline-primary btn-block" onClick={this.props.onClick}>
+      <button className="btn btn-outline-primary btn-block my-1" onClick={this.props.onClick}>
         <div className="row" style={{height:"2.5rem"}}>
           {icon}
           <div className="col">
@@ -44,60 +47,61 @@ class ObjectDisplayView extends React.Component{
 }
 
 export class EmissionDisplayView extends React.Component{
-
-
   render(){
+    let emission=this.props.emission
+    let format = decodeEmissionFormat(emission.format_encoding)
+    //let sym = this.props.profile.currency_symbol
+    let taxName = getAttribute({objectList:this.props.taxes, key:"id", keyValue:emission.tax_type, attribute:"name"})
     return (
       <ObjectDisplayView
-        primaryText="Kamloops to Whistler return"
-        secondaryText="You need to shave your beard."
-        primaryRight="$12.57"
-        secondaryRight="23.4kg CO2"
-        iconSrc="/static/svg/001-departures.svg"
-        onClick={()=>{
-          console.log("HEELLLLLLLO")
-        }}
+        primaryText={emission.name}
+        secondaryText={`${emission.date} - ${taxName}`}
+        primaryRight={`${displayCurrency(emission.price, this.props.profile)}`}
+        secondaryRight={`${parseFloat(emission.co2_output_kg).toFixed(0)}kg CO2`}
+        iconSrc={format==="road" ? urls.CAR_ICON : (format==="airDistance" ? urls.AIRLINER_ICON : urls.HELICOPTER_ICON)}
+        onClick={this.props.onClick ? this.props.onClick :
+          ()=>{this.props.setModal(
+            <EmissionEdit
+              emission={this.props.emission} 
+              displayUnits={this.props.displayUnits} 
+              profile={this.props.profile} 
+              taxes={this.props.taxes} 
+              hideModal={this.props.hideModal} 
+              refresh={this.props.refresh}
+              fuels={this.props.fuels}
+            />
+          )}
+        }
       />
     )
   }
 }
-/*
-      <button className="btn btn-outline-primary btn-block">
-        <div className="row">
-          <div className="col">
-            <div className="row">
-              <div className="col text-left">
-                <strong>Squamish to Whistler</strong>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-3 mx-auto" style={{height:"2.5rem"}}>
-                  <img
-                    alt=""
-                    src="/static/svg/001-departures.svg"
-                    //width="100%"
-                    height="100%"
-                    //className="d-inline-block align-bottom"
-                    name="home"
-                    style={{margin: "0px 0px 0px 0px"}}
-                  />
-              </div>
-              <div className="col">
-                <div className="row" style={{height:"1rem"}}>
-                  <div className="col" style={{margin: "-0.5rem 0px 0px 0px"}}>
-                    <small className="text-right">12 Aug 2019</small>
-                  </div>
-                </div>
-                <div className="row" style={{height:"1.5rem"}}>
-                  <div className="col">
-                    <h4 className="text-center">23kg</h4>
-                  </div>
-                  <div className="col">
-                    <h4 className="text-center">$5.12</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </button>*/
+
+export class TaxDisplayView extends React.Component{
+  render(){
+
+    let tax=this.props.tax
+    let sym = this.props.profile.currency_symbol
+    return (
+      <ObjectDisplayView
+        primaryText={tax.name}
+        secondaryText={`${tax.category}`}
+        primaryRight={`${displayCurrency(tax.price_per_kg, this.props.profile)}`}
+        secondaryRight={`per kg CO2`}
+        iconSrc={tax.category==="Driving" ? urls.CAR_ICON : (tax.category==="Flying" ? urls.AIRLINER_ICON : urls.CO2_ICON)}
+        onClick={this.props.onClick ? this.props.onClick :
+          ()=>{this.props.setModal(
+            <TaxEdit
+              tax={this.props.tax}
+              taxes={this.props.taxes}
+              profile={this.props.profile}
+              hideModal={this.props.hideModal} 
+              setModal={this.props.setModal}
+              refresh={this.props.refresh}
+            />
+          )}
+        }
+      />
+    )
+  }
+}

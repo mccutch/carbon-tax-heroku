@@ -103,7 +103,7 @@ class TaxBackDate extends React.Component{
   }
 }
 
-class TaxEdit extends React.Component{
+export class TaxEdit extends React.Component{
   constructor(props){
     super(props)
 

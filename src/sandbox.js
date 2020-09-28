@@ -50,7 +50,16 @@ export class Sandbox extends React.Component{
       <div className="container bg-dark text-light">
         <h1>Sandbox</h1>
         <div className="container bg-light text-dark py-2">
-          <EmissionDisplayView />
+          {this.props.emission ?
+            <EmissionDisplayView 
+            emission={this.props.emission}
+            profile={this.props.profile}
+            taxes={this.props.taxes}
+          />
+          :
+          ""
+          }
+          
         </div>
       </div>
     )
