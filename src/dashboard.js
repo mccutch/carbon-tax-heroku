@@ -204,9 +204,9 @@ export class Dashboard extends React.Component{
     } else{
       return( 
         <div className="row">
-          <Nav.Link key="history" name="history" onClick={this.changeDisplay}>History</Nav.Link>
-          <Nav.Link key="stats" name="stats" onClick={this.changeDisplay}>Trends</Nav.Link>
-          <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+          <Nav.Link key="history" className={this.state.display==="history"?"active":""} name="history" onClick={this.changeDisplay}>History</Nav.Link>      
+          <Nav.Link key="profile" className={this.state.display==="profile"?"active":""} name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
+          <Nav.Link key="stats" className={this.state.display==="stats"?"active":""} name="stats" onClick={this.changeDisplay}>Trends</Nav.Link>
         </div>
       )
     }
@@ -227,6 +227,7 @@ export class Dashboard extends React.Component{
           displayUnits={this.props.displayUnits}
           emissions={this.props.emissions}
           stats={this.props.stats}
+          recipients={this.props.recipients}
           refresh={this.props.refresh}
           logout={this.props.logout}
           setModal={this.props.setModal}

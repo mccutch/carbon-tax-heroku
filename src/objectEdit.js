@@ -5,6 +5,8 @@ import { apiFetch, getAttribute, displayCurrency, sleep, encodeEmissionFormat} f
 import { ECONOMY_DECIMALS } from './fuelTypes.js';
 import { ObjectSelectionList, FormRow, StandardModal, LabelledInput } from './reactComponents.js';
 import * as api from './urls.js';
+import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
+import * as forms from './forms.js';
 
 
 export class TaxBackDate extends React.Component{
@@ -771,6 +773,141 @@ export class PaymentEdit extends React.Component{
         body={body}
         footer={footer}
       />
+    )
+  }
+}
+
+
+export class RecipientEdit extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      errorMessage:"",
+      submissionPending:false,
+    }
+
+    this.saveChange=this.saveChange.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+    this.validateInput=this.validateInput.bind(this)
+    this.delete=this.delete.bind(this)
+    this.editSuccess=this.editSuccess.bind(this)
+    this.editFailure=this.editFailure.bind(this)
+    this.deleteSuccess=this.deleteSuccess.bind(this)
+  }
+
+  returnError(message){
+    this.setState({
+      errorMessage:message,
+      submissionPending:false,
+    })
+  }
+
+  delete(){
+    let key = parseInt(this.props.recipient.id)
+
+    apiFetch({
+      url:`${api.RECIPIENT}/${key}/`,
+      method:'DELETE',
+      onSuccess:this.deleteSuccess,
+      onFailure:this.editFailure,
+    })
+  }
+
+  validateInput(){
+    
+    this.saveChange() 
+  }
+
+  saveChange(){
+    
+    let key = this.props.recipient.id
+
+    let recipientData = {}
+    let fields = ["name", "country", "description", "donation_link", "website"]
+    for(let i in fields){
+      if(this.state[fields[i]]){
+        recipientData[fields[i]]=this.state[fields[i]]
+      }
+    }
+
+    console.log(recipientData)
+    apiFetch({
+      url:`${api.RECIPIENT}/${key}/`,
+      method:'PATCH',
+      data:recipientData,
+      onSuccess:this.editSuccess,
+      onFailure:this.editFailure,
+    })
+    
+  }
+
+  deleteSuccess(response){
+    this.props.refresh()
+    this.props.hideModal()
+  }
+
+  editSuccess(json){
+    this.props.refresh()
+    this.props.hideModal()
+  }
+
+  editFailure(){
+    this.returnError("Unable to save change.")
+  }
+
+  handleChange(event){
+    this.setState({[event.target.name]:event.target.value})
+  }
+
+  render(){
+    let recipient=this.props.recipient
+  
+    let title=<div>Edit Tax</div>
+
+    let body =
+      <forms.RecipientForm 
+        recipient={recipient}
+        onChange={this.handleChange}
+        errorMessage={this.state.errorMessage}
+      />
+      /*<form>
+        <FormRow
+            label={<div>Name:</div>}
+            labelWidth={3}
+            input={<input defaultValue={recipient.name} type="text" name="name" placeholder="Required" maxLength={MAX_LEN_RECIP_NAME} className="form-control my-2" onChange={this.handleChange}/>}
+        />
+        <FormRow
+          label={<div>Country:</div>}
+          labelWidth={3}
+          input={<input defaultValue={recipient.country} type="text" name="country" placeholder="Country" maxLength={MAX_LEN_RECIP_COUNTRY} className="form-control my-2" onChange={this.handleChange}/>}
+        />
+        <FormRow
+          label={<div>Website:</div>}
+          labelWidth={3}
+          input={<input defaultValue={recipient.website} type="text" name="website" placeholder="Website url" maxLength={MAX_LEN_RECIP_WEB_LINK} className="form-control my-2" onChange={this.handleChange}/>} 
+        /> 
+        <FormRow
+          label={<div>Donation:</div>}
+          labelWidth={3}
+          input={<input defaultValue={recipient.donation_link} type="text" name="donation_link" placeholder="Donation page url" maxLength={MAX_LEN_RECIP_DONATION_LINK} className="form-control my-2" onChange={this.handleChange}/>}
+        />
+        <label>
+          Description:
+        </label>
+        <br/>
+        <textarea defaultValue={recipient.description} type="area" name="description" maxLength={MAX_LEN_RECIP_DESCRIPTION} className="form-control my-2" onChange={this.handleChange} rows="6"/> 
+        <p><strong>{this.state.errorMessage}</strong></p>
+      </form>*/
+
+    let footer = 
+      <div>
+        <button className={`btn btn-outline-primary m-2 ${this.state.submissionPending?"disabled":""}`} onClick={this.validateInput}>Save</button>
+        <button className="btn btn-outline-dark m-2" onClick={this.delete}>Delete</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+      </div>   
+
+    return(
+      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
     )
   }
 }

@@ -3,7 +3,7 @@ import {Badge} from 'react-bootstrap';
 import * as urls from './urls.js';
 import * as units from './unitConversions.js';
 import {decodeEmissionFormat, getAttribute, displayCurrency} from './helperFunctions.js';
-import {EmissionEdit, TaxEdit, VehicleEdit, PaymentEdit} from './objectEdit.js';
+import {EmissionEdit, TaxEdit, VehicleEdit, PaymentEdit, RecipientEdit} from './objectEdit.js';
 
 
 
@@ -175,6 +175,33 @@ export class ProfileDisplayView extends React.Component{
         secondaryRight={`CO2: ${parseFloat(co2Total).toFixed(0)}kg`}
         iconSrc={urls.BEAR_ICON}
         onClick={this.props.onClick}
+      />
+    )
+  }
+}
+
+export class RecipientDisplayView extends React.Component{
+  render(){
+    let recipient=this.props.recipient
+    return (
+      <ObjectDisplayView
+        primaryText={`${recipient.name}`}
+        secondaryText={`${recipient.country ? recipient.country : ""}`}
+        primaryRight={recipient.website ? <Badge pill variant="warning"><a href={recipient.website} target="_blank">Website</a></Badge> : ""}
+        //secondaryRight={recipient.donation_link ? <Badge variant="danger"><a href={recipient.donation_link} target="_blank">Donate</a></Badge> : ""}
+        iconSrc={urls.PIGGY_ICON}
+        onClick={this.props.onClick}
+        onClick={this.props.onClick ? this.props.onClick :
+          ()=>{this.props.setModal(
+            <RecipientEdit
+              recipient={this.props.recipient}
+              //profile={this.props.profile}
+              refresh={this.props.refresh}
+              setModal={this.props.setModal}
+              hideModal={this.props.hideModal}
+            />
+          )}
+        }
       />
     )
   }

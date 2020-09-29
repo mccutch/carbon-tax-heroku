@@ -604,16 +604,16 @@ class ContactForm(APIView):
         else:
             print("Not authenticated")
         context={
-            "first_name": request.user.username if request.user.is_authenticated else "",
-            #"email":"defaultEmail@example.com",
+            "user": request.user.username if request.user.is_authenticated else "",
+            "reply_email": request.data['email'],
+            "message": request.data['message'],
             #"src_banner":"http://cdn.mcauto-images-production.sendgrid.net/c84d4a731b72ca03/8c1086a9-5511-405c-afa7-237ddec5c6a3/2443x1629.JPG",
-            "src_banner":"http://cdn.mcauto-images-production.sendgrid.net/c84d4a731b72ca03/ebd139b8-cbc1-4a14-ac88-b0b966e3a56f/1366x375.jpeg",
+            #"src_banner":"http://cdn.mcauto-images-production.sendgrid.net/c84d4a731b72ca03/ebd139b8-cbc1-4a14-ac88-b0b966e3a56f/1366x375.jpeg",
         }
         response = send_mail(
             subject='Re: Contact Form', 
             message=request.data['message'], 
-            html_message=render_to_string('./static/emailTemplates/emailContent.html', context),
-            #html_message='<p>That’s <strong>the HTML part</strong></p>',
+            html_message=render_to_string('./static/emailTemplates/contact_internal.html', context),
             from_email='Carbon Accountant Admin <admin@carbonaccountant.app>', 
             recipient_list=['jack.mccutchan@gmail.com'], 
             fail_silently=False,

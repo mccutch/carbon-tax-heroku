@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal} from 'react-bootstrap';
-import { TaxTable, VehicleTable, EmissionTable, PaymentTable } from './userTables.js';
+import { TaxTable, VehicleTable, EmissionTable, PaymentTable, RecipientTable } from './userTables.js';
 import { apiFetch, getCurrencyFactor } from './helperFunctions.js';
 import * as units from './unitConversions';
 import { TabbedDisplay, ObjectSelectionList, CurrencySelection, StandardModal, CurrencySymbolSelection, DisplayUnitSelection, FormRow } from './reactComponents.js';
@@ -586,15 +586,30 @@ class SettingsLists extends React.Component{
         hideModal={this.props.hideModal}
         addNew={true}
       />
+    let recipientTable = 
+      <RecipientTable
+        recipients={this.props.recipients}
+        profile={this.props.profile}
+        //user={this.props.user}
+        //stats={this.props.stats}
+        refresh={this.props.refresh}
+        setModal={this.props.setModal}
+        hideModal={this.props.hideModal}
+        addNew={true}
+      />
 
     let tabData = [
       {
-        label: "My Taxes",
+        label: "Taxes",
         display: taxTable,
       },
       {
-        label: "My Vehicles",
+        label: "Vehicles",
         display: vehicleTable,
+      },
+      {
+        label: "Recipients",
+        display: recipientTable,
       },
     ]
     return <TabbedDisplay style="nav-tabs" tabData={tabData} />
@@ -640,6 +655,8 @@ export class ProfileDisplay extends React.Component{
         
         
         <SettingsLists
+          recipients={this.props.recipients}
+          //stats={this.props.stats}
           refresh={this.props.refresh}
           taxes={this.props.taxes}
           vehicles={this.props.vehicles}

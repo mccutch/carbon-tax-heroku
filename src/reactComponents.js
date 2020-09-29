@@ -3,6 +3,17 @@ import * as units from './unitConversions.js';
 import {Modal} from 'react-bootstrap';
 import {sortByKey} from './helperFunctions.js';
 
+export class VerticalSpacer extends React.Component{
+  render(){
+    return(
+      <div>
+        <div className="col" style={{height:`${this.props.height?this.props.height:3}rem`}}>
+        </div>
+      </div>
+    )
+  }      
+}
+
 export class LabelledInput extends React.Component{
   render(){
     return(
@@ -48,7 +59,7 @@ export class StandardModal extends React.Component{
 
     return(
       <Modal show={true} onHide={this.props.hideModal}>
-        <Modal.Header className="bg-info text-light" closeButton>
+        <Modal.Header className="bg-teal text-light" closeButton>
           <Modal.Title>{this.props.title}</Modal.Title>
         </Modal.Header>
         {modalBody}
@@ -110,13 +121,13 @@ export class TabbedDisplay extends React.Component{
   }
 
   makeTab(tabIndex, label){
-    let className
-    if(this.state.activeTab === tabIndex){
-      className="nav-link active"
-    } else {
-      className="nav-link"
-    }
-    return <strong><a name={tabIndex} className={className} onClick={this.handleClick}>{label}</a></strong>
+    console.log(tabIndex)
+    console.log(label)
+    return(
+      <strong><a name={tabIndex} className={`nav-link ${this.state.activeTab===tabIndex?"active bg-light border-dark":""}`} onClick={this.handleClick}>
+        {label}
+      </a></strong>
+    )
   }
 
   makeTabNavBar(){
@@ -132,11 +143,10 @@ export class TabbedDisplay extends React.Component{
     let activeTab = parseInt(this.state.activeTab)
     let display = this.props.tabData[activeTab].display
 
-    let style = "nav "+this.props.style
 
     return(
       <div>
-        <ul className={style}>
+        <ul className="nav nav-tabs border-dark" style={{margin:"0.5rem 0rem 0rem 0rem"}}>
           {this.makeTabNavBar()}
         </ul>
         {display}

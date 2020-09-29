@@ -16,6 +16,7 @@ import * as serviceWorker from './serviceWorker.js';
 import {GoogleDirections} from './googleDirections.js';
 import {USER_CACHE} from './constants.js';
 import * as api from './urls.js';
+import {VerticalSpacer} from './reactComponents.js';
 
 
 class App extends React.Component {
@@ -279,10 +280,7 @@ class App extends React.Component {
             hideModal={this.hideModal}
           />
         </div>
-        <div>
-          <div className="col" style={{height:"3rem"}}>
-          </div>
-        </div>
+        <VerticalSpacer/>
       </div>
     )
   }

@@ -59,6 +59,7 @@ export const PICKUP_ICON = `${ICON_LOC}pick-up-truck.svg`
 export const TRAM_ICON = `${ICON_LOC}tram.svg`
 export const GREEN_TEA_ICON = `${ICON_LOC}green-tea.svg`
 export const BEAR_ICON = `${ICON_LOC}bear.svg`
+export const PIGGY_ICON = `${ICON_LOC}piggy-bank.svg`
 
 
 

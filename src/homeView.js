@@ -1,4 +1,5 @@
 import React from 'react';
+import {VerticalSpacer} from './reactComponents.js';
 
 function generateByline(){
   let bylines = [
@@ -20,22 +21,25 @@ export class HomeView extends React.Component{
   }
 
   render(){
-    let dashboard, payment
-    if(this.props.loggedIn){
-      dashboard = <button className="btn btn-info m-2" name="dashboard" onClick={this.props.selectView}>My Dashboard</button>
-      payment = <button className="btn btn-info m-2" name="payment" onClick={this.props.selectView}>+ Make a payment</button>
-    }
-
     return(
       <div className="container-sm my-2">
         <div className="row justify-content-center">
+              <VerticalSpacer height={1}/>
               <div className="container text-center text-dark">
-                <h2>Carbon Accountant</h2>
                 <h5>{this.state.byline}</h5>
               </div>
-              <button className="btn btn-info m-2" name="emissionCalculator" onClick={this.props.selectView}>+ Add a carbon emission</button>
-              {payment}
-              {dashboard}
+              <div className="row">
+                <div className="col">
+                  <button className="btn btn-info my-2 btn-block" name="emissionCalculator" onClick={this.props.selectView}>+ Add a carbon emission</button>
+                  {this.props.loggedIn ?
+                    <div>
+                      <button className="btn btn-info my-2 btn-block" name="payment" onClick={this.props.selectView}>+ Make a payment</button>
+                      <button className="btn btn-info my-2 btn-block" name="dashboard" onClick={this.props.selectView}>My Dashboard</button>  
+                    </div>
+                    :""
+                }
+                </div>
+              </div>
         </div>
       </div>
     )

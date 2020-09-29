@@ -2,8 +2,8 @@
 import { OptionListInput } from './optionListInput.js';
 import { apiFetch } from './helperFunctions.js';
 import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './objectDetail.js';
-import { EmissionDisplayView, TaxDisplayView, VehicleDisplayView, PaymentDisplayView} from './objectDisplayViews.js'
-import { CreateTax, CreateVehicle } from './objectCreate.js';
+import { EmissionDisplayView, TaxDisplayView, VehicleDisplayView, PaymentDisplayView, RecipientDisplayView} from './objectDisplayViews.js'
+import { CreateTax, CreateVehicle, CreateRecipient } from './objectCreate.js';
 import * as getDate from './getDate.js';
 import * as api from './urls.js';
 
@@ -719,6 +719,60 @@ export class PaymentTable extends React.Component{
         {paginatedTableHeader}
         <ObjectTable tableRows={this.buildRows()} headers={this.props.detailView?["Date", "Recipient", "Amount", ""]:[" "]} />
       </div>
+    )
+  }
+}
+
+export class RecipientTable extends React.Component{
+  constructor(props){
+    super(props)
+    this.buildRows=this.buildRows.bind(this)
+    this.createNew=this.createNew.bind(this)
+  }
+
+  createNew(){
+    let modal = 
+      <CreateRecipient 
+        profile={this.props.profile}
+        refresh={this.props.refresh}
+        setModal={this.props.setModal}
+        hideModal={this.props.hideModal}
+      />
+    this.props.setModal(modal)
+  }
+
+  buildRows(){
+    let recipients = this.props.recipients
+    let tableRows=[]
+    if(recipients){
+      for(let i=0; i<recipients.length; i++){
+        tableRows.push(
+          <tr key={recipients[i].id} >
+            <RecipientDisplayView
+              recipient={recipients[i]} 
+              //taxes={this.props.taxes}
+              refresh={this.props.refresh} 
+              //profile={this.props.profile}
+              setModal={this.props.setModal}
+              hideModal={this.props.hideModal}
+            />
+          </tr>
+        )
+      }
+    }
+    if(this.props.addNew){
+      tableRows.push(
+        <tr key={0}>
+          <button className="btn btn-outline-primary" onClick={this.createNew}>+ Create Recipient</button>
+        </tr>
+      )
+    }
+    return tableRows
+  }
+
+  render(){
+    return(
+      <ObjectTable tableRows={this.buildRows()} headers={[" "]} />
     )
   }
 }

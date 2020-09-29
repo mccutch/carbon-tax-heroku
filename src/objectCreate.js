@@ -6,8 +6,9 @@ import { VehicleInput } from './vehicleInput.js';
 import { VehicleSaveForm } from './vehicleSave.js';
 import {apiFetch} from './helperFunctions.js';
 import {StandardModal, LabelledInput, FormRow} from './reactComponents.js';
-import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
+import {MAX_LEN_NAME} from './constants.js';
 import * as api from './urls.js';
+import * as forms from './forms.js';
 
 export class CreateTax extends React.Component{
   constructor(props){
@@ -111,7 +112,7 @@ export class CreateTax extends React.Component{
         <input type="text" name="newName" maxLength={MAX_LEN_NAME} onChange={this.handleChange} className="form-control my-2" placeholder="Name"/>
         <LabelledInput
           input={<input type="number" name="newPrice" onChange={this.handleChange} className="form-control" placeholder="Price"/>}
-          append={`succes${this.props.profile.currency_symbol}/kg CO2`}
+          append={`${this.props.profile.currency_symbol}/kg CO2`}
         />
         <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
         <p>{this.state.errorMessage}</p>
@@ -273,7 +274,7 @@ export class CreateRecipient extends React.Component{
     let newRecipientList = this.props.profile.recipients
     newRecipientList.push(id)
 
-    let data = {"recipients":newRecipientList}
+    let data = {recipients:newRecipientList}
     //console.log(data)
     apiFetch({
       url:`${api.PROFILE}/${this.props.profile.id}/`,
@@ -287,7 +288,7 @@ export class CreateRecipient extends React.Component{
   successModal(){
     let json = this.state.newRecipient
     this.props.refresh()
-    this.props.returnId(json.id)
+    if(this.props.returnId){this.props.returnId(json.id)}
 
     let title = <div>New: {json.name}</div>
     let body = <p>{json.description}</p>
@@ -305,42 +306,8 @@ export class CreateRecipient extends React.Component{
   }
 
   render(){
-    let errorMessage
-    if(this.state.errorMessage){
-      errorMessage = <p><strong>{this.state.errorMessage}</strong></p>
-    }
-
     let title = <div>Create Recipient</div>
-    let form = 
-      <form>
-        <FormRow
-            label={<div>Name:</div>}
-            labelWidth={3}
-            input={<input type="text" name="name" placeholder="Required" maxLength={MAX_LEN_RECIP_NAME} className="form-control my-2" onChange={this.handleChange}/>}
-        />
-        <FormRow
-          label={<div>Country:</div>}
-          labelWidth={3}
-          input={<input type="text" name="country" placeholder="Country" maxLength={MAX_LEN_RECIP_COUNTRY} className="form-control my-2" onChange={this.handleChange}/>}
-        />
-        <FormRow
-          label={<div>Website:</div>}
-          labelWidth={3}
-          input={<input type="text" name="website" placeholder="Website url" maxLength={MAX_LEN_RECIP_WEB_LINK} className="form-control my-2" onChange={this.handleChange}/>} 
-        /> 
-        <FormRow
-          label={<div>Donation:</div>}
-          labelWidth={3}
-          input={<input type="text" name="donation_link" placeholder="Donation page url" maxLength={MAX_LEN_RECIP_DONATION_LINK} className="form-control my-2" onChange={this.handleChange}/>}
-        />
-        <label>
-          Description:
-        </label>
-        <br/>
-        <textarea type="area" name="description" maxLength={MAX_LEN_RECIP_DESCRIPTION} className="form-control my-2" onChange={this.handleChange} rows="6"/> 
-        {errorMessage}
-      </form>
-
+    let form = <forms.RecipientForm onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
     let formButtons = 
       <div>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>

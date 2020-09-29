@@ -7,13 +7,9 @@ import * as urls from './urls.js';
 export class TabbedNavBar extends React.Component{
 
   makeTab(name, label){
-    let className
-    if(this.props.activeTab === name){
-      className="nav-link active"
-    } else {
-      className="nav-link"
-    }
-    return <strong><a name={name} className={className} onClick={this.props.onTabClick}>{label}</a></strong>
+    return  <a name={name} className={`nav-link ${this.props.activeTab===name?"active bg-light border-dark":""}`} onClick={this.props.onTabClick}>
+              <strong>{label}</strong>
+            </a>
   }
 
   buildNavTabs(){
@@ -31,7 +27,7 @@ export class TabbedNavBar extends React.Component{
 
   render(){
     return(
-      <ul className="nav nav-tabs">
+      <ul className="nav nav-tabs border-dark my-2">
         {this.buildNavTabs()}
       </ul>
     )
@@ -109,23 +105,23 @@ export class NavBar extends React.Component{
         </Nav>
     }
 
-    let navColour = (this.props.serverError ? "secondary":"warning")
+    let navColour = (this.props.serverError ? "secondary":"banner")
 
     return(
-      <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="light" sticky="top" expand="lg">
+      <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="dark" sticky="top" expand="lg">
         <Navbar.Brand onClick={this.handleClick}>
           <img
             alt=""
             src={urls.NAVBAR_ICON}
             width="40"
             //height="50"
-            //className="d-inline-block align-top"
+            //className="d-inline-block align-middle"
             name="home"
           />{' '}
           <a name="home" > Carbon Accountant</a>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
+        <Navbar.Collapse id="responsive-navbar-nav align-middle">
           {navLeft}
           {navRight}
         </Navbar.Collapse>
