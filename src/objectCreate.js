@@ -16,23 +16,17 @@ export class CreateTax extends React.Component{
 
     this.state = {
       createNew: false,
-      newName: "",
-      newPrice: 0,
-      newCategory: "",
-      categoryList:[],
+      name: "",
+      price_per_kg: 0,
+      category: taxCategories[0].title,
     }
 
-    this.buildCategoryList=this.buildCategoryList.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.handlePostSuccess=this.handlePostSuccess.bind(this)
     this.handlePostFailure=this.handlePostFailure.bind(this)
     this.submitNewTax=this.submitNewTax.bind(this)
     this.validateNewTax=this.validateNewTax.bind(this)
     this.returnError=this.returnError.bind(this)
-  }
-
-  componentDidMount(){
-    this.buildCategoryList()
   }
 
   returnError(message){
@@ -42,28 +36,17 @@ export class CreateTax extends React.Component{
     })
   }
 
-  buildCategoryList(){
-    let categoryList=[]
-    for(let i in taxCategories){
-      categoryList.push(taxCategories[i]['title'])
-    }
-    this.setState({
-      categoryList:categoryList,
-      newCategory:categoryList[0]
-    })
-  }
-
   handleChange(event){
-    this.setState({
-      [event.target.name]:event.target.value
-    })
+    let value=event.target.value
+    if(event.target.name==="price_per_kg") value/=this.props.profile.conversion_factor
+    this.setState({[event.target.name]:value})
   }
 
   validateNewTax(){
     this.setState({submissionPending:true})
 
     //Check fields are filled
-    if(!this.state.newName || !this.state.newPrice || !this.state.newCategory){
+    if(!this.state.name || !this.state.price_per_kg || !this.state.category){
       this.returnError("All fields are required.")
       return false
     }
@@ -71,7 +54,7 @@ export class CreateTax extends React.Component{
     //Check name isn't used
     let existingTaxes=this.props.existingTaxes
     for(let i in existingTaxes){
-      if(this.state.newName===existingTaxes[i].name && this.state.newCategory===existingTaxes[i].category){
+      if(this.state.name===existingTaxes[i].name && this.state.category===existingTaxes[i].category){
         this.returnError("A tax of this name already exists.")
         return false
       }
@@ -82,9 +65,9 @@ export class CreateTax extends React.Component{
   submitNewTax(){
 
     let taxData = {
-      name: this.state.newName,
-      price_per_kg: parseFloat(this.state.newPrice).toFixed(TAX_RATE_DECIMALS),
-      category: this.state.newCategory,
+      name: this.state.name,
+      price_per_kg: parseFloat(this.state.price_per_kg).toFixed(TAX_RATE_DECIMALS),
+      category: this.state.category,
     }
 
     apiFetch({
@@ -107,17 +90,7 @@ export class CreateTax extends React.Component{
 
   render(){
     let title = <div>Create Tax</div>
-    let body = 
-      <form>
-        <input type="text" name="newName" maxLength={MAX_LEN_NAME} onChange={this.handleChange} className="form-control my-2" placeholder="Name"/>
-        <LabelledInput
-          input={<input type="number" name="newPrice" onChange={this.handleChange} className="form-control" placeholder="Price"/>}
-          append={`${this.props.profile.currency_symbol}/kg CO2`}
-        />
-        <OptionListInput name="newCategory" list={this.state.categoryList} onChange={this.handleChange} />
-        <p>{this.state.errorMessage}</p>
-      </form>
-
+    let body = <forms.TaxForm profile={this.props.profile} onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
     let footer = 
       <div>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>

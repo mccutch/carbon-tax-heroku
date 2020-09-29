@@ -111,10 +111,10 @@ export class TaxEdit extends React.Component{
     super(props)
 
     this.state = {
-      newValue:false,
+      errorMessage:"",
+      submissionPending:false,
     }
 
-    this.editTax=this.editTax.bind(this)
     this.saveChange=this.saveChange.bind(this)
     this.handleChange=this.handleChange.bind(this)
     this.validateInput=this.validateInput.bind(this)
@@ -122,11 +122,18 @@ export class TaxEdit extends React.Component{
     this.editSuccess=this.editSuccess.bind(this)
     this.editFailure=this.editFailure.bind(this)
     this.deleteSuccess=this.deleteSuccess.bind(this)
+    this.returnError=this.returnError.bind(this)
+  }
+
+  returnError(message){
+    this.setState({
+      errorMessage:message,
+      submissionPending:false,
+    })
   }
 
   deleteTax(){
-    let key = parseInt(this.props.tax.id).toString()
-
+    let key = this.props.tax.id
     apiFetch({
       url:`${api.TAX}/${key}/`,
       method:'DELETE',
@@ -135,26 +142,15 @@ export class TaxEdit extends React.Component{
     })
   }
 
-  editTax(event){
-    if(event.target.name==="cancel"){
-      this.setState({
-        edit:false,
-        newValue:null,
-      })
-    } else if(event.target.name==="edit"){
-      this.setState({edit:true})
-    }
-  }
-
   validateInput(){
-    if(!(this.state.price_per_kg || this.state.name)){
+    this.setState({submissionPending:true})
+    if(!(this.state.price_per_kg || this.state.name || this.state.category)){
       this.props.hideModal()
-      return false
     }
 
     if(this.state.name===""){
-        this.setState({error:"Name cannot be blank"})
-        return false
+        this.returnError("Name cannot be blank")
+        return
     } 
 
     let allTaxes = this.props.allTaxes
@@ -163,38 +159,39 @@ export class TaxEdit extends React.Component{
         continue
       } else {
         if(allTaxes[i].name===this.state.name){
-          this.setState({error:"Name must be unique"})
-          return false
+          this.returnError("Name must be unique")
+          return
         }
       }
     }
-    
-    return true  
+
+    this.saveChange()  
   }
 
   saveChange(){
-    if(this.validateInput()){
-      let key = this.props.tax.id
+    let key = this.props.tax.id
+    let taxData = {}
+    let fields = ['name', 'category']
+    for(let i in fields){
+      if(this.state[fields[i]]){
 
-      let taxData = {}
-      if(this.state.name){
-        taxData['name']=this.state.name
+        taxData[fields[i]]=this.state[fields[i]]
       }
-
-      let currencyFactor = this.props.profile.conversion_factor
-      if(this.state.price_per_kg){
-        taxData['price_per_kg']=parseFloat(this.state.price_per_kg/currencyFactor).toFixed(TAX_RATE_DECIMALS)
-      }
-
-      console.log(taxData)
-      apiFetch({
-        url:`${api.TAX}/${key}/`,
-        method:'PATCH',
-        data:taxData,
-        onSuccess:this.editSuccess,
-        onFailure:this.editFailure,
-      })
     }
+    let currencyFactor = this.props.profile.conversion_factor
+    
+    if(this.state.price_per_kg){
+      taxData['price_per_kg']=parseFloat(this.state.price_per_kg/currencyFactor).toFixed(TAX_RATE_DECIMALS)
+    }
+
+    console.log(taxData)
+    apiFetch({
+      url:`${api.TAX}/${key}/`,
+      method:'PATCH',
+      data:taxData,
+      onSuccess:this.editSuccess,
+      onFailure:this.editFailure,
+    })
   }
 
   deleteSuccess(response){
@@ -208,46 +205,28 @@ export class TaxEdit extends React.Component{
   }
 
   editFailure(){
-    this.setState({
-      error:true
-    })
+    this.returnError("Unable to save change.")
   }
 
   handleChange(event){
     this.setState({[event.target.name]:event.target.value})
   }
 
-
   render(){
     let currencyFactor = this.props.profile.conversion_factor
     console.log(`factor:${currencyFactor}`)
     let existingValue=parseFloat(this.props.tax.price_per_kg*currencyFactor)
     let sym = this.props.profile.currency_symbol
-    
-
-    let deleteButton
-    if(!this.props.tax.isDefault){
-      deleteButton = <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteTax}>Delete</button>
-    }
 
     let title=<div>Edit Tax</div>
 
     let body =
-      <div>
-        Name:
-        <input type="text" name="name" defaultValue={this.props.tax.name} onChange={this.handleChange} placeholder="Name" className="form-control"/>
-        <br/>
-        Price per kg: 
-        <LabelledInput
-          input={<input type="number" name="price_per_kg" defaultValue={existingValue.toFixed(3)} onChange={this.handleChange} step="0.01" className="form-control"/>}
-          prepend={sym}
-        />
-      </div>
+      <forms.TaxForm tax={this.props.tax} profile={this.props.profile} onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
 
     let footer = 
       <div>
-        <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
-        {deleteButton}
+        <button className="btn btn-outline-primary m-2" name="save" onClick={this.validateInput}>Save</button>
+        {this.props.tax.isDefault ? "" : <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteTax}>Delete</button>}
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
       </div>   
 
@@ -539,13 +518,12 @@ export class EmissionEdit extends React.Component{
   render(){
     let emission=this.props.emission
     let displayUnits=this.props.displayUnits
-
-    let distance = (units.distanceDisplay(emission.distance, displayUnits)).toFixed(1)
+    let format = emission.format_encoding
+    let distance = format===encodeEmissionFormat("airTime") ? emission.distance : (units.distanceDisplay(emission.distance, displayUnits)).toFixed(1)
     let economy = (units.convert(emission.economy, displayUnits)).toFixed(2)
-
     let title = <div>Edit Emission</div>
 
-    let format = emission.format_encoding 
+     
     let roadTripFields
     if(format===encodeEmissionFormat("road")){
       roadTripFields = 
@@ -619,7 +597,7 @@ export class EmissionEdit extends React.Component{
         {distanceField}
         {roadTripFields}
         <br/>
-        CO2 Output: <strong>{this.state.co2_output_kg}kg</strong>
+        CO2 Output: <strong>{parseFloat(this.state.co2_output_kg).toFixed(1)}kg</strong>
         <br/>
         Price: <strong>{displayCurrency(this.state.price, this.props.profile)}</strong>
       </form>
@@ -793,6 +771,7 @@ export class RecipientEdit extends React.Component{
     this.editSuccess=this.editSuccess.bind(this)
     this.editFailure=this.editFailure.bind(this)
     this.deleteSuccess=this.deleteSuccess.bind(this)
+    this.returnError=this.returnError.bind(this)
   }
 
   returnError(message){
@@ -803,7 +782,7 @@ export class RecipientEdit extends React.Component{
   }
 
   delete(){
-    let key = parseInt(this.props.recipient.id)
+    let key = this.props.recipient.id
 
     apiFetch({
       url:`${api.RECIPIENT}/${key}/`,
@@ -814,7 +793,7 @@ export class RecipientEdit extends React.Component{
   }
 
   validateInput(){
-    
+    this.setState({submissionPending:true})
     this.saveChange() 
   }
 
@@ -870,34 +849,6 @@ export class RecipientEdit extends React.Component{
         onChange={this.handleChange}
         errorMessage={this.state.errorMessage}
       />
-      /*<form>
-        <FormRow
-            label={<div>Name:</div>}
-            labelWidth={3}
-            input={<input defaultValue={recipient.name} type="text" name="name" placeholder="Required" maxLength={MAX_LEN_RECIP_NAME} className="form-control my-2" onChange={this.handleChange}/>}
-        />
-        <FormRow
-          label={<div>Country:</div>}
-          labelWidth={3}
-          input={<input defaultValue={recipient.country} type="text" name="country" placeholder="Country" maxLength={MAX_LEN_RECIP_COUNTRY} className="form-control my-2" onChange={this.handleChange}/>}
-        />
-        <FormRow
-          label={<div>Website:</div>}
-          labelWidth={3}
-          input={<input defaultValue={recipient.website} type="text" name="website" placeholder="Website url" maxLength={MAX_LEN_RECIP_WEB_LINK} className="form-control my-2" onChange={this.handleChange}/>} 
-        /> 
-        <FormRow
-          label={<div>Donation:</div>}
-          labelWidth={3}
-          input={<input defaultValue={recipient.donation_link} type="text" name="donation_link" placeholder="Donation page url" maxLength={MAX_LEN_RECIP_DONATION_LINK} className="form-control my-2" onChange={this.handleChange}/>}
-        />
-        <label>
-          Description:
-        </label>
-        <br/>
-        <textarea defaultValue={recipient.description} type="area" name="description" maxLength={MAX_LEN_RECIP_DESCRIPTION} className="form-control my-2" onChange={this.handleChange} rows="6"/> 
-        <p><strong>{this.state.errorMessage}</strong></p>
-      </form>*/
 
     let footer = 
       <div>

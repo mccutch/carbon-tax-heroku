@@ -140,6 +140,7 @@ export class EmissionCalculator extends React.Component{
         <button className="btn btn-outline-success" onClick={this.props.hideModal}>Close</button>
       </div>
     this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
+    this.props.refresh()
     this.props.exit()
   }
 

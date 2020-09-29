@@ -1,7 +1,32 @@
 import React from 'react';
-import {FormRow} from './reactComponents.js';
+import {FormRow, LabelledInput, ObjectSelectionList } from './reactComponents.js';
 import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
+import {taxCategories} from './defaultTaxTypes.js';
 
+export class TaxForm extends React.Component{
+  render(){
+    let name, price_per_kg, category
+    let categoryList = <ObjectSelectionList defaultValue={category} name="category" list={taxCategories} onChange={this.props.onChange} label="title" value="title" />
+    if(this.props.tax){
+      name=this.props.tax.name
+      price_per_kg=parseFloat(this.props.tax.price_per_kg*this.props.profile.conversion_factor).toFixed(3)
+      category=this.props.tax.category
+      categoryList = this.props.tax.isDefault ? "" : categoryList
+    }
+      
+    return(
+      <form>
+        <input defaultValue={name} type="text" name="name" maxLength={MAX_LEN_NAME} onChange={this.props.onChange} className="form-control my-2" placeholder="Name"/>
+        <LabelledInput
+          input={<input defaultValue={price_per_kg} type="number" name="price_per_kg" onChange={this.props.onChange} className="form-control" placeholder="Price" step="0.01"/>}
+          append={`${this.props.profile.currency_symbol}/kg CO2`}
+        />
+        {categoryList}
+        <p><strong>{this.props.errorMessage}</strong></p>
+      </form>
+    )
+  }
+}
 
 export class RecipientForm extends React.Component{
   render(){
