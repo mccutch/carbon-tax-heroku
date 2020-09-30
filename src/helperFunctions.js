@@ -1,6 +1,7 @@
 import {refreshToken}  from './myJWT.js';
 import {emissionSaveFormats, heliEmissions} from './constants.js';
 import * as api from './urls.js';
+import { useHistory } from "react-router-dom";
 
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY
@@ -15,6 +16,12 @@ convertCurrency({convertFrom, convertTo, amount, onSuccess, onFailure})
 
 */
 //----------------------------------------------------------------------------------------------------------------------------
+/*export function navigate(path){
+  let history = useHistory()
+  history.push(path)
+}*/
+
+
 export function sortByKey({list, key, ascending=true}){
   return list.sort(function(a, b)
   {

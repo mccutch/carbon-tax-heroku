@@ -29,13 +29,13 @@ export class MainView extends React.Component{
 
   render(){
 
-    let newEmissionMessage
+    /*let newEmissionMessage
     if(this.state.newEmission){
       newEmissionMessage = 
         <div className="container bg-success">
           <p><strong>{this.state.newEmission.name}</strong> saved to profile.</p>
         </div>
-    }
+    }*/
 
     let display
     if(this.props.display==="emissionCalculator"){
@@ -96,12 +96,6 @@ export class MainView extends React.Component{
                   hideModal={this.props.hideModal}
                   hideDisplay={this.hideDisplay}
                 />
-    } else {
-      display = 
-        <div>
-          {newEmissionMessage}
-          
-        </div>
     }
 
     return(

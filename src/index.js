@@ -17,6 +17,20 @@ import {GoogleDirections} from './googleDirections.js';
 import {USER_CACHE} from './constants.js';
 import * as api from './urls.js';
 import {VerticalSpacer} from './reactComponents.js';
+import {EmissionCalculator} from './emissionCalculator.js';
+import {EmissionListWrapper} from './emissionList.js';
+import {Dashboard} from './dashboard.js';
+import {ProfileDisplay} from './userProfile.js';
+import {HomeView} from './homeView.js';
+import {PaymentView} from './payment.js';
+import {ContactPage} from './contact.js';
+
+import {
+  HashRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
 
 
 class App extends React.Component {
@@ -151,6 +165,7 @@ class App extends React.Component {
     // Reload page to clear user data from state
     // What to do about clearing user data from caches??
     window.location.reload(false)
+    //navigate(api.NAV_HOME)
   }
 
   refreshFullProfile(){
@@ -210,27 +225,8 @@ class App extends React.Component {
     } else if(nav==="register"){
       this.setModal(<RegistrationForm onSuccess={this.login} hideModal={this.hideModal}/>)
 
-    } else if(nav==="newEmission"){
-      this.setMainView("emissionCalculator")
-
-    } else if(nav==="newPayment"){
-      this.setMainView("payment")
-
-    } else if(nav==="dashboard"){
-      this.setMainView("dashboard")
-
-    } else if(nav==="contact"){
-      this.setMainView("contact")
-
-    } else if(nav==="about"){
-      this.setMainView("about")
-
-    } else if(nav==="home"){
-      this.setMainView("home")
-    
     } else if(nav==="toggleUnits"){
-      this.toggleDisplayUnits()
-    
+      this.toggleDisplayUnits()  
 
     } else if(nav==="contact"){
       this.setMainView("contact")
@@ -243,6 +239,26 @@ class App extends React.Component {
     if(this.state.modal){
       modal = this.state.modal
     }
+
+    let loggedIn=this.state.loggedIn
+    let displayUnits=this.state.displayUnits
+    let fuels=this.state.fuels
+
+    let user=this.state.user
+    let profile=this.state.profile
+    let stats=this.state.stats
+
+    let taxes=this.state.taxes
+    let vehicles=this.state.vehicles
+    let emissions=this.state.emissions
+    let recipients=this.state.recipients
+    let payments=this.state.payments
+
+    let refresh=this.refreshFullProfile
+    let setModal=this.setModalContent
+    let hideModal=this.hideModal
+    let selectView=(event)=>{this.setMainView(event.target.name)}
+
 
     return( 
       <div className="bg-dark" style={{ backgroundImage: `url(${api.MARANON_SUNRISE})`, 
@@ -260,6 +276,73 @@ class App extends React.Component {
         />
         {modal}
         <div>
+          <Switch>
+            <Route path={api.NAV_CALCULATOR}>
+              <EmissionCalculator 
+                loggedIn={loggedIn} 
+                displayUnits={displayUnits} 
+                exit={null}
+                taxes={taxes}
+                vehicles={vehicles}
+                fuels={fuels}
+                profile={profile}
+                refresh={refresh}
+                setModal={setModal}
+                hideModal={hideModal}
+                selectView={selectView}
+              />
+            </Route>
+            <Route path={api.NAV_DASHBOARD}>
+              {this.state.loggedIn ?
+                <Dashboard 
+                  stats={stats}
+                  user={user}
+                  profile={profile}
+                  taxes={taxes}
+                  vehicles={vehicles}
+                  fuels={fuels}
+                  displayUnits={displayUnits}
+                  emissions={emissions}
+                  payments={payments}
+                  recipients={recipients}
+                  refresh={refresh}
+                  logout={this.logout}
+                  setModal={setModal}
+                  hideModal={hideModal}
+                />
+                : <Redirect to={api.NAV_HOME}/>
+              }
+            </Route>
+            <Route exact path={api.NAV_HOME}>
+              <HomeView 
+                loggedIn={loggedIn}
+              />
+            </Route>
+            <Route path={api.NAV_PAYMENT}>
+              {this.state.loggedIn ?
+                <PaymentView
+                  stats={stats}
+                  user={user}
+                  profile={profile}
+                  recipients={recipients}
+                  refresh={refresh}
+                  setModal={setModal}
+                  hideModal={hideModal}
+                />
+                : <Redirect to={api.NAV_HOME}/>
+              }
+            </Route>
+            <Route path={api.NAV_CONTACT}>
+              <ContactPage 
+                loggedIn={loggedIn}
+                user={user}
+                setModal={setModal}
+                hideModal={hideModal}
+                hideDisplay={null}
+              />
+            </Route>
+          </Switch>
+          {/*
           <MainView
             loggedIn={this.state.loggedIn} 
             displayUnits={this.state.displayUnits}
@@ -278,7 +361,7 @@ class App extends React.Component {
             logout={this.logout}
             setModal={this.setModalContent}
             hideModal={this.hideModal}
-          />
+          />*/}
         </div>
         <VerticalSpacer/>
       </div>
@@ -287,7 +370,12 @@ class App extends React.Component {
 }
 
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(
+  <Router>
+    <App />
+  </Router>, 
+  document.getElementById('root')
+)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

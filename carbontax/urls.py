@@ -6,6 +6,7 @@ from rest_framework_simplejwt import views as jwt_views
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView #Serve sw.js
+from . import serializers
 
 
 
@@ -25,7 +26,7 @@ urlpatterns = [
     path('function/contact-form/', views.ContactForm.as_view(), name="contact-form"),
 
     # JWT FUNCTIONS
-    path('token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/', jwt_views.TokenObtainPairView.as_view(serializer_class=serializers.FlexibleJWTSerializer), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('api-auth/', include('rest_framework.urls')), # Login function on browsable APIs
 

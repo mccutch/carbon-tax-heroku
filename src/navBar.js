@@ -1,8 +1,10 @@
 import React from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import {NavLink, Link} from 'react-router-dom';
 import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
 import * as urls from './urls.js';
+import {CleanLink} from './reactComponents.js';
 
 export class TabbedNavBar extends React.Component{
 
@@ -61,22 +63,36 @@ export class NavBar extends React.Component{
 
 
     // All users
-    let about = <Nav.Link key="about" name="about" onClick={this.handleClick}>About</Nav.Link>
-    let contact = <Nav.Link key="contact" name="contact" onClick={this.handleClick}>Contact</Nav.Link>
-    let demoUser = <Nav.Link key="demoUser" name="demoUser" onClick={this.handleClick}>Demo User</Nav.Link>
+    //let about = <NavLink to="/about" activeClassName="active">About</NavLink>/*<Nav.Link key="about" name="about" onClick={this.handleClick}>About</Nav.Link>*/
+    let contact = <Nav.Link>
+                    <CleanLink to={urls.NAV_CONTACT} className="text-light" activeClassName="active">Contact</CleanLink>
+                  </Nav.Link>
+
+    let demoUser = <Nav.Link key="demoUser" name="demoUser" className="text-light" onClick={this.handleClick}>Demo User</Nav.Link>
 
     // Authenticated users
-    let dashboard = <Nav.Link key="dashboard" name="dashboard" onClick={this.handleClick}>Dashboard</Nav.Link>
-    let profile = <Nav.Link key="profile" name="profile" onClick={this.handleClick}>Profile</Nav.Link>
-    let newEmission = <Nav.Link key="newEmission" name="newEmission" onClick={this.handleClick}>New Emission</Nav.Link>
-    let newPayment = <Nav.Link key="newPayment" name="newPayment" onClick={this.handleClick}>New Payment</Nav.Link>
-    let logout = <Nav.Link key="logout" name="logout" onClick={this.handleClick}>Logout</Nav.Link>
-    let outstanding = <Nav.Link key="outstanding" name="newPayment" onClick={this.handleClick}>Balance: {balance}</Nav.Link> ///Change to payment page
+    let dashboard = <Nav.Link>
+                      <CleanLink to={urls.NAV_DASHBOARD} className="text-light" activeClassName="active">Dashboard</CleanLink>
+                    </Nav.Link>
+    //let profile = <Nav.Link key="profile" name="profile" onClick={this.handleClick}>Profile</Nav.Link>
+    let newEmission = <Nav.Link>
+                        <CleanLink to={urls.NAV_CALCULATOR} className="text-light" activeClassName="active">New Emission</CleanLink>
+                      </Nav.Link>
+
+    let newPayment =  <Nav.Link>
+                        <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active">New Payment</CleanLink>
+                      </Nav.Link>
+
+    let logout = <Nav.Link key="logout" name="logout"  className="text-light" onClick={this.handleClick}>Logout</Nav.Link>
+
+    let outstanding = <Nav.Link>
+                        <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active">Balance: {balance}</CleanLink>
+                      </Nav.Link> ///Change to payment page
 
     // Unauthenticated users
-    let login = <Nav.Link key="login" name="login" onClick={this.handleClick}>Login</Nav.Link>
-    let signUp = <Nav.Link key="signUp" name="register" onClick={this.handleClick}>Sign up</Nav.Link>
-    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" onClick={this.handleClick}>Change Units ({units.units(this.props.displayUnits)})</Nav.Link>
+    let login = <Nav.Link key="login" name="login" className="text-light" onClick={this.handleClick}>Login</Nav.Link>
+    let signUp = <Nav.Link key="signUp" name="register" className="text-light" onClick={this.handleClick}>Sign up</Nav.Link>
+    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" className="text-light" onClick={this.handleClick}>Units ({units.units(this.props.displayUnits)})</Nav.Link>
 
     let navLeft
     let navRight
@@ -109,16 +125,15 @@ export class NavBar extends React.Component{
 
     return(
       <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="dark" sticky="top" expand="lg">
-        <Navbar.Brand onClick={this.handleClick}>
+        <Navbar.Brand>
           <img
             alt=""
             src={urls.NAVBAR_ICON}
             width="40"
             //height="50"
             //className="d-inline-block align-middle"
-            name="home"
           />{' '}
-          <a name="home" > Carbon Accountant</a>
+          <CleanLink className="text-light" to="/"> Carbon Accountant</CleanLink>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav align-middle">

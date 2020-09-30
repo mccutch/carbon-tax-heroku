@@ -11,6 +11,8 @@ import {ObjectSelectionList, StandardModal} from './reactComponents.js';
 import {TabbedNavBar} from './navBar.js';
 import {getAttribute, displayHrs} from './helperFunctions.js';
 import {aircraftTypes, airlinerClasses} from './constants.js';
+import * as urls from './urls.js';
+import {Redirect} from 'react-router-dom';
 
 //Carbon emission modes
 import {ROAD, AIR, PUBLIC, OTHER} from './constants.js';
@@ -69,7 +71,6 @@ export class EmissionCalculator extends React.Component{
     this.exitCalculator=this.exitCalculator.bind(this)
     this.handleTabClick=this.handleTabClick.bind(this)
     this.createClone=this.createClone.bind(this)
-    this.newEmission=this.newEmission.bind(this)
     this.handleModeChange=this.handleModeChange.bind(this)
     this.nextTab=this.nextTab.bind(this)
     this.prevTab=this.prevTab.bind(this)
@@ -97,12 +98,7 @@ export class EmissionCalculator extends React.Component{
   }
 
   exitCalculator(){
-    this.props.exit()
-  }
-
-  newEmission(event){
-    this.props.hideModal()
-    this.props.selectView(event)
+    this.setState({redirect:urls.NAV_HOME})
   }
 
   createClone(json){
@@ -136,12 +132,11 @@ export class EmissionCalculator extends React.Component{
     let footer = 
       <div>
         <button className="btn btn-outline-info" onClick={() => this.createClone(json)}>Edit/Clone</button>
-        <button className="btn btn-outline-info" name="emissionCalculator" onClick={this.newEmission}>New emission</button>
         <button className="btn btn-outline-success" onClick={this.props.hideModal}>Close</button>
       </div>
     this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
     this.props.refresh()
-    this.props.exit()
+    this.exitCalculator()
   }
 
   handleSubmitEconomy(lPer100Km, fuelId){
@@ -214,6 +209,8 @@ export class EmissionCalculator extends React.Component{
   isLastTab(){return this.state.tabList[this.state.tabList.length-1].name===this.state.activeTab}
 
   render(){
+    if(this.state.redirect) return <Redirect to={this.state.redirect}/>
+
     let displayUnits=this.props.displayUnits
     let navBtns = 
       <div className="row">

@@ -61,6 +61,12 @@ export const GREEN_TEA_ICON = `${ICON_LOC}green-tea.svg`
 export const BEAR_ICON = `${ICON_LOC}bear.svg`
 export const PIGGY_ICON = `${ICON_LOC}piggy-bank.svg`
 
+// ROUTING
+export const NAV_CALCULATOR = '/calculator'
+export const NAV_DASHBOARD = '/dashboard'
+export const NAV_HOME = '/'
+export const NAV_PAYMENT = '/payment'
+export const NAV_CONTACT = '/contact'
 
 
 

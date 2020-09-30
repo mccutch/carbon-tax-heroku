@@ -2,6 +2,28 @@ import React from 'react';
 import * as units from './unitConversions.js';
 import {Modal} from 'react-bootstrap';
 import {sortByKey} from './helperFunctions.js';
+import {Link} from 'react-router-dom';
+
+
+export class CleanLink extends React.Component{
+  render(){
+    return <Link to={this.props.to} className={this.props.className} style={{textDecoration:'none'}}>{this.props.children}</Link>
+  }
+}
+
+export class NavButton extends React.Component{
+  render(){
+    return(
+      
+        <CleanLink to={this.props.to} >
+          <button className={this.props.className}>
+          {this.props.children}
+          </button>
+        </CleanLink>
+      
+    )
+  }
+}
 
 export class VerticalSpacer extends React.Component{
   render(){

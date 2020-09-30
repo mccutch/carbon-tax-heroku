@@ -187,7 +187,7 @@ export class RecipientDisplayView extends React.Component{
       <ObjectDisplayView
         primaryText={`${recipient.name}`}
         secondaryText={`${recipient.country ? recipient.country : ""}`}
-        primaryRight={recipient.website ? <Badge pill variant="warning"><a href={recipient.website} target="_blank">Website</a></Badge> : ""}
+        primaryRight={recipient.website ? <Badge pill variant="warning"><a href={recipient.website} target="_blank" onClick={(e)=>{e.stopPropagation()}}>Website</a></Badge> : ""}
         //secondaryRight={recipient.donation_link ? <Badge variant="danger"><a href={recipient.donation_link} target="_blank">Donate</a></Badge> : ""}
         iconSrc={urls.PIGGY_ICON}
         onClick={this.props.onClick}

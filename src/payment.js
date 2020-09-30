@@ -6,6 +6,7 @@ import * as getDate from './getDate.js';
 import {apiFetch, displayCurrency} from './helperFunctions.js';
 import {PaymentEdit} from './objectEdit.js';
 import * as api from './urls.js';
+import {Redirect} from 'react-router-dom';
 
 export class SearchRecipients extends React.Component{
 
@@ -30,7 +31,7 @@ export class SearchRecipients extends React.Component{
 export class PaymentSuccess extends React.Component{
   constructor(props){
     super(props)
-
+    this.state={}
     this.goTo=this.goTo.bind(this)
     this.edit=this.edit.bind(this)
   }
@@ -49,11 +50,12 @@ export class PaymentSuccess extends React.Component{
   }
 
   goTo(event){
-    this.props.setView(event.target.name)
-    this.props.hideModal()
+    this.setState({redirect:event.target.name},this.props.hideModal)
   }
 
   render(){
+    if(this.state.redirect) return <Redirect to={this.state.redirect} />;
+
     let payment=this.props.payment
     let prevBalance = this.props.stats.summary.balance
 
@@ -66,8 +68,8 @@ export class PaymentSuccess extends React.Component{
       </div>
     let footer = 
       <div>
-        <button name="payment" className="btn btn-outline-info m-2" onClick={this.goTo}>New payment</button>
-        <button name="dashboard" className="btn btn-outline-info m-2" onClick={this.goTo}>My Dashboard</button>
+        <button name={api.NAV_PAYMENT} className="btn btn-outline-info m-2" onClick={this.goTo}>New payment</button>
+        <button name={api.NAV_DASHBOARD} className="btn btn-outline-info m-2" onClick={this.goTo}>My Dashboard</button>
         <button name="edit" className="btn btn-outline-info m-2" onClick={this.edit}>Edit/Clone</button>
       </div>
 
@@ -79,7 +81,7 @@ export class PaymentView extends React.Component{
   constructor(props){
     super(props)
 
-    let defaultAmount = this.props.stats ? this.props.stats.summary.balance : 0
+    let defaultAmount = this.props.stats.summary ? this.props.stats.summary.balance : 0
 
     this.state = {
       amount:(defaultAmount>0 ? defaultAmount : 0),
@@ -202,7 +204,8 @@ export class PaymentView extends React.Component{
       />
 
     this.props.setModal(modal)
-    this.props.setView("home")
+    this.props.refresh()
+    this.setState({redirect:api.NAV_HOME})
   }
 
   handlePostFailure(){
@@ -210,6 +213,7 @@ export class PaymentView extends React.Component{
   }
 
   render(){
+    if(this.state.redirect) return <Redirect to={this.state.redirect} />;
 
     let summary, sym, conversion, currency
     let balance = "$0.00"

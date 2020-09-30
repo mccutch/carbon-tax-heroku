@@ -1,4 +1,13 @@
 
+UX
+- Landing page
+- After signup 
+- Improve signup form
+- Link to sign up after emission
+- url matching
+
+Test login with email or username
+
 SW
 - What files need to be cached on after the sw is installed??
 

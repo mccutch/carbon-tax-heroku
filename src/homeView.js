@@ -1,5 +1,7 @@
 import React from 'react';
-import {VerticalSpacer} from './reactComponents.js';
+import {VerticalSpacer, NavButton} from './reactComponents.js';
+import {Link} from 'react-router-dom';
+import * as urls from './urls.js';
 
 function generateByline(){
   let bylines = [
@@ -30,11 +32,11 @@ export class HomeView extends React.Component{
               </div>
               <div className="row">
                 <div className="col">
-                  <button className="btn btn-info my-2 btn-block" name="emissionCalculator" onClick={this.props.selectView}>+ Add a carbon emission</button>
+                  <NavButton to={urls.NAV_CALCULATOR} className="btn btn-info my-2 btn-block" textClassName="text-light">+ Add a carbon emission</NavButton>
                   {this.props.loggedIn ?
                     <div>
-                      <button className="btn btn-info my-2 btn-block" name="payment" onClick={this.props.selectView}>+ Make a payment</button>
-                      <button className="btn btn-info my-2 btn-block" name="dashboard" onClick={this.props.selectView}>My Dashboard</button>  
+                      <NavButton to={urls.NAV_PAYMENT} className="btn btn-info my-2 btn-block" textClassName="text-light">+ Make a payment</NavButton>
+                      <NavButton to={urls.NAV_DASHBOARD} className="btn btn-info my-2 btn-block" textClassName="text-light">My Dashboard</NavButton>  
                     </div>
                     :""
                 }
