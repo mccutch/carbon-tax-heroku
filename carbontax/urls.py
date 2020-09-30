@@ -7,6 +7,10 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView #Serve sw.js
 
+from django.http.response import HttpResponseRedirect
+def handler404(request, *args, **kwargs):
+    print("!!!!!!!404!!!!!!")
+    return HttpResponseRedirect('/')
 
 
 urlpatterns = [

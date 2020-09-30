@@ -38,7 +38,6 @@ export class LabelledInput extends React.Component{
   }
 }
 
-
 export class StandardModal extends React.Component{
   render(){
     let modalFooter
