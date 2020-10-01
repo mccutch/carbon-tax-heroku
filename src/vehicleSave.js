@@ -7,7 +7,33 @@ import * as api from './urls.js';
 import {
   DEFAULT_VEHICLE_NAME,
   MAX_VEHICLE_NAME_LEN,
+  ECONOMY_DECIMALS,
 } from './constants.js';
+
+export function saveVehicle({vehicle, onFailure, onSuccess}){
+
+
+  let vehicleData = {
+    "name":vehicle.name ? truncate(vehicle.name,MAX_VEHICLE_NAME_LEN):DEFAULT_VEHICLE_NAME,
+    "economy":`${parseFloat(vehicle.economy).toFixed(ECONOMY_DECIMALS)}`,
+    "fuel":`${vehicle.fuel}`
+  }
+
+  if(!vehicleData.name || !(vehicleData.economy>0) || !vehicleData.fuel){
+    console.log(vehicleData)
+    onFailure("All fields required.")
+    return
+  }
+
+  console.log(vehicleData)
+  apiFetch({
+    method:'POST',
+    data:vehicleData,
+    url:api.MY_VEHICLES,
+    onSuccess:onSuccess,
+    onFailure:()=>onFailure("Unable to save vehicle"),
+  })
+}
 
 export class VehicleSaveForm extends React.Component{
   /*

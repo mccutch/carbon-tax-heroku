@@ -2,10 +2,9 @@ import React from 'react';
 import { TAX_RATE_DECIMALS } from './defaultTaxTypes.js';
 import * as units from './unitConversions';
 import { apiFetch, getAttribute, displayCurrency, sleep, encodeEmissionFormat} from './helperFunctions.js';
-import { ECONOMY_DECIMALS } from './fuelTypes.js';
-import { ObjectSelectionList, FormRow, StandardModal, LabelledInput } from './reactComponents.js';
+import { ObjectSelectionList, FormRow, StandardModal, LabelledInput, PendingBtn } from './reactComponents.js';
 import * as api from './urls.js';
-import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
+import { ECONOMY_DECIMALS, MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
 import * as forms from './forms.js';
 
 
@@ -251,6 +250,13 @@ export class VehicleEdit extends React.Component{
     this.editFailure=this.editFailure.bind(this)
   }
 
+  returnError(message){
+    this.setState({
+      errorMessage:message,
+      submissionPending:false,
+    })
+  }
+
   handleChange(event){
     if(event.target.name==="economy"){
       this.setState({lPer100Km: units.convert(event.target.value, this.props.displayUnits)})
@@ -262,6 +268,7 @@ export class VehicleEdit extends React.Component{
   }
 
   deleteVehicle(){
+    this.setState({submissionPending:true})
     let key = parseInt(this.props.vehicle.id).toString()
     apiFetch({
       url:`${api.VEHICLE}/${key}/`,
@@ -272,18 +279,21 @@ export class VehicleEdit extends React.Component{
   }
 
   validateInput(){
+    this.setState({submissionPending:true})
+    
+    if(!this.state.name && !this.state.lPer100Km &&!this.state.fuel){
+      // No input data
+      this.props.hideModal()
+    } 
+
     //No validation to apply yet.
-    if(this.state.name || this.state.lPer100Km){
-      return true
-    } else {
-      return false
-    }
+    this.saveChange()
   }
 
   saveChange(){
     if(this.validateInput){
       console.log("SAVE CHANGE")
-      let key = parseInt(this.props.vehicle.id).toString()
+      let key = this.props.vehicle.id
 
       let vehicleData ={}
       if(this.state.name){
@@ -312,42 +322,26 @@ export class VehicleEdit extends React.Component{
   }
 
   editFailure(){
-    this.setState({
-      error:true
-    })
+    this.returnError("Unable to save changes.")
   }
 
   render(){
-    let vehicle=this.props.vehicle
-    let existingLPer100Km=units.convert(parseFloat(vehicle.economy), this.props.displayUnits)
-    let errorDisplay
-    if(this.state.error){
-      errorDisplay = <p>Unable to save changes.</p>
-    }
-
     let title = <div>Edit Vehicle</div>
-
-    let body = 
-      <div>
-        {errorDisplay}
-        <input name="name" type="text" placeholder="Vehicle name" defaultValue={vehicle.name} onChange={this.handleChange} className="form-control my-2"/>
-        <LabelledInput
-          input={<input name="economy" type="number" placeholder="Economy" defaultValue={existingLPer100Km.toFixed(ECONOMY_DECIMALS)} onChange={this.handleChange} step="0.1" className="form-control"/>}
-          append={units.string(this.props.displayUnits)}
-        />
-        <ObjectSelectionList name="fuel" onChange={this.handleChange} list={this.props.fuels} defaultValue={this.props.vehicle.fuel} label="name" value="id" />
-      </div>
-
+    let body =  <forms.VehicleForm 
+                  onChange={this.handleChange} 
+                  vehicle={this.props.vehicle} 
+                  errorMessage={this.state.errorMessage} 
+                  fuels={this.props.fuels}
+                  displayUnits={this.props.displayUnits}
+                />
     let footer = 
       <div>
-        <button className="btn btn-outline-primary m-2" name="save" onClick={this.saveChange}>Save</button>
-        <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteVehicle}>Delete</button>
-        <button className="btn btn-outline-danger m-2" name="cancel" onClick={this.props.hideModal}>Cancel</button>
+        <PendingBtn className="btn-outline-primary m-2" onClick={this.validateInput} pending={this.state.submissionPending}>Save</PendingBtn>
+        <PendingBtn className="btn-outline-dark m-2" onClick={this.deleteVehicle} pending={this.state.submissionPending}>Delete</PendingBtn>
+        <button className={`btn btn-outline-danger m-2`} name="cancel" onClick={this.props.hideModal}>Cancel</button>
       </div>
 
-    return(
-      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
-    )
+    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
   }
 }
 

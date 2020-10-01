@@ -105,7 +105,7 @@ export function getObject({objectList, key, keyValue}){
   if(!keyValue) return null
   for(let i in objectList){
     if(!objectList[i][key]){return null}
-    if(objectList[i][key]===keyValue){
+    if(objectList[i][key]==keyValue){
       return objectList[i]
     }
   }

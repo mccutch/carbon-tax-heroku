@@ -3,131 +3,108 @@ import {VehicleInput} from './vehicleInput.js';
 import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
 import {Modal} from 'react-bootstrap';
-import {StandardModal} from './reactComponents.js';
+import {StandardModal, ObjectSelectionList} from './reactComponents.js';
+import {getAttribute, getObject} from './helperFunctions.js';
+import {VehicleForm} from './forms.js';
+import * as units from './unitConversions.js';
 
 
 export class EconomyInput extends React.Component{
   constructor(props){
     super(props);
 
+    this.initialId = this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.id : null
+
     this.state = {
-      lPer100Km: this.props.initialValues.lPer100Km!==0?this.props.initialValues.lPer100Km:null,
-      fuelId: this.props.initialValues.fuelId?this.props.initialValues.fuelId:null,
-      name: "",
-      vehicleWillSave: false,
     }
-    this.showUserVehicles=this.showUserVehicles.bind(this)
-
-    this.saveVehicle=this.saveVehicle.bind(this)
-    this.cancelSaveVehicle=this.cancelSaveVehicle.bind(this)
-    this.handleSave=this.handleSave.bind(this)
-
-    this.receiveEconomy=this.receiveEconomy.bind(this)
-    this.submitEconomy=this.submitEconomy.bind(this)
-    this.receiveUserVehicle=this.receiveUserVehicle.bind(this)
+    this.handleChange=this.handleChange.bind(this)
+    this.returnVehicle=this.returnVehicle.bind(this)
+    this.inputNewVehicle=this.inputNewVehicle.bind(this)
+    this.selectUserVehicle=this.selectUserVehicle.bind(this)
+    this.returnError=this.returnError.bind(this)
   }
 
-  showUserVehicles(){
-    let vehicleTable = 
-      <VehicleTable
+  returnError(message){
+    this.setState({
+      errorMessage:message
+    })
+  }
+
+  handleChange(event){
+    if(event.target.name==="economy"){
+      this.setState({lPer100Km:units.convert(event.target.value, this.props.displayUnits)})
+    } else {
+      this.setState({[event.target.name]: event.target.value})
+    }  
+  }
+
+  returnVehicle(){
+    let vehicle
+    
+    if(this.props.loggedIn){
+      vehicle = this.initialId ?
+        getObject({objectList:this.props.vehicles, key:"id", keyValue:this.initialId})
+        :
+        this.props.vehicles[0]
+
+      this.props.returnVehicle(vehicle)
+    } else {
+      if(!this.state.lPer100Km){
+        this.returnError("Vehicle economy is required.")
+        return
+      }
+
+      vehicle = {
+        economy:this.state.lPer100Km, 
+        fuel:this.state.fuel ? this.state.fuel : this.props.fuels[0].id, 
+        name:this.state.name,
+      }
+
+      this.props.returnVehicle(vehicle)
+    }
+  }
+
+  selectUserVehicle(event){
+    console.log(getObject({objectList:this.props.vehicles, key:"id", keyValue:parseInt(event.target.value)}))
+    this.props.returnVehicle(
+      getObject({objectList:this.props.vehicles, key:"id", keyValue:parseInt(event.target.value)})
+
+    )
+  }
+
+  inputNewVehicle(){
+    this.props.setModal(
+      <VehicleInput
         displayUnits={this.props.displayUnits}
-        vehicles={this.props.vehicles}
         fuels={this.props.fuels}
-        submitEconomy={this.receiveUserVehicle}
+        onSave={(newVehicle)=>{this.props.refresh(); this.props.returnVehicle(newVehicle)}}
+        refresh={this.props.refresh}
         setModal={this.props.setModal}
         hideModal={this.props.hideModal}
-        refresh={this.props.refresh}
       />
-
-    let title = <div>My Vehicles</div>
-    let modal = <StandardModal hideModal={this.props.hideModal} title={title} body={vehicleTable} />
-
-    this.props.setModal(modal)
-  }
-
-  saveVehicle(){
-    this.setState({
-      vehicleWillSave:true
-    })
-  }
-
-  cancelSaveVehicle(){
-    this.setState({
-      vehicleWillSave:false
-    })
-  }
-
-  handleSave(){
-    this.setState({
-      vehicleDidSave:true
-    })
-  }
-
-  receiveEconomy(lPer100Km, fuelId, name){
-    this.setState({
-      lPer100Km:lPer100Km,
-      fuelId:fuelId,
-      name:name,
-    })
-  }
-
-  receiveUserVehicle(lPer100Km, fuelId, name){
-    this.setState({
-      lPer100Km:lPer100Km,
-      fuelId:fuelId,
-      name:name,
-    }, this.submitEconomy)
-  }
-
-  submitEconomy(){
-    this.props.submitEconomy(this.state.lPer100Km, this.state.fuelId)
+    )
   }
 
   render(){
 
-    let vehicleInput=
-      <VehicleInput 
-        displayUnits={this.props.displayUnits} 
-        fuels={this.props.fuels}
-        returnEconomy={this.receiveEconomy}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
-        initialValues={this.props.initialValues}
-      />
-
-    let saveDisplay
-    let myVehiclesBtn
-
-    if(this.props.loggedIn){
-
-      myVehiclesBtn = <button className="btn btn-outline-info m-2" onClick={this.showUserVehicles}>Use a saved vehicle</button>
-
-      if(this.state.lPer100Km && this.state.fuelId){
-        if(this.state.vehicleDidSave){
-          saveDisplay = <p>Vehicle saved to profile.</p>
-        } else if(this.state.vehicleWillSave){
-          saveDisplay = 
-            <VehicleSaveForm
-              cancel={this.cancelSaveVehicle}
-              name={this.state.name}
-              lPer100Km={this.state.lPer100Km}
-              fuelId={this.state.fuelId}
-              onSave={this.handleSave}
-            />
-        } else {
-          saveDisplay = <button className="btn btn-outline-primary m-2" onClick={this.saveVehicle}>Save this vehicle</button>
-        }
-      }
-    }
-
     return(
       <div className='bg-light py-2'>
-        {vehicleInput}
-        {myVehiclesBtn}
-        {saveDisplay}
+        { this.props.loggedIn ?
+            <div>
+              <ObjectSelectionList list={this.props.vehicles} label="name" value="id" onChange={this.selectUserVehicle} defaultValue={this.initialId}/>
+              <button className="btn btn-outline-primary" onClick={this.inputNewVehicle} >Input new vehicle</button>
+            </div>
+            :
+            <VehicleForm
+              vehicle={this.props.initialValues}
+              displayUnits={this.props.displayUnits}
+              errorMessage={this.props.errorMessage}
+            />
+        }
+      
         <div>
           <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
-          <button className="btn btn-success m-2" disabled={!(this.state.lPer100Km && this.state.fuelId)} onClick={this.submitEconomy}>Continue to carbon calculator</button>
+          <button className="btn btn-success m-2" disabled={!this.props.loggedIn && !(this.state.lPer100Km && this.state.fuelId)} onClick={this.returnVehicle}>Continue to carbon calculator</button>
         </div>
       </div>
     )

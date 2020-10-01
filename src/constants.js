@@ -27,6 +27,8 @@ export const MAX_LEN_RECIP_DONATION_LINK = 200
 export const MAX_LEN_RECIP_DESCRIPTION = 1000 //Undefined in views.py
 export const POSITION_DECIMALS = 10
 
+export const ECONOMY_DECIMALS = 5
+
 export const JET_FUEL_ID = 3
 
 /*export const fuelTypes = [

@@ -139,11 +139,10 @@ export class EmissionCalculator extends React.Component{
     this.exitCalculator()
   }
 
-  handleSubmitEconomy(lPer100Km, fuelId){
+  handleSubmitEconomy(vehicle){
     this.setState({
-      lPer100Km: lPer100Km,
-      fuelId: parseInt(fuelId),
-      economySubmitted: true,
+      vehicle:vehicle,
+      economySubmitted:true,
     },this.nextTab);
   }
 
@@ -223,17 +222,17 @@ export class EmissionCalculator extends React.Component{
     
     if(this.state.activeTab==="economy"){
       if(this.state.economySubmitted){
-        let fuelName=getAttribute({objectList:this.props.fuels, key:"id", keyValue:this.state.fuelId, attribute:"name"})
+        let fuelName=getAttribute({objectList:this.props.fuels, key:"id", keyValue:this.state.vehicle.fuel, attribute:"name"})
 
         tabDisplay = 
           <div className="container bg-light" >
-            <h3>{parseFloat(units.convert(this.state.lPer100Km, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}</h3>
+            <h3>{parseFloat(units.convert(this.state.vehicle.economy, displayUnits)).toFixed(1)} {units.string(displayUnits)}, {fuelName}</h3>
             {navBtns}
           </div>
       } else {
         tabDisplay = 
           <EconomyInput
-            submitEconomy={this.handleSubmitEconomy}
+            returnVehicle={this.handleSubmitEconomy}
             displayUnits={displayUnits}
             loggedIn={this.props.loggedIn}
             vehicles={this.props.vehicles}
@@ -242,7 +241,7 @@ export class EmissionCalculator extends React.Component{
             setModal={this.props.setModal}
             hideModal={this.props.hideModal}
             prevTab={this.prevTab}
-            initialValues={{lPer100Km:this.state.lPer100Km, fuelId:this.state.fuelId}}
+            initialValues={this.state.vehicle}
           />
       }
     }
@@ -281,19 +280,28 @@ export class EmissionCalculator extends React.Component{
 
       tabDisplay = formsComplete ?
         <CarbonCalculator 
-          data={this.state} 
+          origin={this.state.origin}
+          destination={this.state.destination}
+          returnTrip={this.state.wasReturnTrip}
+
+          mode={this.state.mode}
+          distanceKm={this.state.distanceKm}
+          fuelId={this.state.vehicle?this.state.vehicle.fuel:null}
+          lPer100Km={this.state.vehicle?this.state.vehicle.economy:null}
+          flightHrs={this.state.flightHrs}
+          aircraftType={this.state.aircraftType}
+          aircraftFields={this.state.aircraftFields}
+          airOptions={this.state.airOptions}
+          
           displayUnits={displayUnits} 
           loggedIn={this.props.loggedIn} 
           submitCarbon={this.handleEmissionSave} 
           taxCategory={taxes.getCategoryName(this.state.mode)}
           taxes={this.props.taxes}
-          fuels={this.props.fuels}
-          refresh={this.props.refresh}
+          fuels={this.props.fuels}  
           profile={this.props.profile}
-          mode={this.state.mode}
-          aircraftType={this.state.aircraftType}
-          aircraftFields={this.state.aircraftFields}
-          airOptions={this.state.airOptions}
+          
+          refresh={this.props.refresh}
           prevTab={this.prevTab}
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}

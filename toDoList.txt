@@ -3,6 +3,8 @@ Is it better to just store prices in local currency???
  - Set default taxes with converted value
  - payment, taxview, taxedit, emission, emission edit fuuuuuuuuck
 
+ editing distance fucks with units
+
 
 UX
 - Landing page

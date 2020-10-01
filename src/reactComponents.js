@@ -5,6 +5,12 @@ import {sortByKey} from './helperFunctions.js';
 import {Link} from 'react-router-dom';
 
 
+export class PendingBtn extends React.Component{
+  render(){
+    return <button name={this.props.name} onClick={this.props.onClick} className={`btn ${this.props.className} ${this.props.pending?"disabled":""}`} >{this.props.children}</button>
+  }
+}
+
 export class CenterPage extends React.Component{
   render(){
     return <div className='container-sm my-2 bg-light' style={{maxWidth:"600px"}}>{this.props.children}</div>

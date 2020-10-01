@@ -2,6 +2,30 @@ import React from 'react';
 import {FormRow, LabelledInput, ObjectSelectionList } from './reactComponents.js';
 import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
 import {taxCategories} from './defaultTaxTypes.js';
+import * as units from './unitConversions.js';
+
+
+export class VehicleForm extends React.Component{
+  render(){
+    let name, economy, fuelId
+    if(this.props.vehicle){
+      name=this.props.vehicle.name
+      economy=parseFloat(units.convert(this.props.vehicle.economy, this.props.displayUnits)).toFixed(1)
+      fuelId=this.props.vehicle.fuel
+    }
+    return(
+      <form>
+        <p><strong>{this.props.errorMessage}</strong></p>
+        <input name="name" type="text" placeholder="Vehicle name" defaultValue={name} onChange={this.props.onChange} className="form-control my-2"/>
+        <LabelledInput
+          input={<input name="economy" type="number" placeholder="Economy" defaultValue={economy} onChange={this.props.onChange} step="0.1" className="form-control"/>}
+          append={units.string(this.props.displayUnits)}
+        />
+        <ObjectSelectionList name="fuel" onChange={this.props.onChange} list={this.props.fuels} defaultValue={fuelId} label="name" value="id" />
+      </form>
+    )
+  }
+}
 
 export class TaxForm extends React.Component{
   render(){

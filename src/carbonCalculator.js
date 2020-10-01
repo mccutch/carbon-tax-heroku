@@ -32,12 +32,12 @@ export class CarbonCalculator extends React.Component{
 
     // Set default trip name for save
     let tripName
-    if(this.props.data.origin){
-      let origin = this.props.data.origin
-      let destination = this.props.data.destination
+    if(this.props.origin){
+      let origin = this.props.origin
+      let destination = this.props.destination
       tripName = origin +" to "+destination
 
-      if(this.props.data.returnTrip){
+      if(this.props.returnTrip){
         tripName += " return"
       }
 
@@ -139,26 +139,26 @@ export class CarbonCalculator extends React.Component{
 
   calculateCarbon(){
     if(this.state.format==="road"){
-      let fuelId = this.props.data.fuelId
+      let fuelId = this.props.fuelId
       let carbonPerL = getAttribute({objectList:this.props.fuels, key:"id", keyValue:fuelId, attribute:"co2_per_unit"})
-      let carbonKg = (carbonPerL*this.props.data.lPer100Km*this.props.data.distanceKm/100)/this.state.split
+      let carbonKg = (carbonPerL*this.props.lPer100Km*this.props.distanceKm/100)/this.state.split
       this.setState({
         carbonPerL:carbonPerL,
         carbonKg:carbonKg,
       })
     }else if(this.state.format==="airDistance"){
-      let carbonPerPaxKmAvg = (this.props.data.distanceKm<500)?AIRLINER_KGCO2_PPAX_LT500:AIRLINER_KGCO2_PPAX_GT500
+      let carbonPerPaxKmAvg = (this.props.distanceKm<500)?AIRLINER_KGCO2_PPAX_LT500:AIRLINER_KGCO2_PPAX_GT500
       let fareClass = fareClassMultiplier[this.props.aircraftFields.airlinerClass]
       let rfMultiplier = this.props.airOptions.multiplier
       this.setState({
         carbonPerPaxKmAvg:carbonPerPaxKmAvg,
         fareClass:fareClass,
-        carbonKg:carbonPerPaxKmAvg*this.props.data.distanceKm*fareClass*rfMultiplier,
+        carbonKg:carbonPerPaxKmAvg*this.props.distanceKm*fareClass*rfMultiplier,
       })
     }else if(this.state.format==="airTime"){
-      let carbonPerHr = getHeliEconomy(this.props.data.aircraftFields.totalSeats)
-      let flightHrs = this.props.data.flightHrs
-      let numPassengers = this.props.data.aircraftFields.passengers
+      let carbonPerHr = getHeliEconomy(this.props.aircraftFields.totalSeats)
+      let flightHrs = this.props.flightHrs
+      let numPassengers = this.props.aircraftFields.passengers
       this.setState({
         carbonPerHr:carbonPerHr,
         carbonKg:flightHrs*carbonPerHr/numPassengers,
@@ -173,9 +173,9 @@ export class CarbonCalculator extends React.Component{
     let distance, economy, fuelId, price, offset
     // For air travel, record economy in kg/km or kg/hr.
     if(this.state.format==="road"){
-      economy = this.props.data.lPer100Km
-      distance = this.props.data.distanceKm
-      fuelId = this.props.data.fuelId
+      economy = this.props.lPer100Km
+      distance = this.props.distanceKm
+      fuelId = this.props.fuelId
       price = this.calculatePrice()
       offset = 0
     } else {
@@ -185,11 +185,11 @@ export class CarbonCalculator extends React.Component{
       price = this.calculatePrice() - offset
       
       if(this.state.format==="airDistance"){
-        economy = this.state.carbonKg/this.props.data.distanceKm
-        distance = this.props.data.distanceKm
+        economy = this.state.carbonKg/this.props.distanceKm
+        distance = this.props.distanceKm
       } else if(this.state.format==="airTime"){
-        economy = this.state.carbonKg/this.props.data.flightHrs
-        distance = this.props.data.flightHrs
+        economy = this.state.carbonKg/this.props.flightHrs
+        distance = this.props.flightHrs
       } 
     }
 
@@ -227,8 +227,8 @@ export class CarbonCalculator extends React.Component{
 
     let carbon = parseFloat(this.state.carbonKg).toFixed(2)
     //let split = parseFloat(this.state.split)
-    let distance = parseFloat(units.distanceDisplay(this.props.data.distanceKm, this.props.displayUnits)).toFixed(1)
-    let economy = parseFloat(units.convert(this.props.data.lPer100Km, this.props.displayUnits)).toFixed(1)
+    let distance = parseFloat(units.distanceDisplay(this.props.distanceKm, this.props.displayUnits)).toFixed(1)
+    let economy = parseFloat(units.convert(this.props.lPer100Km, this.props.displayUnits)).toFixed(1)
 
     let body
     if(this.state.format==="road"){
@@ -254,7 +254,7 @@ export class CarbonCalculator extends React.Component{
       body = 
         <div>
           <p> {getAttribute({objectList:aircraftTypes, key:"type", keyValue:this.props.aircraftType, attribute:"label"})}: {this.props.aircraftFields.totalSeats} passengers</p>
-          <p> Flight time: {displayHrs(this.props.data.flightHrs)} </p>
+          <p> Flight time: {displayHrs(this.props.flightHrs)} </p>
           <p> Emissions per hr: {parseFloat(this.state.carbonPerHr).toFixed(1)}kg CO2</p>
           <p> Passenger loading: {this.props.aircraftFields.passengers}/{this.props.aircraftFields.totalSeats} </p>
           <p> Flight time x Emissions per hour / Passengers = <strong>{carbon}kg CO2</strong></p>
