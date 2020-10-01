@@ -30,7 +30,7 @@ export function saveVehicle({vehicle, onFailure, onSuccess}){
     method:'POST',
     data:vehicleData,
     url:api.MY_VEHICLES,
-    onSuccess:onSuccess,
+    onSuccess:onSuccess?onSuccess:null,
     onFailure:()=>onFailure("Unable to save vehicle"),
   })
 }

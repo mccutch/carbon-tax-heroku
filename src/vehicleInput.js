@@ -360,7 +360,7 @@ export class VehicleSearch extends React.Component {
       vehicle:newVehicle, 
       onFailure:(message)=>{this.setState({errorMessage:message, submissionPending:false})},
       onSuccess:(newVehicle)=>{
-        this.props.onSave(newVehicle)
+        if(this.props.onSave) this.props.onSave(newVehicle);
         this.props.hideModal()
       },
     })
@@ -442,7 +442,10 @@ export class VehicleInput extends React.Component{
     }
     saveVehicle({
       vehicle:newVehicle, 
-      onSuccess:(newVehicle)=>{this.props.onSave(newVehicle); this.props.hideModal()},
+      onSuccess:(newVehicle)=>{
+        if(this.props.onSave) this.props.onSave(newVehicle); 
+        this.props.hideModal()
+      },
       onFailure:(message)=>{this.setState({errorMessage:message, submissionPending:false})},
       
     })

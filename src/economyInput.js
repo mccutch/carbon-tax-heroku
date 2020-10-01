@@ -32,7 +32,7 @@ export class EconomyInput extends React.Component{
 
   handleChange(event){
     if(event.target.name==="economy"){
-      this.setState({lPer100Km:units.convert(event.target.value, this.props.displayUnits)})
+      this.setState({economy:units.convert(event.target.value, this.props.displayUnits)})
     } else {
       this.setState({[event.target.name]: event.target.value})
     }  
@@ -96,15 +96,18 @@ export class EconomyInput extends React.Component{
             </div>
             :
             <VehicleForm
+              loggedIn={this.props.loggedIn}
               vehicle={this.props.initialValues}
+              fuels={this.props.fuels}
               displayUnits={this.props.displayUnits}
               errorMessage={this.props.errorMessage}
+              onChange={this.handleChange}
             />
         }
       
         <div>
           <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
-          <button className="btn btn-success m-2" disabled={!this.props.loggedIn && !(this.state.lPer100Km && this.state.fuelId)} onClick={this.returnVehicle}>Continue to carbon calculator</button>
+          <button className="btn btn-success m-2" disabled={!this.props.loggedIn && !(this.state.lPer100Km && this.state.fuel)} onClick={this.returnVehicle}>Continue to carbon calculator</button>
         </div>
       </div>
     )

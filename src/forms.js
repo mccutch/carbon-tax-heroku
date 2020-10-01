@@ -16,7 +16,7 @@ export class VehicleForm extends React.Component{
     return(
       <form>
         <p><strong>{this.props.errorMessage}</strong></p>
-        <input name="name" type="text" placeholder="Vehicle name" defaultValue={name} onChange={this.props.onChange} className="form-control my-2"/>
+        {this.props.loggedIn?<input name="name" type="text" placeholder="Vehicle name" defaultValue={name} onChange={this.props.onChange} className="form-control my-2"/>:""}
         <LabelledInput
           input={<input name="economy" type="number" placeholder="Economy" defaultValue={economy} onChange={this.props.onChange} step="0.1" className="form-control"/>}
           append={units.string(this.props.displayUnits)}

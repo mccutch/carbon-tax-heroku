@@ -4,6 +4,7 @@ import { apiFetch } from './helperFunctions.js';
 import { TaxDetail, VehicleDetail, EmissionDetail, PaymentDetail} from './objectDetail.js';
 import { EmissionDisplayView, TaxDisplayView, VehicleDisplayView, PaymentDisplayView, RecipientDisplayView} from './objectDisplayViews.js'
 import { CreateTax, CreateVehicle, CreateRecipient } from './objectCreate.js';
+import { VehicleInput } from './vehicleInput.js';
 import * as getDate from './getDate.js';
 import * as api from './urls.js';
 
@@ -142,7 +143,23 @@ export class VehicleTable extends React.Component{
     if(this.props.addNew){
       tableRows.push(
         <tr>
-          <CreateVehicle displayUnits={this.props.displayUnits} fuels={this.props.fuels} refresh={this.props.refresh} setModal={this.props.setModal} hideModal={this.props.hideModal}/>
+          <button 
+            name="createVehicle" 
+            className="btn btn-outline-primary" 
+            onClick={()=>{
+              this.props.setModal(
+                <VehicleInput
+                  displayUnits={this.props.displayUnits}
+                  fuels={this.props.fuels}
+                  onSave={this.props.refresh}
+                  refresh={this.props.refresh}
+                  setModal={this.props.setModal}
+                  hideModal={this.props.hideModal}
+                />
+              )
+            }}
+          >+ New Vehicle</button>
+
         </tr>
       )
     }
