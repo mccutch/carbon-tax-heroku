@@ -251,8 +251,7 @@ export class Dashboard extends React.Component{
       
     return(
       // Add -15px margin to sides of navbar to make full-width
-      //<div className="my-2 bg-light">
-      <div className='container-sm my-2 bg-light' > 
+      <div> 
         <div style={{margin: "0px -15px 0px -15px"}} >
           <Navbar bg="info" variant="dark">
             <Navbar.Brand >

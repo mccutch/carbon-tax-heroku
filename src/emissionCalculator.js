@@ -351,7 +351,7 @@ export class EmissionCalculator extends React.Component{
     }
     
     return(
-      <div className='container-sm my-2 bg-light' > 
+      <div>
         <div style={{margin: "0px -15px 0px -15px"}} >
         <Navbar bg="info" variant="dark">
           <Navbar.Brand >

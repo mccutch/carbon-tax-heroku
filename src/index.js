@@ -16,7 +16,7 @@ import * as serviceWorker from './serviceWorker.js';
 import {GoogleDirections} from './googleDirections.js';
 import {USER_CACHE} from './constants.js';
 import * as api from './urls.js';
-import {VerticalSpacer} from './reactComponents.js';
+import {VerticalSpacer, CenterPage} from './reactComponents.js';
 import {EmissionCalculator} from './emissionCalculator.js';
 import {EmissionListWrapper} from './emissionList.js';
 import {Dashboard} from './dashboard.js';
@@ -275,41 +275,45 @@ class App extends React.Component {
           serverError={this.state.serverConnectionFailure}
         />
         {modal}
-        <div>
+        <div> 
           <Switch>
             <Route path={api.NAV_CALCULATOR}>
-              <EmissionCalculator 
-                loggedIn={loggedIn} 
-                displayUnits={displayUnits} 
-                exit={null}
-                taxes={taxes}
-                vehicles={vehicles}
-                fuels={fuels}
-                profile={profile}
-                refresh={refresh}
-                setModal={setModal}
-                hideModal={hideModal}
-                selectView={selectView}
-              />
-            </Route>
-            <Route path={api.NAV_DASHBOARD}>
-              {this.state.loggedIn ?
-                <Dashboard 
-                  stats={stats}
-                  user={user}
-                  profile={profile}
+              <CenterPage>
+                <EmissionCalculator 
+                  loggedIn={loggedIn} 
+                  displayUnits={displayUnits} 
+                  exit={null}
                   taxes={taxes}
                   vehicles={vehicles}
                   fuels={fuels}
-                  displayUnits={displayUnits}
-                  emissions={emissions}
-                  payments={payments}
-                  recipients={recipients}
+                  profile={profile}
                   refresh={refresh}
-                  logout={this.logout}
                   setModal={setModal}
                   hideModal={hideModal}
+                  selectView={selectView}
                 />
+              </CenterPage>
+            </Route>
+            <Route path={api.NAV_DASHBOARD}>
+              {this.state.loggedIn ?
+                <CenterPage>
+                  <Dashboard 
+                    stats={stats}
+                    user={user}
+                    profile={profile}
+                    taxes={taxes}
+                    vehicles={vehicles}
+                    fuels={fuels}
+                    displayUnits={displayUnits}
+                    emissions={emissions}
+                    payments={payments}
+                    recipients={recipients}
+                    refresh={refresh}
+                    logout={this.logout}
+                    setModal={setModal}
+                    hideModal={hideModal}
+                  />
+                </CenterPage>
                 : <Redirect to={api.NAV_HOME}/>
               }
             </Route>
@@ -320,26 +324,30 @@ class App extends React.Component {
             </Route>
             <Route path={api.NAV_PAYMENT}>
               {this.state.loggedIn ?
-                <PaymentView
-                  stats={stats}
-                  user={user}
-                  profile={profile}
-                  recipients={recipients}
-                  refresh={refresh}
-                  setModal={setModal}
-                  hideModal={hideModal}
-                />
+                <CenterPage>
+                  <PaymentView
+                    stats={stats}
+                    user={user}
+                    profile={profile}
+                    recipients={recipients}
+                    refresh={refresh}
+                    setModal={setModal}
+                    hideModal={hideModal}
+                  />
+                </CenterPage>
                 : <Redirect to={api.NAV_HOME}/>
               }
             </Route>
             <Route path={api.NAV_CONTACT}>
-              <ContactPage 
-                loggedIn={loggedIn}
-                user={user}
-                setModal={setModal}
-                hideModal={hideModal}
-                hideDisplay={null}
-              />
+              <CenterPage>
+                <ContactPage 
+                  loggedIn={loggedIn}
+                  user={user}
+                  setModal={setModal}
+                  hideModal={hideModal}
+                  hideDisplay={null}
+                />
+              </CenterPage>
             </Route>
           </Switch>
           {/*

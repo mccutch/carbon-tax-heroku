@@ -5,6 +5,12 @@ import {sortByKey} from './helperFunctions.js';
 import {Link} from 'react-router-dom';
 
 
+export class CenterPage extends React.Component{
+  render(){
+    return <div className='container-sm my-2 bg-light' style={{maxWidth:"600px"}}>{this.props.children}</div>
+  }
+}
+
 export class CleanLink extends React.Component{
   render(){
     return <Link to={this.props.to} className={this.props.className} style={{textDecoration:'none'}}>{this.props.children}</Link>

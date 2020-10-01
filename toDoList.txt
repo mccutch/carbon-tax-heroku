@@ -1,3 +1,8 @@
+Is it better to just store prices in local currency???
+ - Only return currency with a currency factor of <20??
+ - Set default taxes with converted value
+ - payment, taxview, taxedit, emission, emission edit fuuuuuuuuck
+
 
 UX
 - Landing page
