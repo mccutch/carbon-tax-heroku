@@ -19,7 +19,7 @@ export class CenterPage extends React.Component{
 
 export class CleanLink extends React.Component{
   render(){
-    return <Link to={this.props.to} className={this.props.className} style={{textDecoration:'none'}}>{this.props.children}</Link>
+    return <Link to={this.props.to} className={this.props.className} style={{textDecoration:'none'}} onClick={this.props.onClick}>{this.props.children}</Link>
   }
 }
 

@@ -5,6 +5,7 @@ import {RegistrationForm} from './registrationForm.js';
 import {Modal, Button} from 'react-bootstrap';
 import {StandardModal} from './reactComponents.js';
 
+
 const DEMO_USERNAME = process.env.REACT_APP_DEMO_USERNAME
 const DEMO_PW = process.env.REACT_APP_DEMOUSER_PW
 
@@ -80,7 +81,7 @@ export function demoLogin({onSuccess, onFailure}){
   getToken({data:data, onSuccess:onSuccess, onFailure:onFailure})
 }
 
-
+/*
 export class LoginWrapper extends React.Component{
   constructor(props){
     super(props)
@@ -198,3 +199,4 @@ export class LoginWrapper extends React.Component{
     )
   }
 }
+*/

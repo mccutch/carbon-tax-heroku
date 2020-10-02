@@ -107,80 +107,11 @@ export class CreateVehicle extends React.Component{
   Render a VehicleInput and VehiceSaveForm.
   Maintain state on vehicle input to render the save form.
   */
-  constructor(props){
-    super(props)
-
-    this.state={
-      createNew:false,
-      lPer100Km:null,
-      fuelId:null,
-      name:"",
-    }
-
-    this.receiveInputs=this.receiveInputs.bind(this)
-    this.handleClick=this.handleClick.bind(this)
-    this.cancelNewVehicle=this.cancelNewVehicle.bind(this)
-    this.handleSave=this.handleSave.bind(this)
-  }
-
-  receiveInputs(lPer100Km, fuelId, name){
-    this.setState({
-      lPer100Km:lPer100Km,
-      fuelId:fuelId,
-      name:name,
-    })
-  }
-
-  cancelNewVehicle(){
-    this.setState({
-      createNew:false,
-      lPer100Km:null,
-      fuelId:null,
-      name:"",
-    })
-  }
-
-  handleClick(event){
-    if(event.target.name==="createVehicle"){
-      this.setState({createNew:true})
-    }
-  }
-
-  handleSave(){
-    this.setState=({
-      createNew:false,
-      lPer100Km:null,
-      fuelId:null,
-      name:"",
-    })
-    this.props.refresh()
-  }
+  
 
   render(){
-    let display
-    if(!this.state.createNew){
-      display = <td><button name="createVehicle" className="btn btn-outline-primary" onClick={this.handleClick}>+ New Vehicle</button></td>
-    } else {
-      display =
-        <td colspan="4" >
-          <VehicleInput 
-            displayUnits={this.props.displayUnits} 
-            fuels={this.props.fuels}
-            returnEconomy={this.receiveInputs}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
-            initialValues={{}}
-          />
-          <VehicleSaveForm 
-            cancel={this.cancelNewVehicle}
-            name={this.state.name}
-            lPer100Km={this.state.lPer100Km}
-            fuelId={this.state.fuelId}
-            onSave={this.handleSave}
-          />
-        </td>
-    }
-    return(display)
+    return <td><button name="createVehicle" className="btn btn-outline-primary" onClick={this.handleClick}>+ New Vehicle</button></td>
+
   }
 }
 

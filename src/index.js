@@ -9,7 +9,7 @@ import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
 import {apiFetch, testServer} from './helperFunctions.js';
 import {MainView} from './mainView.js';
-import {NavBar} from './navBar.js';
+import {NavBar, BootstrapNavBar} from './navBar.js';
 import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
 import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker.js';
@@ -267,7 +267,7 @@ class App extends React.Component {
                                         backgroundPosition:'center',
                                         minHeight: "100vh",
                                       }}>
-        <NavBar 
+        <BootstrapNavBar 
           loggedIn={this.state.loggedIn}
           onClick={this.handleNavClick}
           displayUnits={this.state.displayUnits}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import {Nav, } from 'react-bootstrap';
 import {NavLink, Link} from 'react-router-dom';
 import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
@@ -36,14 +36,17 @@ export class TabbedNavBar extends React.Component{
   }
 }
 
-export class NavBar extends React.Component{
+export class BootstrapNavBar extends React.Component{
   constructor(props){
     super(props)
-
+    this.state={collapsed:true}
     this.handleClick=this.handleClick.bind(this)
   }
 
+
+
   handleClick(event){
+    this.setState({collapsed:true})
     console.log(event.target.name)
     this.props.onClick(event.target.name)
     //let navBar = document.getElementById("navHeader")
@@ -65,28 +68,28 @@ export class NavBar extends React.Component{
     // All users
     //let about = <NavLink to="/about" activeClassName="active">About</NavLink>/*<Nav.Link key="about" name="about" onClick={this.handleClick}>About</Nav.Link>*/
     let contact = <Nav.Link>
-                    <CleanLink to={urls.NAV_CONTACT} className="text-light" activeClassName="active">Contact</CleanLink>
+                    <CleanLink to={urls.NAV_CONTACT} className="text-light" activeClassName="active" onClick={this.handleClick}>Contact</CleanLink>
                   </Nav.Link>
 
     let demoUser = <Nav.Link key="demoUser" name="demoUser" className="text-light" onClick={this.handleClick}>Demo User</Nav.Link>
 
     // Authenticated users
     let dashboard = <Nav.Link>
-                      <CleanLink to={urls.NAV_DASHBOARD} className="text-light" activeClassName="active">Dashboard</CleanLink>
+                      <CleanLink to={urls.NAV_DASHBOARD} className="text-light" activeClassName="active" onClick={this.handleClick}>Dashboard</CleanLink>
                     </Nav.Link>
     //let profile = <Nav.Link key="profile" name="profile" onClick={this.handleClick}>Profile</Nav.Link>
     let newEmission = <Nav.Link>
-                        <CleanLink to={urls.NAV_CALCULATOR} className="text-light" activeClassName="active">New Emission</CleanLink>
+                        <CleanLink to={urls.NAV_CALCULATOR} className="text-light" activeClassName="active" onClick={this.handleClick}>New Emission</CleanLink>
                       </Nav.Link>
 
     let newPayment =  <Nav.Link>
-                        <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active">New Payment</CleanLink>
+                        <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active" onClick={this.handleClick}>New Payment</CleanLink>
                       </Nav.Link>
 
     let logout = <Nav.Link key="logout" name="logout"  className="text-light" onClick={this.handleClick}>Logout</Nav.Link>
 
     let outstanding = <Nav.Link>
-                        <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active">Balance: {balance}</CleanLink>
+                        <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active"  onClick={this.handleClick}>Balance: {balance}</CleanLink>
                       </Nav.Link> ///Change to payment page
 
     // Unauthenticated users
@@ -98,34 +101,34 @@ export class NavBar extends React.Component{
     let navRight
     if(this.props.loggedIn){
       navLeft = 
-        <Nav className="mr-auto">
+        <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           {newEmission}
           {newPayment} 
           {dashboard}
           {contact}
-        </Nav>  
+        </ul>  
       navRight = 
-        <Nav className="mr-auto">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           {outstanding}
           {logout}
-        </Nav>
+        </ul>
     } else {
       navLeft = 
-        <Nav className="mr-auto">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           {newEmission}
           {login}
           {signUp}
           {demoUser}
           {contact}
           {toggleUnits}
-        </Nav>
+        </ul>
     }
 
     let navColour = (this.props.serverError ? "secondary":"banner")
 
     return(
-      <Navbar id="navHeader" collapseOnSelect bg={navColour} variant="dark" sticky="top" expand="lg">
-        <Navbar.Brand>
+      <nav className={`navbar navbar-expand-lg navbar-dark bg-${navColour}`}>
+        <a className="navbar-brand">
           <img
             alt=""
             src={urls.NAVBAR_ICON}
@@ -134,13 +137,24 @@ export class NavBar extends React.Component{
             //className="d-inline-block align-middle"
           />{' '}
           <CleanLink className="text-light" to="/"> Carbon Accountant</CleanLink>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav align-middle">
+        </a>
+        <button 
+          className="navbar-toggler" 
+          type="button" 
+          dataToggle="collapse" 
+          dataTarget="#navbarTogglerDemo02" 
+          ariaControls="navbarTogglerDemo02" 
+          ariaExpanded="false" 
+          ariaLabel="Toggle navigation"
+          onClick={()=>{this.setState({collapsed:!this.state.collapsed})}}
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className={`navbar-collapse ${this.state.collapsed?'collapse':""}`} id="navbarTogglerDemo02">
           {navLeft}
           {navRight}
-        </Navbar.Collapse>
-      </Navbar>
+        </div>
+      </nav>
     )
   }
 }
