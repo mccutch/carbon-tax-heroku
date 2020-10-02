@@ -8,7 +8,8 @@ import { MAX_EMISSION_NAME_LEN } from './constants.js';
 import { ROAD, AIR, PUBLIC, OTHER } from './constants.js';
 import { AIRLINER_KGCO2_PPAX_LT500, AIRLINER_KGCO2_PPAX_GT500, fareClassMultiplier, JET_FUEL_ID, airlinerClasses, aircraftTypes } from './constants.js';
 import * as api from './urls.js';
-
+import {LoginForm} from './loginWrapper.js';
+import {RegistrationForm} from './registrationForm.js';
 
 
 export class CarbonCalculator extends React.Component{
@@ -340,7 +341,14 @@ export class CarbonCalculator extends React.Component{
           </div>
           :
           <div>
-            <p>Create an account to save emissions and calculate carbon tax.</p>
+            <p>
+              <a onClick={()=>this.props.setModal(<LoginForm hideModal={this.props.hideModal} onSuccess={this.props.login}/>)}>
+                <strong className="text-primary"><em>Login</em></strong>
+              </a> or 
+              <a onClick={()=>this.props.setModal(<RegistrationForm hideModal={this.props.hideModal}onSuccess={this.props.login}/>)}>
+                <strong className="text-primary"><em> sign up</em></strong>
+              </a> to save emissions and calculate carbon tax.
+            </p>
             <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
           </div>
         }

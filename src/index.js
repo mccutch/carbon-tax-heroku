@@ -180,6 +180,7 @@ class App extends React.Component {
     this.fetchUserObject({url:api.MY_PAYMENTS, objectName:"payments"})
     apiFetch({
       url:api.FUEL_TYPES, 
+      method:'GET',
       onSuccess:this.setFuels,
       noAuth:true,
     })
@@ -211,7 +212,7 @@ class App extends React.Component {
   }
 
   handleNavClick(nav){
-    this.refreshFullProfile()
+    //this.refreshFullProfile()
 
     if(nav==="login"){
       this.setModal(<LoginForm onSuccess={this.login} hideModal={this.hideModal}/>)
@@ -291,6 +292,7 @@ class App extends React.Component {
                   setModal={setModal}
                   hideModal={hideModal}
                   selectView={selectView}
+                  login={this.login}
                 />
               </CenterPage>
             </Route>

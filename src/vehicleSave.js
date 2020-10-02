@@ -1,6 +1,7 @@
 import React from 'react';
 import { apiFetch, truncate } from './helperFunctions.js';
 import * as api from './urls.js';
+import * as units from './unitConversions.js';
 
 
 
@@ -10,19 +11,23 @@ import {
   ECONOMY_DECIMALS,
 } from './constants.js';
 
-export function saveVehicle({vehicle, onFailure, onSuccess}){
+export function saveVehicle({vehicle, onFailure, onSuccess, displayUnits, fuelName}){
 
 
-  let vehicleData = {
-    "name":vehicle.name ? truncate(vehicle.name,MAX_VEHICLE_NAME_LEN):DEFAULT_VEHICLE_NAME,
-    "economy":`${parseFloat(vehicle.economy).toFixed(ECONOMY_DECIMALS)}`,
-    "fuel":`${vehicle.fuel}`
+
+  if(!(vehicle.economy>0) || !(vehicle.fuel>0)){
+    console.log(vehicle)
+    onFailure("Economy and fuel fields required.")
+    return
   }
 
-  if(!vehicleData.name || !(vehicleData.economy>0) || !vehicleData.fuel){
-    console.log(vehicleData)
-    onFailure("All fields required.")
-    return
+  let vehicleData = {
+    "name":vehicle.name ? 
+      truncate(vehicle.name,MAX_VEHICLE_NAME_LEN) 
+      : 
+      `${fuelName} Vehicle (${units.convert(vehicle.economy, displayUnits)} ${units.string(displayUnits)})`,
+    "economy":`${parseFloat(vehicle.economy).toFixed(ECONOMY_DECIMALS)}`,
+    "fuel":`${vehicle.fuel}`,
   }
 
   console.log(vehicleData)

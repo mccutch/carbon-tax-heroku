@@ -140,6 +140,7 @@ export class EmissionCalculator extends React.Component{
   }
 
   handleSubmitEconomy(vehicle){
+    console.log(vehicle)
     this.setState({
       vehicle:vehicle,
       economySubmitted:true,
@@ -305,6 +306,7 @@ export class EmissionCalculator extends React.Component{
           prevTab={this.prevTab}
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}
+          login={this.props.login}
         />
        :
        <div className="container bg-light" >

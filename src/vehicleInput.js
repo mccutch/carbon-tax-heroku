@@ -360,9 +360,11 @@ export class VehicleSearch extends React.Component {
       vehicle:newVehicle, 
       onFailure:(message)=>{this.setState({errorMessage:message, submissionPending:false})},
       onSuccess:(newVehicle)=>{
-        if(this.props.onSave) this.props.onSave(newVehicle);
+        if(this.props.onSave){this.props.onSave(newVehicle)}
         this.props.hideModal()
       },
+      displayUnits:this.props.displayUnits,
+      fuelName:getAttribute({objectList:this.props.fuels, key:"id", keyValue:newVehicle.fuel, attribute:"name"}),
     })
   }
 
@@ -438,7 +440,7 @@ export class VehicleInput extends React.Component{
     let newVehicle = {
       economy:this.state.lPer100Km, 
       fuel:this.state.fuel ? this.state.fuel : this.props.fuels[0].id, 
-      name:this.state.name
+      name:this.state.name,
     }
     saveVehicle({
       vehicle:newVehicle, 
@@ -447,7 +449,8 @@ export class VehicleInput extends React.Component{
         this.props.hideModal()
       },
       onFailure:(message)=>{this.setState({errorMessage:message, submissionPending:false})},
-      
+      displayUnits:this.props.displayUnits,
+      fuelName:getAttribute({objectList:this.props.fuels, key:"id", keyValue:newVehicle.fuel, attribute:"name"}),
     })
   }
 
@@ -462,6 +465,7 @@ export class VehicleInput extends React.Component{
           errorMessage={this.state.errorMessage} 
           fuels={this.props.fuels}
           displayUnits={this.props.displayUnits}
+          loggedIn={this.props.loggedIn}
         />
         <button className="btn btn-outline-info m-2" onClick={this.vehicleSearch}>Look up US vehicle</button>
       </div>
@@ -469,7 +473,7 @@ export class VehicleInput extends React.Component{
     let footer =
       <div>
         {/*{this.props.returnVehicle?<button className="btn btn-outline-info m-2" onClick={this.returnEconomy}>Continue without saving</button>:""}*/}
-        <PendingBtn className="btn-success m-2" onClick={this.saveAndSubmit} pending={this.state.submissionPending}>Save</PendingBtn>
+        <PendingBtn className="btn-success m-2" onClick={this.saveAndSubmit} pending={this.state.submissionPending || !this.state.lPer100Km}>Save</PendingBtn>
       </div>
 
     return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>

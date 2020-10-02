@@ -1,6 +1,5 @@
 import React from 'react';
 import {VehicleInput} from './vehicleInput.js';
-import {VehicleSaveForm} from './vehicleSave.js';
 import { VehicleTable } from './userTables.js';
 import {Modal} from 'react-bootstrap';
 import {StandardModal, ObjectSelectionList} from './reactComponents.js';
@@ -16,6 +15,8 @@ export class EconomyInput extends React.Component{
     this.initialId = this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.id : null
 
     this.state = {
+      economy: !this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.economy : null,
+      fuel: !this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.fuel : null,
     }
     this.handleChange=this.handleChange.bind(this)
     this.returnVehicle=this.returnVehicle.bind(this)
@@ -49,13 +50,13 @@ export class EconomyInput extends React.Component{
 
       this.props.returnVehicle(vehicle)
     } else {
-      if(!this.state.lPer100Km){
+      if(!this.state.economy){
         this.returnError("Vehicle economy is required.")
         return
       }
 
       vehicle = {
-        economy:this.state.lPer100Km, 
+        economy:this.state.economy, 
         fuel:this.state.fuel ? this.state.fuel : this.props.fuels[0].id, 
         name:this.state.name,
       }
@@ -75,6 +76,7 @@ export class EconomyInput extends React.Component{
   inputNewVehicle(){
     this.props.setModal(
       <VehicleInput
+        loggedIn={this.props.loggedIn}
         displayUnits={this.props.displayUnits}
         fuels={this.props.fuels}
         onSave={(newVehicle)=>{this.props.refresh(); this.props.returnVehicle(newVehicle)}}
@@ -107,7 +109,7 @@ export class EconomyInput extends React.Component{
       
         <div>
           <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
-          <button className="btn btn-success m-2" disabled={!this.props.loggedIn && !(this.state.lPer100Km && this.state.fuel)} onClick={this.returnVehicle}>Continue to carbon calculator</button>
+          <button className="btn btn-success m-2" disabled={!this.props.loggedIn && !this.state.economy} onClick={this.returnVehicle}>Continue to carbon calculator</button>
         </div>
       </div>
     )

@@ -240,7 +240,7 @@ export function apiFetch({method, data, url, onSuccess, onFailure, noAuth}){
     }
   }
 
-  console.log("FETCH")
+  console.log(`Fetch: ${url}`)
   console.log(fetchData)
   fetch(url, fetchData)
   .then(res => {

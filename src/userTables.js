@@ -155,6 +155,7 @@ export class VehicleTable extends React.Component{
                   refresh={this.props.refresh}
                   setModal={this.props.setModal}
                   hideModal={this.props.hideModal}
+                  loggedIn={true}
                 />
               )
             }}
