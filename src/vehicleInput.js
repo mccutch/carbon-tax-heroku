@@ -296,6 +296,7 @@ export class VehicleSearch extends React.Component {
     this.receiveVehicleId = this.receiveVehicleId.bind(this)
     this.setAvgEconomy = this.setAvgEconomy.bind(this)
     this.saveAndSubmit = this.saveAndSubmit.bind(this)
+    this.returnVehicle = this.returnVehicle.bind(this)
   }
 
   normaliseFuelType(fuelRaw){
@@ -349,6 +350,15 @@ export class VehicleSearch extends React.Component {
     this.setState({avgLper100Km:(cityProportion*this.state.cityLper100Km) + (1-cityProportion)*this.state.highwayLper100Km})
   }
 
+  returnVehicle(){
+    this.props.returnVehicle({
+      name:this.state.name,
+      economy:this.state.avgLper100Km,
+      fuel:getAttribute({objectList:this.props.fuels, key:"name", keyValue:this.state.fuelType, attribute:"id"}),
+    })
+    this.props.hideModal()
+  }
+
   saveAndSubmit(){
     this.setState({submissionPending:true})
     let newVehicle = {
@@ -379,7 +389,11 @@ export class VehicleSearch extends React.Component {
     let footer = 
       <div>
         <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
-        <PendingBtn className="btn-success m-2" onClick={this.saveAndSubmit} pending={!this.state.vehicleId||this.state.submissionPending}>Save</PendingBtn>
+        {this.props.loggedIn ?
+          <PendingBtn className="btn-success m-2" onClick={this.saveAndSubmit} pending={!this.state.vehicleId||this.state.submissionPending}>Save</PendingBtn>
+          :
+          <button className={`btn btn-success m-2 ${this.state.vehicleId?"":"disabled"}`} onClick={this.returnVehicle}>Continue</button>
+        }
       </div>
     return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
   }
@@ -423,6 +437,7 @@ export class VehicleInput extends React.Component{
         refresh={this.props.refresh}
         hideModal={this.props.hideModal}
         fuels={this.props.fuels}
+        loggedIn={this.props.loggedIn}
       />
     )
   }

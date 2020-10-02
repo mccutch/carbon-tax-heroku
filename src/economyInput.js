@@ -1,5 +1,5 @@
 import React from 'react';
-import {VehicleInput} from './vehicleInput.js';
+import {VehicleInput, VehicleSearch} from './vehicleInput.js';
 import { VehicleTable } from './userTables.js';
 import {Modal} from 'react-bootstrap';
 import {StandardModal, ObjectSelectionList} from './reactComponents.js';
@@ -23,6 +23,7 @@ export class EconomyInput extends React.Component{
     this.inputNewVehicle=this.inputNewVehicle.bind(this)
     this.selectUserVehicle=this.selectUserVehicle.bind(this)
     this.returnError=this.returnError.bind(this)
+    this.searchForVehicle=this.searchForVehicle.bind(this)
   }
 
   returnError(message){
@@ -87,16 +88,30 @@ export class EconomyInput extends React.Component{
     )
   }
 
+  searchForVehicle(){
+    this.props.setModal(
+      <VehicleSearch 
+        displayUnits={this.props.displayUnits}
+        refresh={this.props.refresh}
+        returnVehicle={this.props.returnVehicle}
+        hideModal={this.props.hideModal}
+        fuels={this.props.fuels}
+        loggedIn={this.props.loggedIn}
+      />
+    )
+  }
+
   render(){
 
     return(
       <div className='bg-light py-2'>
         { this.props.loggedIn ?
-            <div>
-              <ObjectSelectionList list={this.props.vehicles} label="name" value="id" onChange={this.selectUserVehicle} defaultValue={this.initialId}/>
-              <button className="btn btn-outline-primary" onClick={this.inputNewVehicle} >Input new vehicle</button>
-            </div>
-            :
+          <div>
+            <ObjectSelectionList list={this.props.vehicles} label="name" value="id" onChange={this.selectUserVehicle} defaultValue={this.initialId}/>
+            <button className="btn btn-outline-primary" onClick={this.inputNewVehicle} >Input new vehicle</button>
+          </div>
+          :
+          <div>
             <VehicleForm
               loggedIn={this.props.loggedIn}
               vehicle={this.props.initialValues}
@@ -105,6 +120,9 @@ export class EconomyInput extends React.Component{
               errorMessage={this.props.errorMessage}
               onChange={this.handleChange}
             />
+            or
+            <button className="btn btn-outline-info m-2" onClick={this.searchForVehicle} >Search US vehicle database</button> 
+          </div>
         }
       
         <div>
