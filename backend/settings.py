@@ -188,7 +188,7 @@ SIMPLE_JWT = {
 }
 
 
-email_backend = "SendGrid_SMTP" if DEBUG else "Backend"
+email_backend = "SendGrid_API" if DEBUG else "SendGrid_API"
 
     
 if(email_backend=="SendGrid_API"):
@@ -196,13 +196,6 @@ if(email_backend=="SendGrid_API"):
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
     EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-elif(email_backend=="SendGrid_SMTP"):
-    print("Email mode - SendGrid SMTP")
-    EMAIL_HOST = 'smtp.sendgrid.net'
-    EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
-    EMAIL_HOST_PASSWORD = SENDGRID_SMTP_KEY
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
 else:

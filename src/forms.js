@@ -3,7 +3,29 @@ import {FormRow, LabelledInput, ObjectSelectionList } from './reactComponents.js
 import { MAX_LEN_RECIP_NAME, MAX_LEN_RECIP_COUNTRY, MAX_LEN_RECIP_WEB_LINK, MAX_LEN_RECIP_DONATION_LINK, MAX_LEN_RECIP_DESCRIPTION, MAX_LEN_NAME} from './constants.js';
 import {taxCategories} from './defaultTaxTypes.js';
 import * as units from './unitConversions.js';
+import {EmailInput} from './validation.js';
 
+export class ContactForm extends React.Component{
+  render(){
+    return(
+      <form>
+        <p><strong>{this.props.errorMessage}</strong></p>
+        <EmailInput 
+          name="returnEmail" 
+          defaultValue={this.props.defaultEmail} 
+          placeholder="Contact email address" 
+          onChange={this.props.onChange} 
+          className="form-control my-2"
+          returnValidation={this.props.returnValidation}
+          isValid={this.props.emailIsValid}
+          submitted={this.props.submitted}
+          value={this.props.returnEmail}
+        />
+        <textarea name="message" placeholder="Message" rows="5" onChange={this.props.onChange}  className="form-control my-2"/>
+      </form>
+    )
+  }
+}
 
 export class VehicleForm extends React.Component{
   render(){
