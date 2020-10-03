@@ -1,5 +1,5 @@
 import React from 'react';
-import {Nav, } from 'react-bootstrap';
+import {Nav} from 'react-bootstrap';
 import {NavLink, Link} from 'react-router-dom';
 import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
@@ -43,16 +43,11 @@ export class BootstrapNavBar extends React.Component{
     this.handleClick=this.handleClick.bind(this)
   }
 
-
-
   handleClick(event){
     this.setState({collapsed:true})
     console.log(event.target.name)
     this.props.onClick(event.target.name)
-    //let navBar = document.getElementById("navHeader")
-    //navBar.setAttribute("expanded",false)
   }
-
 
   render(){
     let summary, sym, conversion

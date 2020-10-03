@@ -2,6 +2,7 @@ import React from 'react';
 import {VerticalSpacer, NavButton} from './reactComponents.js';
 import {Link} from 'react-router-dom';
 import * as urls from './urls.js';
+import {HomePageCopy} from './homePageCopy.js';
 
 function generateByline(){
   let bylines = [
@@ -26,12 +27,13 @@ export class HomeView extends React.Component{
     return(
       <div className="container-sm my-2">
         <div className="row justify-content-center">
+          <div className="col">
               <VerticalSpacer height={1}/>
               <div className="container text-center text-dark">
                 <h5>{this.state.byline}</h5>
               </div>
-              <div className="row">
-                <div className="col">
+              <div className="row justify-content-center" style={{height:"160px"}}>
+                <div className="col" style={{maxWidth:"300px"}} >
                   <NavButton to={urls.NAV_CALCULATOR} className="btn btn-info my-2 btn-block" textClassName="text-light">+ Add a carbon emission</NavButton>
                   {this.props.loggedIn ?
                     <div>
@@ -42,6 +44,13 @@ export class HomeView extends React.Component{
                 }
                 </div>
               </div>
+              {//this.props.loggedIn ? "" :
+                <div className="row">
+                  <VerticalSpacer height={10}/>
+                  <HomePageCopy />
+                </div>
+              }
+          </div>
         </div>
       </div>
     )
