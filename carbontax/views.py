@@ -161,40 +161,14 @@ class CurrentUser(APIView):
         }
         return Response(content)
 
-class ValidateUsername(APIView):
-    permission_classes = (AllowAny, )
-
-    def post(self, request):
-        print(request.data['username'])
-
-        if User.objects.filter(username=request.data['username']).exists():
-            result="false"
-        else:
-            result="true"
-        content = {"unique":result}
-        return Response(content)
-
-class ValidateEmail(APIView):
-    permission_classes = (AllowAny, )
-
-    def post(self, request):
-        print(request.data['email'])
-
-        if User.objects.filter(email=request.data['email']).exists():
-            result="false"
-        else:
-            result="true"
-        content = {"unique":result}
-        return Response(content)
-
 class CheckUnique(APIView):
     permission_classes = (AllowAny, )
 
     def post(self, request):
         print(request.data)
         content = {
-            'uniqueEmail': not User.objects.filter(email=request.data['email']).exists(),
-            'uniqueUsername': not User.objects.filter(username=request.data['username']).exists()
+            'uniqueEmail': not User.objects.filter(email__iexact=request.data['email']).exists(),
+            'uniqueUsername': not User.objects.filter(username__iexact=request.data['username']).exists()
         }
 
         return Response(content)

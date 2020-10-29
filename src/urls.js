@@ -31,8 +31,6 @@ export const RECIPIENT = '/api/recipient'
 export const REGISTER = '/account/register/'
 export const UPDATE_PASSWORD = '/account/update-password/'
 export const DJANGO_ACCOUNT = '/account/'
-export const CHECK_USERNAME = '/registration/check-username/'
-export const CHECK_EMAIL = '/registration/check-email/'
 export const CHECK_UNIQUE = '/registration/check-unique/'
 
 // JUNK - NEED TO SORT THIS OUT

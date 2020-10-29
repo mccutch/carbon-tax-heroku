@@ -114,8 +114,8 @@ export class RegistrationForm extends React.Component{
     
   }
 
-  validateUserData(){
-    //event.preventDefault()
+  validateUserData(e){
+    e.preventDefault()
     this.setState({
       errorMessage:"",
       submitted:true,

@@ -53,9 +53,7 @@ urlpatterns = [
     # ACCOUNT/REGISTRATION - NOCACHE
     path('account/register/', views.UserCreate.as_view(), name="create-user"),
     path('account/update-password/', views.UpdatePassword.as_view(), name="update-password"),
-    path('account/', include('django.contrib.auth.urls')), # django default password reset views  
-    path('registration/check-username/', views.ValidateUsername.as_view(), name="check-username"),
-    path('registration/check-email/', views.ValidateEmail.as_view(), name="check-email"),
+    path('account/', include('django.contrib.auth.urls')), # django default password reset views 
     path('registration/check-unique/', views.CheckUnique.as_view(), name="check-unique"),
     
     # JUNK - NEED TO SORT THIS OUT
