@@ -9,6 +9,7 @@ export const GET_TOKEN = '/token/'
 export const REFRESH_TOKEN = '/token/refresh/'
 
 // CACHE-FIRST USER ASSETS
+export const USER_DATA = '/user/data/'
 export const GET_USER = '/user/current-user/'
 export const MY_PROFILE = '/user/my-profile/'
 export const MY_VEHICLES = '/user/my-vehicles/'

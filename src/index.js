@@ -169,15 +169,45 @@ class App extends React.Component {
   }
 
   refreshFullProfile(){
-    if(this.state.serverConnectionFailure) this.testServer();
-    this.fetchUserObject({url:api.GET_USER, objectName:"user"})
-    this.fetchUserObject({url:api.MY_PROFILE, objectName:"profile", onSuccess:this.useProfileSettings})
-    this.fetchUserObject({url:api.MY_TAXES, objectName:"taxes"})
-    this.fetchUserObject({url:api.MY_VEHICLES, objectName:"vehicles"})
-    this.fetchUserObject({url:api.MY_EMISSIONS, objectName:"emissions"})
-    this.fetchUserObject({url:api.MY_STATS, objectName:"stats"})
-    this.fetchUserObject({url:api.MY_RECIPIENTS, objectName:"recipients"})
-    this.fetchUserObject({url:api.MY_PAYMENTS, objectName:"payments"})
+    if(this.state.serverConnectionFailure){
+      this.testServer()
+      return
+    }
+
+    apiFetch({
+      url:api.USER_DATA,
+      method:'GET',
+      onSuccess:(data)=>{
+        console.log(data)
+        this.setState({
+          user:data.user,
+          profile:data.profile,
+          taxes:data.taxes,
+          vehicles:data.vehicles,
+          stats:data.stats,
+          recipients:data.recipients,
+        },
+          //onSuccess of setState
+          ()=>{
+            this.useProfileSettings()
+          }
+        )
+      },
+      onFailure:(error)=>{
+        console.warn(error)
+        console.log("Unable to fetch user data")
+        if(error==='500') this.serverConnectionFailure();
+      }
+    })
+
+    //this.fetchUserObject({url:api.GET_USER, objectName:"user"})
+    //this.fetchUserObject({url:api.MY_PROFILE, objectName:"profile", onSuccess:this.useProfileSettings})
+    //this.fetchUserObject({url:api.MY_TAXES, objectName:"taxes"})
+    //this.fetchUserObject({url:api.MY_VEHICLES, objectName:"vehicles"})
+    this.fetchUserObject({url:api.MY_EMISSIONS, objectName:"emissions"}) ///paginated
+    //this.fetchUserObject({url:api.MY_STATS, objectName:"stats"})
+    //this.fetchUserObject({url:api.MY_RECIPIENTS, objectName:"recipients"})
+    this.fetchUserObject({url:api.MY_PAYMENTS, objectName:"payments"}) //paginated
     apiFetch({
       url:api.FUEL_TYPES, 
       method:'GET',
