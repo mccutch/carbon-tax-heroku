@@ -16,6 +16,7 @@ class ListInput extends React.Component {
   }
 
   fetchList(){
+    document.getElementById(this.props.label).value=this.props.defaultText
     let returnList = [this.props.defaultText]
     if(this.props.suffix){
       console.log("Searching "+this.props.url+this.props.suffix);
@@ -65,7 +66,7 @@ class ListInput extends React.Component {
 
   render(){
     return(
-      <select onChange = {this.props.onChange} name = {this.props.label} className="form-control my-2" >
+      <select onChange={this.props.onChange} id={this.props.label} name={this.props.label} className="form-control my-2" >
         {this.renderOptions()}
       </select>
     )
@@ -382,7 +383,7 @@ export class VehicleSearch extends React.Component {
     let title = <div>US Vehicle Search</div>
     let body = 
       <div>
-        <VehicleInputFields returnVehicleId ={this.receiveVehicleId} />
+        <VehicleInputFields returnVehicleId={this.receiveVehicleId} />
         <br/>
         {this.state.vehicleId ? <VehicleResult data = {this.state} displayUnits = {this.props.displayUnits} returnCityProportion = {this.setAvgEconomy} /> : ""}
       </div> 

@@ -24,7 +24,7 @@ class ObjectDisplayView extends React.Component{
       <button className="btn btn-outline-primary btn-block my-1" onClick={this.props.onClick}>
         <div className="row" style={{height:"2.5rem"}}>
           {icon}
-          <div className="col">
+          <div className="col-10">
               <div className="row">
                 <div className="col text-truncate text-left"  style={{margin: "0rem 0rem 0rem -0.25rem"}}>
                   <strong>{this.props.primaryText}</strong>

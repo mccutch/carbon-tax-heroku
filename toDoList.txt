@@ -5,6 +5,7 @@ Is it better to just store prices in local currency???
 
  editing distance fucks with units
 
+Test API GET when user has no objects, eg my-vehicles for new user
 
 UX
 - Landing page

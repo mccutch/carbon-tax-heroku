@@ -25,7 +25,7 @@ export class DistanceInput extends React.Component{
 
   submitDistance(event){
     if(this.state.distance>0){
-      this.props.submitDistance("","",units.convertToKm(this.state.distance, this.props.displayUnits), false)
+      this.props.submitDistance("","",this.state.distance, false)
     }else if(this.state.hours>0 || this.state.minutes>0){
       this.props.submitFlightHrs(this.state.hours+this.state.minutes/60)
     }
@@ -37,15 +37,16 @@ export class DistanceInput extends React.Component{
   }
 
   handleChange(event){
-    if(event.target.value>=0){
-      this.setState({[event.target.name]:parseFloat(event.target.value)})
+    let value = parseFloat(event.target.value)
+    value = event.target.name==="distance" ? units.convertToKm(value, this.props.displayUnits) : value
+
+    if(value>=0){
+      this.setState({[event.target.name]:value})
     }
   }
 
   render(){
 
-    //let display
-    //if(this.props.mode===AIR && this.props.aircraftType!=="airliner"){
     let display = this.props.inputHrs ?
       <div>
         <p>Input flight time for fuel calculation:</p>
@@ -68,7 +69,7 @@ export class DistanceInput extends React.Component{
       <div>
         <LabelledInput
           append={units.distanceString(this.props.displayUnits)}
-          input={<input type="number" onChange={this.handleChange} name="distance" placeholder="Distance" className="form-control" defaultValue={this.hasInitial?units.distanceDisplay(this.props.initialValue, this.props.displayUnits):null}/>}
+          input={<input type="number" onChange={this.handleChange} name="distance" placeholder="Distance" className="form-control" defaultValue={this.hasInitial?parseFloat(units.distanceDisplay(this.props.initialValue, this.props.displayUnits)).toFixed(0):null}/>}
         />
         <button name="displayRouteCalculator" className=" btn btn-outline-info my-2" onClick={this.showRouteCalculator} >Route calculator</button>
       </div>
