@@ -80,8 +80,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        email = validated_data['email']
-        print(email)
+        validated_data['email'] = validated_data['email'].lower()
 
         user = User(**validated_data)
         user.set_password(password)
@@ -99,13 +98,14 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class FlexibleJWTSerializer(TokenObtainPairSerializer):
-    #Credit lardorm: https://stackoverflow.com/questions/34332074/django-rest-jwt-login-using-username-or-email
+    # Accepts case-insensitive username or email
+    # Credit: lardorm https://stackoverflow.com/questions/34332074/django-rest-jwt-login-using-username-or-email
     def validate(self, attrs):
         credentials = {
             'username': '',
             'password': attrs.get("password")
         }
-        user_obj = User.objects.filter(email=attrs.get("username")).first() or User.objects.filter(username=attrs.get("username")).first()
+        user_obj = User.objects.filter(email__iexact=attrs.get("username")).first() or User.objects.filter(username__iexact=attrs.get("username")).first()
         if user_obj:
             credentials['username'] = user_obj.username
         return super().validate(credentials)
