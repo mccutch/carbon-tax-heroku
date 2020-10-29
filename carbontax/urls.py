@@ -31,6 +31,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')), # Login function on browsable APIs
 
     # CACHE-FIRST USER ASSETS
+    path('user/data/', views.UserData.as_view(), name="user-data"),
     path('user/current-user/', views.CurrentUser.as_view(), name="current-user"),
     path('user/my-profile/', views.UserProfile.as_view(), name="my-profile"),
     path('user/my-vehicles/', views.UserVehicleList.as_view(), name="my-vehicles"),
@@ -48,7 +49,7 @@ urlpatterns = [
     path('api/emission/<int:pk>/', views.EmissionDetail.as_view(), name="emission-detail"),
     path('api/tax/<int:pk>/', views.TaxDetail.as_view(), name="tax-detail"),
     path('api/payment/<int:pk>/', views.PaymentDetail.as_view(), name="payment-detail"),
-    path('api/recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="recipient-detail"),
+    path('api/recipient/<int:pk>/', views.DonationRecipientDetail.as_view(), name="donationrecipient-detail"),
 
     # ACCOUNT/REGISTRATION - NOCACHE
     path('account/register/', views.UserCreate.as_view(), name="create-user"),

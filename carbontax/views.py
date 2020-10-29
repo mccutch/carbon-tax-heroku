@@ -20,11 +20,28 @@ from rest_framework.filters import SearchFilter
 
 from django.core.mail import send_mail
 
+from . import user_stats
+
 
 # Serve Single Page Application
 index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 
+class UserData(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+
+        return Response({
+            'user':serializers.UserSerializer(request.user, context={'request':request}).data,
+            'profile':serializers.ProfileSerializer(request.user.profile, context={'request':request}).data,
+            'taxes':serializers.TaxRateSerializer(request.user.taxes, many=True, context={'request':request}).data,
+            'vehicles':serializers.VehicleSerializer(request.user.vehicles, many=True, context={'request':request}).data,
+            #emissions - paginated
+            #payments - paginated
+            'recipients':serializers.DonationRecipientSerializer(request.user.profile.recipients, many=True, context={'request':request}).data,
+            'stats':user_stats.get(request),
+            })
 
 # -----------VEHICLES-----------
 
@@ -144,10 +161,11 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
 
-class CurrentUser(generics.RetrieveAPIView):
-    permission_classes = (IsAuthenticated, permissions.IsOwner)
-    serializer_class = serializers.UserSerializer
-    queryset = User.objects.all()
+class CurrentUser(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        serializer = serializers.UserSerializer(request.user, context={'request':request})
+        return Response(serializer.data)
 
 class CheckUnique(APIView):
     permission_classes = (AllowAny, )
