@@ -144,22 +144,10 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
 
-class CurrentUser(APIView):
-    permission_classes = (IsAuthenticated,)
-    def get(self, request):
-        user=request.user
-        email=user.email
-        first=user.first_name
-        last=user.last_name
-
-        content = {
-            'username': user.username, 
-            'id': user.pk,
-            'email': email,
-            'first_name': first,
-            'last_name': last,
-        }
-        return Response(content)
+class CurrentUser(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated, permissions.IsOwner)
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
 
 class CheckUnique(APIView):
     permission_classes = (AllowAny, )
