@@ -184,7 +184,7 @@ CORS_ORIGIN_WHITELIST = [
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=0.2),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
 }
 
 
