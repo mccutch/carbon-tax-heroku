@@ -291,12 +291,15 @@ class App extends React.Component {
     let selectView=(event)=>{this.setMainView(event.target.name)}
 
 
-    return( 
-      <div className="bg-dark" style={{ backgroundImage: `url(${api.MARANON_SUNRISE})`, 
-                                        backgroundSize:'cover',
-                                        backgroundPosition:'center',
-                                        minHeight: "100vh",
-                                      }}>
+    return(
+      <div style={{ backgroundImage: `url(${api.MARANON_SUNRISE})`, 
+                    //backgroundImage: `url(${api.POINT_PERP_NARROW})`, 
+                    //backgroundColor:'blue',
+                    backgroundSize:'cover',
+                    backgroundPosition:'center',
+                    //minHeight: "100vh",
+                    height:"150vh",
+                  }}>
         <BootstrapNavBar 
           loggedIn={this.state.loggedIn}
           onClick={this.handleNavClick}

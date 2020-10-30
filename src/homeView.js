@@ -44,12 +44,10 @@ export class HomeView extends React.Component{
                 }
                 </div>
               </div>
-              {//this.props.loggedIn ? "" :
-                <div className="row">
-                  <VerticalSpacer height={10}/>
-                  <HomePageCopy />
-                </div>
-              }
+              <div className="row">
+                <VerticalSpacer height={1}/>
+                <HomePageCopy />
+              </div>
           </div>
         </div>
       </div>

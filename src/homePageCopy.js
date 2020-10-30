@@ -74,18 +74,16 @@ export class HomePageCopy extends React.Component{
           :""}
           {this.state.activeTab==='about'?
             <p>
-              In the years after Australia's carbon tax legislation was repealed in 2014, I found myself frustrated at this lack of action in 
-              the face of climate change. But at the same time, I was doing everything I could to travel and spend time outdoors. I could 
-              justify money spent on petrol or plane tickets, but felt like I never had pockets deep enough to donate.
+              In the years since Australia's carbon pricing legislation was repealed in 2014, I've found myself frustrated at this deliberate lack 
+              of action in the face of climate change.
               <br/><br/>
-              In 2017, the irony eventually settled in and I started a spreadsheet, calculating a proportion on any money spend polluting that 
+              But in my own actions, I was doing everything I could to travel and spend time outdoors, 
+              but felt like I never had pockets deep enough to donate towards change.
+              <br/><br/>
+              The irony eventually settled in and in 2017 I started a spreadsheet, calculating a proportion on any money spend polluting that 
               I should donate to an environmental charity. 
               <br/><br/>
-              Instead of waiting for the government to tax fossil fuels for the damage they cause, I could just tax myself and choose where 
-              the money went.
-              <br/><br/>
-              In 2020, being chained indoors by a pandemic and an injury has forced me to take the time to learn how to build this website, which I 
-              hope might offer something to whoever finds it, or else remain a tool to help myself to visualise my impact in the world.
+              Carbon Accountant has finally become a website, in the hope that it reaches those who want it.
               <br/><br/>
               Jack McCutchan, Oct 2020
             </p>
