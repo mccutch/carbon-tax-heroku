@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './custom.scss'; // import custom bootstrap
 
-import {LoginWrapper} from './loginWrapper.js';
 import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
@@ -13,7 +12,7 @@ import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
 import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker.js';
 import {GoogleDirections} from './googleDirections.js';
-import {USER_CACHE} from './constants.js';
+import {USER_CACHE, DEFAULT_DISPLAY_UNITS} from './constants.js';
 import * as api from './urls.js';
 import {VerticalSpacer, CenterPage} from './reactComponents.js';
 import {EmissionCalculator} from './emissionCalculator.js';
@@ -38,7 +37,7 @@ class App extends React.Component {
 
     this.state = {
       loggedIn: false,
-      displayUnits: units.METRIC,
+      displayUnits: DEFAULT_DISPLAY_UNITS,
       user: {},
       profile: {},
       taxes: [],
@@ -54,7 +53,6 @@ class App extends React.Component {
 
     this.defaultState = JSON.parse(JSON.stringify(this.state))
 
-    this.login=this.login.bind(this)
     this.logout=this.logout.bind(this)
     this.logoutSuccess=this.logoutSuccess.bind(this)
     this.toggleDisplayUnits=this.toggleDisplayUnits.bind(this)
@@ -63,24 +61,12 @@ class App extends React.Component {
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
     this.setFuels = this.setFuels.bind(this)
     this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
-    this.useProfileSettings = this.useProfileSettings.bind(this)
-    this.hideModal = this.hideModal.bind(this)
     this.handleNavClick = this.handleNavClick.bind(this)
-    this.setModal = this.setModal.bind(this)
-    this.setMainView = this.setMainView.bind(this)
-    this.setModalContent = this.setModalContent.bind(this)
-    this.useState = this.useState.bind(this)
     this.testServer = this.testServer.bind(this)
   }
 
   componentDidMount(){
-    apiFetch({
-      url:api.FUEL_TYPES, 
-      onSuccess:this.setFuels,
-      onFailure:this.serverConnectionFailure,
-      noAuth:true,
-    })
-    this.fetchUserObject({url:api.GET_USER, objectName:"user", onSuccess:this.login})
+    this.refreshFullProfile()
   }
 
   componentDidUpdate(prevProps){
@@ -104,10 +90,14 @@ class App extends React.Component {
     })
   }
 
-  setFuels(json){
+  setFuels(){
     // fueltypes returns as a paginated view
-    this.setState({fuels:json.results})
-    //this.setState({serverConnectionFailure:false})
+    apiFetch({
+      url:api.FUEL_TYPES, 
+      method:'GET',
+      onSuccess:(json)=>this.setState({fuels:json.results}),
+      noAuth:true,
+    })
   }
 
   fetchUserObject({url, objectName, onSuccess}){
@@ -131,29 +121,6 @@ class App extends React.Component {
     })
   }
 
-  useState({objectName, json, onSuccess}){
-    if(onSuccess){
-      this.setState({[objectName]:json}, onSuccess)
-    }else{
-      this.setState({[objectName]:json})
-    }
-  }
-
-
-  login(){
-    this.refreshFullProfile()
-    this.setState({
-      loggedIn:true,
-      modal:null,
-    })
-  }
-
-  useProfileSettings(){
-    //console.log(profile)
-    this.setState({displayUnits: this.state.profile.display_units})
-    //console.log(`Not loading display units from profile: ${profile}`)
-  }
-
   logout(){
     logoutBrowser({onSuccess:this.logoutSuccess})
   }
@@ -162,9 +129,7 @@ class App extends React.Component {
     console.log("Logout successful.")
     console.log(this.defaultState)
     // Reload page to clear user data from state
-    // What to do about clearing user data from caches??
     window.location.reload(false)
-    //navigate(api.NAV_HOME)
   }
 
   refreshFullProfile(){
@@ -181,14 +146,16 @@ class App extends React.Component {
         this.setState({
           user:data.user,
           profile:data.profile,
+          displayUnits:data.profile.display_units,
           taxes:data.taxes,
           vehicles:data.vehicles,
           stats:data.stats,
           recipients:data.recipients,
+          loggedIn:true,
         },
           //onSuccess of setState
           ()=>{
-            this.useProfileSettings()
+            console.log("User data fetch success.")
           }
         )
       },
@@ -199,77 +166,38 @@ class App extends React.Component {
       }
     })
 
-    //this.fetchUserObject({url:api.GET_USER, objectName:"user"})
-    //this.fetchUserObject({url:api.MY_PROFILE, objectName:"profile", onSuccess:this.useProfileSettings})
-    //this.fetchUserObject({url:api.MY_TAXES, objectName:"taxes"})
-    //this.fetchUserObject({url:api.MY_VEHICLES, objectName:"vehicles"})
     this.fetchUserObject({url:api.MY_EMISSIONS, objectName:"emissions"}) ///paginated
-    //this.fetchUserObject({url:api.MY_STATS, objectName:"stats"})
-    //this.fetchUserObject({url:api.MY_RECIPIENTS, objectName:"recipients"})
     this.fetchUserObject({url:api.MY_PAYMENTS, objectName:"payments"}) //paginated
-    apiFetch({
-      url:api.FUEL_TYPES, 
-      method:'GET',
-      onSuccess:this.setFuels,
-      noAuth:true,
-    })
+    this.setFuels()
   }
 
   toggleDisplayUnits(){
     this.setState({displayUnits:units.toggle(this.state.displayUnits)})
   }
 
-  hideModal(){
-    this.setState({
-      modal:null,
-    })
-  }
-
-  setModal(type){
-    this.setState({modal:type})
-  }
-
-  setModalContent(content){
-    this.setState({modal:content})
-  }
-
-  setMainView(view){
-    this.refreshFullProfile()
-    this.setState({
-      mainView:view,
-    })
-  }
-
   handleNavClick(nav){
-    //this.refreshFullProfile()
+    this.refreshFullProfile()
 
     if(nav==="login"){
-      this.setModal(<LoginForm onSuccess={this.login} hideModal={this.hideModal}/>)
+      this.setState({modal:<LoginForm onSuccess={this.refreshFullProfile} hideModal={this.hideModal}/>})
 
     } else if(nav==="logout"){
       this.logout()
 
     } else if(nav==="demoUser"){
-      demoLogin({onSuccess:this.login})
+      demoLogin({onSuccess:this.refreshFullProfile})
 
     } else if(nav==="register"){
-      this.setModal(<RegistrationForm onSuccess={this.login} hideModal={this.hideModal}/>)
+      this.setState({modal:<RegistrationForm onSuccess={this.refreshFullProfile} hideModal={this.hideModal}/>})
 
     } else if(nav==="toggleUnits"){
       this.toggleDisplayUnits()  
 
-    } else if(nav==="contact"){
-      this.setMainView("contact")
     }
   }
   
   
   render(){
-    let modal
-    if(this.state.modal){
-      modal = this.state.modal
-    }
-
     let loggedIn=this.state.loggedIn
     let displayUnits=this.state.displayUnits
     let fuels=this.state.fuels
@@ -285,9 +213,14 @@ class App extends React.Component {
     let payments=this.state.payments
 
     let refresh=this.refreshFullProfile
-    let setModal=this.setModalContent
-    let hideModal=this.hideModal
-    let selectView=(event)=>{this.setMainView(event.target.name)}
+    let setModal=(modal)=>this.setState({modal:modal})
+    let hideModal=()=>this.setState({modal:null})
+
+    let app = {
+      refresh:this.refreshFullProfile,
+      setModal:(modal)=>this.setState({modal:modal}),
+      hideModal:()=>this.setState({modal:null}),
+    }
 
 
     return(
@@ -300,22 +233,21 @@ class App extends React.Component {
                     height:"150vh",
                   }}>
         <BootstrapNavBar 
-          loggedIn={this.state.loggedIn}
+          loggedIn={loggedIn}
           onClick={this.handleNavClick}
-          displayUnits={this.state.displayUnits}
-          profile={this.state.profile}
-          stats={this.state.stats}
+          displayUnits={displayUnits}
+          profile={profile}
+          stats={stats}
           serverError={this.state.serverConnectionFailure}
         />
-        {modal}
+        {this.state.modal ? this.state.modal : ""}
         <div> 
           <Switch>
             <Route path={api.NAV_CALCULATOR}>
               <CenterPage>
                 <EmissionCalculator 
                   loggedIn={loggedIn} 
-                  displayUnits={displayUnits} 
-                  exit={null}
+                  displayUnits={displayUnits}
                   taxes={taxes}
                   vehicles={vehicles}
                   fuels={fuels}
@@ -323,8 +255,6 @@ class App extends React.Component {
                   refresh={refresh}
                   setModal={setModal}
                   hideModal={hideModal}
-                  selectView={selectView}
-                  login={this.login}
                 />
               </CenterPage>
             </Route>
@@ -364,9 +294,10 @@ class App extends React.Component {
                     user={user}
                     profile={profile}
                     recipients={recipients}
-                    refresh={refresh}
-                    setModal={setModal}
-                    hideModal={hideModal}
+                    app={app}
+                    //refresh={refresh}
+                    //setModal={setModal}
+                    //hideModal={hideModal}
                   />
                 </CenterPage>
                 : <Redirect to={api.NAV_HOME}/>
@@ -377,9 +308,7 @@ class App extends React.Component {
                 <ContactPage 
                   loggedIn={loggedIn}
                   user={user}
-                  setModal={setModal}
-                  hideModal={hideModal}
-                  hideDisplay={null}
+                  app={app}
                 />
               </CenterPage>
             </Route>

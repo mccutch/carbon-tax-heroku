@@ -21,10 +21,10 @@ export class SearchRecipients extends React.Component{
     let footer = 
       <div>
         <button type="button" className="btn btn-outline-primary" onClick={this.submitNewTax}>Submit</button>
-        <button className="btn btn-outline-danger" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger" onClick={this.props.app.hideModal}>Cancel</button>
       </div>
 
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal} />
   }
 }
 
@@ -40,17 +40,16 @@ export class PaymentSuccess extends React.Component{
     let modal = 
       <PaymentEdit 
         payment={this.props.payment}
+        app={this.props.app}
         profile={this.props.profile}
-        hideModal={this.props.hideModal} 
-        refresh={this.props.refresh}
         recipients={this.props.recipients}
       />
 
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
 
   goTo(event){
-    this.setState({redirect:event.target.name},this.props.hideModal)
+    this.setState({redirect:event.target.name},this.props.app.hideModal)
   }
 
   render(){
@@ -73,7 +72,7 @@ export class PaymentSuccess extends React.Component{
         <button name="edit" className="btn btn-outline-info m-2" onClick={this.edit}>Edit/Clone</button>
       </div>
 
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal} />
   }
 }
 
@@ -141,21 +140,19 @@ export class PaymentView extends React.Component{
     let modal = 
       <CreateRecipient
         profile={this.props.profile}
-        refresh={this.props.refresh}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
+        app={this.props.app}
         returnId={this.setNewRecipient}
       />
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
 
   searchRecipients(event){
     event.preventDefault()
     let modal = 
       <SearchRecipients 
-        hideModal={this.props.hideModal}
+        hideModal={this.props.app.hideModal}
       />
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
 
   makePayment(event){
@@ -196,15 +193,12 @@ export class PaymentView extends React.Component{
         payment={json}
         profile={this.props.profile}
         recipients={this.props.recipients}
-        refresh={this.props.refresh}
         stats={this.props.stats}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
-        setView={this.props.setView}
+        app={this.props.app}
       />
 
-    this.props.setModal(modal)
-    this.props.refresh()
+    this.props.app.setModal(modal)
+    this.props.app.refresh()
     this.setState({redirect:api.NAV_HOME})
   }
 

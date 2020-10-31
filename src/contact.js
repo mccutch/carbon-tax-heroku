@@ -94,7 +94,7 @@ export class ContactPage extends React.Component{
   displaySuccessModal(email){
     let title = <div>Message sent</div>
     let body = <p>Thanks for getting in touch, we'll get back to you at <strong>{email}</strong> shortly.</p>
-    this.props.setModal(<StandardModal hideModal={this.props.hideModal} title={title} body={body} />)
+    this.props.app.setModal(<StandardModal hideModal={this.props.app.hideModal} title={title} body={body} />)
   }
 
   render(){

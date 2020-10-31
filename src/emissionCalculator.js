@@ -68,7 +68,6 @@ export class EmissionCalculator extends React.Component{
     this.handleEmissionSave=this.handleEmissionSave.bind(this)
     this.handleAircraftInput=this.handleAircraftInput.bind(this)
     this.handleAirOptions=this.handleAirOptions.bind(this)
-    this.exitCalculator=this.exitCalculator.bind(this)
     this.handleTabClick=this.handleTabClick.bind(this)
     this.createClone=this.createClone.bind(this)
     this.handleModeChange=this.handleModeChange.bind(this)
@@ -95,10 +94,6 @@ export class EmissionCalculator extends React.Component{
         this.setState({activeTab:tabList[i-1].name})
       }
     }
-  }
-
-  exitCalculator(){
-    this.setState({redirect:urls.NAV_HOME})
   }
 
   createClone(json){
@@ -136,7 +131,7 @@ export class EmissionCalculator extends React.Component{
       </div>
     this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
     this.props.refresh()
-    this.exitCalculator()
+    this.setState({redirect:urls.NAV_HOME})
   }
 
   handleSubmitEconomy(vehicle){

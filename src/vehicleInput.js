@@ -352,6 +352,7 @@ export class VehicleSearch extends React.Component {
   }
 
   returnVehicle(){
+    if(!this.state.fuel)
     this.props.returnVehicle({
       name:this.state.name,
       economy:this.state.avgLper100Km,

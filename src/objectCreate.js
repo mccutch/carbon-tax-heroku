@@ -191,7 +191,7 @@ export class CreateRecipient extends React.Component{
 
   successModal(){
     let json = this.state.newRecipient
-    this.props.refresh()
+    this.props.app.refresh()
     if(this.props.returnId){this.props.returnId(json.id)}
 
     let title = <div>New: {json.name}</div>
@@ -201,7 +201,7 @@ export class CreateRecipient extends React.Component{
         <a href={json.website} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info m-2">Website</a>
         <a href={json.donation_link} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info m-2">Donation</a>
       </div>
-    this.props.setModal(<StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer}/>)
+    this.props.app.setModal(<StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer}/>)
   }
 
   handlePostFailure(json){
@@ -214,10 +214,10 @@ export class CreateRecipient extends React.Component{
     let form = <forms.RecipientForm onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
     let formButtons = 
       <div>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
         <button type="button" className="btn btn-success m-2" onClick={this.validateForm}><strong>Submit</strong></button>
       </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={form} footer={formButtons} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={form} footer={formButtons} />
   }
 }

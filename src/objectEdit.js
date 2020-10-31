@@ -684,8 +684,8 @@ export class PaymentEdit extends React.Component{
   }
 
   editSuccess(){
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   editFailure(){
@@ -740,7 +740,7 @@ export class PaymentEdit extends React.Component{
 
     return(
       <StandardModal
-        hideModal={this.props.hideModal}
+        hideModal={this.props.app.hideModal}
         title={<div>Edit Payment</div>}
         body={body}
         footer={footer}

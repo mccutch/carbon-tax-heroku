@@ -1,6 +1,8 @@
 
 "Learn more" link in aircraft input doesn't open new tab
 
+edit vehicle name
+
 Single login API endpoint?
 
 Is it better to just store prices in local currency???
