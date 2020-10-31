@@ -342,7 +342,7 @@ export class CarbonCalculator extends React.Component{
           :
           <div>
             <p>
-              <a onClick={()=>this.props.setModal(<LoginForm hideModal={this.props.hideModal} onSuccess={this.props.login}/>)}>
+              <a onClick={()=>this.props.setModal(<LoginForm hideModal={this.props.hideModal} onSuccess={this.props.refresh}/>)}>
                 <strong className="text-primary"><em>Login</em></strong>
               </a> or 
               <a onClick={()=>this.props.setModal(<RegistrationForm hideModal={this.props.hideModal}onSuccess={this.props.login}/>)}>

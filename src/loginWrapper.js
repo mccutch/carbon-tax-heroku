@@ -40,7 +40,13 @@ export class LoginForm extends React.Component{
   }
 
   getJWT(data){
-    getToken({data:data, onSuccess:this.props.onSuccess, onFailure:this.handleLoginFailure})
+    getToken({
+      data:data, 
+      onSuccess:()=>{
+        this.props.hideModal()
+        this.props.onSuccess()
+      }, 
+      onFailure:this.handleLoginFailure})
   }
 
   handleLoginFailure(){

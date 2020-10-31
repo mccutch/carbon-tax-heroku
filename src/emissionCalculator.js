@@ -269,7 +269,7 @@ export class EmissionCalculator extends React.Component{
           mode={this.state.mode}
           prevTab={this.prevTab}
           inputHrs={(this.state.mode===AIR && this.state.aircraftType!=="airliner")}
-          initialValue={(this.state.mode===AIR && this.state.aircraftType!=="airliner") ? this.state.flightHrs : this .state.distanceKm}
+          initialValue={(this.state.mode===AIR && this.state.aircraftType!=="airliner") ? this.state.flightHrs : this.state.distanceKm}
         />
     }
     
@@ -306,7 +306,6 @@ export class EmissionCalculator extends React.Component{
           prevTab={this.prevTab}
           setModal={this.props.setModal}
           hideModal={this.props.hideModal}
-          login={this.props.login}
         />
        :
        <div className="container bg-light" >
