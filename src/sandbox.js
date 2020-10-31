@@ -4,6 +4,7 @@ import {fetchObject, convertCurrency, truncate, fetchFromCache } from './helperF
 
 import {CurrencySelection, ObjectSelectionList} from './reactComponents.js';
 import {EmissionDisplayView} from './objectDisplayViews.js';
+import {colourList} from './dataVisuals.js';
 
 import * as units from './unitConversions.js';
 
@@ -43,6 +44,13 @@ export class Sandbox extends React.Component{
     console.log(truncate(event.target.value, 4))
   }
   
+  printColours(){
+    let list = []
+    for(let i in colourList){
+      list.push(<strong><p style={{color:`#${colourList[i]}`}}>Colour {i}</p></strong>)
+    }
+    return list
+  }
 
   render(){
 
@@ -50,16 +58,7 @@ export class Sandbox extends React.Component{
       <div className="container bg-dark text-light">
         <h1>Sandbox</h1>
         <div className="container bg-light text-dark py-2">
-          {this.props.emission ?
-            <EmissionDisplayView 
-            emission={this.props.emission}
-            profile={this.props.profile}
-            taxes={this.props.taxes}
-          />
-          :
-          ""
-          }
-          
+          {this.printColours()}
         </div>
       </div>
     )

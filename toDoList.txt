@@ -1,9 +1,12 @@
+
+"Learn more" link in aircraft input doesn't open new tab
+
+Single login API endpoint?
+
 Is it better to just store prices in local currency???
  - Only return currency with a currency factor of <20??
  - Set default taxes with converted value
  - payment, taxview, taxedit, emission, emission edit fuuuuuuuuck
-
- editing distance fucks with units
 
 Test API GET when user has no objects, eg my-vehicles for new user
 

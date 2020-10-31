@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './custom.scss';
-//import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.scss'; // import custom bootstrap
 
 import {LoginWrapper} from './loginWrapper.js';
 import {Sandbox} from './sandbox.js';
@@ -385,26 +384,6 @@ class App extends React.Component {
               </CenterPage>
             </Route>
           </Switch>
-          {/*
-          <MainView
-            loggedIn={this.state.loggedIn} 
-            displayUnits={this.state.displayUnits}
-            taxes={this.state.taxes}
-            vehicles={this.state.vehicles}
-            emissions={this.state.emissions}
-            fuels={this.state.fuels}
-            profile={this.state.profile}
-            stats={this.state.stats}
-            user={this.state.user}
-            payments={this.state.payments}
-            recipients={this.state.recipients}
-            refresh={this.refreshFullProfile}
-            display={this.state.mainView}
-            setView={this.setMainView}
-            logout={this.logout}
-            setModal={this.setModalContent}
-            hideModal={this.hideModal}
-          />*/}
         </div>
         <VerticalSpacer/>
       </div>
