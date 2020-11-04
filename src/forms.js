@@ -32,18 +32,18 @@ export class VehicleForm extends React.Component{
     let name, economy, fuelId
     if(this.props.vehicle){
       name=this.props.vehicle.name
-      economy=parseFloat(units.convert(this.props.vehicle.economy, this.props.displayUnits)).toFixed(1)
+      economy=parseFloat(units.convert(this.props.vehicle.economy, this.props.app.displayUnits)).toFixed(1)
       fuelId=this.props.vehicle.fuel
     }
     return(
       <form>
         <p><strong>{this.props.errorMessage}</strong></p>
-        {this.props.loggedIn?<input name="name" type="text" placeholder="Vehicle name" defaultValue={name} onChange={this.props.onChange} className="form-control my-2"/>:""}
+        {this.props.app.loggedIn?<input name="name" type="text" placeholder="Vehicle name" defaultValue={name} onChange={this.props.onChange} className="form-control my-2"/>:""}
         <LabelledInput
           input={<input name="economy" type="number" placeholder="Economy" defaultValue={economy} onChange={this.props.onChange} step="0.1" className="form-control"/>}
-          append={units.string(this.props.displayUnits)}
+          append={units.string(this.props.app.displayUnits)}
         />
-        <ObjectSelectionList name="fuel" onChange={this.props.onChange} list={this.props.fuels} defaultValue={fuelId} label="name" value="id" />
+        <ObjectSelectionList name="fuel" onChange={this.props.onChange} list={this.props.app.fuels} defaultValue={fuelId} label="name" value="id" />
       </form>
     )
   }
@@ -55,7 +55,7 @@ export class TaxForm extends React.Component{
     let categoryList = <ObjectSelectionList defaultValue={category} name="category" list={taxCategories} onChange={this.props.onChange} label="title" value="title" />
     if(this.props.tax){
       name=this.props.tax.name
-      price_per_kg=parseFloat(this.props.tax.price_per_kg*this.props.profile.conversion_factor).toFixed(3)
+      price_per_kg=parseFloat(this.props.tax.price_per_kg*this.props.userData.profile.conversion_factor).toFixed(3)
       category=this.props.tax.category
       categoryList = this.props.tax.isDefault ? "" : categoryList
     }
@@ -65,7 +65,7 @@ export class TaxForm extends React.Component{
         <input defaultValue={name} type="text" name="name" maxLength={MAX_LEN_NAME} onChange={this.props.onChange} className="form-control my-2" placeholder="Name"/>
         <LabelledInput
           input={<input defaultValue={price_per_kg} type="number" name="price_per_kg" onChange={this.props.onChange} className="form-control" placeholder="Price" step="0.01"/>}
-          append={`${this.props.profile.currency_symbol}/kg CO2`}
+          append={`${this.props.userData.profile.currency_symbol}/kg CO2`}
         />
         {categoryList}
         <p><strong>{this.props.errorMessage}</strong></p>

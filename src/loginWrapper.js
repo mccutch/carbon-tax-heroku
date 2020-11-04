@@ -43,7 +43,7 @@ export class LoginForm extends React.Component{
     getToken({
       data:data, 
       onSuccess:()=>{
-        this.props.hideModal()
+        this.props.app.hideModal()
         this.props.onSuccess()
       }, 
       onFailure:this.handleLoginFailure})
@@ -71,7 +71,7 @@ export class LoginForm extends React.Component{
         </form>
       </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={form} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={form} />
   }
 }
 

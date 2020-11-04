@@ -101,21 +101,17 @@ export class EmissionCalculator extends React.Component{
 
     let modal = 
       <EmissionEdit 
-        emission={json} 
-        displayUnits={this.props.displayUnits} 
-        profile={this.props.profile} 
-        taxes={this.props.taxes} 
-        hideModal={this.props.hideModal} 
-        refresh={this.props.refresh}
-        fuels={this.props.fuels}
+        emission={json}
+        app={this.props.app}
+        userData={this.props.userData}
       />
   
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
 
   handleEmissionSave(json){
-    let sym = this.props.profile.currency_symbol
-    let price = this.props.profile.conversion_factor*json.price
+    let sym = this.props.userData.profile.currency_symbol
+    let price = this.props.userData.profile.conversion_factor*json.price
     console.log(json)
 
     let title=<div>Emission Saved!</div>
@@ -127,10 +123,10 @@ export class EmissionCalculator extends React.Component{
     let footer = 
       <div>
         <button className="btn btn-outline-info" onClick={() => this.createClone(json)}>Edit/Clone</button>
-        <button className="btn btn-outline-success" onClick={this.props.hideModal}>Close</button>
+        <button className="btn btn-outline-success" onClick={this.props.app.hideModal}>Close</button>
       </div>
-    this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
-    this.props.refresh()
+    this.props.app.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal}/>)
+    this.props.app.refresh()
     this.setState({redirect:urls.NAV_HOME})
   }
 
@@ -206,7 +202,7 @@ export class EmissionCalculator extends React.Component{
   render(){
     if(this.state.redirect) return <Redirect to={this.state.redirect}/>
 
-    let displayUnits=this.props.displayUnits
+    let displayUnits=this.props.app.displayUnits
     let navBtns = 
       <div className="row">
         {this.isFirstTab() ? "" : <button className="btn btn-outline-danger m-2" onClick={this.prevTab} >Back</button>}
@@ -218,7 +214,7 @@ export class EmissionCalculator extends React.Component{
     
     if(this.state.activeTab==="economy"){
       if(this.state.economySubmitted){
-        let fuelName=getAttribute({objectList:this.props.fuels, key:"id", keyValue:this.state.vehicle.fuel, attribute:"name"})
+        let fuelName=getAttribute({objectList:this.props.app.fuels, key:"id", keyValue:this.state.vehicle.fuel, attribute:"name"})
 
         tabDisplay = 
           <div className="container bg-light" >
@@ -228,14 +224,9 @@ export class EmissionCalculator extends React.Component{
       } else {
         tabDisplay = 
           <EconomyInput
+            app={this.props.app}
+            userData={this.props.userData}
             returnVehicle={this.handleSubmitEconomy}
-            displayUnits={displayUnits}
-            loggedIn={this.props.loggedIn}
-            vehicles={this.props.vehicles}
-            fuels={this.props.fuels}
-            refresh={this.props.refresh}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
             prevTab={this.prevTab}
             initialValues={this.state.vehicle}
           />
@@ -254,17 +245,16 @@ export class EmissionCalculator extends React.Component{
         </div>
         :
         <DistanceInput  
-          locationBias={this.props.loggedIn&&this.props.profile.loc_lat ? {lat:this.props.profile.loc_lat,lng:this.props.profile.loc_lng} : null}
+          locationBias={this.props.app.loggedIn&&this.props.userData.profile.loc_lat ? {lat:this.props.userData.profile.loc_lat,lng:this.props.userData.profile.loc_lng} : null}
           submitDistance={this.handleSubmitDistance}
           submitFlightHrs={this.handleSubmitFlightHrs}
-          displayUnits={displayUnits}
           submitted={this.state.distanceSubmitted}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
           mode={this.state.mode}
           prevTab={this.prevTab}
           inputHrs={(this.state.mode===AIR && this.state.aircraftType!=="airliner")}
           initialValue={(this.state.mode===AIR && this.state.aircraftType!=="airliner") ? this.state.flightHrs : this.state.distanceKm}
+          app={this.props.app}
+          userData={this.props.userData}
         />
     }
     
@@ -288,19 +278,13 @@ export class EmissionCalculator extends React.Component{
           aircraftType={this.state.aircraftType}
           aircraftFields={this.state.aircraftFields}
           airOptions={this.state.airOptions}
-          
-          displayUnits={displayUnits} 
-          loggedIn={this.props.loggedIn} 
+
           submitCarbon={this.handleEmissionSave} 
           taxCategory={taxes.getCategoryName(this.state.mode)}
-          taxes={this.props.taxes}
-          fuels={this.props.fuels}  
-          profile={this.props.profile}
-          
-          refresh={this.props.refresh}
           prevTab={this.prevTab}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
+
+          app={this.props.app}
+          userData={this.props.userData}
         />
        :
        <div className="container bg-light" >
@@ -348,7 +332,7 @@ export class EmissionCalculator extends React.Component{
         />
         :
         <div className="container bg-light" >
-          <p>Offset: {this.props.profile.currency_symbol}{parseFloat(this.state.airOptions.offset).toFixed(2)}</p>
+          <p>Offset: {this.props.userData.profile.currency_symbol}{parseFloat(this.state.airOptions.offset).toFixed(2)}</p>
           <p>RF Multiplier: {this.state.airOptions.multiplier}</p>
           {navBtns}
         </div>

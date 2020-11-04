@@ -19,8 +19,8 @@ export class ContactPage extends React.Component{
       errorMessage:"", 
     }
 
-    if(this.props.loggedIn){
-      this.state.returnEmail=this.props.user.email
+    if(this.props.app.loggedIn){
+      this.state.returnEmail=this.props.userData.user.email
       this.state.validEmail=true
     }
 
@@ -76,7 +76,7 @@ export class ContactPage extends React.Component{
       data: contactData,
       onSuccess: this.handleSuccess,
       onFailure: this.handleFailure,
-      noAuth: (this.props.loggedIn ? false:true),
+      noAuth: (this.props.app.loggedIn ? false:true),
     })
   }
 

@@ -73,13 +73,13 @@ export class CarbonCalculator extends React.Component{
 
   componentDidMount(){
     this.calculateCarbon()
-    if(this.props.loggedIn){
+    if(this.props.app.loggedIn){
       this.getRelevantTaxes()
     }
   }
 
   componentDidUpdate(prevProps){
-    if(this.props.taxes!==prevProps.taxes){
+    if(this.props.userData.taxes!==prevProps.userData.taxes){
       this.getRelevantTaxes()
     }
   }
@@ -103,7 +103,7 @@ export class CarbonCalculator extends React.Component{
 
   getRelevantTaxes(){
     let taxCategory = this.props.taxCategory
-    let allTaxes = this.props.taxes
+    let allTaxes = this.props.userData.taxes
     let relevantTaxes = []
     for(let i in allTaxes){
       if(allTaxes[i].category===taxCategory || allTaxes[i].category==="Other"){
@@ -121,12 +121,12 @@ export class CarbonCalculator extends React.Component{
   }
 
   getTaxRate(){
-    return(getAttribute({objectList:this.props.taxes, key:"id", keyValue:this.state.tax, attribute:"price_per_kg"}))
+    return(getAttribute({objectList:this.props.userData.taxes, key:"id", keyValue:this.state.tax, attribute:"price_per_kg"}))
   }
 
   incrementTaxUsage(){
     let key = this.state.tax
-    let usage = getAttribute({objectList:this.props.taxes, key:"id", keyValue:this.state.tax, attribute:"usage"})
+    let usage = getAttribute({objectList:this.props.userData.taxes, key:"id", keyValue:this.state.tax, attribute:"usage"})
     let taxData = {
       usage:(parseInt(usage)+1).toString()
     }
@@ -134,14 +134,13 @@ export class CarbonCalculator extends React.Component{
       url:`${api.TAX}/${key}/`,
       method:'PATCH',
       data:taxData,
-      //onSuccess:this.props.refresh,
     })
   }
 
   calculateCarbon(){
     if(this.state.format==="road"){
       let fuelId = this.props.fuelId
-      let carbonPerL = getAttribute({objectList:this.props.fuels, key:"id", keyValue:fuelId, attribute:"co2_per_unit"})
+      let carbonPerL = getAttribute({objectList:this.props.app.fuels, key:"id", keyValue:fuelId, attribute:"co2_per_unit"})
       let carbonKg = (carbonPerL*this.props.lPer100Km*this.props.distanceKm/100)/this.state.split
       this.setState({
         carbonPerL:carbonPerL,
@@ -180,8 +179,8 @@ export class CarbonCalculator extends React.Component{
       price = this.calculatePrice()
       offset = 0
     } else {
-      fuelId = this.props.fuels[0].id
-      let currencyFactor = this.props.profile.conversion_factor
+      fuelId = this.props.app.fuels[0].id
+      let currencyFactor = this.props.userData.profile.conversion_factor
       offset = this.props.airOptions.offset/currencyFactor
       price = this.calculatePrice() - offset
       
@@ -228,16 +227,17 @@ export class CarbonCalculator extends React.Component{
 
     let carbon = parseFloat(this.state.carbonKg).toFixed(2)
     //let split = parseFloat(this.state.split)
-    let distance = parseFloat(units.distanceDisplay(this.props.distanceKm, this.props.displayUnits)).toFixed(1)
+    let distance = parseFloat(units.distanceDisplay(this.props.distanceKm, this.props.app.displayUnits)).toFixed(1)
     let economy = parseFloat(units.convert(this.props.lPer100Km, this.props.displayUnits)).toFixed(1)
+    let displayUnits = this.props.app.displayUnits
 
     let body
     if(this.state.format==="road"){
       body = 
         <div>
           <p> Fuel density: {this.state.carbonPerL}kg CO2/L </p>
-          <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
-          <p> Fuel economy: {economy}{units.string(this.props.displayUnits)}</p>
+          <p> Distance: {distance}{units.distanceString(displayUnits)} </p>
+          <p> Fuel economy: {economy}{units.string(displayUnits)}</p>
           <p> Split by: {this.state.split}</p>  
           <p> Fuel density x (Distance/100) x  Fuel economy / Split = <strong>{carbon}kg CO2</strong></p>
         </div>
@@ -245,7 +245,7 @@ export class CarbonCalculator extends React.Component{
       body = 
         <div>
           <p> Passenger Airliner - {getAttribute({objectList:airlinerClasses, key:"class", keyValue:this.props.aircraftFields.airlinerClass, attribute:"label"})} </p>
-          <p> Distance: {distance}{units.distanceString(this.props.displayUnits)} </p>
+          <p> Distance: {distance}{units.distanceString(displayUnits)} </p>
           <p> Average emissions/seat: {this.state.carbonPerPaxKmAvg}kg CO2/km </p>
           <p> Fare class multiplier: {this.state.fareClass} </p>
           <p> Radiative forcing multiplier: {this.props.airOptions.multiplier} </p>
@@ -262,12 +262,12 @@ export class CarbonCalculator extends React.Component{
         </div>
     }
 
-    this.props.setModal(<StandardModal title={title} body={body} hideModal={this.props.hideModal}/>)
+    this.props.app.setModal(<StandardModal title={title} body={body} hideModal={this.props.app.hideModal}/>)
   }
 
   showTaxCalculation(){
-    let sym = this.props.profile.currency_symbol
-    let currencyFactor = this.props.profile.conversion_factor
+    let sym = this.props.userData.profile.currency_symbol
+    let currencyFactor = this.props.userData.profile.conversion_factor
 
     let carbon = parseFloat(this.state.carbonKg).toFixed(2)
     let price = parseFloat(currencyFactor*(this.calculatePrice()))
@@ -287,12 +287,12 @@ export class CarbonCalculator extends React.Component{
     } else {
       body = <p> {carbon}kg x {sym}{taxRate}/kg = <strong>{sym}{price.toFixed(2)} carbon tax</strong></p>
     }
-    this.props.setModal(<StandardModal title={title} body={body} hideModal={this.props.hideModal}/>)
+    this.props.app.setModal(<StandardModal title={title} body={body} hideModal={this.props.hideModal}/>)
   }
 
   render(){
-    let sym = this.props.profile.currency_symbol
-    let currencyFactor = this.props.profile.conversion_factor
+    let sym = this.props.userData.profile.currency_symbol
+    let currencyFactor = this.props.userData.profile.conversion_factor
     let carbon = parseFloat(this.state.carbonKg).toFixed(2)
     let price = parseFloat(currencyFactor*(this.calculatePrice()))
   
@@ -313,7 +313,7 @@ export class CarbonCalculator extends React.Component{
           labelWidth={6}
           input={<button className="btn btn-info btn-block" onClick={this.showCarbonCalculation}><strong>{carbon}kg CO2</strong></button>}
         />
-        {this.props.loggedIn ?
+        {this.props.app.loggedIn ?
           <div>
             <FormRow
               label={<div>Tax rate:</div>}
@@ -342,10 +342,10 @@ export class CarbonCalculator extends React.Component{
           :
           <div>
             <p>
-              <a onClick={()=>this.props.setModal(<LoginForm hideModal={this.props.hideModal} onSuccess={this.props.refresh}/>)}>
+              <a onClick={()=>this.props.app.setModal(<LoginForm app={this.props.app}/>)}>
                 <strong className="text-primary"><em>Login</em></strong>
               </a> or 
-              <a onClick={()=>this.props.setModal(<RegistrationForm hideModal={this.props.hideModal}onSuccess={this.props.login}/>)}>
+              <a onClick={()=>this.props.app.setModal(<RegistrationForm app={this.props.app}/>)}>
                 <strong className="text-primary"><em> sign up</em></strong>
               </a> to save emissions and calculate carbon tax.
             </p>

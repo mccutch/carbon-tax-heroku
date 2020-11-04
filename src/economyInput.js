@@ -12,11 +12,13 @@ export class EconomyInput extends React.Component{
   constructor(props){
     super(props);
 
-    this.initialId = this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.id : null
+    let loggedIn = this.props.app.loggedIn
+
+    this.initialId = loggedIn&&this.props.initialValues ? this.props.initialValues.id : null
 
     this.state = {
-      economy: !this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.economy : null,
-      fuel: !this.props.loggedIn&&this.props.initialValues ? this.props.initialValues.fuel : null,
+      economy: !loggedIn&&this.props.initialValues ? this.props.initialValues.economy : null,
+      fuel: !loggedIn&&this.props.initialValues ? this.props.initialValues.fuel : null,
     }
     this.handleChange=this.handleChange.bind(this)
     this.returnVehicle=this.returnVehicle.bind(this)
@@ -34,7 +36,7 @@ export class EconomyInput extends React.Component{
 
   handleChange(event){
     if(event.target.name==="economy"){
-      this.setState({economy:units.convert(event.target.value, this.props.displayUnits)})
+      this.setState({economy:units.convert(event.target.value, this.props.app.displayUnits)})
     } else {
       this.setState({[event.target.name]: event.target.value})
     }  
@@ -43,11 +45,11 @@ export class EconomyInput extends React.Component{
   returnVehicle(){
     let vehicle
     
-    if(this.props.loggedIn){
+    if(this.props.app.loggedIn){
       vehicle = this.initialId ?
-        getObject({objectList:this.props.vehicles, key:"id", keyValue:this.initialId})
+        getObject({objectList:this.props.userData.vehicles, key:"id", keyValue:this.initialId})
         :
-        this.props.vehicles[0]
+        this.props.userData.vehicles[0]
 
       this.props.returnVehicle(vehicle)
     } else {
@@ -58,7 +60,7 @@ export class EconomyInput extends React.Component{
 
       vehicle = {
         economy:this.state.economy, 
-        fuel:this.state.fuel ? this.state.fuel : this.props.fuels[0].id, 
+        fuel:this.state.fuel ? this.state.fuel : this.props.app.fuels[0].id, 
         name:this.state.name,
       }
 
@@ -67,36 +69,29 @@ export class EconomyInput extends React.Component{
   }
 
   selectUserVehicle(event){
-    console.log(getObject({objectList:this.props.vehicles, key:"id", keyValue:parseInt(event.target.value)}))
+    console.log(getObject({objectList:this.props.userData.vehicles, key:"id", keyValue:parseInt(event.target.value)}))
     this.props.returnVehicle(
-      getObject({objectList:this.props.vehicles, key:"id", keyValue:parseInt(event.target.value)})
+      getObject({objectList:this.props.userData.vehicles, key:"id", keyValue:parseInt(event.target.value)})
 
     )
   }
 
   inputNewVehicle(){
-    this.props.setModal(
+    this.props.app.setModal(
       <VehicleInput
-        loggedIn={this.props.loggedIn}
-        displayUnits={this.props.displayUnits}
-        fuels={this.props.fuels}
+        app={this.props.app}
+        userData={this.props.userData}
         onSave={(newVehicle)=>{this.props.refresh(); this.props.returnVehicle(newVehicle)}}
-        refresh={this.props.refresh}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
       />
     )
   }
 
   searchForVehicle(){
-    this.props.setModal(
-      <VehicleSearch 
-        displayUnits={this.props.displayUnits}
-        refresh={this.props.refresh}
+    this.props.app.setModal(
+      <VehicleSearch
+        app={this.props.app}
+        userData={this.props.userData}
         returnVehicle={this.props.returnVehicle}
-        hideModal={this.props.hideModal}
-        fuels={this.props.fuels}
-        loggedIn={this.props.loggedIn}
       />
     )
   }
@@ -105,18 +100,17 @@ export class EconomyInput extends React.Component{
 
     return(
       <div className='bg-light py-2'>
-        { this.props.loggedIn ?
+        { this.props.app.loggedIn ?
           <div>
-            <ObjectSelectionList list={this.props.vehicles} label="name" value="id" onChange={this.selectUserVehicle} defaultValue={this.initialId}/>
+            <ObjectSelectionList list={this.props.userData.vehicles} label="name" value="id" onChange={this.selectUserVehicle} defaultValue={this.initialId}/>
             <button className="btn btn-outline-primary" onClick={this.inputNewVehicle} >Input new vehicle</button>
           </div>
           :
           <div>
             <VehicleForm
-              loggedIn={this.props.loggedIn}
+              app={this.props.app}
+              userData={this.props.userData}
               vehicle={this.props.initialValues}
-              fuels={this.props.fuels}
-              displayUnits={this.props.displayUnits}
               errorMessage={this.props.errorMessage}
               onChange={this.handleChange}
             />
@@ -127,7 +121,7 @@ export class EconomyInput extends React.Component{
       
         <div>
           <button className="btn btn-outline-danger m-2" onClick={this.props.prevTab}>Back</button>
-          <button className="btn btn-success m-2" disabled={!this.props.loggedIn && !this.state.economy} onClick={this.returnVehicle}>Continue to carbon calculator</button>
+          <button className="btn btn-success m-2" disabled={!this.props.app.loggedIn && !this.state.economy} onClick={this.returnVehicle}>Continue to carbon calculator</button>
         </div>
       </div>
     )

@@ -136,7 +136,7 @@ export class RouteCalculator extends React.Component{
 
   submitDistance(){
     this.props.submitDistance(this.state.origin, this.state.destination, this.state.distance, this.state.returnTrip)
-    this.props.hideModal()
+    this.props.app.hideModal()
   }
 
   setReturnTrip(){
@@ -159,7 +159,7 @@ export class RouteCalculator extends React.Component{
     let dest_url = encodeURIComponent(destination);
 
     let googleUnits;
-    if(this.props.displayUnits === units.METRIC){
+    if(this.props.app.displayUnits === units.METRIC){
       googleUnits = 'metric';
     } else {
       googleUnits = 'imperial';
@@ -268,8 +268,8 @@ export class RouteCalculator extends React.Component{
       returnDisplay="Return trip?"
     }
 
-    let distance = units.distanceDisplay(this.state.distance, this.props.displayUnits)
-    let distanceString = parseFloat(distance).toFixed(1)+units.distanceString(this.props.displayUnits)
+    let distance = units.distanceDisplay(this.state.distance, this.props.app.displayUnits)
+    let distanceString = parseFloat(distance).toFixed(1)+units.distanceString(this.props.app.displayUnits)
 
     let submitDisplay
     if(this.state.routeFound){
@@ -286,7 +286,7 @@ export class RouteCalculator extends React.Component{
     }
 
     return(
-      <Modal show={true} onHide={this.props.hideModal}>
+      <Modal show={true} onHide={this.props.app.hideModal}>
         <Modal.Header closeButton>
           <Modal.Title>Route Calculator</Modal.Title>
         </Modal.Header>
@@ -301,7 +301,7 @@ export class RouteCalculator extends React.Component{
             //distance={this.state.distance}
             routeFound={this.state.routeFound}
             inputError={this.state.inputErrorMessage}
-            //displayUnits={this.props.displayUnits}
+            //displayUnits={this.props.app.displayUnits}
             //returnTrip={this.state.returnTrip}
           />
         </Modal.Body>

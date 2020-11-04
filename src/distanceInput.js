@@ -32,13 +32,12 @@ export class DistanceInput extends React.Component{
   }
 
   showRouteCalculator(){
-    let modal = <GoogleDirections submitDistance={this.props.submitDistance} hideModal={this.props.hideModal} displayUnits={this.props.displayUnits} mode={this.props.mode} locationBias={this.props.locationBias}/>
-    this.props.setModal(modal)
+    this.props.app.setModal(<GoogleDirections submitDistance={this.props.submitDistance} app={this.props.app} mode={this.props.mode} locationBias={this.props.locationBias}/>)
   }
 
   handleChange(event){
     let value = parseFloat(event.target.value)
-    value = event.target.name==="distance" ? units.convertToKm(value, this.props.displayUnits) : value
+    value = event.target.name==="distance" ? units.convertToKm(value, this.props.app.displayUnits) : value
 
     if(value>=0){
       this.setState({[event.target.name]:value})
@@ -68,8 +67,8 @@ export class DistanceInput extends React.Component{
       :
       <div>
         <LabelledInput
-          append={units.distanceString(this.props.displayUnits)}
-          input={<input type="number" onChange={this.handleChange} name="distance" placeholder="Distance" className="form-control" defaultValue={this.hasInitial?parseFloat(units.distanceDisplay(this.props.initialValue, this.props.displayUnits)).toFixed(0):null}/>}
+          append={units.distanceString(this.props.app.displayUnits)}
+          input={<input type="number" onChange={this.handleChange} name="distance" placeholder="Distance" className="form-control" defaultValue={this.hasInitial?parseFloat(units.distanceDisplay(this.props.initialValue, this.props.app.displayUnits)).toFixed(0):null}/>}
         />
         <button name="displayRouteCalculator" className=" btn btn-outline-info my-2" onClick={this.showRouteCalculator} >Route calculator</button>
       </div>

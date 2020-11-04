@@ -52,10 +52,10 @@ export class BootstrapNavBar extends React.Component{
   render(){
     let summary, sym, conversion
     let balance = "$0.00"
-    if(this.props.loggedIn && this.props.stats && this.props.profile){
-      summary = this.props.stats.summary
+    if(this.props.app.loggedIn && this.props.userData.stats && this.props.userData.profile){
+      summary = this.props.userData.stats.summary
       if(summary){
-        balance = displayCurrency(summary.balance, this.props.profile)
+        balance = displayCurrency(summary.balance, this.props.userData.profile)
       }
     }
 
@@ -90,11 +90,11 @@ export class BootstrapNavBar extends React.Component{
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" className="text-light" onClick={this.handleClick}>Login</Nav.Link>
     let signUp = <Nav.Link key="signUp" name="register" className="text-light" onClick={this.handleClick}>Sign up</Nav.Link>
-    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" className="text-light" onClick={this.handleClick}>Units ({units.units(this.props.displayUnits)})</Nav.Link>
+    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" className="text-light" onClick={this.handleClick}>Units ({units.units(this.props.app.displayUnits)})</Nav.Link>
 
     let navLeft
     let navRight
-    if(this.props.loggedIn){
+    if(this.props.app.loggedIn){
       navLeft = 
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           {newEmission}
@@ -119,7 +119,7 @@ export class BootstrapNavBar extends React.Component{
         </ul>
     }
 
-    let navColour = (this.props.serverError ? "secondary":"banner")
+    let navColour = (this.props.app.serverError ? "secondary":"banner")
 
     return(
       <nav className={`navbar navbar-expand-lg navbar-dark bg-${navColour}`}>

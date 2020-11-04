@@ -48,16 +48,15 @@ export class TaxTable extends React.Component{
     let modal = 
       <CreateTax 
         buttonLabel={"+ New Tax"} 
-        refresh={this.props.refresh} 
+        app={this.props.app}
+        userData={this.props.userData}
         existingTaxes={this.props.taxes}
-        hideModal={this.props.hideModal}
-        profile={this.props.profile}
       />
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
 
   buildRows(){
-    let taxes = this.props.taxes
+    let taxes = this.props.userData.taxes
     let tableRows=[]
     if(taxes){
       for(let i=0; i<taxes.length; i++){
@@ -66,22 +65,13 @@ export class TaxTable extends React.Component{
             <TaxDetail 
               key={taxes[i].id} 
               tax={taxes[i]} 
-              allTaxes={this.props.taxes}
-              refresh={this.props.refresh} 
-              profile={this.props.profile}
-              setModal={this.props.setModal}
-              hideModal={this.props.hideModal}
+              allTaxes={this.props.userData.taxes}
+              app={this.props.app}
+              userData={this.props.userData}
             />
             :
             <tr key={taxes[i].id} >
-              <TaxDisplayView
-                tax={taxes[i]} 
-                taxes={this.props.taxes}
-                refresh={this.props.refresh} 
-                profile={this.props.profile}
-                setModal={this.props.setModal}
-                hideModal={this.props.hideModal}
-              />
+              <TaxDisplayView tax={taxes[i]} app={this.props.app} userData={this.props.userData} />
             </tr>
         )
       }
@@ -112,7 +102,7 @@ export class VehicleTable extends React.Component{
 
   buildRows(){
     let tableRows=[]
-    let vehicles=this.props.vehicles
+    let vehicles=this.props.userData.vehicles
     for(let i=0; i<vehicles.length; i++){
       tableRows.push(
         this.props.detailView ?
@@ -120,22 +110,15 @@ export class VehicleTable extends React.Component{
             key={vehicles[i].id} 
             vehicle={vehicles[i]} 
             submitEconomy={this.props.submitEconomy} 
-            displayUnits={this.props.displayUnits}
-            fuels={this.props.fuels}
-            refresh={this.props.refresh}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
+            app={this.props.app}
+            userData={this.props.userData}
           />
           :
           <tr key={vehicles[i].id}>
             <VehicleDisplayView
               vehicle={vehicles[i]} 
               onClick={this.props.submitEconomy} 
-              displayUnits={this.props.displayUnits}
-              fuels={this.props.fuels}
-              refresh={this.props.refresh}
-              setModal={this.props.setModal}
-              hideModal={this.props.hideModal}
+              app={this.props.app}
             />
           </tr>
       )
@@ -147,17 +130,7 @@ export class VehicleTable extends React.Component{
             name="createVehicle" 
             className="btn btn-outline-primary" 
             onClick={()=>{
-              this.props.setModal(
-                <VehicleInput
-                  displayUnits={this.props.displayUnits}
-                  fuels={this.props.fuels}
-                  onSave={this.props.refresh}
-                  refresh={this.props.refresh}
-                  setModal={this.props.setModal}
-                  hideModal={this.props.hideModal}
-                  loggedIn={true}
-                />
-              )
+              this.props.app.setModal(<VehicleInput app={this.props.app} onSave={this.props.refresh} />)
             }}
           >+ New Vehicle</button>
 
@@ -202,7 +175,7 @@ export class EmissionFilterNav extends React.Component{
 
 
   makeTaxList(){
-    let taxes = this.props.taxes
+    let taxes = this.props.userData.taxes
     let taxList=[this.defaultTaxDisplayText]
     for(let i in taxes){
       taxList.push(taxes[i].name)
@@ -429,13 +402,13 @@ export class EmissionTable extends React.Component{
   }
 
   componentDidMount(){
-    this.setState({displayedEmissions:this.props.emissions})
+    this.setState({displayedEmissions:this.props.userData.emissions})
   }
 
   componentDidUpdate(prevProps){
-    if(this.props.emissions!==prevProps.emissions){
+    if(this.props.userData.emissions!==prevProps.userData.emissions){
       this.setState({
-        displayedEmissions:this.props.emissions,
+        displayedEmissions:this.props.userData.emissions,
         page:1
       })
     }
@@ -449,25 +422,15 @@ export class EmissionTable extends React.Component{
         this.props.detailView ?
           <EmissionDetail 
             emission={emissions[i]} 
-            displayUnits={this.props.displayUnits} 
-            profile={this.props.profile} 
-            taxes={this.props.taxes} 
-            fuels={this.props.fuels}
-            refresh={this.props.refresh}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
+            app={this.props.app}
+            userData={this.props.userData}
           />
-          : 
+          :
           <tr key={emissions[i].id}>
             <EmissionDisplayView
               emission={emissions[i]} 
-              displayUnits={this.props.displayUnits} 
-              profile={this.props.profile} 
-              taxes={this.props.taxes} 
-              fuels={this.props.fuels}
-              refresh={this.props.refresh}
-              setModal={this.props.setModal}
-              hideModal={this.props.hideModal}
+              app={this.props.app}
+              userData={this.props.userData}
             />
           </tr>
           
@@ -480,7 +443,7 @@ export class EmissionTable extends React.Component{
 
     let filters, showFilters
     if(this.state.showFilters){
-      filters = <EmissionFilterNav baseUrl={api.MY_EMISSIONS} default={this.props.emissions} returnResults={this.changeResults} taxes={this.props.taxes} hide={this.hideFilters}/>
+      filters = <EmissionFilterNav baseUrl={api.MY_EMISSIONS} default={this.props.userData.emissions} returnResults={this.changeResults} userData={this.props.userData} hide={this.hideFilters}/>
     } else {
       showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
     }
@@ -526,7 +489,7 @@ export class PaymentFilterNav extends React.Component{
 
 
   makeRecipientList(){
-    let recipients = this.props.recipients
+    let recipients = this.props.userData.recipients
     let recipientList=[this.defaultRecipientDisplayText]
     for(let i in recipients){
       recipientList.push(recipients[i].name)
@@ -670,13 +633,13 @@ export class PaymentTable extends React.Component{
   }
 
   componentDidMount(){
-    this.setState({displayedPayments:this.props.payments})
+    this.setState({displayedPayments:this.props.userData.payments})
   }
 
   componentDidUpdate(prevProps){
-    if(this.props.payments!==prevProps.payments){
+    if(this.props.userData.payments!==prevProps.userData.payments){
       this.setState({
-        displayedPayments:this.props.payments,
+        displayedPayments:this.props.userData.payments,
         page:1
       })
     }
@@ -690,23 +653,15 @@ export class PaymentTable extends React.Component{
         this.props.detailView ?
           <PaymentDetail 
             payment={payments[i]} 
-            displayUnits={this.props.displayUnits} 
-            profile={this.props.profile} 
-            recipients={this.props.recipients}
-            refresh={this.props.refresh}
-            setModal={this.props.setModal}
-            hideModal={this.props.hideModal}
+            app={this.props.app}
+            userData={this.props.userData}
           />
           :
           <tr key={payments[i].id}>
             <PaymentDisplayView
-              payment={payments[i]} 
-              displayUnits={this.props.displayUnits} 
-              profile={this.props.profile} 
-              recipients={this.props.recipients}
-              refresh={this.props.refresh}
-              setModal={this.props.setModal}
-              hideModal={this.props.hideModal}
+              payment={payments[i]}
+              app={this.props.app}
+              userData={this.props.userData}
             />
           </tr>
       )
@@ -718,7 +673,7 @@ export class PaymentTable extends React.Component{
 
     let filters, showFilters
     if(this.state.showFilters){
-      filters = <PaymentFilterNav baseUrl={api.MY_PAYMENTS} default={this.props.payments} returnResults={this.changeResults} recipients={this.props.recipients} hide={this.hideFilters}/>
+      filters = <PaymentFilterNav baseUrl={api.MY_PAYMENTS} default={this.props.userData.payments} returnResults={this.changeResults} recipients={this.props.userData.recipients} hide={this.hideFilters}/>
     } else {
       showFilters = <button className="btn btn-outline-warning m-2" onClick={this.showFilters}>Show filters</button>
     }
@@ -749,18 +704,11 @@ export class RecipientTable extends React.Component{
   }
 
   createNew(){
-    let modal = 
-      <CreateRecipient 
-        profile={this.props.profile}
-        refresh={this.props.refresh}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
-      />
-    this.props.setModal(modal)
+    this.props.app.setModal(<CreateRecipient app={this.props.app} userData={this.props.userData} />)
   }
 
   buildRows(){
-    let recipients = this.props.recipients
+    let recipients = this.props.userData.recipients
     let tableRows=[]
     if(recipients){
       for(let i=0; i<recipients.length; i++){
@@ -768,11 +716,7 @@ export class RecipientTable extends React.Component{
           <tr key={recipients[i].id} >
             <RecipientDisplayView
               recipient={recipients[i]} 
-              //taxes={this.props.taxes}
-              refresh={this.props.refresh} 
-              //profile={this.props.profile}
-              setModal={this.props.setModal}
-              hideModal={this.props.hideModal}
+              app={this.props.app}
             />
           </tr>
         )

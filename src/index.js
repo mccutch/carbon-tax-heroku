@@ -6,7 +6,6 @@ import {Sandbox} from './sandbox.js';
 import * as units from './unitConversions';
 import {refreshToken}  from './myJWT.js';
 import {apiFetch, testServer} from './helperFunctions.js';
-import {MainView} from './mainView.js';
 import {NavBar, BootstrapNavBar} from './navBar.js';
 import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
 import {RegistrationForm} from './registrationForm.js';
@@ -198,28 +197,27 @@ class App extends React.Component {
   
   
   render(){
-    let loggedIn=this.state.loggedIn
-    let displayUnits=this.state.displayUnits
-    let fuels=this.state.fuels
-
-    let user=this.state.user
-    let profile=this.state.profile
-    let stats=this.state.stats
-
-    let taxes=this.state.taxes
-    let vehicles=this.state.vehicles
-    let emissions=this.state.emissions
-    let recipients=this.state.recipients
-    let payments=this.state.payments
-
-    let refresh=this.refreshFullProfile
-    let setModal=(modal)=>this.setState({modal:modal})
-    let hideModal=()=>this.setState({modal:null})
 
     let app = {
       refresh:this.refreshFullProfile,
       setModal:(modal)=>this.setState({modal:modal}),
       hideModal:()=>this.setState({modal:null}),
+      logout:this.logout,
+      displayUnits:this.state.displayUnits,
+      loggedIn:this.state.loggedIn,
+      fuels:this.state.fuels,
+      serverError:this.state.serverConnectionFailure,
+    }
+
+    let userData = {
+      user:this.state.user,
+      profile:this.state.profile,
+      taxes:this.state.taxes,
+      stats:this.state.stats,
+      vehicles:this.state.vehicles,
+      emissions:this.state.emissions,
+      recipients:this.state.recipients,
+      payments:this.state.payments,
     }
 
 
@@ -232,13 +230,10 @@ class App extends React.Component {
                     //minHeight: "100vh",
                     height:"150vh",
                   }}>
-        <BootstrapNavBar 
-          loggedIn={loggedIn}
+        <BootstrapNavBar
           onClick={this.handleNavClick}
-          displayUnits={displayUnits}
-          profile={profile}
-          stats={stats}
-          serverError={this.state.serverConnectionFailure}
+          app={app}
+          userData={userData}
         />
         {this.state.modal ? this.state.modal : ""}
         <div> 
@@ -246,36 +241,17 @@ class App extends React.Component {
             <Route path={api.NAV_CALCULATOR}>
               <CenterPage>
                 <EmissionCalculator 
-                  loggedIn={loggedIn} 
-                  displayUnits={displayUnits}
-                  taxes={taxes}
-                  vehicles={vehicles}
-                  fuels={fuels}
-                  profile={profile}
-                  refresh={refresh}
-                  setModal={setModal}
-                  hideModal={hideModal}
+                  app={app}
+                  userData={userData}
                 />
               </CenterPage>
             </Route>
             <Route path={api.NAV_DASHBOARD}>
               {this.state.loggedIn ?
                 <CenterPage>
-                  <Dashboard 
-                    stats={stats}
-                    user={user}
-                    profile={profile}
-                    taxes={taxes}
-                    vehicles={vehicles}
-                    fuels={fuels}
-                    displayUnits={displayUnits}
-                    emissions={emissions}
-                    payments={payments}
-                    recipients={recipients}
-                    refresh={refresh}
-                    logout={this.logout}
-                    setModal={setModal}
-                    hideModal={hideModal}
+                  <Dashboard
+                    app={app}
+                    userData={userData}
                   />
                 </CenterPage>
                 : <Redirect to={api.NAV_HOME}/>
@@ -283,21 +259,15 @@ class App extends React.Component {
             </Route>
             <Route exact path={api.NAV_HOME}>
               <HomeView 
-                loggedIn={loggedIn}
+                app={app}
               />
             </Route>
             <Route path={api.NAV_PAYMENT}>
               {this.state.loggedIn ?
                 <CenterPage>
                   <PaymentView
-                    stats={stats}
-                    user={user}
-                    profile={profile}
-                    recipients={recipients}
                     app={app}
-                    //refresh={refresh}
-                    //setModal={setModal}
-                    //hideModal={hideModal}
+                    userData={userData}
                   />
                 </CenterPage>
                 : <Redirect to={api.NAV_HOME}/>
@@ -305,10 +275,9 @@ class App extends React.Component {
             </Route>
             <Route path={api.NAV_CONTACT}>
               <CenterPage>
-                <ContactPage 
-                  loggedIn={loggedIn}
-                  user={user}
+                <ContactPage
                   app={app}
+                  userData={userData}
                 />
               </CenterPage>
             </Route>

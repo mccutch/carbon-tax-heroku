@@ -22,11 +22,8 @@ export class EmissionListWrapper extends React.Component{
     let emissionTable = 
         <div>
           <EmissionTable 
-            emissions={this.props.emissions} 
-            displayUnits={this.props.displayUnits}
-            taxes={this.props.taxes}
-            profile={this.props.profile}
-            refresh={this.props.refresh}
+            app={this.props.app}
+            userData={this.props.userData}
           />
         </div>
 

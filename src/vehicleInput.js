@@ -328,10 +328,10 @@ export class VehicleSearch extends React.Component {
       let xmlDoc = parser.parseFromString(result, "text/xml");
 
       let highwayMpg = xmlDoc.getElementsByTagName('highway08');
-      this.setState({highwayLper100Km: units.USMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
+      this.setState({highwayLper100Km: units.USMpgToMetric(parseFloat(highwayMpg[0].childNodes[0].nodeValue), this.props.app.displayUnits)});
 
       let cityMpg = xmlDoc.getElementsByTagName('city08');
-      this.setState({cityLper100Km: units.USMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.displayUnits)});
+      this.setState({cityLper100Km: units.USMpgToMetric(parseFloat(cityMpg[0].childNodes[0].nodeValue), this.props.app.displayUnits)});
 
       let fuelType = xmlDoc.getElementsByTagName('fuelType1');
       this.normaliseFuelType((fuelType[0].childNodes[0].nodeValue))
@@ -356,16 +356,16 @@ export class VehicleSearch extends React.Component {
     this.props.returnVehicle({
       name:this.state.name,
       economy:this.state.avgLper100Km,
-      fuel:getAttribute({objectList:this.props.fuels, key:"name", keyValue:this.state.fuelType, attribute:"id"}),
+      fuel:getAttribute({objectList:this.props.app.fuels, key:"name", keyValue:this.state.fuelType, attribute:"id"}),
     })
-    this.props.hideModal()
+    this.props.app.hideModal()
   }
 
   saveAndSubmit(){
     this.setState({submissionPending:true})
     let newVehicle = {
       economy:this.state.avgLper100Km, 
-      fuel:getAttribute({objectList:this.props.fuels, key:"name", keyValue:this.state.fuelType, attribute:"id"}),
+      fuel:getAttribute({objectList:this.props.app.fuels, key:"name", keyValue:this.state.fuelType, attribute:"id"}),
       name:this.state.name
     }
     saveVehicle({
@@ -373,10 +373,10 @@ export class VehicleSearch extends React.Component {
       onFailure:(message)=>{this.setState({errorMessage:message, submissionPending:false})},
       onSuccess:(newVehicle)=>{
         if(this.props.onSave){this.props.onSave(newVehicle)}
-        this.props.hideModal()
+        this.props.app.hideModal()
       },
-      displayUnits:this.props.displayUnits,
-      fuelName:getAttribute({objectList:this.props.fuels, key:"id", keyValue:newVehicle.fuel, attribute:"name"}),
+      displayUnits:this.props.app.displayUnits,
+      fuelName:getAttribute({objectList:this.props.app.fuels, key:"id", keyValue:newVehicle.fuel, attribute:"name"}),
     })
   }
 
@@ -386,18 +386,18 @@ export class VehicleSearch extends React.Component {
       <div>
         <VehicleInputFields returnVehicleId={this.receiveVehicleId} />
         <br/>
-        {this.state.vehicleId ? <VehicleResult data = {this.state} displayUnits = {this.props.displayUnits} returnCityProportion = {this.setAvgEconomy} /> : ""}
+        {this.state.vehicleId ? <VehicleResult data = {this.state} app={this.props.app} returnCityProportion = {this.setAvgEconomy} /> : ""}
       </div> 
     let footer = 
       <div>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
-        {this.props.loggedIn ?
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
+        {this.props.app.loggedIn ?
           <PendingBtn className="btn-success m-2" onClick={this.saveAndSubmit} pending={!this.state.vehicleId||this.state.submissionPending}>Save</PendingBtn>
           :
           <button className={`btn btn-success m-2 ${this.state.vehicleId?"":"disabled"}`} onClick={this.returnVehicle}>Continue</button>
         }
       </div>
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal} />
   }
 }
 
@@ -408,45 +408,17 @@ export class VehicleInput extends React.Component{
     this.state={
     }
     this.handleChange=this.handleChange.bind(this)
-    //this.setFuel=this.setFuel.bind(this)
     this.vehicleSearch=this.vehicleSearch.bind(this)
     this.saveAndSubmit=this.saveAndSubmit.bind(this)
   }
-  /*
-  componentDidMount(){
-    this.setFuel()
-  }
-
-  componentDidUpdate(prevProps){
-    if(prevProps.fuels !== this.props.fuels){
-      this.setFuel()
-    }
-  }
-
-  setFuel(){
-    if(this.props.fuels.length>0){
-      this.setState({
-        fuel:this.props.fuels[0]['id'],
-      })
-    }
-  }
-  */
+  
   vehicleSearch(){
-    this.props.setModal(
-      <VehicleSearch 
-        displayUnits={this.props.displayUnits}
-        onSave={this.props.onSave}
-        refresh={this.props.refresh}
-        hideModal={this.props.hideModal}
-        fuels={this.props.fuels}
-        loggedIn={this.props.loggedIn}
-      />
-    )
+    this.props.app.setModal(<VehicleSearch app={this.props.app} onSave={this.props.onSave} />)
   }
 
   handleChange(event){
     if(event.target.name==="economy"){
-      this.setState({lPer100Km:units.convert(event.target.value, this.props.displayUnits)})
+      this.setState({lPer100Km:units.convert(event.target.value, this.props.app.displayUnits)})
     } else {
       this.setState({[event.target.name]: event.target.value})
     }  
@@ -456,18 +428,19 @@ export class VehicleInput extends React.Component{
     this.setState({submissionPending:true})
     let newVehicle = {
       economy:this.state.lPer100Km, 
-      fuel:this.state.fuel ? this.state.fuel : this.props.fuels[0].id, 
+      fuel:this.state.fuel ? this.state.fuel : this.props.app.fuels[0].id, 
       name:this.state.name,
     }
     saveVehicle({
       vehicle:newVehicle, 
       onSuccess:(newVehicle)=>{
         if(this.props.onSave) this.props.onSave(newVehicle); 
-        this.props.hideModal()
+        this.props.app.refresh()
+        this.props.app.hideModal()
       },
       onFailure:(message)=>{this.setState({errorMessage:message, submissionPending:false})},
-      displayUnits:this.props.displayUnits,
-      fuelName:getAttribute({objectList:this.props.fuels, key:"id", keyValue:newVehicle.fuel, attribute:"name"}),
+      displayUnits:this.props.app.displayUnits,
+      fuelName:getAttribute({objectList:this.props.app.fuels, key:"id", keyValue:newVehicle.fuel, attribute:"name"}),
     })
   }
 
@@ -480,20 +453,17 @@ export class VehicleInput extends React.Component{
         <VehicleForm 
           onChange={this.handleChange}
           errorMessage={this.state.errorMessage} 
-          fuels={this.props.fuels}
-          displayUnits={this.props.displayUnits}
-          loggedIn={this.props.loggedIn}
+          app={this.props.app}
         />
         <button className="btn btn-outline-info m-2" onClick={this.vehicleSearch}>Look up US vehicle</button>
       </div>
 
     let footer =
       <div>
-        {/*{this.props.returnVehicle?<button className="btn btn-outline-info m-2" onClick={this.returnEconomy}>Continue without saving</button>:""}*/}
         <PendingBtn className="btn-success m-2" onClick={this.saveAndSubmit} pending={this.state.submissionPending || !this.state.lPer100Km}>Save</PendingBtn>
       </div>
 
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal}/>
   }
 }
 

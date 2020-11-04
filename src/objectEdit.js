@@ -32,7 +32,7 @@ export class TaxBackDate extends React.Component{
     console.log(emissionList)
     if(emissionList.all.length===0){
       sleep(500).then(()=>{
-        this.props.hideModal()
+        this.props.app.hideModal()
       })
     } else {
       this.setState({
@@ -62,8 +62,8 @@ export class TaxBackDate extends React.Component{
   handleBackdateSuccess(response){
     console.log("Changed applied.")
     console.log(response)
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   render(){
@@ -84,8 +84,8 @@ export class TaxBackDate extends React.Component{
       body = 
         <div>
           {displayText}
-          <button className="btn btn-outline-info m-2">Show all</button>
-          {showSincePaymentButton}
+          {/*<button className="btn btn-outline-info m-2">Show all</button>
+          {showSincePaymentButton}*/}
         </div>
     } else {
       body = <div>Loading emissions...</div>
@@ -95,12 +95,12 @@ export class TaxBackDate extends React.Component{
     <div>
       <div className="row">
         <button className="btn btn-outline-success m-2" name="all" onClick={this.applyChange}>Apply to all</button>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Apply to none</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Apply to none</button>
         {applySincePaymentButton}
       </div>
     </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
   }
 }
 
@@ -144,7 +144,7 @@ export class TaxEdit extends React.Component{
   validateInput(){
     this.setState({submissionPending:true})
     if(!(this.state.price_per_kg || this.state.name || this.state.category)){
-      this.props.hideModal()
+      this.props.app.hideModal()
     }
 
     if(this.state.name===""){
@@ -177,7 +177,7 @@ export class TaxEdit extends React.Component{
         taxData[fields[i]]=this.state[fields[i]]
       }
     }
-    let currencyFactor = this.props.profile.conversion_factor
+    let currencyFactor = this.props.userData.profile.conversion_factor
     
     if(this.state.price_per_kg){
       taxData['price_per_kg']=parseFloat(this.state.price_per_kg/currencyFactor).toFixed(TAX_RATE_DECIMALS)
@@ -194,13 +194,13 @@ export class TaxEdit extends React.Component{
   }
 
   deleteSuccess(response){
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   editSuccess(json){
-    this.props.refresh()
-    this.props.setModal(<TaxBackDate tax={json} hideModal={this.props.hideModal} setModal={this.props.setModal} refresh={this.props.refresh}/>)
+    this.props.app.refresh()
+    this.props.app.setModal(<TaxBackDate tax={json} app={this.props.app}/>)
   }
 
   editFailure(){
@@ -212,25 +212,24 @@ export class TaxEdit extends React.Component{
   }
 
   render(){
-    let currencyFactor = this.props.profile.conversion_factor
+    let currencyFactor = this.props.userData.profile.conversion_factor
     console.log(`factor:${currencyFactor}`)
     let existingValue=parseFloat(this.props.tax.price_per_kg*currencyFactor)
-    let sym = this.props.profile.currency_symbol
+    let sym = this.props.userData.profile.currency_symbol
 
     let title=<div>Edit Tax</div>
-
     let body =
-      <forms.TaxForm tax={this.props.tax} profile={this.props.profile} onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
+      <forms.TaxForm tax={this.props.tax} userData={this.props.userData} onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
 
     let footer = 
       <div>
         <button className="btn btn-outline-primary m-2" name="save" onClick={this.validateInput}>Save</button>
         {this.props.tax.isDefault ? "" : <button className="btn btn-outline-dark m-2" name="delete" onClick={this.deleteTax}>Delete</button>}
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
       </div>   
 
     return(
-      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+      <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
     )
   }
 }
@@ -259,7 +258,7 @@ export class VehicleEdit extends React.Component{
 
   handleChange(event){
     if(event.target.name==="economy"){
-      this.setState({lPer100Km: units.convert(event.target.value, this.props.displayUnits)})
+      this.setState({lPer100Km: units.convert(event.target.value, this.props.app.displayUnits)})
     } else if(event.target.name==="name"){
       this.setState({name:event.target.value})
     } else if(event.target.name==="fuel"){
@@ -283,7 +282,7 @@ export class VehicleEdit extends React.Component{
     
     if(!this.state.name && !this.state.lPer100Km &&!this.state.fuel){
       // No input data
-      this.props.hideModal()
+      this.props.app.hideModal()
     } 
 
     //No validation to apply yet.
@@ -317,8 +316,8 @@ export class VehicleEdit extends React.Component{
   }
 
   editSuccess(){
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   editFailure(){
@@ -331,17 +330,16 @@ export class VehicleEdit extends React.Component{
                   onChange={this.handleChange} 
                   vehicle={this.props.vehicle} 
                   errorMessage={this.state.errorMessage} 
-                  fuels={this.props.fuels}
-                  displayUnits={this.props.displayUnits}
+                  app={this.props.app}
                 />
     let footer = 
       <div>
         <PendingBtn className="btn-outline-primary m-2" onClick={this.validateInput} pending={this.state.submissionPending}>Save</PendingBtn>
         <PendingBtn className="btn-outline-dark m-2" onClick={this.deleteVehicle} pending={this.state.submissionPending}>Delete</PendingBtn>
-        <button className={`btn btn-outline-danger m-2`} name="cancel" onClick={this.props.hideModal}>Cancel</button>
+        <button className={`btn btn-outline-danger m-2`} name="cancel" onClick={this.props.app.hideModal}>Cancel</button>
       </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
   }
 }
 
@@ -378,7 +376,7 @@ export class EmissionEdit extends React.Component{
     let name = event.target.name
 
     if(name==="cancelEdit"){
-      this.props.hideModal()
+      this.props.app.hideModal()
     } else if(name==="clone" || name==="update"){
       this.prepareData(name)
     } else if(name==="delete"){
@@ -394,10 +392,10 @@ export class EmissionEdit extends React.Component{
       value=parseInt(value)
     }
     if(name==="distance"){
-      value=units.convertToKm(value, this.props.displayUnits)
+      value=units.convertToKm(value, this.props.app.displayUnits)
     }
     if(name==="economy"){
-      value=units.convert(value, this.props.displayUnits)
+      value=units.convert(value, this.props.app.displayUnits)
     }
     if(name==="split"){
       value = (value>0? value : 1)
@@ -407,7 +405,7 @@ export class EmissionEdit extends React.Component{
       value = value/60
     }
     if(name==="offset"){
-      value = value/this.props.profile.conversion_factor
+      value = value/this.props.userData.profile.conversion_factor
     }
     this.setState({
       [name]:value,
@@ -417,8 +415,8 @@ export class EmissionEdit extends React.Component{
 
   recalculate(){
     console.log("RECALCULATE")
-    let fuelCarbonPerL = getAttribute({key:"id", keyValue:this.state.fuel, objectList:this.props.fuels, attribute:"co2_per_unit"})
-    let taxPrice = getAttribute({key:"id", keyValue:this.state.tax_type, objectList:this.props.taxes, attribute:"price_per_kg"})
+    let fuelCarbonPerL = getAttribute({key:"id", keyValue:this.state.fuel, objectList:this.props.app.fuels, attribute:"co2_per_unit"})
+    let taxPrice = getAttribute({key:"id", keyValue:this.state.tax_type, objectList:this.props.userData.taxes, attribute:"price_per_kg"})
 
     let co2_output_kg 
     let format = this.props.emission.format_encoding
@@ -469,7 +467,7 @@ export class EmissionEdit extends React.Component{
 
   saveChanges(data){
     if(!this.state.willSave){
-      this.props.hideModal()
+      this.props.app.hideModal()
     }
     let key = this.props.emission.id
     apiFetch({
@@ -483,8 +481,8 @@ export class EmissionEdit extends React.Component{
 
   saveSuccess(){
     console.log("Save success")
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   cloneFailure(){
@@ -511,7 +509,7 @@ export class EmissionEdit extends React.Component{
 
   render(){
     let emission=this.props.emission
-    let displayUnits=this.props.displayUnits
+    let displayUnits=this.props.app.displayUnits
     let format = emission.format_encoding
     let distance = format===encodeEmissionFormat("airTime") ? emission.distance : (units.distanceDisplay(emission.distance, displayUnits)).toFixed(1)
     let economy = (units.convert(emission.economy, displayUnits)).toFixed(2)
@@ -525,7 +523,7 @@ export class EmissionEdit extends React.Component{
           <FormRow
             label={<div>Fuel:</div>}
             labelWidth={4}
-            input={<ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.fuels} value="id" label="name" onChange={this.handleChange}/>}
+            input={<ObjectSelectionList name="fuel" defaultValue={emission.fuel} list={this.props.app.fuels} value="id" label="name" onChange={this.handleChange}/>}
           />
           <FormRow
             label={<div>Economy:</div>}
@@ -549,8 +547,8 @@ export class EmissionEdit extends React.Component{
             label={<div>Offset:</div>}
             labelWidth={4}
             input={<LabelledInput
-                      input={<input type="number" name="offset" defaultValue={(emission.offset*this.props.profile.conversion_factor).toFixed(2)} onChange={this.handleChange} className="form-control"/>}
-                      prepend={this.props.profile.currency_symbol}
+                      input={<input type="number" name="offset" defaultValue={(emission.offset*this.props.userData.profile.conversion_factor).toFixed(2)} onChange={this.handleChange} className="form-control"/>}
+                      prepend={this.props.userData.profile.currency_symbol}
                   />}
           />
     }
@@ -586,14 +584,14 @@ export class EmissionEdit extends React.Component{
         <FormRow
           label={<div>Tax Type:</div>}
           labelWidth={4}
-          input={<ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.taxes} value="id" label="name" onChange={this.handleChange}/>}
+          input={<ObjectSelectionList name="tax_type" defaultValue={emission.tax_type} list={this.props.userData.taxes} value="id" label="name" onChange={this.handleChange}/>}
         />
         {distanceField}
         {roadTripFields}
         <br/>
         CO2 Output: <strong>{parseFloat(this.state.co2_output_kg).toFixed(1)}kg</strong>
         <br/>
-        Price: <strong>{displayCurrency(this.state.price, this.props.profile)}</strong>
+        Price: <strong>{displayCurrency(this.state.price, this.props.userData.profile)}</strong>
       </form>
 
     let footer = 
@@ -604,7 +602,7 @@ export class EmissionEdit extends React.Component{
         <button name="delete" className="btn btn-outline-dark m-2" onClick={this.handleClick}>Delete</button>
       </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
   }
 }
 
@@ -699,7 +697,7 @@ export class PaymentEdit extends React.Component{
     let value=event.target.value
 
     if(name==="amount"){
-      value=parseFloat(value/this.props.profile.conversion_factor).toFixed(2)
+      value=parseFloat(value/this.props.userData.profile.conversion_factor).toFixed(2)
     } else if(name==="recipient"){
       value=parseInt(value)
     }
@@ -708,7 +706,7 @@ export class PaymentEdit extends React.Component{
 
   render(){
     let payment = this.props.payment
-    let profile = this.props.profile
+    let profile = this.props.userData.profile
     let prevAmount = parseFloat(payment.amount*profile.conversion_factor).toFixed(2)
     let sym = profile.currency_symbol
 
@@ -724,7 +722,7 @@ export class PaymentEdit extends React.Component{
         <br/>
         <label>
           Recipient:
-           <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.recipients} value="id" label="name" defaultValue={this.props.payment.recipient}/>
+           <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.userData.recipients} value="id" label="name" defaultValue={this.props.payment.recipient}/>
         </label>
         <br/>
         <input defaultValue={payment.date} type="date" name="date" className="form-control" onChange={this.handleChange}/>
@@ -734,7 +732,7 @@ export class PaymentEdit extends React.Component{
       <div>
         <button name="update" className="btn btn-outline-primary m-2" onClick={this.saveChange}>Save changes</button>
         <button name="clone" className="btn btn-outline-success m-2" onClick={this.saveChange}>Save as new</button>
-        <button name="cancelEdit" className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel edit</button>
+        <button name="cancelEdit" className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel edit</button>
         <button name="delete" className="btn btn-outline-dark m-2" onClick={this.deletePayment}>Delete</button>
       </div>
 
@@ -815,13 +813,13 @@ export class RecipientEdit extends React.Component{
   }
 
   deleteSuccess(response){
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   editSuccess(json){
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   editFailure(){
@@ -848,11 +846,11 @@ export class RecipientEdit extends React.Component{
       <div>
         <button className={`btn btn-outline-primary m-2 ${this.state.submissionPending?"disabled":""}`} onClick={this.validateInput}>Save</button>
         <button className="btn btn-outline-dark m-2" onClick={this.delete}>Delete</button>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
       </div>   
 
     return(
-      <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+      <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
     )
   }
 }

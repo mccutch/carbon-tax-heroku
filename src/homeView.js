@@ -35,7 +35,7 @@ export class HomeView extends React.Component{
               <div className="row justify-content-center" style={{height:"160px"}}>
                 <div className="col" style={{maxWidth:"300px"}} >
                   <NavButton to={urls.NAV_CALCULATOR} className="btn btn-info my-2 btn-block" textClassName="text-light">+ Add a carbon emission</NavButton>
-                  {this.props.loggedIn ?
+                  {this.props.app.loggedIn ?
                     <div>
                       <NavButton to={urls.NAV_PAYMENT} className="btn btn-info my-2 btn-block" textClassName="text-light">+ Make a payment</NavButton>
                       <NavButton to={urls.NAV_DASHBOARD} className="btn btn-info my-2 btn-block" textClassName="text-light">My Dashboard</NavButton>  

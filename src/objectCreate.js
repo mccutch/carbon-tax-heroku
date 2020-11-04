@@ -38,7 +38,7 @@ export class CreateTax extends React.Component{
 
   handleChange(event){
     let value=event.target.value
-    if(event.target.name==="price_per_kg") value/=this.props.profile.conversion_factor
+    if(event.target.name==="price_per_kg") value/=this.props.userData.profile.conversion_factor
     this.setState({[event.target.name]:value})
   }
 
@@ -80,8 +80,8 @@ export class CreateTax extends React.Component{
   }
 
   handlePostSuccess(){
-    this.props.refresh()
-    this.props.hideModal()
+    this.props.app.refresh()
+    this.props.app.hideModal()
   }
 
   handlePostFailure(){
@@ -90,14 +90,14 @@ export class CreateTax extends React.Component{
 
   render(){
     let title = <div>Create Tax</div>
-    let body = <forms.TaxForm profile={this.props.profile} onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
+    let body = <forms.TaxForm userData={this.props.userData} onChange={this.handleChange} errorMessage={this.state.errorMessage}/>
     let footer = 
       <div>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
         <button type="button" className={`btn btn-success m-2 ${this.state.submissionPending?"disabled":""}`} onClick={this.validateNewTax}><strong>Save</strong></button>  
       </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
   }
 }
 
@@ -175,13 +175,13 @@ export class CreateRecipient extends React.Component{
   }
 
   addToUser(id){
-    let newRecipientList = this.props.profile.recipients
+    let newRecipientList = this.props.userData.profile.recipients
     newRecipientList.push(id)
 
     let data = {recipients:newRecipientList}
     //console.log(data)
     apiFetch({
-      url:`${api.PROFILE}/${this.props.profile.id}/`,
+      url:`${api.PROFILE}/${this.props.userData.profile.id}/`,
       method:'PATCH',
       data:data,
       onSuccess:this.successModal,

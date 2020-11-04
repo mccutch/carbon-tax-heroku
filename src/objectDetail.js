@@ -16,22 +16,13 @@ export class TaxDetail extends React.Component{
   }
 
   edit(){
-    let modal = 
-          <TaxEdit 
-            tax={this.props.tax}
-            taxes={this.props.taxes}
-            profile={this.props.profile}
-            hideModal={this.props.hideModal} 
-            setModal={this.props.setModal}
-            refresh={this.props.refresh}
-          />
-    this.props.setModal(modal)
+    this.props.app.setModal(<TaxEdit tax={this.props.tax} app={this.props.app} userData={this.props.userData} />)
   }
 
   render(){
     let tax = this.props.tax
-    let sym = this.props.profile.currency_symbol
-    let currencyFactor = this.props.profile.conversion_factor
+    let sym = this.props.userData.profile.currency_symbol
+    let currencyFactor = this.props.userData.profile.conversion_factor
     let taxName = <button className="btn btn-outline-primary btn-block m-2" onClick={this.edit}>{tax.name}</button>
 
     return(
@@ -62,24 +53,21 @@ export class VehicleDetail extends React.Component{
     let modal = 
           <VehicleEdit 
             vehicle={this.props.vehicle}
-            displayUnits={this.props.displayUnits}
-            fuels={this.props.fuels}
-            hideModal={this.props.hideModal} 
-            refresh={this.props.refresh}
+            app={this.props.app}
           />
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
 
   useVehicle(){
     this.props.submitEconomy(this.props.vehicle.economy, this.props.vehicle.fuel, this.props.vehicle.name)
-    if(this.props.hideModal){
-      this.props.hideModal()
+    if(this.props.app.hideModal){
+      this.props.app.hideModal()
     }
   }
 
   render(){
     let vehicle=this.props.vehicle
-    let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.displayUnits)
+    let economy = units.convertFromMetricToDisplayUnits(vehicle.economy, this.props.app.displayUnits)
 
     let vehicleName
     if(this.props.submitEconomy){
@@ -91,8 +79,8 @@ export class VehicleDetail extends React.Component{
     return(
       <tr key={vehicle.id}>
         {vehicleName}
-        <td className="align-middle">{economy.toFixed(1)} {units.displayUnitString(this.props.displayUnits)}</td>
-        <td className="align-middle">{getAttribute({key:"id", keyValue:vehicle.fuel, objectList:this.props.fuels, attribute:"name"})}</td>
+        <td className="align-middle">{economy.toFixed(1)} {units.displayUnitString(this.props.app.displayUnits)}</td>
+        <td className="align-middle">{getAttribute({key:"id", keyValue:vehicle.fuel, objectList:this.props.app.fuels, attribute:"name"})}</td>
       </tr>
     )
   }
@@ -108,24 +96,14 @@ export class EmissionDetail extends React.Component{
   }
 
   edit(){
-    let modal = 
-          <EmissionEdit 
-            emission={this.props.emission} 
-            displayUnits={this.props.displayUnits} 
-            profile={this.props.profile} 
-            taxes={this.props.taxes} 
-            hideModal={this.props.hideModal} 
-            refresh={this.props.refresh}
-            fuels={this.props.fuels}
-          />
-    this.props.setModal(modal)
+    this.props.app.setModal(<EmissionEdit emission={this.props.emission} app={this.props.app} userData={this.props.userData} />)
   }
 
   render(){
-    let displayUnits=this.props.displayUnits
+    let displayUnits=this.props.app.displayUnits
     let emission=this.props.emission
-    let sym=this.props.profile.currency_symbol
-    let currencyFactor = this.props.profile.conversion_factor
+    let sym=this.props.userData.profile.currency_symbol
+    let currencyFactor = this.props.userData.profile.conversion_factor
 
     let distance
     let format = this.props.emission.format_encoding
@@ -141,7 +119,7 @@ export class EmissionDetail extends React.Component{
         <tr key={emission.id}>
           <td className="align-middle"><button className="btn btn-outline-primary m-2 btn-block" onClick={this.edit}>{emission.name}</button></td>
           <td className="align-middle">{emission.date}</td>
-          <td className="align-middle">{getAttribute({key:"id", keyValue:emission.tax_type, objectList:this.props.taxes, attribute:"name"})}</td>
+          <td className="align-middle">{getAttribute({key:"id", keyValue:emission.tax_type, objectList:this.props.userData.taxes, attribute:"name"})}</td>
           <td className="align-middle">{sym}{parseFloat(currencyFactor*emission.price).toFixed(2)}</td>
         </tr>
     
@@ -158,15 +136,7 @@ export class PaymentDetail extends React.Component{
   }
 
   edit(){
-    let modal = 
-          <PaymentEdit 
-            payment={this.props.payment}
-            profile={this.props.profile}
-            hideModal={this.props.hideModal} 
-            refresh={this.props.refresh}
-            recipients={this.props.recipients}
-          />
-    this.props.setModal(modal)
+    this.props.app.setModal(<PaymentEdit payment={this.props.payment} app={this.props.app} userData={this.props.userData} />)
   }
 
   render(){
@@ -174,8 +144,8 @@ export class PaymentDetail extends React.Component{
     return(
       <tr key={payment.id}>
         <td className="align-middle">{payment.date}</td>
-        <td className="align-middle">{getAttribute({key:"id", keyValue:payment.recipient, objectList:this.props.recipients, attribute:"name"})}</td>
-        <td className="align-middle">{displayCurrency(payment.amount, this.props.profile)}</td>
+        <td className="align-middle">{getAttribute({key:"id", keyValue:payment.recipient, objectList:this.props.userData.recipients, attribute:"name"})}</td>
+        <td className="align-middle">{displayCurrency(payment.amount, this.props.userData.profile)}</td>
         <td className="align-middle"><button className="btn btn-outline-primary m-2" onClick={this.edit}>Edit</button></td>
       </tr>
     )

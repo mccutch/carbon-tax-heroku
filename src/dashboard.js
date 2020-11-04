@@ -39,9 +39,10 @@ export class StatsDisplay extends React.Component{
     }
 
     let taxName
-    for(let i in this.props.taxes){
-      if(this.props.taxes[i].id===parseInt(taxId)){
-        taxName=this.props.taxes[i].name
+    let taxes=this.props.userData.taxes
+    for(let i in taxes){
+      if(taxes[i].id===parseInt(taxId)){
+        taxName=taxes[i].name
         return taxName
       }
     }
@@ -56,9 +57,9 @@ export class StatsDisplay extends React.Component{
     let taxList = []
     let paymentHistory = []
 
-    let taxData = this.props.stats.emissions_by_tax
-    let emissionHistoryData = this.props.stats.emissions_by_month_and_tax
-    let paymentHistoryData = this.props.stats.payments_by_month
+    let taxData = this.props.userData.stats.emissions_by_tax
+    let emissionHistoryData = this.props.userData.stats.emissions_by_month_and_tax
+    let paymentHistoryData = this.props.userData.stats.payments_by_month
     
     //let totalCo2 = taxData.total.co2_kg
     //let totalCost = taxData.total.price
@@ -115,9 +116,9 @@ export class StatsDisplay extends React.Component{
         x_key="month" 
         dataSeries={['Paid', 'Taxed']} 
         title="Payment History"
-        preUnit={this.props.profile.currency_symbol}
+        preUnit={this.props.userData.profile.currency_symbol}
         postUnit=""
-        yLabel={`Cost (${this.props.profile.currency_symbol})`} 
+        yLabel={`Cost (${this.props.userData.profile.currency_symbol})`} 
       />
 
     let active = "btn btn-primary btn-sm active"
@@ -145,10 +146,10 @@ export class StatsDisplay extends React.Component{
           dataSeries={this.state.taxList} 
           title={`Emission History - ${this.state.radio==="co2" ? "Carbon Output" : "Cost"}`}
           //xLabel="Date"
-          yLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
+          yLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.userData.profile.currency_symbol})`}
           switches = {radioSwitches}
           postUnit={this.state.radio==="co2" ? "kg" : ""}
-          preUnit={this.state.radio==="co2" ? "" : this.props.profile.currency_symbol}
+          preUnit={this.state.radio==="co2" ? "" : this.props.userData.profile.currency_symbol}
         />
       </div>
 
@@ -159,7 +160,7 @@ export class StatsDisplay extends React.Component{
           labelKey="tax" 
           barValues={[this.state.radio==="co2" ? 'co2_kg' : 'price']} 
           title={`Total ${this.state.radio==="co2" ? "Carbon Output" : "Cost"}`}
-          xLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.profile.currency_symbol})`}
+          xLabel={this.state.radio==="co2" ? "kg CO2" : `Cost (${this.props.userData.profile.currency_symbol})`}
         />
         {radioSwitches}
       </div>
@@ -189,7 +190,7 @@ export class Dashboard extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      display:(this.props.emissions.count==0 && this.props.payments.count==0) ? "profile":"history",
+      display:(this.props.userData.emissions.count==0 && this.props.userData.payments.count==0) ? "profile":"history",
     }
 
     this.changeDisplay=this.changeDisplay.bind(this)
@@ -199,7 +200,7 @@ export class Dashboard extends React.Component{
   changeDisplay(event){this.setState({display:event.target.name})}
 
   buildTabs(){
-    if(this.props.emissions.count==0 && this.props.payments.count==0){
+    if(this.props.userData.emissions.count==0 && this.props.userData.payments.count==0){
       return <Nav.Link key="profile" name="profile" onClick={this.changeDisplay}>Profile</Nav.Link>
     } else{
       return( 
@@ -215,37 +216,18 @@ export class Dashboard extends React.Component{
   render(){
     let display
     if(this.state.display==="stats"){
-      display = <StatsDisplay stats={this.props.stats} taxes={this.props.taxes} profile={this.props.profile}/>
+      display = <StatsDisplay app={this.props.app} userData={this.props.userData}/>
     } else if(this.state.display==="profile"){
       display = 
         <ProfileDisplay
-          user={this.props.user}
-          profile={this.props.profile}
-          taxes={this.props.taxes}
-          vehicles={this.props.vehicles}
-          fuels={this.props.fuels}
-          displayUnits={this.props.displayUnits}
-          emissions={this.props.emissions}
-          stats={this.props.stats}
-          recipients={this.props.recipients}
-          refresh={this.props.refresh}
-          logout={this.props.logout}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
+          app={this.props.app}
+          userData={this.props.userData}  
         />
     } else if(this.state.display==="history"){
       display = 
         <HistoryLists 
-          refresh={this.props.refresh}
-          taxes={this.props.taxes}
-          displayUnits={this.props.displayUnits}
-          emissions={this.props.emissions}
-          profile={this.props.profile}
-          recipients={this.props.recipients}
-          payments={this.props.payments}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
-          fuels={this.props.fuels}
+          app={this.props.app}
+          userData={this.props.userData} 
         />
     }
       
@@ -255,7 +237,7 @@ export class Dashboard extends React.Component{
         <div style={{margin: "0px -15px 0px -15px"}} >
           <Navbar bg="info" variant="dark">
             <Navbar.Brand >
-              {this.props.user.username}
+              {this.props.userData.user.username}
             </Navbar.Brand>
             <Nav className="mr-auto">
               {this.buildTabs()}

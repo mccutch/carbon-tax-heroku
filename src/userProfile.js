@@ -87,8 +87,8 @@ class PasswordChange extends React.Component{
   handleResponse(json){
     let title=<div>Password changed</div>
     let body=<p>Password changed successfully.</p>
-    let footer=<button className="btn btn-outline-success m-2" onClick={this.props.hideModal}>Close</button>
-    this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>)
+    let footer=<button className="btn btn-outline-success m-2" onClick={this.props.app.hideModal}>Close</button>
+    this.props.setModal(<StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal}/>)
   }
 
   updateFailure(json){
@@ -130,11 +130,11 @@ class PasswordChange extends React.Component{
 
     let footer = 
       <div>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
         <button type="submit" className={`btn btn-success m-2 ${this.state.submissionPending ? "disabled":""}`} onClick={this.submit}>Submit</button>
       </div>
 
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal}/>
   }
 }
 
@@ -162,7 +162,7 @@ class DeleteUser extends React.Component{
   }
 
   deleteUserAccount(){
-    let key = this.props.user.id
+    let key = this.props.userData.user.id
 
     apiFetch({
       url:`${api.USER}/${key}/`,
@@ -177,7 +177,7 @@ class DeleteUser extends React.Component{
     this.setState({
       errorMessage:"User deleted successfully"
     })
-    this.props.logout()
+    this.props.app.logout()
   }
 
   deleteFailure(){
@@ -264,9 +264,9 @@ class ProfileEdit extends React.Component{
       return
     }
 
-    if(this.state.email && this.state.email!==this.props.user.email){
+    if(this.state.email && this.state.email!==this.props.userData.user.email){
       validation.checkUniqueUser({
-        username:this.props.user.username,
+        username:this.props.userData.user.username,
         email:this.state.email,
         onSuccess:this.uniqueResponse,
         onFailure:this.updateFailure,
@@ -309,14 +309,14 @@ class ProfileEdit extends React.Component{
     }
 
     if(Object.keys(profileData).length===0 && Object.keys(userData).length===0){
-      this.props.hideModal()
+      this.props.app.hideModal()
     }
 
     if(Object.keys(userData).length>0){
       this.setState({updatingUser:true})
       console.log("Updating user")
       console.log(userData)
-      let key = this.props.user.id
+      let key = this.props.userData.user.id
 
       apiFetch({
         url:`${api.USER}/${key}/`,
@@ -331,7 +331,7 @@ class ProfileEdit extends React.Component{
       this.setState({updatingProfile:true})
       console.log("Updating profile")
       console.log(profileData)
-      let key = this.props.profile.id
+      let key = this.props.userData.profile.id
 
       apiFetch({
         url:`${api.PROFILE}/${key}/`,
@@ -371,8 +371,8 @@ class ProfileEdit extends React.Component{
   finishEdit(){
     /* PATCH on user and profile are separate, so check that both are complete. */ 
     if(!this.state.updatingProfile && !this.state.updatingUser){
-      this.props.refresh()
-      this.props.hideModal()
+      this.props.app.refresh()
+      this.props.app.hideModal()
     }
   }
 
@@ -389,8 +389,8 @@ class ProfileEdit extends React.Component{
   }
 
   render(){
-    let user=this.props.user
-    let profile=this.props.profile
+    let user=this.props.userData.user
+    let profile=this.props.userData.profile
 
     let title = <div>Edit Profile</div>
     let body = 
@@ -409,7 +409,7 @@ class ProfileEdit extends React.Component{
           input={
             <EmailInput
               value={this.state.email}
-              defaultValue={this.props.user.email}
+              defaultValue={this.props.userData.user.email}
               isValid={this.state.validEmail}
               submitted={this.state.submitted}
               onChange={this.handleChange}
@@ -458,17 +458,17 @@ class ProfileEdit extends React.Component{
           labelWidth={2}
           input={<DisplayUnitSelection name="display_units" defaultValue={profile.display_units} onChange={this.handleChange} />}
         />
-        <DeleteUser user={user} logout={this.props.logout}/>
+        <DeleteUser user={user} app={this.props.app}/>
         <p><strong>{this.state.errorMessage}</strong></p>
       </form>
 
     let footer = 
       <div>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
         <button name="saveChanges" className={`btn btn-success m-2 ${this.state.submissionPending ? "disabled":""}`} onClick={this.validateInputs}>Save changes</button>
       </div>
     
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal} />
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal} />
   }
 }
 
@@ -483,29 +483,21 @@ class ProfileDetails extends React.Component{
   }
 
   changePassword(){
-    let modal = 
-      <PasswordChange
-        hideModal={this.props.hideModal}
-        setModal={this.props.setModal}
-      />
-    this.props.setModal(modal)
+    this.props.app.setModal(<PasswordChange app={this.props.app}/>)
   }
 
   editProfile(){
     let modal = 
       <ProfileEdit
-        user={this.props.user} 
-        profile={this.props.profile}
-        refresh={this.props.refresh} 
-        logout={this.props.logout}
-        hideModal={this.props.hideModal}
+        app={this.props.app}
+        userData={this.props.userData}
       />
-    this.props.setModal(modal)
+    this.props.app.setModal(modal)
   }
   
   render(){
-    let user=this.props.user
-    let profile=this.props.profile
+    let user=this.props.userData.user
+    let profile=this.props.userData.profile
 
     let title = <div>Profile</div>
     let body =
@@ -523,7 +515,7 @@ class ProfileDetails extends React.Component{
         <button name="changePassword" className="btn btn-outline-danger m-2" onClick={this.changePassword}>Change password</button>
       </div>
 
-    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.hideModal}/>
+    return <StandardModal title={title} body={body} footer={footer} hideModal={this.props.app.hideModal}/>
   }
 }
 
@@ -531,34 +523,14 @@ class ProfileDetails extends React.Component{
 
 export class HistoryLists extends React.Component{
   render(){
-    let emissions = <EmissionTable 
-                      refresh={this.props.refresh} 
-                      emissions={this.props.emissions} 
-                      displayUnits={this.props.displayUnits} 
-                      taxes={this.props.taxes} 
-                      profile={this.props.profile}
-                      setModal={this.props.setModal}
-                      hideModal={this.props.hideModal}
-                      fuels={this.props.fuels}
-                    />
-    let payments = <PaymentTable 
-                      refresh={this.props.refresh} 
-                      payments={this.props.payments} 
-                      displayUnits={this.props.displayUnits} 
-                      recipients={this.props.recipients} 
-                      profile={this.props.profile}
-                      setModal={this.props.setModal}
-                      hideModal={this.props.hideModal}
-                    />
-
     let tabData = [
       {
         label: "Emissions",
-        display: emissions,
+        display: <EmissionTable app={this.props.app} userData={this.props.userData} />,
       },
       {
         label: "Payments",
-        display: payments,
+        display: <PaymentTable app={this.props.app} userData={this.props.userData} />,
       }
     ]
     return <TabbedDisplay style="nav-tabs" tabData={tabData} />
@@ -567,49 +539,18 @@ export class HistoryLists extends React.Component{
 
 class SettingsLists extends React.Component{
   render(){
-    let taxTable = 
-      <TaxTable 
-        refresh={this.props.refresh} 
-        taxes={this.props.taxes} 
-        profile={this.props.profile}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
-        addNew={true}
-      />
-    let vehicleTable = 
-      <VehicleTable 
-        refresh={this.props.refresh} 
-        vehicles={this.props.vehicles} 
-        displayUnits={this.props.displayUnits} 
-        fuels={this.props.fuels}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
-        addNew={true}
-      />
-    let recipientTable = 
-      <RecipientTable
-        recipients={this.props.recipients}
-        profile={this.props.profile}
-        //user={this.props.user}
-        //stats={this.props.stats}
-        refresh={this.props.refresh}
-        setModal={this.props.setModal}
-        hideModal={this.props.hideModal}
-        addNew={true}
-      />
-
     let tabData = [
       {
         label: "Taxes",
-        display: taxTable,
+        display: <TaxTable app={this.props.app} userData={this.props.userData} addNew={true} />,
       },
       {
         label: "Vehicles",
-        display: vehicleTable,
+        display: <VehicleTable app={this.props.app} userData={this.props.userData} addNew={true} />,
       },
       {
         label: "Recipients",
-        display: recipientTable,
+        display: <RecipientTable app={this.props.app} userData={this.props.userData} addNew={true} />,
       },
     ]
     return <TabbedDisplay style="nav-tabs" tabData={tabData} />
@@ -627,46 +568,17 @@ export class ProfileDisplay extends React.Component{
   }
 
   componentDidMount(){
-    this.props.refresh()
+    this.props.app.refresh()
   }
 
   render(){
     return(
-
       <div>
         <ProfileDisplayView
-          user={this.props.user}
-          profile={this.props.profile}
-          stats={this.props.stats}
-          onClick={()=>{
-            this.props.setModal(
-              <ProfileDetails 
-                user={this.props.user} 
-                profile={this.props.profile} 
-                stats={this.props.stats}
-                refresh={this.props.refresh}
-                logout={this.props.logout}
-                setModal={this.props.setModal}
-                hideModal={this.props.hideModal}
-              />
-            )
-          }}
-        />
-        
-        
-        <SettingsLists
-          recipients={this.props.recipients}
-          //stats={this.props.stats}
-          refresh={this.props.refresh}
-          taxes={this.props.taxes}
-          vehicles={this.props.vehicles}
-          fuels={this.props.fuels}
-          displayUnits={this.props.displayUnits}
-          profile={this.props.profile}
-          setModal={this.props.setModal}
-          hideModal={this.props.hideModal}
-        />
-
+          userData={this.props.userData}
+          onClick={()=>this.props.app.setModal(<ProfileDetails userData={this.props.userData} app={this.props.app} />)}
+        />      
+        <SettingsLists app={this.props.app} userData={this.props.userData} />
       </div>
     )
   }

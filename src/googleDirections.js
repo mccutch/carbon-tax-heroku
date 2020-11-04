@@ -252,7 +252,7 @@ export class GoogleDirections extends React.Component{
 
   submitDistance(){
     this.props.submitDistance(this.state.origin.name, this.state.destination.name, this.state.totalDistance, this.state.returnTrip)
-    this.props.hideModal()
+    this.props.app.hideModal()
   }
 
   render(){
@@ -272,8 +272,8 @@ export class GoogleDirections extends React.Component{
 
     let footer 
     if(this.state.totalDistance){
-      let distDisplay = units.distanceDisplay(this.state.totalDistance, this.props.displayUnits)
-      let unitDisplay = units.distanceString(this.props.displayUnits)
+      let distDisplay = units.distanceDisplay(this.state.totalDistance, this.props.app.displayUnits)
+      let unitDisplay = units.distanceString(this.props.app.displayUnits)
       let returnButton
       if(!this.state.returnTrip){
         returnButton = <button className="btn btn-warning m-2" onClick={()=>this.setState({returnTrip:true}, this.updateDistance)}>Return trip?</button>
@@ -287,6 +287,6 @@ export class GoogleDirections extends React.Component{
         </div>
     }
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer}/>
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer}/>
   }
 }

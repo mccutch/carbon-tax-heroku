@@ -41,8 +41,7 @@ export class PaymentSuccess extends React.Component{
       <PaymentEdit 
         payment={this.props.payment}
         app={this.props.app}
-        profile={this.props.profile}
-        recipients={this.props.recipients}
+        userData={this.props.userData}
       />
 
     this.props.app.setModal(modal)
@@ -56,14 +55,14 @@ export class PaymentSuccess extends React.Component{
     if(this.state.redirect) return <Redirect to={this.state.redirect} />;
 
     let payment=this.props.payment
-    let prevBalance = this.props.stats.summary.balance
+    let prevBalance = this.props.userData.stats.summary.balance
 
     let title = <div>Payment saved</div>
     let body =
       <div>
         <p>Donation saved to profile.</p>
-        <p>Paid: {displayCurrency(payment.amount, this.props.profile)}</p>
-        <p>Balance remaining: {displayCurrency(prevBalance-payment.amount, this.props.profile)}</p>
+        <p>Paid: {displayCurrency(payment.amount, this.props.userData.profile)}</p>
+        <p>Balance remaining: {displayCurrency(prevBalance-payment.amount, this.props.userData.profile)}</p>
       </div>
     let footer = 
       <div>
@@ -80,7 +79,7 @@ export class PaymentView extends React.Component{
   constructor(props){
     super(props)
 
-    let defaultAmount = this.props.stats.summary ? this.props.stats.summary.balance : 0
+    let defaultAmount = this.props.userData.stats.summary ? this.props.userData.stats.summary.balance : 0
 
     this.state = {
       amount:(defaultAmount>0 ? defaultAmount : 0),
@@ -98,14 +97,14 @@ export class PaymentView extends React.Component{
   }
 
   componentDidMount(){
-    if(this.props.recipients.length>0){
-      this.setState({recipient:this.props.recipients[0].id})
+    if(this.props.userData.recipients.length>0){
+      this.setState({recipient:this.props.userData.recipients[0].id})
     }
   }
 
   componentDidUpdate(prevProps){
     // Change value displayed by selectionList after new recipient is added
-    if(this.state.newRecipient && prevProps.recipients!==this.props.recipients){
+    if(this.state.newRecipient && prevProps.recipients!==this.props.userData.recipients){
       console.log(`setting selectionList to ${this.state.newRecipient}`)
       let selectionList = document.getElementById("recipient")
       selectionList.value = this.state.newRecipient
@@ -128,7 +127,7 @@ export class PaymentView extends React.Component{
     let value=event.target.value
     let name=event.target.name
     if(name==="amount"){
-      value = value/this.props.profile.conversion_factor
+      value = value/this.props.userData.profile.conversion_factor
     } else if(name==="recipient"){
       value = parseInt(value)
     }
@@ -139,7 +138,7 @@ export class PaymentView extends React.Component{
     event.preventDefault()
     let modal = 
       <CreateRecipient
-        profile={this.props.profile}
+        userData={this.props.userData}
         app={this.props.app}
         returnId={this.setNewRecipient}
       />
@@ -150,7 +149,7 @@ export class PaymentView extends React.Component{
     event.preventDefault()
     let modal = 
       <SearchRecipients 
-        hideModal={this.props.app.hideModal}
+        app={this.props.app}
       />
     this.props.app.setModal(modal)
   }
@@ -168,7 +167,7 @@ export class PaymentView extends React.Component{
         paymentData[field]=this.state[field]
       } else {
         if(field==="amount"){
-          paymentData[field] = this.props.stats.summary.balance
+          paymentData[field] = this.props.userData.stats.summary.balance
         } else if(field==="recipient"){
           console.log("No recipient listed.")
         }
@@ -191,9 +190,7 @@ export class PaymentView extends React.Component{
     let modal = 
       <PaymentSuccess
         payment={json}
-        profile={this.props.profile}
-        recipients={this.props.recipients}
-        stats={this.props.stats}
+        userData={this.props.userData}
         app={this.props.app}
       />
 
@@ -211,11 +208,11 @@ export class PaymentView extends React.Component{
 
     let summary, sym, conversion, currency
     let balance = "$0.00"
-    conversion = this.props.profile.conversion_factor
-    sym = this.props.profile.currency_symbol
-    currency = this.props.profile.currency
-    if(this.props.stats && this.props.profile){
-      summary = this.props.stats.summary
+    conversion = this.props.userData.profile.conversion_factor
+    sym = this.props.userData.profile.currency_symbol
+    currency = this.props.userData.profile.currency
+    if(this.props.userData.stats && this.props.userData.profile){
+      summary = this.props.userData.stats.summary
       if(summary){
         balance = parseFloat(conversion*(summary.balance)).toFixed(2)
       }
@@ -238,10 +235,10 @@ export class PaymentView extends React.Component{
             prepend={`${sym}${currency}`}
             className="my-2"
           />
-          {(this.props.recipients.length > 0) ? 
+          {(this.props.userData.recipients.length > 0) ? 
             <div className="form-row">
               <div className="col-8">
-                <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.recipients} value="id" label="name"/>
+                <ObjectSelectionList name="recipient" onChange={this.handleChange} list={this.props.userData.recipients} value="id" label="name"/>
               </div>
               <div className="col">
                 <button className="btn btn-outline-info btn-block my-2" onClick={this.addRecipient} >+ New</button>

@@ -354,10 +354,10 @@ export class RegistrationForm extends React.Component{
 
     let footer =  
       <div>
-        <button className="btn btn-outline-danger m-2" onClick={this.props.hideModal}>Cancel</button>
+        <button className="btn btn-outline-danger m-2" onClick={this.props.app.hideModal}>Cancel</button>
         <button className={`btn btn-success m-2 ${this.state.submissionPending ? "disabled":""}`} onClick={this.validateUserData}>Create account</button>
       </div>
 
-    return <StandardModal hideModal={this.props.hideModal} title={title} body={body} footer={footer} />
+    return <StandardModal hideModal={this.props.app.hideModal} title={title} body={body} footer={footer} />
   }
 }

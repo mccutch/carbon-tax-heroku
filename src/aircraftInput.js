@@ -4,6 +4,7 @@ import {airlinerClasses, rfMultiplier, aircraftTypes} from './constants.js';
 import {getAttribute} from './helperFunctions.js';
 
 
+
 export class AirOptionsInput extends React.Component{
   constructor(props){
     super(props)
