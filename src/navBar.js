@@ -5,7 +5,7 @@ import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
 import * as urls from './urls.js';
 import {CleanLink} from './reactComponents.js';
-import * as loginFunctions from './loginWrapper.js'; //{LoginForm, logoutBrowser, demoLogin}
+import * as loginFunctions from './loginWrapper.js'; //{LoginForm, demoLogin}
 
 import {RegistrationForm} from './registrationForm.js';
 
@@ -49,7 +49,7 @@ export class BootstrapNavBar extends React.Component{
   handleClick(event){
     this.setState({collapsed:true})
     console.log(event.target.name)
-    this.props.onClick(event.target.name)
+    this.props.app.refresh()
   }
 
   render(){
@@ -89,21 +89,37 @@ export class BootstrapNavBar extends React.Component{
                         <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active" onClick={this.handleClick}>New Payment</CleanLink>
                       </Nav.Link>
 
-    let logout = <Nav.Link key="logout" name="logout"  className="text-light" onClick={this.handleClick}>Logout</Nav.Link>
+    let logout =  <Nav.Link key="logout" name="logout"  className="text-light" 
+                  onClick={(event)=>{
+                    this.handleClick(event)
+                    this.props.app.logout()
+                  }}
+                  >Logout</Nav.Link>
 
     let outstanding = <Nav.Link>
                         <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active"  onClick={this.handleClick}>Balance: {balance}</CleanLink>
-                      </Nav.Link> ///Change to payment pag
+                      </Nav.Link> ///Change to payment page
 
     // Unauthenticated users
-    let login = <Nav.Link key="login" name="login" className="text-light" onClick={this.handleClick}>Login</Nav.Link>
+    let login = <Nav.Link key="login" name="login" className="text-light" 
+                  onClick={(event)=>{
+                    this.handleClick(event)
+                    this.props.app.setModal(<loginFunctions.LoginForm onSuccess={this.props.app.refresh} app={this.props.app}/>)
+                  }}
+                  >Login</Nav.Link>
     let signUp = <Nav.Link key="signUp" name="register" className="text-light" 
                   onClick={(event)=>{
                     this.handleClick(event)
                     this.props.app.setModal(<RegistrationForm onSuccess={this.props.app.refresh} app={this.props.app}/>)
                   }}
                 >Sign up</Nav.Link>
-    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" className="text-light" onClick={this.handleClick}>Units ({units.units(this.props.app.displayUnits)})</Nav.Link>
+
+    let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" className="text-light" 
+                        onClick={(event)=>{
+                          this.handleClick(event)
+                          this.props.app.toggleDisplayUnits()
+                        }}
+                      >Units ({units.units(this.props.app.displayUnits)})</Nav.Link>
 
     let navLeft
     let navRight

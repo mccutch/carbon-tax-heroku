@@ -53,14 +53,11 @@ class App extends React.Component {
     this.defaultState = JSON.parse(JSON.stringify(this.state))
 
     this.logout=this.logout.bind(this)
-    this.logoutSuccess=this.logoutSuccess.bind(this)
-    this.toggleDisplayUnits=this.toggleDisplayUnits.bind(this)
     
     this.fetchUserObject = this.fetchUserObject.bind(this)
     this.refreshFullProfile = this.refreshFullProfile.bind(this)
     this.setFuels = this.setFuels.bind(this)
     this.serverConnectionFailure = this.serverConnectionFailure.bind(this)
-    this.handleNavClick = this.handleNavClick.bind(this)
     this.testServer = this.testServer.bind(this)
   }
 
@@ -121,14 +118,13 @@ class App extends React.Component {
   }
 
   logout(){
-    logoutBrowser({onSuccess:this.logoutSuccess})
+    // Complete logout, then reload page to clear user data from state
+    logoutBrowser({onSuccess:()=>window.location.reload(false)})
   }
 
   logoutSuccess(){
     console.log("Logout successful.")
-    console.log(this.defaultState)
-    // Reload page to clear user data from state
-    window.location.reload(false)
+    console.log(this.defaultState)  
   }
 
   refreshFullProfile(){
@@ -169,31 +165,6 @@ class App extends React.Component {
     this.fetchUserObject({url:api.MY_PAYMENTS, objectName:"payments"}) //paginated
     this.setFuels()
   }
-
-  toggleDisplayUnits(){
-    console.log("Toggle units")
-    this.setState({displayUnits:units.toggle(this.state.displayUnits)})
-  }
-
-  handleNavClick(nav){
-    this.refreshFullProfile()
-
-    if(nav==="login"){
-      this.setState({modal:<LoginForm onSuccess={this.refreshFullProfile} hideModal={this.hideModal}/>})
-
-    } else if(nav==="logout"){
-      this.logout()
-
-    } else if(nav==="demoUser"){
-      console.log("Do nothing")
-      //demoLogin({onSuccess:this.refreshFullProfile})
-
-
-    } else if(nav==="toggleUnits"){
-      this.toggleDisplayUnits()  
-
-    }
-  }
   
   
   render(){
@@ -207,10 +178,8 @@ class App extends React.Component {
       loggedIn:this.state.loggedIn,
       fuels:this.state.fuels,
       serverError:this.state.serverConnectionFailure,
-      toggleDisplayUnits:this.toggleDisplayUnits,
+      toggleDisplayUnits:()=>this.setState({displayUnits:units.toggle(this.state.displayUnits)}),
     }
-
-    console.log(app)
 
     let userData = {
       user:this.state.user,
@@ -223,7 +192,6 @@ class App extends React.Component {
       payments:this.state.payments,
     }
 
-
     return(
       <div style={{ backgroundImage: `url(${api.MARANON_SUNRISE})`, 
                     //backgroundImage: `url(${api.POINT_PERP_NARROW})`, 
@@ -234,7 +202,6 @@ class App extends React.Component {
                     height:"150vh",
                   }}>
         <BootstrapNavBar
-          onClick={this.handleNavClick}
           app={app}
           userData={userData}
         />
