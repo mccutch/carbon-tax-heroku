@@ -411,6 +411,12 @@ export class VehicleInput extends React.Component{
     this.vehicleSearch=this.vehicleSearch.bind(this)
     this.saveAndSubmit=this.saveAndSubmit.bind(this)
   }
+
+  componentDidMount(prevProps){
+    console.log("VehicleInput update")
+    console.log(prevProps)
+    console.log(this.props)
+  }
   
   vehicleSearch(){
     this.props.app.setModal(<VehicleSearch app={this.props.app} onSave={this.props.onSave} />)

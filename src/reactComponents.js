@@ -55,14 +55,14 @@ export class LabelledInput extends React.Component{
       <div className="input-group">
         {this.props.prepend ?
           <div className="input-group-prepend">
-            <span className="input-group-text"> {this.props.prepend} </span>
+            <span className="input-group-text" onClick={this.props.onPrependClick}> {this.props.prepend} </span>
           </div>
           : ""
         }
         {this.props.input}
         {this.props.append ?
           <div className="input-group-append">
-            <span className="input-group-text"> {this.props.append} </span>
+            <span className="input-group-text" onClick={()=>{console.log("Whoops"); this.props.onAppendClick()}}> {this.props.append} </span>
           </div>
           : ""
         }

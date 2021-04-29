@@ -5,6 +5,9 @@ import * as units from './unitConversions.js';
 import {displayCurrency} from './helperFunctions.js';
 import * as urls from './urls.js';
 import {CleanLink} from './reactComponents.js';
+import * as loginFunctions from './loginWrapper.js'; //{LoginForm, logoutBrowser, demoLogin}
+
+import {RegistrationForm} from './registrationForm.js';
 
 export class TabbedNavBar extends React.Component{
 
@@ -66,7 +69,12 @@ export class BootstrapNavBar extends React.Component{
                     <CleanLink to={urls.NAV_CONTACT} className="text-light" activeClassName="active" onClick={this.handleClick}>Contact</CleanLink>
                   </Nav.Link>
 
-    let demoUser = <Nav.Link key="demoUser" name="demoUser" className="text-light" onClick={this.handleClick}>Demo User</Nav.Link>
+    let demoUser =  <Nav.Link key="demoUser" name="demoUser" className="text-light" 
+                      onClick={(event)=>{
+                        this.handleClick(event)
+                        loginFunctions.demoLogin({onSuccess:this.props.app.refresh, onFailure:this.props.app.serverError})
+                      }}
+                    >Demo User</Nav.Link>
 
     // Authenticated users
     let dashboard = <Nav.Link>
@@ -89,7 +97,12 @@ export class BootstrapNavBar extends React.Component{
 
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" className="text-light" onClick={this.handleClick}>Login</Nav.Link>
-    let signUp = <Nav.Link key="signUp" name="register" className="text-light" onClick={this.handleClick}>Sign up</Nav.Link>
+    let signUp = <Nav.Link key="signUp" name="register" className="text-light" 
+                  onClick={(event)=>{
+                    this.handleClick(event)
+                    this.props.app.setModal(<RegistrationForm onSuccess={this.props.app.refresh} app={this.props.app}/>)
+                  }}
+                >Sign up</Nav.Link>
     let toggleUnits = <Nav.Link key="toggleUnits" name="toggleUnits" className="text-light" onClick={this.handleClick}>Units ({units.units(this.props.app.displayUnits)})</Nav.Link>
 
     let navLeft

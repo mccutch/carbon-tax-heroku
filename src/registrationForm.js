@@ -244,11 +244,12 @@ export class RegistrationForm extends React.Component{
     console.log("User account deleted. Ready to try again.")
   }
 
-  createTaxes(){
+  createTaxes(profile){
+    console.log(profile)
     for (let i in defaultTaxes){
       let taxData = {
         name: defaultTaxes[i]['name'],
-        price_per_kg: defaultTaxes[i]['price'],
+        price_per_kg: parseFloat(defaultTaxes[i]['price']*profile.conversion_factor).toFixed(3),
         category: defaultTaxes[i]['category'],
         isDefault: "True",
       }
@@ -257,7 +258,10 @@ export class RegistrationForm extends React.Component{
         method:'POST',
         url:api.MY_TAXES,
         data:taxData,
-        onSuccess:this.props.onSuccess,
+        onSuccess:(data)=>{
+          this.props.app.hideModal()
+          this.props.onSuccess(data)
+        },
         onFailure:this.createProfileFailure,
       })
     }

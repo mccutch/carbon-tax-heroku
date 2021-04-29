@@ -173,14 +173,12 @@ export class TaxEdit extends React.Component{
     let fields = ['name', 'category']
     for(let i in fields){
       if(this.state[fields[i]]){
-
         taxData[fields[i]]=this.state[fields[i]]
       }
     }
-    let currencyFactor = this.props.userData.profile.conversion_factor
     
     if(this.state.price_per_kg){
-      taxData['price_per_kg']=parseFloat(this.state.price_per_kg/currencyFactor).toFixed(TAX_RATE_DECIMALS)
+      taxData['price_per_kg']=parseFloat(this.state.price_per_kg).toFixed(TAX_RATE_DECIMALS)
     }
 
     console.log(taxData)

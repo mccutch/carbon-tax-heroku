@@ -6,7 +6,7 @@ import {HomePageCopy} from './homePageCopy.js';
 
 function generateByline(){
   let bylines = [
-    "Balm for the guild-ridden traveller.",
+    "Balm for the guilt-ridden traveller.",
     "The armchair dissident's carbon tax.",
     "Face your consumption.",
     "Liberty through taxation.",

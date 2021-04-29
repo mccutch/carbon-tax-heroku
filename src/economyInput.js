@@ -28,6 +28,12 @@ export class EconomyInput extends React.Component{
     this.searchForVehicle=this.searchForVehicle.bind(this)
   }
 
+  componentDidMount(){
+    if(this.props.app.loggedIn && this.props.userData.vehicles.length==0){
+      this.inputNewVehicle()
+    }
+  }
+
   returnError(message){
     this.setState({
       errorMessage:message

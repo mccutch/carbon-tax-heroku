@@ -46,18 +46,20 @@ export class HomePageCopy extends React.Component{
               You decide how much that should be, you decide where that money should go.
               You could donate, you could offset. Maybe you'll lobby politcians, maybe you'll invest, maybe you'll invest in yourself.
               <br/><br/>
-              Tax yourself only what you can afford, but don't fear a little discomfort, because that's the point. 
+              Tax only what you can afford, but don't fear a little discomfort, because that's the point. 
               What is your impact worth?
             </p>
           :""}
           {this.state.activeTab==='how'?
             <p>
               <em>Carbon Accountant</em> aims to be an accessible tool for calculating the carbon output of your trips, 
-              that can be installed as a PWA to your mobile's home screen.
+              that can be easily added to your mobile's home screen.
               <br/><br/>
-              Input your trips using the calculator, then apply a customisable tax on the carbon emissions. 
+              Input your trips using the calculator, then apply a your tax on the carbon emissions. 
               <br/><br/>
               After that, it's up to you what to do with the money, but you can use the app to record how you've donated, spent or saved it.
+              <br/><br/>
+              Click on <em>Demo User</em> in the toolbar to take it for a spin.
             </p>
           :""}
           {this.state.activeTab==='what'?
@@ -66,8 +68,8 @@ export class HomePageCopy extends React.Component{
               <br/><br/>
               If you want it to be, then sure. But the real power of <em>Carbon Accountant</em> is as a tax. 
               <br/><br/>
-              For the tax to be effective, it should change behaviour. You decide where the threshold lies between effectiveness and affordability. 
-              It's your money, as you get to decide where it is spent.
+              For a tax to be effective, it should change behaviour. You decide where the threshold lies between effectiveness and affordability. 
+              It's your money, so you get to decide where it is spent.
               <br/><br/>
               If this tax helps you question the amount you're flying, or whether you should be riding to work more often, then it's working.
             </p>
@@ -78,14 +80,14 @@ export class HomePageCopy extends React.Component{
               of action in the face of climate change.
               <br/><br/>
               But in my own actions, I was doing everything I could to travel and spend time outdoors, 
-              but felt like I never had pockets deep enough to donate towards change.
+              and felt like I never had pockets deep enough to donate towards change.
               <br/><br/>
               The irony eventually settled in and in 2017 I started a spreadsheet, calculating a proportion on any money spend polluting that 
               I should donate to an environmental charity. 
               <br/><br/>
-              Carbon Accountant has finally become a website, in the hope that it reaches those who want it.
+              Carbon Accountant has finally become a website, in the hope that it reaches those who want to find it.
               <br/><br/>
-              Jack McCutchan, Oct 2020
+              Jack McCutchan, 2020
             </p>
           :""}
         </div>

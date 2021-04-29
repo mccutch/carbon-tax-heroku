@@ -90,7 +90,7 @@ export function sleep(milliseconds){
 }
 
 export function displayCurrency(value, profile, decimals=2){
-  return `${profile.currency_symbol}${parseFloat(value*profile.conversion_factor).toFixed(decimals)}`
+  return `${profile.currency_symbol}${parseFloat(value).toFixed(decimals)}`
 }
 
 export function truncate(str, maxLen){

@@ -42,6 +42,7 @@ export class VehicleForm extends React.Component{
         <LabelledInput
           input={<input name="economy" type="number" placeholder="Economy" defaultValue={economy} onChange={this.props.onChange} step="0.1" className="form-control"/>}
           append={units.string(this.props.app.displayUnits)}
+          onAppendClick={this.props.app.toggleDisplayUnits}
         />
         <ObjectSelectionList name="fuel" onChange={this.props.onChange} list={this.props.app.fuels} defaultValue={fuelId} label="name" value="id" />
       </form>
@@ -55,7 +56,7 @@ export class TaxForm extends React.Component{
     let categoryList = <ObjectSelectionList defaultValue={category} name="category" list={taxCategories} onChange={this.props.onChange} label="title" value="title" />
     if(this.props.tax){
       name=this.props.tax.name
-      price_per_kg=parseFloat(this.props.tax.price_per_kg*this.props.userData.profile.conversion_factor).toFixed(3)
+      price_per_kg=parseFloat(this.props.tax.price_per_kg).toFixed(3)
       category=this.props.tax.category
       categoryList = this.props.tax.isDefault ? "" : categoryList
     }

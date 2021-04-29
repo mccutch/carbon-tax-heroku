@@ -8,7 +8,7 @@ import {refreshToken}  from './myJWT.js';
 import {apiFetch, testServer} from './helperFunctions.js';
 import {NavBar, BootstrapNavBar} from './navBar.js';
 import {LoginForm, logoutBrowser, demoLogin} from './loginWrapper.js';
-import {RegistrationForm} from './registrationForm.js';
+//import {RegistrationForm} from './registrationForm.js';
 import * as serviceWorker from './serviceWorker.js';
 import {GoogleDirections} from './googleDirections.js';
 import {USER_CACHE, DEFAULT_DISPLAY_UNITS} from './constants.js';
@@ -171,6 +171,7 @@ class App extends React.Component {
   }
 
   toggleDisplayUnits(){
+    console.log("Toggle units")
     this.setState({displayUnits:units.toggle(this.state.displayUnits)})
   }
 
@@ -184,10 +185,9 @@ class App extends React.Component {
       this.logout()
 
     } else if(nav==="demoUser"){
-      demoLogin({onSuccess:this.refreshFullProfile})
+      console.log("Do nothing")
+      //demoLogin({onSuccess:this.refreshFullProfile})
 
-    } else if(nav==="register"){
-      this.setState({modal:<RegistrationForm onSuccess={this.refreshFullProfile} hideModal={this.hideModal}/>})
 
     } else if(nav==="toggleUnits"){
       this.toggleDisplayUnits()  
@@ -197,7 +197,7 @@ class App extends React.Component {
   
   
   render(){
-
+    console.log("render app")
     let app = {
       refresh:this.refreshFullProfile,
       setModal:(modal)=>this.setState({modal:modal}),
@@ -207,7 +207,10 @@ class App extends React.Component {
       loggedIn:this.state.loggedIn,
       fuels:this.state.fuels,
       serverError:this.state.serverConnectionFailure,
+      toggleDisplayUnits:this.toggleDisplayUnits,
     }
+
+    console.log(app)
 
     let userData = {
       user:this.state.user,
