@@ -93,7 +93,7 @@ export class BootstrapNavBar extends React.Component{
 
     let outstanding = <Nav.Link>
                         <CleanLink to={urls.NAV_PAYMENT} className="text-light" activeClassName="active"  onClick={this.handleClick}>Balance: {balance}</CleanLink>
-                      </Nav.Link> ///Change to payment page
+                      </Nav.Link> ///Change to payment pag
 
     // Unauthenticated users
     let login = <Nav.Link key="login" name="login" className="text-light" onClick={this.handleClick}>Login</Nav.Link>
